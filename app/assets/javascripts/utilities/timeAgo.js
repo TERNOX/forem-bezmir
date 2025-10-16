@@ -2,16 +2,16 @@
 
 function secondsToHumanUnitAgo(seconds) {
   const times = [
-    ['second', 1],
-    ['min', 60],
-    ['hour', 60 * 60],
-    ['day', 60 * 60 * 24],
-    ['week', 60 * 60 * 24 * 7],
-    ['month', 60 * 60 * 24 * 30],
-    ['year', 60 * 60 * 24 * 365],
+    ['сек', 1],
+    ['хв', 60],
+    ['год', 60 * 60],
+    ['день', 60 * 60 * 24],
+    ['тиждень', 60 * 60 * 24 * 7],
+    ['місяць', 60 * 60 * 24 * 30],
+    ['рік', 60 * 60 * 24 * 365],
   ];
 
-  if (seconds < times[0][1]) return 'just now';
+  if (seconds < times[0][1]) return 'прямо зараз';
 
   let scale = 0;
   // If the amount of seconds is more than a minute, we change the scale to minutes
@@ -20,9 +20,9 @@ function secondsToHumanUnitAgo(seconds) {
   while (scale + 1 < times.length && seconds >= times[scale + 1][1]) scale += 1;
 
   const wholeUnits = Math.floor(seconds / times[scale][1]);
-  const unitName = times[scale][0] + (wholeUnits === 1 ? '' : 's');
+  const unitName = times[scale][0] + (wholeUnits === 1 ? '' : '');
 
-  return wholeUnits + ' ' + unitName + ' ago';
+  return wholeUnits + ' ' + unitName + ' тому';
 }
 
 /**

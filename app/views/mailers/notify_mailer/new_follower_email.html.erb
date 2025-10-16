@@ -4,7 +4,7 @@
     <tr>
       <td align="center" bgcolor="#FFFFFF" style="padding: 25px 2px 35px;">
         <h1 style="margin: 0; font-size: 24px; color: #333;">
-          <%= @follower.name %></a> just followed you on <%= community_name %>
+          <%= @follower.name %></a> щойно підписався(лась) на вас у <%= community_name %>
         </h1>
       </td>
     </tr>
@@ -12,14 +12,14 @@
       <td align="center">
         <img style="border-radius:100%;" width="150px"
           src="<%= optimized_image_url(URL.local_image(@follower.profile_image), width: 150)%>"
-          alt="<%= @follower.name %> profile image">
+          alt="Фото профілю <%= @follower.name %>">
       </td>
     </tr>
     <tr>
       <td style="padding: 24px 2%; text-align: center;">
         <a style="background:<%= Settings::UserExperience.primary_brand_color_hex %>;color:white;padding:12px;border-radius:8px;text-decoration:none;display:block;margin-top:4px;font-size:20px;font-weight:bold"
           href='<%= URL.user(@follower) %>'>
-          View their profile
+          Переглянути профіль
         </a>
       </td>
     </tr>
@@ -29,13 +29,10 @@
           <tr>
             <td bgcolor="#F8F8F8"
               style="padding: 20px; text-align: center; color: #3a3c3d; font-size: 16px; border-radius: 8px;border:2px solid #3a3c3d">
-              <h3 style="font-weight:600">You now have <%= pluralize(@user.good_standing_followers_count, "total follower"
-                  ) %>.
-                  <p>
-                    When someone follows you on <%= community_name %>, your posts will be prioritized in their feed and
-                      notifications. The perks of popularity I suppose.
-                  </p>
-
+              <h3 style="font-weight:600">Тепер у вас <%= pluralize(@user.good_standing_followers_count, "підписник") %>.</h3>
+              <p>
+                Коли хтось підписується на вас у <%= community_name %>, ваші публікації отримують вищий пріоритет у його стрічці та сповіщеннях. Переваги популярності, так би мовити.
+              </p>
             </td>
           </tr>
         </table>

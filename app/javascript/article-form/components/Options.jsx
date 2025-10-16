@@ -56,7 +56,7 @@ export const Options = ({
           aria-label="Select one of the existing series"
         >
           <option value="" disabled>
-            Select...
+            Обрати...
           </option>
           {seriesNames}
         </select>
@@ -73,7 +73,7 @@ export const Options = ({
             variant="primary"
             onClick={onSaveDraft}
           >
-            Convert to a Draft
+            До чорнеток
           </Button>
         </div>
       );
@@ -82,7 +82,7 @@ export const Options = ({
         <div data-testid="options__danger-zone" className="crayons-field mb-6">
           <div className="crayons-field__label color-accent-danger">Danger Zone</div>
           <Button variant="primary" destructive onClick={onSaveDraft}>
-            Unpublish post
+            Сховати допис
           </Button>
         </div>
       );
@@ -97,7 +97,7 @@ export const Options = ({
     publishedAtField = (
       <div className="crayons-field mb-6">
         <label htmlFor="publishedAtDate" className="crayons-field__label">
-          Schedule Publication
+          Запланувати допис
         </label>
         <input
           aria-label="Schedule publication date"
@@ -154,10 +154,10 @@ export const Options = ({
         <h3 className="mb-6">Post options</h3>
         <div className="crayons-field mb-6">
           <label htmlFor="canonicalUrl" className="crayons-field__label">
-            Canonical URL
+            Канонічний URL
           </label>
           <p className="crayons-field__description">
-            Change meta tag <code>canonical_url</code> if this post was first published elsewhere (like your own blog).
+            Змініть мета теґ <code>canonical_url</code> якщо цей допис спочатку було опубліковано десь інше (наприклад на вашому особистому сайті). Це дасть зрозуміти пошуковим системам де оригінал статті і перевага буде надаватися вашому сайту.
           </p>
           <input
             type="text"
@@ -173,10 +173,12 @@ export const Options = ({
         {publishedAtField}
         <div className="crayons-field mb-6">
           <label htmlFor="series" className="crayons-field__label">
-            Series
+            Серія
           </label>
           <p className="crayons-field__description">
-            Will this post be part of a series? Give the series a unique name. (Series visible once it has multiple posts)
+			Цей допис є частиною дописів у великій серії? Дай цій серії ім'я.
+            (Перелік дописів буде видно у кожному дописі серії)
+
           </p>
           <input
             type="text"
@@ -196,7 +198,7 @@ export const Options = ({
           data-content="exit"
           variant="secondary"
         >
-          Done
+          Готово
         </Button>
       </Dropdown>
     </div>
@@ -220,4 +222,4 @@ Options.propTypes = {
   previewLoading: PropTypes.bool.isRequired,
 };
 
-Options.displayName = 'Options';
+Options.displayName = 'Налаштування';

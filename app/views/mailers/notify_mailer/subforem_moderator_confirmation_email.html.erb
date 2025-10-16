@@ -1,27 +1,27 @@
-<p>Hey <%= @user.name %>!</p>
+<p>Привіт, <%= @user.name %>!</p>
 
-<p>Thanks for volunteering to be a <%= community_name %> subforem moderator. We've added you as a moderator for <%= link_to @subforem.domain, "https://#{@subforem.domain}" %>.</p>
+<p>Дякуємо, що зголосилися стати модератором підсайту <%= community_name %>. Ми додали вас як модератора для <%= link_to @subforem.domain, "https://#{@subforem.domain}" %>.</p>
 
-<p>With great power comes great... you know the saying. As a subforem moderator, you are able to:</p>
+<p>З великою владою приходить велика... ну, ви знаєте як там далі. Як модератор підсайту, ви можете:</p>
 
 <ul>
-  <li>Manage the discoverability of the subforem</li>
-  <li>Update community settings like description and tagline</li>
-  <li>Help maintain the quality and relevance of content within the subforem</li>
-  <li>Use moderation tools to ensure the community follows our Code of Conduct</li>
-  <li>Contribute to fostering a warm, welcoming, and inclusive environment</li>
+  <li>Керувати видимістю підсайту</li>
+  <li>Оновлювати налаштування спільноти, такі як опис і слоган</li>
+  <li>Підтримувати якість і актуальність контенту в межах підсайту</li>
+  <li>Використовувати інструменти модерації, щоб спільнота дотримувалася Кодексу поведінки</li>
+  <li>Сприяти створенню теплої, привітної та інклюзивної атмосфери</li>
 </ul>
 
-<p>For details on all available features and how to access them, visit our <%= link_to "Community Moderation", community_moderation_path %> pages.</p>
+<p>Докладніше про всі доступні функції та способи їх використання можна дізнатися на сторінці <%= link_to "Модерація спільноти", community_moderation_path %>.</p>
 
-<p>Subforem moderation is something we're continuously iterating on, so you can expect adjustments and expanding features over time as we receive feedback.</p>
+<p>Модерація підсайтів — це процес, який ми постійно вдосконалюємо, тому з часом ви можете очікувати оновлення та розширення можливостей на основі відгуків користувачів.</p>
 
-<p>Of course, if you have any questions, please hit "reply" to this email.</p>
+<p>Якщо у вас виникнуть запитання, просто натисніть «Відповісти» на цей лист.</p>
 
-<p>Thanks so much for volunteering your time to benefit <%= community_name %>. Your participation will assist us in better organizing the site via subforems, and help us to foster a warm, welcoming, inclusive, spam-free-as-can-be platform.</p>
+<p>Щиро дякуємо, що присвячуєте свій час розвитку <%= community_name %>. Ваша участь допоможе нам краще організувати сайт через підсайти та створити теплу, привітну, інклюзивну і максимально вільну від спаму платформу.</p>
 
 <p>
-  Happy Modding!
+  Гарної модерації!
   <br>
-  - <%= community_name %> Team
+  — Команда <%= community_name %>
 </p>

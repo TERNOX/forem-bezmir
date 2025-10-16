@@ -1369,8 +1369,25 @@ class Article < ApplicationRecord
   end
 
   def title_to_slug
-    truncated_title = title.size > 100 ? title[0..100].split[0...-1].join(" ") : title
-    "#{Sterile.sluggerize(truncated_title)}-#{rand(100_000).to_s(26)}"
+
+    ru = { 'а' => 'a', 'б' => 'b', 'в' => 'v', 'г' => 'h', 'д' => 'd', \
+    'е' => 'e', 'ё' => 'e', 'ж' => 'zh', 'з' => 'z', 'и' => 'y', \
+    'к' => 'k', 'л' => 'l', 'м' => 'm', 'н' => 'n', 'о' => 'o', \
+    'п' => 'p', 'р' => 'r', 'с' => 's', 'т' => 't', 'у' => 'u', \
+    'ф' => 'f', 'х' => 'h', 'ц' => 'c', 'ч' => 'ch', 'ш' => 'sh', \
+    'щ' => 'shch', 'ы' => 'y', 'э' => 'e', 'ю' => 'u', 'я' => 'ya', \
+    'й' => 'i', 'ъ' => '', 'ь' => '', 'ґ' => 'g', 'є' => 'ye', 'і' => 'i', 'ї' => 'yi'}
+
+    identifier = ''
+
+    title.downcase.each_char do |char|
+      identifier += ru[char] ? ru[char] : char
+    end
+
+    identifier.gsub!(/[^a-z0-9_]+/, '_'); # remaining non-alphanumeric => hyphen
+    identifier.gsub(/^[-_]*|[-_]*$/, ''); # remove hyphens/underscores and numbers at beginning and hyphens/underscores at end
+	
+	"#{identifier}-#{rand(100_000).to_s(26)}"
   end
 
   def touch_actor_latest_article_updated_at(destroying: false)
