@@ -39,7 +39,7 @@ export const TagsField = ({ onInput, defaultValue, switchHelpContext }) => {
       showLabel={false}
       placeholder={locale('core.tags_field_placeholder')}
       border={false}
-      maxSelections={4}
+      maxSelections={6}
       SuggestionTemplate={TagAutocompleteOption}
       SelectionTemplate={TagAutocompleteSelection}
       onSelectionsChanged={syncSelections}

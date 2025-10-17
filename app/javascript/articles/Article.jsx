@@ -109,7 +109,7 @@ export const Article = ({
                 >
                   <path d="M22.314 10.172l-1.415 1.414-.707-.707-4.242 4.242-.707 3.536-1.415 1.414-4.242-4.243-4.95 4.95-1.414-1.414 4.95-4.95-4.243-4.242 1.414-1.415L8.88 8.05l4.242-4.242-.707-.707 1.414-1.415z" />
                 </svg>
-                Pinned
+                Закріплено
                 <span class="hidden s:inline">&nbsp;post</span>
               </div>
             )}
@@ -139,7 +139,7 @@ export const Article = ({
               )}
 
               <div className="crayons-story__save">
-                <ReadingTime readingTime={article.reading_time} typeOf={article.type_of} />
+
                 { isRoot && (<small class="crayons-story__tertiary mr-2 fs-xs fw-bold">{domain}</small>)}
                 <SaveButton
                   article={article}
