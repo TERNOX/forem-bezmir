@@ -1,172 +1,127 @@
-FROM ghcr.io/forem/ruby:3.3.0@sha256:9cda49a45931e9253d58f7d561221e43bd0d47676b8e75f55862ce1e9997ab5c as base
+# ---------- base ----------
+FROM ghcr.io/forem/ruby:3.3.0@sha256:9cda49a45931e9253d58f7d561221e43bd0d47676b8e75f55862ce1e9997ab5c AS base
 
-FROM base as builder
+# інколи всередині образу немає /usr/bin/bash — робимо симлінк
+USER root
+RUN ln -sf /bin/bash /usr/bin/bash
 
-# This is provided by BuildKit
+ENV APP_USER=forem \
+    APP_UID=1000 \
+    APP_GID=1000 \
+    APP_HOME=/opt/apps/forem \
+    LD_PRELOAD=libjemalloc.so.2
+
+# юзер/група додатку
+RUN groupadd -g "${APP_GID}" "${APP_USER}" && \
+    useradd -u "${APP_UID}" -g "${APP_GID}" -d "${APP_HOME}" -m "${APP_USER}"
+
+# ---------- builder ----------
+FROM base AS builder
+
 ARG TARGETARCH
-
 USER root
 
-# pkg-config,
-# libpixman-1-dev,
-# libcairo2-dev,
-# libpango1.0-dev
-#
-# are needed only on arm64: some nodejs dependency doesn't provide
-# pre-built binaries for that arch, and so falls back to building
-# from source, which then requires a few extra packages installed.
-#
-# Since we wipe out node_modules as part of this image after calling
-# the bundler, we don't need these headers (or their sofile counterparts)
-# in any of the other build stages.
-RUN apt update && \
-    apt install -y \
-        build-essential \
-        libcurl4-openssl-dev \
-        libffi-dev \
-        libxml2-dev \
-        libxslt-dev \
-        libpcre3-dev \
-        libpq-dev \
-        pkg-config \
-        libpixman-1-dev \
-        libcairo2-dev \
-        libpango1.0-dev \
-        && \
-    apt clean
+# системні залежності для зборки gems/node (canvas etc.)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      build-essential \
+      libcurl4-openssl-dev \
+      libffi-dev \
+      libxml2-dev \
+      libxslt-dev \
+      libpcre3-dev \
+      libpq-dev \
+      pkg-config \
+      libpixman-1-dev \
+      libcairo2-dev \
+      libpango1.0-dev \
+      curl ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
 
+# dockerize (чекає сервіси на старті)
+ENV DOCKERIZE_VERSION=v0.7.0
+RUN curl -fsSLO https://github.com/jwilder/dockerize/releases/download/${DOCKERIZE_VERSION}/dockerize-linux-${TARGETARCH}-${DOCKERIZE_VERSION}.tar.gz \
+ && tar -C /usr/local/bin -xzvf dockerize-linux-${TARGETARCH}-${DOCKERIZE_VERSION}.tar.gz \
+ && rm dockerize-linux-${TARGETARCH}-${DOCKERIZE_VERSION}.tar.gz
+
+# bundler
 ENV BUNDLER_VERSION=2.4.17 \
     BUNDLE_SILENCE_ROOT_WARNING=true \
     BUNDLE_SILENCE_DEPRECATIONS=true
-
-RUN gem install -N bundler:"${BUNDLER_VERSION}"
-
-ENV APP_USER=forem APP_UID=1000 APP_GID=1000 APP_HOME=/opt/apps/forem \
-    LD_PRELOAD=libjemalloc.so.2
-RUN mkdir -p ${APP_HOME} && chown "${APP_UID}":"${APP_GID}" "${APP_HOME}" && \
-    groupadd -g "${APP_GID}" "${APP_USER}" && \
-    adduser --uid "${APP_UID}" --gid "${APP_GID}" --home "${APP_HOME}" "${APP_USER}"
-
-ENV DOCKERIZE_VERSION=v0.7.0
-RUN curl -fsSLO https://github.com/jwilder/dockerize/releases/download/"${DOCKERIZE_VERSION}"/dockerize-linux-${TARGETARCH}-"${DOCKERIZE_VERSION}".tar.gz \
-    && tar -C /usr/local/bin -xzvf dockerize-linux-${TARGETARCH}-"${DOCKERIZE_VERSION}".tar.gz \
-    && rm dockerize-linux-${TARGETARCH}-"${DOCKERIZE_VERSION}".tar.gz \
-    && chown root:root /usr/local/bin/dockerize
+RUN gem install -N bundler:${BUNDLER_VERSION}
 
 USER "${APP_USER}"
 WORKDIR "${APP_HOME}"
 
-COPY --chown=${APP_UID}:${APP_GID} ./.ruby-version "${APP_HOME}"/
-COPY --chown=${APP_UID}:${APP_GID} ./Gemfile ./Gemfile.lock "${APP_HOME}"/
-COPY --chown=${APP_UID}:${APP_GID} ./vendor/cache "${APP_HOME}"/vendor/cache
+# додаємо файли для bundler спочатку — кеш шарів
+COPY --chown=${APP_UID}:${APP_GID} .ruby-version Gemfile Gemfile.lock ${APP_HOME}/
+COPY --chown=${APP_UID}:${APP_GID} vendor/cache ${APP_HOME}/vendor/cache
 
-# Have to reset APP_CONFIG, which appears to be set by upstream images, to
-# avoid permission errors in the development/test images (which run bundle
-# as a user and require write access to the config file for setting things
-# like BUNDLE_WITHOUT (a value that is cached by root here in this builder
-# layer, see https://michaelheap.com/bundler-ignoring-bundle-without/))
+# не використовувати глобальний APP_CONFIG — пишемо в локальну .bundle
 ENV BUNDLE_APP_CONFIG="${APP_HOME}/.bundle"
 RUN mkdir -p "${BUNDLE_APP_CONFIG}" && \
     touch "${BUNDLE_APP_CONFIG}/config" && \
-    chown -R "${APP_UID}:${APP_GID}" "${BUNDLE_APP_CONFIG}" && \
     bundle config --local build.sassc --disable-march-tune-native && \
     bundle config --local without development:test && \
     BUNDLE_FROZEN=true bundle install --deployment --jobs 4 --retry 5 && \
     find "${APP_HOME}"/vendor/bundle -name "*.c" -delete && \
     find "${APP_HOME}"/vendor/bundle -name "*.o" -delete
 
-COPY --chown=${APP_UID}:${APP_GID} . "${APP_HOME}"
+# весь код після інсталяції gems
+COPY --chown=${APP_UID}:${APP_GID} . ${APP_HOME}
 
+# статика
 RUN mkdir -p "${APP_HOME}"/public/{assets,images,packs,podcasts,uploads}
-
-# While it's relatively rare for bare metal builds to hit the default
-# timeout, QEMU-based ones (as is the case with Docker BuildX for
-# cross-compiling) quite often can. This increased timeout should help
-# reduce false-negatives when building multiarch images.
+# buildx/qemu інколи повільний — збільшуємо таймаут для yarn
 RUN echo 'httpTimeout: 300000' >> ~/.yarnrc.yml
 
-# This is one giant step now because previously, removing node_modules to save
-# layer space was done in a later step, which is invalid in at least some
-# Docker storage drivers (resulting in Directory Not Empty errors).
+# install node deps та препрокомпіляція ассетів
 RUN NODE_ENV=production yarn install && \
     RAILS_ENV=production NODE_ENV=production bundle exec rake assets:precompile && \
     rm -rf node_modules
 
-# This used to be calculated within the container build, but we then tried
-# to rm -rf the .git that was copied in, which isn't valid (removing
-# directories created in lower layers of an image isn't a thing (at least
-# with the overlayfs drivers). Instead, we'll pass this in over CLI when
-# building images (eg. in CI), but leave a default value for callers who don't
-# override (perhaps docker-compose). This isn't perfect, but it'll do for now.
+# метадані збірки (опційно, CI може переписати)
 ARG VCS_REF=unspecified
+RUN date -u +'%Y-%m-%dT%H:%M:%SZ' >> "${APP_HOME}/FOREM_BUILD_DATE" && \
+    echo "${VCS_REF}" >> "${APP_HOME}/FOREM_BUILD_SHA"
 
-RUN echo $(date -u +'%Y-%m-%dT%H:%M:%SZ') >> "${APP_HOME}"/FOREM_BUILD_DATE && \
-    echo "${VCS_REF}" >> "${APP_HOME}"/FOREM_BUILD_SHA
-
-
-
-## Testing
+# ---------- (необов'язково) testing ----------
 FROM builder AS testing
+# якщо раптом треба тести — можна добити сюди spec’и, але в прод це не піде
+# ENTRYPOINT/CMD такі самі, як у builder, якщо потрібно.
 
-USER "${APP_USER}"
-
-COPY --chown="${APP_USER}":"${APP_USER}" ./spec "${APP_HOME}"/spec
-COPY --from=builder /usr/local/bin/dockerize /usr/local/bin/dockerize
-
-RUN bundle config --local build.sassc --disable-march-tune-native && \
-    bundle config --delete without && \
-    BUNDLE_FROZEN=true bundle install --deployment --jobs 4 --retry 5 && \
-    find "${APP_HOME}"/vendor/bundle -name "*.c" -delete && \
-    find "${APP_HOME}"/vendor/bundle -name "*.o" -delete
-
-ENTRYPOINT ["./scripts/entrypoint.sh"]
-
-CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0", "-p", "3000"]
-
-FROM builder AS uffizzi
-
-USER "${APP_USER}"
-
-COPY --chown="${APP_USER}":"${APP_USER}" ./spec "${APP_HOME}"/spec
-COPY --from=builder /usr/local/bin/dockerize /usr/local/bin/dockerize
-
-RUN bundle config --local build.sassc --disable-march-tune-native && \
-      bundle config --delete without && \
-      BUNDLE_FROZEN=true bundle install --deployment --jobs 4 --retry 5 && \
-      find "${APP_HOME}"/vendor/bundle -name "*.c" -delete && \
-      find "${APP_HOME}"/vendor/bundle -name "*.o" -delete
-
-# Replacement for volume
-COPY --from=builder --chown="${APP_USER}":"${APP_USER}" ${APP_HOME} ${APP_HOME}
-## Bund install
-RUN ./scripts/bundle.sh
-## Yarn install
-RUN bash -c yarn install --dev
-
-# Document that we're going to expose port 3000
-EXPOSE 3000
-# Use Bash as the default command
-CMD ["/usr/bin/bash"]
-
-## Development
+# ---------- (необов'язково) development ----------
 FROM base AS development
-
-ENV TMPDIR=/var/tmp
-
-## Production
-FROM base as production
-
 USER root
 
+# dev-інструменти/клієнти ставимо ЛИШЕ в dev (НЕ в production!)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      build-essential git curl less \
+      libpq-dev postgresql-client \
+      libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 \
+      libnss3 libxss1 libasound2 libxtst6 xauth xvfb \
+      libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+# для локальної розробки:
+RUN gem update --system && gem install bundler
+
+USER "${APP_USER}"
+WORKDIR /app
+EXPOSE 3000
+CMD ["/usr/bin/bash"]
+
+# ---------- production (ФІНАЛЬНИЙ, мінімальний) ----------
+FROM base AS production
+USER root
+
+# тільки bundler + системний юзер (жодних apt-get у прод!)
 ENV BUNDLER_VERSION=2.4.17 BUNDLE_SILENCE_ROOT_WARNING=1
-RUN gem install -N bundler:"${BUNDLER_VERSION}"
+RUN gem install -N bundler:${BUNDLER_VERSION}
 
-ENV APP_USER=forem APP_UID=1000 APP_GID=1000 APP_HOME=/opt/apps/forem \
-    LD_PRELOAD=libjemalloc.so.2
-RUN mkdir -p ${APP_HOME} && chown "${APP_UID}":"${APP_GID}" "${APP_HOME}" && \
-    groupadd -g "${APP_GID}" "${APP_USER}" && \
-    adduser --uid "${APP_UID}" --gid "${APP_GID}" --home "${APP_HOME}" "${APP_USER}"
+# (забезпечуємо існування APP_HOME та власника — якщо треба повторно)
+RUN mkdir -p ${APP_HOME} && chown "${APP_UID}:${APP_GID}" "${APP_HOME}"
 
+# копіюємо ГООООТОВУ збірку з builder
 COPY --from=builder --chown="${APP_USER}":"${APP_USER}" ${APP_HOME} ${APP_HOME}
 
 USER "${APP_USER}"
@@ -175,75 +130,4 @@ WORKDIR "${APP_HOME}"
 VOLUME "${APP_HOME}"/public/
 
 ENTRYPOINT ["./scripts/entrypoint.sh"]
-
 CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0", "-p", "3000"]
-
-# Common dependencies
-# Using --mount to speed up build with caching, see https://github.com/moby/buildkit/blob/master/frontend/dockerfile/docs/reference.md#run---mount
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
-  --mount=type=cache,target=/var/lib/apt,sharing=locked \
-  --mount=type=tmpfs,target=/var/log \
-  rm -f /etc/apt/apt.conf.d/docker-clean; \
-  echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache; \
-  apt-get update -qq && \
-  DEBIAN_FRONTEND=noninteractive apt-get -yq dist-upgrade && \
-  DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
-    build-essential \
-    gnupg2 \
-    curl \
-    less \
-    git
-
-ARG PG_MAJOR
-RUN curl -sSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /usr/share/keyrings/postgres-archive-keyring.gpg \
-  && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/postgres-archive-keyring.gpg] https://apt.postgresql.org/pub/repos/apt/" \
-    $(lsb_release -cs)-pgdg main $PG_MAJOR | tee /etc/apt/sources.list.d/postgres.list > /dev/null
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
-  --mount=type=cache,target=/var/lib/apt,sharing=locked \
-  --mount=type=tmpfs,target=/var/log \
-  apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get -yq dist-upgrade && \
-  DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
-    libpq-dev \
-    postgresql-client
-
-# Application dependencies, for Cypress, node-canvas
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
-    --mount=type=cache,target=/var/lib/apt,sharing=locked \
-    --mount=type=tmpfs,target=/var/log \
-    DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
-      build-essential \
-      libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb \
-      libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
-
-# Installing hivemind
-ARG TARGETARCH
-ENV HIVEMIND_VERSION=v1.1.0
-ADD https://github.com/DarthSim/hivemind/releases/download/${HIVEMIND_VERSION}/hivemind-${HIVEMIND_VERSION}-linux-${TARGETARCH}.gz /tmp/hivemind.gz
-RUN gunzip /tmp/hivemind.gz && \
-    chmod +x /tmp/hivemind && \
-    mv /tmp/hivemind /usr/local/bin/hivemind && \
-    rm -rf /tmp/*
-
-# Configure bundler
-ENV LANG=C.UTF-8 \
-  BUNDLE_JOBS=4 \
-  BUNDLE_RETRY=3
-
-# Store Bundler settings in the project's root
-ENV BUNDLE_APP_CONFIG=.bundle
-
-# Uncomment this line if you want to run binstubs without prefixing with `bin/` or `bundle exec`
-# ENV PATH /app/bin:$PATH
-
-# Upgrade RubyGems and install the latest Bundler version
-RUN gem update --system && \
-    gem install bundler
-
-# Create a directory for the app code
-RUN mkdir -p /app
-WORKDIR /app
-
-# Document that we're going to expose port 3000
-EXPOSE 3000
-# Use Bash as the default command
-CMD ["/usr/bin/bash"]
