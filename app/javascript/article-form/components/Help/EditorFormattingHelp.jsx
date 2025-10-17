@@ -6,106 +6,100 @@ export const EditorFormattingHelp = ({ openModal }) => (
     data-testid="format-help"
     className="crayons-article-form__help crayons-article-form__help--body"
   >
-      <h4 className="mb-2 fs-l">Як краще писати?</h4>
+    <h4 className="mb-2 fs-l">Editor Basics</h4>
     <ul className="list-disc pl-6 color-base-70">
       <li>
-        У нас є <a href="https://kutok.io/editorial/pro_shcho_i_yak_my_pyshemo-3hdk" target="_blank">допис</a>, який докладно розповідає про що краще не писати, а також як саме це робити правильно. Будь ласка, ознайомтеся з ним.
-	  </li>
-	  </ul>
-    <h4 className="mb-2 fs-l">Основи редактора</h4>
-    <ul className="list-disc pl-6 color-base-70">
-      <li>
-        Використовуйте{' '}
+        Use{' '}
         <a href="#markdown" onClick={() => openModal('markdownShowing')}>
-          Розмітку
+          Markdown
         </a>{' '}
-        щоб красиво оформлювати дописи.
+        to write and format posts.
         <details className="fs-s my-1">
-          <summary class="cursor-pointer">Найчастіші способи використання</summary>
+          <summary class="cursor-pointer">Commonly used syntax</summary>
           <table className="crayons-card crayons-card--secondary crayons-table crayons-table--compact w-100 mt-2 mb-4 lh-tight">
             <tbody>
               <tr>
                 <td className="ff-monospace">
-                  # Підзаголовок
+                  # Header
                   <br />
                   ...
                   <br />
-                  ###### Підзаголовок
+                  ###### Header
                 </td>
                 <td>
-                  H1 Підзаголовок
+                  H1 Header
                   <br />
                   ...
                   <br />
-                  H6 Підзаголовок
+                  H6 Header
                 </td>
               </tr>
               <tr>
-                <td className="ff-monospace">*курсив* or _курсив_</td>
+                <td className="ff-monospace">*italics* or _italics_</td>
                 <td>
-                  <em>курсив</em>
+                  <em>italics</em>
                 </td>
               </tr>
               <tr>
-                <td className="ff-monospace">**жирний**</td>
+                <td className="ff-monospace">**bold**</td>
                 <td>
-                  <strong>жирний</strong>
+                  <strong>bold</strong>
                 </td>
               </tr>
               <tr>
-                <td className="ff-monospace">[Посилання](https://...)</td>
+                <td className="ff-monospace">[Link](https://...)</td>
                 <td>
-                  <a href="https://forem.com">Посилання</a>
+                  <a href="https://forem.com">Link</a>
                 </td>
               </tr>
               <tr>
                 <td className="ff-monospace">
-                  * пункт 1<br />* пункт 2
+                  * item 1<br />* item 2
                 </td>
                 <td>
                   <ul class="list-disc ml-5">
-                    <li>пункт 1</li>
-                    <li>пункт 2</li>
+                    <li>item 1</li>
+                    <li>item 2</li>
                   </ul>
                 </td>
               </tr>
               <tr>
                 <td className="ff-monospace">
-                  1. пункт 1<br />
-                  2. пункт 2
+                  1. item 1<br />
+                  2. item 2
                 </td>
                 <td>
                   <ul class="list-decimal ml-5">
-                    <li>пункт 1</li>
-                    <li>пункт 2</li>
+                    <li>item 1</li>
+                    <li>item 2</li>
                   </ul>
                 </td>
               </tr>
               <tr>
-                <td className="ff-monospace">&gt; цитата</td>
+                <td className="ff-monospace">&gt; quoted text</td>
                 <td>
                   <span className="pl-2 border-0 border-solid border-l-2 border-base-50">
-                    цитата
+                    quoted text
                   </span>
                 </td>
               </tr>
               <tr>
-                <td className="ff-monospace">`код`</td>
+                <td className="ff-monospace">`inline code`</td>
                 <td>
-                  <code>код</code>
+                  <code>inline code</code>
                 </td>
               </tr>
               <tr>
                 <td className="ff-monospace">
                   <span class="fs-xs">```</span>
                   <br />
-                  блок коду
+                  code block
                   <br />
                   <span class="fs-xs">```</span>
                 </td>
                 <td>
                   <div class="highlight p-2 overflow-hidden">
-                    <code>блок коду</code>
+                    <code>code block</code>
                   </div>
                 </td>
               </tr>
@@ -114,17 +108,17 @@ export const EditorFormattingHelp = ({ openModal }) => (
         </details>
       </li>
       <li>
-        Вбудовуйте різноманітний контент, наприклад, твіти, відео з YouTube тощо. Використовуйте повний 
+        Embed rich content such as Tweets, YouTube videos, etc. Use the complete
         URL: <code>{'{% embed https://... %}.'}</code>{' '}
         <a href="#liquid" onClick={() => openModal('liquidShowing')}>
-          Дивитися повний перелік підтримуваних сайтів
+          See a list of supported embeds
         </a>
         .
       </li>
       <li>
-        Окрім зображень для вмісту допису, ви також можете перетягнути зображення обкладинки.
+        In addition to images for the post's content, you can also drag and drop
+        a cover image.
       </li>
-	  <li><a href="https://kutok.io/site/gaid_z_vykorystannya_markdown-381i" target="_blank">Повний ґайд розмітки</a></li>
     </ul>
   </div>
 );

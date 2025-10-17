@@ -1,5 +1,5 @@
 class ArticlePolicy < ApplicationPolicy
-  MAX_TAG_LIST_SIZE = 6
+  MAX_TAG_LIST_SIZE = 4
 
   def self.limit_post_creation_to_admins?
     FeatureFlag.enabled?(:limit_post_creation_to_admins)
