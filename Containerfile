@@ -1,5 +1,10 @@
 FROM ghcr.io/forem/ruby:3.3.0@sha256:9cda49a45931e9253d58f7d561221e43bd0d47676b8e75f55862ce1e9997ab5c as base
 
+USER root
+RUN apt-get update && apt-get install -y --no-install-recommends bash ca-certificates \
+ && rm -rf /var/lib/apt/lists/* \
+ && ln -sf /bin/bash /usr/bin/bash
+
 FROM base as builder
 
 # This is provided by BuildKit
