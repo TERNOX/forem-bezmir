@@ -245,3 +245,43 @@ WORKDIR /app
 EXPOSE 3000
 # Use Bash as the default command
 CMD ["/usr/bin/bash"]
+
+
+# === app layout ===
+# Куди кладемо код Forem (узгоджено з systemd-юнітами Forem)
+RUN mkdir -p /opt/apps/forem
+WORKDIR /opt/apps/forem
+
+# Скопіюй увесь код у контейнер
+COPY . /opt/apps/forem
+
+# Додай скрипти у PATH (якщо у репозиторії є scripts/ і bin/)
+# Якщо у тебе папка scripts/ є — робимо їх виконуваними:
+RUN if [ -d scripts ]; then chmod +x scripts/* || true; fi \
+ && if [ -d bin ]; then chmod +x bin/* || true; fi
+
+# ДУЖЕ ВАЖЛИВО: зробити доступним "bootstrap" в PATH,
+# бо systemd викликає контейнер саме з цим аргументом.
+# Варіант 1: у тебе є scripts/bootstrap → додаємо у PATH:
+ENV PATH="/opt/apps/forem/scripts:/opt/apps/forem/bin:${PATH}"
+
+# Якщо у твоєму форку НРАПТО немає scripts/bootstrap,
+# зробимо тонкий шімер (uncomment, якщо треба):
+# RUN printf '%s\n' '#!/usr/bin/env bash
+# set -euo pipefail
+# export RAILS_ENV=${RAILS_ENV:-production}
+# bundle check || bundle install --jobs 4
+# bundle exec rails db:migrate
+# bundle exec rails assets:precompile
+# ' > /usr/local/bin/bootstrap && chmod +x /usr/local/bin/bootstrap
+# ENV PATH="/usr/local/bin:${PATH}"
+
+# Forem веб слухає 9090 у проді (Traefik шле туди)
+ENV PORT=9090
+EXPOSE 9090
+
+# За замовчуванням запускаємо веб-сервер, а не /bin/bash
+# (офіційний образ теж стартує веб-процес без аргументів)
+# Якщо у тебе є bin/web або scripts/server — юзай його.
+# Універсальний варіант через Puma:
+CMD ["bash", "-lc", "bundle check || bundle install --jobs 4 && bundle exec puma -C config/puma.rb"]
