@@ -245,23 +245,3 @@ WORKDIR /app
 EXPOSE 3000
 # Use Bash as the default command
 CMD ["/usr/bin/bash"]
-
-
-RUN printf '%s\n' '#!/usr/bin/env bash
-set -euo pipefail
-export RAILS_ENV=${RAILS_ENV:-production}
-
-if [ -d /opt/apps/forem ]; then cd /opt/apps/forem; elif [ -d /app ]; then cd /app; fi
-bundle check || bundle install --jobs 4
-bundle exec rails db:migrate
-bundle exec rails assets:precompile
-
-if [ "${1:-}" != "preonly" ]; then
-  exec bundle exec puma -C config/puma.rb
-fi
-' > /usr/local/bin/bootstrap && chmod +x /usr/local/bin/bootstrap
-
-ENV PORT=9090
-EXPOSE 9090
-
-CMD ["bootstrap"]

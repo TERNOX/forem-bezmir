@@ -139,7 +139,7 @@ export const Article = ({
               )}
 
               <div className="crayons-story__save">
-
+ <ReadingTime readingTime={article.reading_time} typeOf={article.type_of} />
                 { isRoot && (<small class="crayons-story__tertiary mr-2 fs-xs fw-bold">{domain}</small>)}
                 <SaveButton
                   article={article}
