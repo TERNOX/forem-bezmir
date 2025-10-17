@@ -1,10 +1,5 @@
 FROM ghcr.io/forem/ruby:3.3.0@sha256:9cda49a45931e9253d58f7d561221e43bd0d47676b8e75f55862ce1e9997ab5c as base
 
-USER root
-RUN apt-get update && apt-get install -y --no-install-recommends bash ca-certificates \
- && rm -rf /var/lib/apt/lists/* \
- && ln -sf /bin/bash /usr/bin/bash
-
 FROM base as builder
 
 # This is provided by BuildKit
@@ -108,30 +103,7 @@ ARG VCS_REF=unspecified
 RUN echo $(date -u +'%Y-%m-%dT%H:%M:%SZ') >> "${APP_HOME}"/FOREM_BUILD_DATE && \
     echo "${VCS_REF}" >> "${APP_HOME}"/FOREM_BUILD_SHA
 
-## Production
-FROM base as production
 
-USER root
-
-ENV BUNDLER_VERSION=2.4.17 BUNDLE_SILENCE_ROOT_WARNING=1
-RUN gem install -N bundler:"${BUNDLER_VERSION}"
-
-ENV APP_USER=forem APP_UID=1000 APP_GID=1000 APP_HOME=/opt/apps/forem \
-    LD_PRELOAD=libjemalloc.so.2
-RUN mkdir -p ${APP_HOME} && chown "${APP_UID}":"${APP_GID}" "${APP_HOME}" && \
-    groupadd -g "${APP_GID}" "${APP_USER}" && \
-    adduser --uid "${APP_UID}" --gid "${APP_GID}" --home "${APP_HOME}" "${APP_USER}"
-
-COPY --from=builder --chown="${APP_USER}":"${APP_USER}" ${APP_HOME} ${APP_HOME}
-
-USER "${APP_USER}"
-WORKDIR "${APP_HOME}"
-
-VOLUME "${APP_HOME}"/public/
-
-ENTRYPOINT ["./scripts/entrypoint.sh"]
-
-CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0", "-p", "3000"]
 
 ## Testing
 FROM builder AS testing
@@ -180,6 +152,31 @@ CMD ["/usr/bin/bash"]
 FROM base AS development
 
 ENV TMPDIR=/var/tmp
+
+## Production
+FROM base as production
+
+USER root
+
+ENV BUNDLER_VERSION=2.4.17 BUNDLE_SILENCE_ROOT_WARNING=1
+RUN gem install -N bundler:"${BUNDLER_VERSION}"
+
+ENV APP_USER=forem APP_UID=1000 APP_GID=1000 APP_HOME=/opt/apps/forem \
+    LD_PRELOAD=libjemalloc.so.2
+RUN mkdir -p ${APP_HOME} && chown "${APP_UID}":"${APP_GID}" "${APP_HOME}" && \
+    groupadd -g "${APP_GID}" "${APP_USER}" && \
+    adduser --uid "${APP_UID}" --gid "${APP_GID}" --home "${APP_HOME}" "${APP_USER}"
+
+COPY --from=builder --chown="${APP_USER}":"${APP_USER}" ${APP_HOME} ${APP_HOME}
+
+USER "${APP_USER}"
+WORKDIR "${APP_HOME}"
+
+VOLUME "${APP_HOME}"/public/
+
+ENTRYPOINT ["./scripts/entrypoint.sh"]
+
+CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0", "-p", "3000"]
 
 # Common dependencies
 # Using --mount to speed up build with caching, see https://github.com/moby/buildkit/blob/master/frontend/dockerfile/docs/reference.md#run---mount
