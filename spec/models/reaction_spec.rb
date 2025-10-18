@@ -45,6 +45,40 @@ RSpec.describe Reaction do
     end
   end
 
+  describe "reputation score tracking" do
+    let(:author) { create(:user) }
+    let(:reactor) { create(:user) }
+    let(:article) { create(:article, user: author) }
+
+    it "increments the author's reputation when a like is created" do
+      expect do
+        create(:reaction, reactable: article, user: reactor, category: "like")
+      end.to change { author.reload.reputation_score }.by(1)
+    end
+
+    it "decrements the author's reputation when the like is removed" do
+      reaction = create(:reaction, reactable: article, user: reactor, category: "like")
+
+      expect do
+        reaction.destroy
+      end.to change { author.reload.reputation_score }.by(-1)
+    end
+
+    it "removes reputation credit when the reaction becomes invalid" do
+      reaction = create(:reaction, reactable: article, user: reactor, category: "like")
+
+      expect do
+        reaction.update!(status: "invalid")
+      end.to change { author.reload.reputation_score }.by(-1)
+    end
+
+    it "does not change reputation for non-like reactions" do
+      expect do
+        create(:reaction, reactable: article, user: reactor, category: "unicorn")
+      end.not_to change { author.reload.reputation_score }
+    end
+  end
+
   describe "validations" do
     it "allows like reaction for users without trusted role" do
       reaction.category = "like"
