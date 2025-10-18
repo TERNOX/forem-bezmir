@@ -101,7 +101,7 @@ uk:
       co_authors_html: з %{names}
       crossposted:
         text_html: Спочатку опубліковано на %{url} %{on}
-        on_html: %{date}
+        on_html: "%{date}"
       edited: Відредаговано %{date}
       edited_html: Відредаговано %{date}
       for_org_html: "%{start} для %{end}%{org}"

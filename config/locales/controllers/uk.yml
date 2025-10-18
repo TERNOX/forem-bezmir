@@ -21,7 +21,7 @@ uk:
     markdown_html: "<p>😔 Сталася помилка у вашому markdown</p><hr><p>%{error}</p>"
     moderated: Недоступно через модерацію
   confirmations_controller:
-    email_sent: Лист надіслано! Якщо Ви не отримали інструкції, зверніться до служби підтримки: %{email}.
+    email_sent: "Лист надіслано! Якщо Ви не отримали інструкції, зверніться до служби підтримки: %{email}."
   credits_controller:
     done:
       one: "%{count} новий бал придбано!"
