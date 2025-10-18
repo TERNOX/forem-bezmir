@@ -48,7 +48,7 @@ describe('initializeTimeFixer', () => {
     const dateConversion = await convertUtcDate(utcDate);
     // const formatDateTime = jest.fn();
 
-    expect(dateConversion).toContain('Feb 2');
+    expect(dateConversion).toContain('2 лютого');
   });
 
   test('convertUtcDate function with different options', () => {
@@ -58,7 +58,7 @@ describe('initializeTimeFixer', () => {
       month: 'short',
       day: 'numeric',
     };
-    expect(convertUtcDate(utcDate, options1)).toBe('Feb 2');
+    expect(convertUtcDate(utcDate, options1)).toBe('2 лютого');
 
     const options2 = {
       year: 'numeric',
@@ -69,7 +69,7 @@ describe('initializeTimeFixer', () => {
       second: 'numeric',
       timeZoneName: 'short',
     };
-    expect(convertUtcDate(utcDate, options2)).toBe('Feb 2');
+    expect(convertUtcDate(utcDate, options2)).toBe('2 лютого');
   });
 
   test('convertUtcTime function with different options', () => {
@@ -80,7 +80,7 @@ describe('initializeTimeFixer', () => {
       minute: 'numeric',
       timeZoneName: 'short',
     };
-    expect(convertUtcTime(utcTime, options1)).toBe('3:04 AM UTC');
+    expect(convertUtcTime(utcTime, options1)).toBe('05:04 GMT+2');
 
     const options2 = {
       hour: 'numeric',
@@ -88,7 +88,7 @@ describe('initializeTimeFixer', () => {
       second: 'numeric',
       timeZoneName: 'short',
     };
-    expect(convertUtcTime(utcTime, options2)).toBe('3:04 AM UTC');
+    expect(convertUtcTime(utcTime, options2)).toBe('05:04 GMT+2');
   });
 
   test('formatDateTime function with different options and values', () => {
@@ -98,7 +98,7 @@ describe('initializeTimeFixer', () => {
       timeZoneName: 'short',
     };
     const value1 = new Date(917924645000);
-    expect(formatDateTime(options1, value1)).toBe('3:04 AM UTC');
+    expect(formatDateTime(options1, value1)).toBe('05:04 GMT+2');
 
     const options2 = {
       year: 'numeric',
@@ -106,7 +106,7 @@ describe('initializeTimeFixer', () => {
       day: 'numeric',
     };
     const value2 = new Date(917924645000);
-    expect(formatDateTime(options2, value2)).toBe('Feb 2, 1999');
+    expect(formatDateTime(options2, value2)).toBe('2 лют. 1999 р.');
   });
 });
 
@@ -120,7 +120,7 @@ describe('formatDateTime', () => {
       minute: 'numeric',
     };
     const value = new Date('2022-04-13T12:34:56Z');
-    const expected = 'Apr 13, 2022, 12:34 PM';
+    const expected = '13 квіт. 2022 р., 15:34';
 
     expect(formatDateTime(options, value)).toEqual(expected);
   });
@@ -129,7 +129,7 @@ describe('formatDateTime', () => {
 describe('convertUtcTime', () => {
   it('converts the UTC time to local time with proper format', () => {
     const utcTime = 917924645000;
-    const expected = '3:04 AM UTC';
+    const expected = '05:04 GMT+2';
 
     expect(convertUtcTime(utcTime)).toEqual(expected);
   });
@@ -138,7 +138,7 @@ describe('convertUtcTime', () => {
 describe('convertUtcDate', () => {
   it('converts the UTC date to local date with proper format', () => {
     const utcDate = 917924645000;
-    const expected = expect.stringMatching(/^\w{3} \d{1,2}$/);
+    const expected = '2 лютого';
 
     expect(convertUtcDate(utcDate)).toEqual(expected);
   });
@@ -174,11 +174,9 @@ describe('updateLocalDateTime', () => {
       (element) => element.innerHTML,
     );
 
-    expect(utcTimeElements[0].innerHTML).toEqual('3:04 AM UTC');
-    expect(utcDateElements[0].innerHTML).toEqual(
-      expect.stringMatching(/^\w{3} \d{1,2}$/),
-    );
-    expect(utcElements[0].innerHTML).toEqual('Tuesday, February 2 at 3:04 AM');
+    expect(utcTimeElements[0].innerHTML).toEqual('05:04 GMT+2');
+    expect(utcDateElements[0].innerHTML).toEqual('2 лютого');
+    expect(utcElements[0].innerHTML).toEqual('вівторок, 2 лютого о 05:04');
   });
 });
 
@@ -195,7 +193,7 @@ describe('formatDateTime', () => {
       hour12: true,
     };
     const value = new Date(1682636630);
-    const expected = 'Tue, Jan 20, 1970, 11:23 AM';
+    const expected = 'вт, 20 січ. 1970 р., 2:23 пп';
     expect(formatDateTime(options, value)).toBe(expected);
   });
 });
@@ -203,7 +201,7 @@ describe('formatDateTime', () => {
 describe('convertCalEvent', () => {
   it('should convert UTC to a formatted date and time string', () => {
     const utc = 1682636630;
-    const expected = 'Tuesday, January 20 at 11:23 AM';
+    const expected = 'вівторок, 20 січня о 14:23';
     expect(convertCalEvent(utc)).toBe(expected);
   });
 });

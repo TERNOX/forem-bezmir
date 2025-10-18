@@ -1,12 +1,18 @@
+const KYIV_LOCALE = 'uk-UA';
+const KYIV_TIME_ZONE = 'Europe/Kyiv';
+
 function formatDateTime(options, value) {
-  return new Intl.DateTimeFormat('en-US', options).format(value);
+  return new Intl.DateTimeFormat(KYIV_LOCALE, {
+    ...(options || {}),
+    timeZone: KYIV_TIME_ZONE,
+  }).format(value);
 }
 
 function convertUtcTime(utcTime) {
   const time = new Date(Number(utcTime));
   const options = {
-    hour: 'numeric',
-    minute: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
     timeZoneName: 'short',
   };
   return formatDateTime(options, time);
@@ -15,7 +21,7 @@ function convertUtcTime(utcTime) {
 function convertUtcDate(utcDate) {
   const date = new Date(Number(utcDate));
   const options = {
-    month: 'short',
+    month: 'long',
     day: 'numeric',
   };
   return formatDateTime(options, date);
@@ -27,8 +33,8 @@ function convertCalEvent(utc) {
     weekday: 'long',
     month: 'long',
     day: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   };
 
   return formatDateTime(options, date);
