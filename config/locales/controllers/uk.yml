@@ -1,3 +1,4 @@
+---
 uk:
   api_secrets_controller:
     generated: 'Ваш API-ключ згенеровано: %{secret}'
