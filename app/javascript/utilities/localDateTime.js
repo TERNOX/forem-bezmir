@@ -4,12 +4,15 @@
   Convert string timestamp to local time, using the given locale.
 
   timestamp should be something like '2019-05-03T16:02:50.908Z'
-  locale can be `navigator.language` or a custom locale. defaults to 'default'
+  locale can be `navigator.language` or a custom locale. defaults to 'uk-UA'
   options are `Intl.DateTimeFormat` options
 
   see <https://developer.mozilla.org//docs/Web/JavaScript/Reference/Global_Objects/DateTimeFormat>
   for more information.
 */
+const DEFAULT_LOCALE = 'uk-UA';
+const KYIV_TIME_ZONE = 'Europe/Kyiv';
+
 export function timestampToLocalDateTime(timestamp, locale, options) {
   if (!timestamp) {
     return '';
@@ -17,9 +20,10 @@ export function timestampToLocalDateTime(timestamp, locale, options) {
 
   try {
     const time = new Date(timestamp);
+    const formatOptions = { ...(options || {}), timeZone: KYIV_TIME_ZONE };
     const formattedTime = new Intl.DateTimeFormat(
-      locale || 'default',
-      options,
+      locale || DEFAULT_LOCALE,
+      formatOptions,
     ).format(time);
     return options.year === '2-digit'
       ? formattedTime.replace(', ', " '")
@@ -38,9 +42,7 @@ export function addLocalizedDateTimeToElementsTitles(elements, timestampAttribut
 
     if (timestamp) {
       // add a full datetime to the element title, visible on hover.
-      // `navigator.language` is used to allow the date to be localized
-      // according to the browser's locale
-      // see <https://developer.mozilla.org/en-US/docs/Web/API/NavigatorLanguage/language>
+      // Kyiv locale and timezone keep the display consistent across the UI.
       const localDateTime = timestampToLocalDateTimeLong(timestamp);
       element.setAttribute('title', localDateTime);
     }
@@ -55,7 +57,7 @@ export function localizeTimeElements(elements, timeOptions) {
     if (timestamp) {
       const localDateTime = timestampToLocalDateTime(
         timestamp,
-        navigator.language,
+        DEFAULT_LOCALE,
         timeOptions,
       );
 
@@ -65,9 +67,9 @@ export function localizeTimeElements(elements, timeOptions) {
 }
 
 function timestampToLocalDateTimeLong(timestamp) {
-  // example: "Wednesday, April 3, 2019, 2:55:14 PM"
+  // example: "середа, 3 квітня 2019 р., 17:55:14"
 
-  return timestampToLocalDateTime(timestamp, navigator.language, {
+  return timestampToLocalDateTime(timestamp, DEFAULT_LOCALE, {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
@@ -79,8 +81,8 @@ function timestampToLocalDateTimeLong(timestamp) {
 }
 
 function timestampToLocalDateTimeShort(timestamp) {
-  // example: "10 Dec 2018" if it is not the current year
-  // example: "6 Sep" if it is the current year
+  // example: "10 грудня 2018 р., 19:30" if it is not the current year
+  // example: "6 вересня, 08:15" if it is the current year
 
   if (timestamp) {
     const currentYear = new Date().getFullYear();
@@ -88,14 +90,16 @@ function timestampToLocalDateTimeShort(timestamp) {
 
     const timeOptions = {
       day: 'numeric',
-      month: 'short',
+      month: 'long',
+      hour: '2-digit',
+      minute: '2-digit',
     };
 
     if (givenYear !== currentYear) {
       timeOptions.year = 'numeric';
     }
 
-    return timestampToLocalDateTime(timestamp, navigator.language, timeOptions);
+    return timestampToLocalDateTime(timestamp, DEFAULT_LOCALE, timeOptions);
   }
 
   return '';

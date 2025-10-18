@@ -13,10 +13,6 @@ export function setupRssFetchTime() {
       second: 'numeric',
     };
 
-    timeNode.textContent = timestampToLocalDateTime(
-      timeStamp,
-      navigator.language,
-      timeOptions,
-    );
+    timeNode.textContent = timestampToLocalDateTime(timeStamp, undefined, timeOptions);
   }
 }

@@ -12,16 +12,16 @@ describe('LocalDateTime Utilities', () => {
   it('should return readable date string', () => {
     const localTime = timestampToLocalDateTime(
       '2019-05-03T16:02:50.908Z',
-      'en',
+      'uk-UA',
       {},
     );
-    expect(localTime).toEqual('5/3/2019');
+    expect(localTime).toEqual('03.05.2019');
   });
 
   it('should return formatted year when year option added', () => {
     const localTime = timestampToLocalDateTime(
       '2019-05-03T16:02:50.908Z',
-      'en',
+      'uk-UA',
       { year: '2-digit' },
     );
     expect(localTime).toEqual('19');
