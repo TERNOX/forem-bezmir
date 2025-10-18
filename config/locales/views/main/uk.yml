@@ -26,7 +26,7 @@ uk:
         admin: Адмін
         dashboard: Панель керування
         placeholder: "..."
-        list: Список для читання
+        list: Збережене
         moderator_center: Центр модерації
         other: Інше
         settings: Налаштування
@@ -66,7 +66,7 @@ uk:
         desc_html: "Спільнота Куток — %{desc}"
         logo: Логотип Forem
         powered:
-          text_html: Зроблено з любов’ю, Forem та %{rails}. Спільнота Куток <span title="copyright">&copy;</span> %{copyright}.
+          text_html: Зроблено з любов’ю та %{rails}. Спільнота Куток <span title="copyright">&copy;</span> %{copyright}.
           rails: Ruby on Rails
         sidebar_desc_html: "Спільнота Куток\n%{desc}"
       create_post: Створити допис

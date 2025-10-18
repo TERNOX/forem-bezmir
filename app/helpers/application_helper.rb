@@ -269,7 +269,7 @@ module ApplicationHelper
     if social_media_type.to_s == "mastodon"
       handle
     elsif social_media_type.to_s == "twitter"
-      "https://x.com/#{handle}"
+      handle
     elsif social_media_type.to_s == "bluesky"
       "https://bsky.app/profile/#{handle}"
     elsif social_media_type.to_s == "linkedin"

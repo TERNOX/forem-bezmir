@@ -24,7 +24,7 @@ describe('Follow tag', () => {
       cy.wait('@followsRequest');
 
       cy.findByTestId('snackbar').within(() => {
-        cy.findByRole('alert').should('have.text', 'An error has occurred.');
+        cy.findByRole('alert').should('have.text', 'Помилка.');
       });
     });
 
@@ -39,7 +39,7 @@ describe('Follow tag', () => {
       cy.get('@followButton').should('have.attr', 'aria-pressed', 'true');
 
       cy.findByTestId('snackbar').within(() => {
-        cy.findByRole('alert').should('have.text', 'You have followed tag0.');
+        cy.findByRole('alert').should('have.text', 'Ви підписалися на теґ tag0.');
       });
 
       cy.get('@followButton').click();
@@ -49,7 +49,7 @@ describe('Follow tag', () => {
       cy.get('@followButton').should('have.attr', 'aria-pressed', 'false');
 
       cy.findByTestId('snackbar').within(() => {
-        cy.findByRole('alert').should('have.text', 'You have unfollowed tag0.');
+        cy.findByRole('alert').should('have.text', 'Ви відписалися від теґу tag0.');
       });
     });
 
@@ -68,7 +68,7 @@ describe('Follow tag', () => {
       cy.get('@hideButton').should('have.text', 'Unhide');
       cy.get('@toBeHiddenFollowButton').should('not.exist');
       cy.findByTestId('snackbar').within(() => {
-        cy.findByRole('alert').should('have.text', 'You have hidden tag0.');
+        cy.findByRole('alert').should('have.text', 'Ви приховали для себе теґ tag0.');
       });
 
       // clicking on 'Unhide' should change it back to 'Hide'
@@ -90,7 +90,7 @@ describe('Follow tag', () => {
         'false',
       );
       cy.findByTestId('snackbar').within(() => {
-        cy.findByRole('alert').should('have.text', 'You have unhidden tag0.');
+        cy.findByRole('alert').should('have.text', 'Ви повернули теґ tag0.');
       });
     });
   });
@@ -118,7 +118,7 @@ describe('Follow tag', () => {
       cy.get('@followButton').should('have.attr', 'aria-pressed', 'true');
 
       cy.findByTestId('snackbar').within(() => {
-        cy.findByRole('alert').should('have.text', 'You have followed tag1.');
+        cy.findByRole('alert').should('have.text', 'Ви підписалися на теґ tag1.');
       });
 
       cy.get('@followButton').click();
@@ -128,7 +128,7 @@ describe('Follow tag', () => {
       cy.get('@followButton').should('have.attr', 'aria-pressed', 'false');
 
       cy.findByTestId('snackbar').within(() => {
-        cy.findByRole('alert').should('have.text', 'You have unfollowed tag1.');
+        cy.findByRole('alert').should('have.text', 'Ви відписалися від теґу tag1.');
       });
     });
 
@@ -147,7 +147,7 @@ describe('Follow tag', () => {
       cy.get('@hideButton').should('have.text', 'Unhide');
       cy.get('@toBeHiddenFollowButton').should('not.exist');
       cy.findByTestId('snackbar').within(() => {
-        cy.findByRole('alert').should('have.text', 'You have hidden tag1.');
+        cy.findByRole('alert').should('have.text', 'Ви приховали теґ tag1.');
       });
 
       // clicking on 'Unhide' should change it back to 'Hide'
@@ -169,7 +169,7 @@ describe('Follow tag', () => {
         'false',
       );
       cy.findByTestId('snackbar').within(() => {
-        cy.findByRole('alert').should('have.text', 'You have unhidden tag1.');
+        cy.findByRole('alert').should('have.text', 'Ви знову бачите теґ tag1.');
       });
     });
   });

@@ -5,7 +5,7 @@ module Settings
 
     self.table_name = "site_configs"
     SOCIAL_MEDIA_SERVICES = %w[
-      twitter facebook github instagram twitch mastodon youtube linkedin bluesky
+      twitter facebook github instagram twitch mastodon telegram youtube linkedin bluesky
     ].freeze
 
     # Forem Team

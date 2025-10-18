@@ -747,11 +747,7 @@ class Article < ApplicationRecord
     relevant_date = displayable_published_at
     return unless relevant_date
 
-    if relevant_date.year == Time.current.year
-      I18n.l(relevant_date, format: :short)
-    elsif relevant_date
-      I18n.l(relevant_date, format: :short_with_yy)
-    end
+
   end
 
   def video_duration_in_minutes
