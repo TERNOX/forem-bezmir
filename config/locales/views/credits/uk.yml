@@ -1,0 +1,57 @@
+uk:
+  views:
+    credits:
+      meta:
+        title: Бали
+      ledger:
+        class:
+          listing: Оголошення
+        category: Категорія
+        item: Елемент
+        cost: Вартість (бали)
+        date: Дата
+        misc: Інші елементи
+      listing:
+        create: Створити оголошення
+        dashboard: Перейти до панелі оголошень
+      new:
+        meta:
+          title: Придбати бали
+        heading: Придбати бали для @%{name}
+        hook:
+          text_html: Бали використовуються для %{listings}, а також для майбутніх продуктів і сервісів.
+          listings: "оголошень у спільноті Куток"
+        form:
+          amount:
+            label: Сума до покупки
+            placeholder: Введіть будь-яку суму
+          method:
+            label: Спосіб оплати
+            number: "**** **** **** %{last}"
+            exp: "%{mm}/%{yy}"
+            add: Додати нову картку
+          submit: Завершити покупку
+          submitting: Надсилання...
+          note_org: "*Усі адміністратори проєкту мають доступ до балів, які належать проєкту"
+        switch:
+          org: Перемкнутись на %{name}
+          user: Перемкнутись на особисту покупку
+        status:
+          subtitle:
+            org: Скільки балів має %{name}?
+            user: Скільки балів у мене зараз?
+          desc:
+            org: "%{name} має %{count} балів."
+            user: У вас %{count} балів.
+        how:
+          subtitle: Як я можу отримати бали?
+          desc_html: Учасники отримують <strong>5 балів</strong> за кожен бейдж, отриманий у профілі.
+      purchase: Придбати додаткові бали
+      tag: 'Тег: %{name}'
+      status:
+        user:
+          one: "У вас %{count} особистий бал для витрат"
+          other: "У вас %{count} особистих балів для витрат"
+        org_html:
+          one: "%{name} має %{num} бал для витрат"
+          other: "%{name} має %{num} балів для витрат"

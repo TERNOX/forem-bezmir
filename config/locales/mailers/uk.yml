@@ -1,0 +1,36 @@
+uk:
+  mailers:
+    digest_mailer:
+      from: Дайджест
+      more_top_posts: ще популярні дописи у %{community}
+      more_top_posts_based: ще популярні дописи у %{community}, підібрані за Вашими інтересами
+      more_top_posts_from: ще цікаві публікації від спільноти
+      more_trending_posts: ще трендові дописи у %{community}
+      more_trending_posts_picked: ще трендові дописи у %{community}, підібрані спеціально для Вас
+      other_posts: інші дописи, які можуть Вам сподобатися
+      other_community_posts: інші публікації зі %{community}, які можуть Вам сподобатися
+      other_top_posts: інші популярні дописи у %{community}
+      other_trending_posts: інші трендові дописи у %{community}
+    custom_mailer:
+      from: Розсилка
+    notify_mailer:
+      account_deleted: "%{community} — підтвердження видалення акаунта"
+      deletion_requested: "%{community} — запит на видалення акаунта"
+      trusted: Вітаємо! Тепер Ви — «довірений» користувач %{community}!
+      base_subscriber: Вітаємо! Тепер Ви підписані на DEV++
+      moderator: "Вітаємо! Тепер Ви модеруєте тег #%{tag_name}"
+      subforem_moderator: "Вітаємо! Тепер Ви модеруєте %{subforem_name}"
+      new_follower: щойно підписався(лась) на Вас у %{community}
+      new_mention: "%{name} щойно згадав(ла) Вас у своєму %{type}"
+      org_deleted: "%{community} — підтвердження видалення проєкту"
+      new_reply: "%{name} відповів(ла) на Ваш %{type}"
+      feedback: Дякуємо за Ваш звіт у %{community}
+      export: Експорт Вашого контенту готовий
+      unread_notifications:
+        one: "🔥 У Вас %{count} непрочитане сповіщення у %{community}"
+        other: "🔥 У Вас %{count} непрочитаних сповіщень у %{community}"
+      new_badge: Ви щойно отримали значок
+      video_upload: Ваше відео успішно завантажено
+    verification_mailer:
+      from: "%{community} — підтвердження електронної пошти <%{email}>"
+      verify_ownership: Підтвердьте володіння акаунтом %{community}

@@ -1,0 +1,31 @@
+uk:
+  views:
+    search:
+      heading: Результати пошуку%{for}
+      for: " для %{query}"
+      placeholder: Пошук...
+      find_related_posts: Знайти пов’язані дописи...
+      icon:
+        aria_label: Пошук
+        title: Пошук
+      powered_by: Працює на базі Algolia
+      suggestions:
+        submit_search: Надішліть запит для розширеного фільтрування.
+        displaying_recommendations: Відображаються рекомендації Algolia — почніть вводити, щоб шукати
+      nav:
+        posts: Дописи
+        podcasts: Подкасти
+        people: Люди
+        comments: Коментарі
+        my_posts: Лише мої дописи
+        organizations: Проєкти
+        tags: Теги
+      sort:
+        aria_label: Параметри сортування результатів пошуку
+        relevance: Найбільш релевантні
+        newest: Найновіші
+        oldest: Найстаріші
+      meta:
+        title: Результати пошуку%{for}
+        for: " для %{query}"
+        description: "%{site} => Результати пошуку"

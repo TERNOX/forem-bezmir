@@ -1,0 +1,21 @@
+---
+uk:
+  api:
+    v0:
+      analytics_controller:
+        invalid_date_format: Параметри дати 'start' або 'end' мають бути у форматі 'yyyy-mm-dd'
+        start_missing: Обов’язковий параметр 'start' відсутній
+      articles_controller:
+        must_be_json: параметр article має бути об’єктом JSON. Ти надіслав article як %{type}
+      follows_controller:
+        followed:
+          one: підписався на %{count} користувача
+          other: підписався на %{count} користувачів
+      health_checks_controller:
+        app_is_up: Додаток працює!
+        database_connected: Базу даних підключено
+        database_not_connected: Базу даних НЕ підключено!
+        redis_connected: Redis підключено
+        redis_not_connected: Redis НЕ підключено!
+      listings_controller:
+        no_credit: Недостатньо доступних кредитів

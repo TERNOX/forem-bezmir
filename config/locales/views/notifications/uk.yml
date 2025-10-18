@@ -1,0 +1,102 @@
+uk:
+  views:
+    notifications:
+      meta:
+        description: Вхідні сповіщення спільноти Куток
+        og:
+          title: Сповіщення — спільнота Куток
+      heading: Сповіщення
+      article:
+        published_html: "%{user} опублікував допис %{title}"
+        mod_greeting: "Привіт, %{user} 👋"
+        welcome_html: "%{user} — новий учасник спільноти. Перегляньте його допис і залиште добрий коментар, щоб привітати!"
+        mod_opt_out: Не хочете отримувати такі сповіщення?
+        change_settings: Змінити налаштування
+      badge:
+        heading_html: Ви отримали значок %{badge}
+        awarded_html: "Ви також отримуєте %{credits} для використання у %{listings}, якщо хочете щось просунути. 🎉"
+        credits:
+          one: "%{count} новий бал"
+          other: "%{count} нових балів"
+        listings: списках спільноти
+        more: Детальніше про списки
+        profile: Переглянути профіль
+      broadcast:
+        visit_html: Відвідайте %{settings}, щоб керувати своїми сповіщеннями.
+        settings: налаштування
+      comment:
+        commented_html: "%{user} прокоментував %{title}"
+        first_html: "%{user} залишив свій перший коментар до %{title}"
+        first_reply: "Залиште йому першу відповідь! 🎉"
+        left_html: "%{user} щойно залишив коментар до %{title}."
+        replied_html: "%{user} відповів у темі %{title}"
+        mod_greeting: "Привіт, %{user} 👋"
+        welcome_html: "%{user} — новий учасник спільноти. Залиште добрий коментар, щоб привітати його."
+        mod_opt_out: Не хочете отримувати такі сповіщення?
+        change_settings: Змінити налаштування
+      error:
+        subtitle: Сталася помилка!
+        desc: Це вже зафіксовано, і ми працюємо над вирішенням.
+      follow:
+        and_html: "%{first} та %{second} підписалися на вас!"
+        and_other_html:
+          one: "%{first} і ще %{others} підписалися на вас!"
+          other: "%{first} і ще %{others} підписалися на вас!"
+        others:
+          one: "%{count} інший"
+          other: "%{count} інших"
+        single_html: "%{name} підписався на вас!"
+      load: Завантажити більше
+      mention:
+        article_html: "%{user} згадав вас у дописі%{if_org}"
+        comment_html: "%{user} згадав вас у коментарі"
+        article_mobile: "%{user} згадав вас у дописі %{title}"
+        comment_mobile: "%{user} згадав вас у коментарі до %{title}"
+        if_org_html: " у межах %{org}"
+      milestone:
+        heading_html: Ваш допис %{title} досяг %{type}!
+        check: Перевірте свою панель керування
+        intro: "🎉🎉🎉🎉🎉🎉🎉🎉"
+        type:
+          View:
+            one: "%{count} перегляд"
+            other: "%{count} переглядів"
+          Reaction:
+            one: "%{count} реакція"
+            other: "%{count} реакцій"
+      nav:
+        aria_label: Сповіщення
+        all: Усі
+        comments: Коментарі
+        posts: Дописи
+      new_post:
+        if_org_html: " у межах %{org}"
+        verb_html: "%{user} створив новий допис%{if_org}"
+      reacted:
+        and_html: "%{first} і %{last}"
+        and_other_html:
+          one: "%{first} і ще %{count} інших"
+          other: "%{first} і ще %{count} інших"
+        verb_html:
+          one: "%{start}%{actors} відреагував на %{title} через%{end} %{reactions}"
+          other: "%{start}%{actors} відреагували на %{title} через%{end} %{reactions}"
+        your:
+          article: ваш допис
+          comment: ваш коментар
+          unknown: вас
+      settings: Налаштування
+      tag:
+        heading: "Привіт 👋"
+        add_html: Модератори додали тег <strong>%{tag}</strong> до вашого допису %{title}. Вони вважають, що цей тег найкраще відповідає змісту.
+        check_html: Перевірте %{other}, можливо, вони пасують краще
+        other: інші популярні теги
+        reason: 'Причина дії:'
+        remove_html: Модератори видалили тег <strong>%{tag}</strong> із вашого допису %{title}. Деякі теги мають особливі правила, тому модератори можуть коригувати їх для кращої відповідності спільноті.
+        support_html: "Дякуємо, що ви частина спільноти Куток! %{email} 🤗"
+      subforem:
+        heading: "Ваш допис переміщено 👋"
+        change_html: Ваш допис %{title} автоматично переміщено зі %{old_community_link} до %{new_community_link}.
+        reason: 'Причина переміщення:'
+        misc_explanation: Це відкритий простір для загальних обговорень і взаємодії, що може не підходити для інших частин мережі.
+        explanation_html: Це допомагає показувати ваш контент найвідповіднішій аудиторії та підтримувати якість кожної спільноти.
+        support_html: "Дякуємо, що ви частина спільноти Куток! %{email} 🤗"

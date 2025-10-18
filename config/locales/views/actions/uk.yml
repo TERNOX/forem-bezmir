@@ -1,0 +1,25 @@
+uk:
+  views:
+    actions:
+      copy:
+        text: Скопійовано у буфер обміну
+        button: Копіювати посилання
+      more:
+        title: Більше...
+        aria_label: Параметри поширення допису
+      share:
+        facebook:
+          text: Поділитися у Facebook
+        hackernews:
+          text: Поділитися у Hacker News
+        linkedin:
+          text: Поділитися у LinkedIn
+        mastodon:
+          text: Поділитися у Mastodon
+        reddit:
+          text: Поділитися у Reddit
+        twitter:
+          text: Поділитися у X
+          query: '"%{article}" від %{author}'
+        link: Поділитися дописом через...
+        report: Поскаржитися на порушення

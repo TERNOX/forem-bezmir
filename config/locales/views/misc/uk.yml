@@ -1,0 +1,128 @@
+uk:
+  views:
+    auth:
+      welcome_to_subforem: "Вітаємо у спільноті Куток — частині мережі Forem!"
+      create:
+        text: Створити акаунт
+        aria_label: Створити новий акаунт
+      login:
+        text: Увійти
+        aria_label: Увійти
+    badges:
+      meta:
+        title: Бейджи
+      all:
+        one: Показати один бейдж
+        other: Показати всі %{count} бейджи
+      heading: Бейджи
+      desc: Отримуйте бейджи за вашу активність! Натисніть на бейдж, щоб дізнатися, як його здобути.
+      icon_close: Закрити
+      gotit: Зрозуміло
+      indicator: "%{user} отримав цей бейдж %{number} разів."
+    campaign:
+      subtitle: Історії (%{count})
+      view: Переглянути всі дописи
+    deep_links:
+      subtitle: Відкриваємо мобільний застосунок...
+      alert:
+        subtitle: Ой! Не вдалося відкрити мобільний застосунок?
+        desc_html: Переконайтеся, що він встановлений, і спробуйте ще раз. Якщо проблема не зникає — зверніться до %{email}.
+        back: Повернутися назад
+        again: Спробувати ще раз
+        install: Встановити застосунок
+    email_subscriptions:
+      unsubscribe:
+        heading: "Ви відписалися від %{type}. 😔"
+        description_html: Ви більше не отримуватимете подібні листи. Якщо хочете знову підписатися або керувати всіма налаштуваннями пошти — %{link}.
+        link: натисніть тут
+      invalid:
+        heading: Токен недійсний або прострочений
+        description_html: Будь ласка, %{signin}, щоб керувати своїми налаштуваннями пошти.
+        signin: увійдіть
+    hamburger:
+      icon: Меню навігації
+      icon_close: Закрити
+      icon_left: Ліве меню
+      icon_right: Праве меню
+    logo:
+      color_1:
+        label: Основний колір бренду
+        description: Використовується для фону, рамок тощо.
+      color_2:
+        label: Другий колір бренду
+        description_html: Використовується для текстів (зазвичай на <em>основному кольорі бренду</em>).
+      preview:
+        icon: Логотип застосунку
+        text: 'Попередній перегляд:'
+    mailers:
+      contact_mailto_html: Зв’яжіться з нами за адресою <a href="mailto:%{contact_email}">%{contact_email}</a>, якщо ми можемо ще чимось допомогти.
+    onboardings:
+      meta:
+        title: Вітаємо у спільноті Куток
+      heading: Тепер ви — частина спільноти!
+      subtitle: РЕКОМЕНДОВАНІ КРОКИ
+      close: Закрити вітальне повідомлення
+      settings_html: "<span class=\"emoji\">💅🏼</span>Налаштуйте свій профіль"
+      welcome_html: "<span class=\"emoji\">😊</span>Приєднайтесь до вітальної теми"
+      write_html: "<span class=\"emoji\">✍🏾</span>Напишіть свій перший допис у спільноті Куток"
+      join_subscription_html: "<span class=\"emoji\">🚀</span>Приєднайтесь до DEV++"
+    pins:
+      article: Закріплено
+      pinned: "📌 Закріплено! (закріплені дописи відображаються у хронологічному порядку, максимум 5)"
+      removed: "🗑 Закріплення знято"
+      error: Можна мати максимум п’ять закріплень
+    profile:
+      color:
+        label: Колір бренду
+        description: Використовується для фону, рамок тощо.
+    reading_list:
+      meta:
+        title: Список для читання
+        description: Мої збережені дописи.
+        og:
+          title: Список для читання — спільнота Куток
+    series:
+      meta:
+        description: Переглянути %{title} на %{site}
+      heading: Серії користувача %{user}
+      empty: У цього користувача немає серій
+      list:
+        heading: Дописи із серії %{series}
+        back: Назад до серій користувача %{user}
+        empty: У цій серії ще немає дописів
+    stats:
+      meta:
+        title: Статистика вашого допису
+      heading_html: Статистика для "%{article}"
+      period:
+        aria_label: Період аналітики
+        week: Тиждень
+        month: Місяць
+        infinity: Увесь час
+      readers: Огляд читачів
+      followers: Нові підписники
+      reactions: "Огляд реакцій"
+      comments: "Огляд коментарів"
+      traffic:
+        text: "Джерела трафіку"
+        source: Джерело
+        views: Перегляди
+      reactions_history: "Історія реакцій"
+      by: автор
+    sticky:
+      joined: Приєднався
+      default_cta: Дізнатися більше
+      email: Електронна пошта
+      hot: Популярне
+      location: Локація
+      more_from_html: Більше від %{actor}
+      no_summary: Дописи з цим тегом
+      trending_html: У тренді на %{app}
+    videos:
+      meta:
+        title: Відео
+        og:
+          description: Усі відео спільноти Куток
+      heading: Відео спільноти Куток
+      beta_html: "<strong>Відео — бета-функція:</strong> %{contact}"
+      upload: "🎥 Завантажити відеофайл 🙌"

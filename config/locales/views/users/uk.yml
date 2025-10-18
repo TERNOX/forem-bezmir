@@ -1,0 +1,97 @@
+uk:
+  views:
+    users:
+      meta:
+        og:
+          title: "%{user} — Профіль у спільноті Куток"
+      comments_locked_cta:
+        title: Хочете зв’язатися з %{user}?
+        description: Створіть обліковий запис, щоб зв’язатися з %{user}. Якщо вже маєте акаунт — увійдіть нижче, щоб продовжити.
+        create_account: Створити акаунт
+        already_have_an_account: Вже маєте акаунт?
+        sign_in: Увійти
+      comments:
+        all:
+          one: Усі коментарі
+          other: Усі коментарі
+        last:
+          one: Останні коментарі
+          other: Останні коментарі
+        recent: Недавні коментарі
+        view: Переглянути всю активність
+        view_all:
+          one: Переглянути всі коментарі
+          other: Переглянути всі коментарі
+        view_last:
+          one: Переглянути останні коментарі
+          other: Переглянути останні коментарі
+      github:
+        heading: Репозиторії GitHub
+        fork: Форк
+        stars:
+          one: 1 зірка
+          other: "%{count} зірок"
+      pin_icon: Закріпити
+      pinned: Закріплено
+      profile_fields:
+        bio:
+          label: Біографія
+          placeholder: Коротко про себе...
+        display_email_on_profile: Показувати email у профілі
+        location:
+          label: Місцезнаходження
+          placeholder: Київ, Україна
+        website:
+          label: URL сайту
+          placeholder: https://вашсайт.com
+        education: Освіта
+        currently learning: Наразі вивчає
+        currently hacking on: Працює над
+        available for: Відкритий до
+        skills/languages: Навички / Мови
+        work: Робота
+      side:
+        comment:
+          icon: Коментар
+          text:
+            one: 1 коментар
+            other: "%{count} коментарів"
+        org: Проєкти
+        post:
+          icon: Допис
+          text:
+            one: 1 допис опубліковано
+            other: "%{count} дописів опубліковано"
+        tag:
+          icon: Теґ
+          text:
+            one: 1 теґ відстежується
+            other: "%{count} теґів відстежується"
+      signout:
+        meta:
+          title: Підтвердити вихід — Куток
+        heading: Ви впевнені, що хочете вийти?
+        'yes': Так, вийти
+      block: Заблокувати @%{user}
+      details: Деталі профілю %{user}
+      dropdown: Дії користувача
+      email_icon: Електронна адреса
+      empty: Біо не знайдено (404)
+      flag: Позначити @%{user}
+      follow: Підписатися
+      joined:
+        icon: Приєднався
+        text_html: "Приєднався %{date}"
+      location_icon: Місцезнаходження
+      logo: Фото профілю %{user}
+      more: Докладніше про @%{user}
+      send_pm:
+        code: кодекс поведінки
+        notice_html: Усі приватні взаємодії <b>мають</b> відповідати %{code}.
+        placeholder: Введіть повідомлення тут...
+        submit: Надіслати
+      spam: Позначити @%{user} як спам
+      social: "%{service} сторінка"
+      unflag: Зняти позначку з @%{user}
+      unspam: Позначити @%{user} як надійного
+      website: Персональний сайт

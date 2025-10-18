@@ -1,0 +1,64 @@
+uk:
+  views:
+    tags:
+      meta:
+        title: Теґи
+        description: Теґи для підписки у спільноті Куток
+        og:
+          description: "%{community} — це чудово!"
+      heading:
+        default: Теґи
+        search_results: Результати пошуку для %{q}
+      search:
+        aria_labels:
+          search_input: Термін пошуку теґу
+          submit: Шукати теґи
+        placeholder: Пошук теґу
+      edit:
+        meta:
+          title: Редагувати %{tag}
+        admin: "Адмін"
+        help: "Довідка"
+        view: "Переглянути"
+        form:
+          pretty_name:
+            label: Назва теґу
+            placeholder: Це назва, що відображається у верхній частині сторінки.
+          bg_color_hex:
+            label: Колір теґу
+          short_summary:
+            label: Короткий опис
+            placeholder: Коротко про те, що означає цей теґ.
+          wiki_body_markdown:
+            label: Розділ «Про» (розмітка)
+            placeholder: Тут можна додати опис, FAQ або додаткові ресурси.
+          rules_markdown:
+            label: Правила (розмітка)
+            placeholder: Необов’язково — можна використати для викликів чи правил подання.
+          submit: Зберегти
+      follow: Підписатися
+      hide: Приховати
+      aria_labels:
+        follow: "Підписатися на теґ: %{tag_name}"
+        hide: "Приховати теґ: %{tag_name}"
+      following_tags: Відстежувані теґи
+      hidden_tags: Приховані теґи
+      moderator:
+        text_html: "через кому, пробіли необов’язкові. Приклад: %{code}"
+        code: 123
+        placeholder: "через кому, пробіли необов’язкові. Приклад: 1,2,3"
+      published:
+        one: 1 допис
+        other: "%{count} дописів"
+      sidebar:
+        about: 'про #%{tag}'
+        admin: Адмін
+        edit: Редагувати
+        guidelines: правила подання
+        moderate: Модерація
+        mods: модератори теґу
+        new: Створити допис
+        older: 'Старіші дописи #%{tag}'
+        published:
+          one: 1 допис опубліковано
+          other: "%{count} дописів опубліковано"

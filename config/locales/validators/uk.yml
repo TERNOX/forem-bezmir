@@ -1,0 +1,23 @@
+uk:
+  validators:
+    bytesize_validator:
+      non_negative: ":maximum має бути невід’ємним цілим числом"
+    color_contrast_validator:
+      must_be_darker: має бути темнішим для доступності
+    emoji_only_validator:
+      invalid_emoji: містить неемодзі символи або некоректне емодзі
+    existing_published_article_id_validator:
+      default: має бути чинним ідентифікатором опублікованої статті
+    profile_validator:
+      bio_too_long: Біографія занадто довга
+    cross_model_slug_validator:
+      is_taken: уже зайнято
+      is_invalid: некоректно
+      is_reserved: зарезервовано
+      too_many_subdirectories: занадто багато підкаталогів
+    valid_domain_csv_validator:
+      invalid_list_format: має бути списком коректних доменів, розділених комами
+    iso3166_hash_validator:
+      is_blank: має бути вказано
+      invalid_key: містить некоректний код ISO 3166
+      invalid_value: має містити значення `:with_regions` або `:without_regions`

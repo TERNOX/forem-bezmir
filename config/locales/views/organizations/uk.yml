@@ -1,0 +1,44 @@
+uk:
+  views:
+    organizations:
+      dropdown: Дії проєкту
+      empty: 404 — опис не знайдено
+      external:
+        icon: Іконка зовнішнього посилання
+      follow: Підписатися
+      github:
+        icon: Логотип GitHub
+      joined:
+        icon: Приєднався
+        text_html: "Приєднався %{date}"
+      location:
+        icon: Локація
+      logo: Зображення профілю %{org}
+      size: Кількість учасників
+      sponsor:
+        text: "%{level} Спонсор спільноти ❤️"
+        level:
+          gold: Золотий
+          silver: Срібний
+          bronze: Бронзовий
+          tag: Теговий
+          media: Медіа
+          devrel: DevRel
+      stack: Наш стек
+      story: Наша історія
+      side:
+        post:
+          icon: Допис
+          text:
+            one: 1 допис опубліковано
+            other: "%{count} дописів опубліковано"
+        member:
+          icon: Учасник
+          text:
+            one: 1 учасник
+            other: "%{count} учасників"
+      support: Електронна пошта підтримки
+      team: Команда
+      all_members: Переглянути всіх учасників
+      twitter:
+        icon: Логотип X (Twitter)

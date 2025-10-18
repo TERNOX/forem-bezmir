@@ -1,0 +1,64 @@
+uk:
+  views:
+    subforems:
+      meta:
+        title: Підсайти
+        description: Підсайти для підписки у спільноті Куток
+        og:
+          description: "%{community} — це чудово!"
+      heading:
+        default: Підсайти
+        search_results: Результати пошуку для %{q}
+      search:
+        aria_labels:
+          search_input: Термін пошуку тегів
+          submit: Шукати підсайти
+        placeholder: Пошук підсайту
+      edit:
+        meta:
+          title: Редагувати %{subforem}
+        admin: "Адмін"
+        help: "Довідка"
+        view: "Переглянути"
+        form:
+          pretty_name:
+            label: Назва підсайту
+            placeholder: Це назва, що відображається у верхній частині сторінки.
+          bg_color_hex:
+            label: Колір тегу
+          short_summary:
+            label: Короткий опис
+            placeholder: Коротко про те, про що цей підсайт.
+          wiki_body_markdown:
+            label: Розділ «Про» (розмітка)
+            placeholder: Тут можна додати опис, FAQ або додаткові ресурси.
+          rules_markdown:
+            label: Правила (розмітка)
+            placeholder: Необов’язково — можна використати для викликів чи правил подання.
+          submit: Зберегти
+      follow: Підписатися
+      hide: Приховати
+      aria_labels:
+        follow: "Підписатися на підсайт: %{subforem_name}"
+        hide: "Приховати підсайт: %{subforem_name}"
+      following_subforems: Підписані підсайти
+      hidden_subforems: Приховані підсайти
+      moderator:
+        text_html: "через кому, пробіли необов’язкові. Приклад: %{code}"
+        code: 123
+        placeholder: "через кому, пробіли необов’язкові. Приклад: 1,2,3"
+      published:
+        one: 1 допис
+        other: "%{count} дописів"
+      sidebar:
+        about: 'про #%{subforem}'
+        admin: Адмін
+        edit: Редагувати
+        guidelines: правила подання
+        moderate: Модерація
+        mods: модератори підсайту
+        new: Створити допис
+        older: 'Старіші дописи #%{subforem}'
+        published:
+          one: 1 допис опубліковано
+          other: "%{count} дописів опубліковано"

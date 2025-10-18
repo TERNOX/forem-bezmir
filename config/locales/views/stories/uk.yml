@@ -1,0 +1,51 @@
+uk:
+  views:
+    stories:
+      meta:
+        description_tagged: "%{tag} контент у %{name}"
+        page: " Сторінка %{page}"
+        rss: "%{name} RSS-стрічка"
+      status_placeholder: "Що у вас на думці?"
+      status_expanded_placeholder: "Хочете щось додати?"
+      submit: "Опублікувати"
+      status_hint_html: "<strong>Швидкі дописи</strong> з’являються у стрічці, але не в сповіщеннях чи профілі — <a href='/new'>Відкрити повний редактор</a>"
+      heading: Дописи
+      discuss: "#обговорення"
+      follow: Підписатися
+      menu:
+        aria_left: кнопка-навігації-вліво
+        aria_right: кнопка-навігації-вправо
+      sort:
+        aria_label: Переглянути дописи за
+        aria_tagged: Переглянути позначені дописи за
+        relevant: Актуальні
+        week: Тиждень
+        month: Місяць
+        year: Рік
+        infinity: За весь час
+        latest: Нові
+        signin_html: "👋 <a href=\"%{path}\">Увійдіть</a>, щоб мати змогу сортувати дописи за <strong>актуальністю</strong>, <strong>новизною</strong> або <strong>топом</strong>."
+        top: Топ
+      feed:
+        discover: Відкрийте
+        following: Відстежувані
+        top_this_week: Топ цього тижня
+        top_this_month: Топ цього місяця
+        top_this_year: Топ цього року
+        top_this_infinity: Топ за весь час
+        no_results:
+          discover:
+            title: "Дописів не знайдено"
+            description: "Загляньте пізніше або створіть власний допис!"
+            action_text: "Створити допис"
+            action_href: "/new"
+          following:
+            title: "Немає дописів від тих, на кого ви підписані"
+            description: "Підпишіться на учасників, щоб бачити їхні нові дописи у своїй стрічці."
+            action_text: "Назад до вкладки «Відкрийте»"
+            action_href: "/discover"
+          default:
+            title: "Дописів не знайдено"
+            description: "Загляньте пізніше або створіть власний допис!"
+            action_text: "Створити допис"
+            action_href: "/new"

@@ -1,0 +1,8 @@
+uk:
+  views:
+    article_form:
+      save_changes: Зберегти зміни
+      schedule: Запланувати
+      publish: Опублікувати
+      loading_preview: Завантаження попереднього перегляду
+      preview_loaded: Попередній перегляд завантажено

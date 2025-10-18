@@ -1,0 +1,163 @@
+uk:
+  views:
+    dashboard:
+      meta:
+        title: Панель керування — %{site}
+      heading: Панель керування
+      actions:
+        mobile:
+          posts: Пости (%{num})
+          followers: Підписники (%{num})
+          following_tags: Відстежувані теги (%{num})
+          following_users: Відстежувані користувачі (%{num})
+          following_orgs: Відстежувані проєкти (%{num})
+          following_pods: Відстежувані подкасти (%{num})
+          hidden_tags: Приховані теги (%{num})
+        posts: Пости
+        series: Серії
+        followers: Підписники
+        following_tags: Відстежувані теги
+        following_users: Відстежувані користувачі
+        following_orgs: Відстежувані проєкти
+        following_pods: Відстежувані подкасти
+        hidden_tags: Приховані теги
+        listings: Оголошення
+        analytics: Аналітика
+        for_org: Аналітика для %{org}
+        upload: Завантажити відео
+      analytics:
+        meta:
+          title: Аналітика
+        heading: Аналітика %{name}
+        back: "Повернутись до головної панелі"
+        your: Ваша панель
+        org: "Аналітика проєкту %{org}"
+        readers: Читачі
+        comments: Коментарі
+        reactions: Реакції
+      article:
+        heading:
+          text_html: "%{archived}%{title}"
+          archived: "[Архівовано] "
+        archived: Архівовано
+        published: "Опубліковано:"
+        published_html: "Опубліковано: %{date}"
+        edited: "Редаговано:"
+        edited_html: "Редаговано: %{date}"
+        series: "Серія:"
+        series_html: "<strong>Серія:</strong> %{series}"
+        draft: Чернетка
+        scheduled: Заплановано
+        scheduled_at: "Заплановано:"
+        language: "Мова:"
+        reactions:
+          title: Реакції
+          icon: Реакції
+          text_html:
+            one: "%{num} реакція"
+            other: "%{num} реакцій"
+        comments:
+          title: Коментарі
+          icon: Коментарі
+          text_html:
+            one: "%{num} коментар"
+            other: "%{num} коментарів"
+        views:
+          title: Перегляди
+          icon: Перегляди
+          lt_25: "< 25"
+          text_html:
+            one: "%{scale} перегляд"
+            other: "%{scale} переглядів"
+          u_25: менше ніж 25
+        subscriptions:
+          title: Підписки
+          icon: Дані
+          number: Підписки (%{num})
+        delete: Видалити
+        unpin: Відкріпити
+        pin:
+          title: Закріпити у профілі
+          button: Закріпити у профілі
+          text: Закріпити
+        manage:
+          aria_label: "Керувати постом: %{title}"
+          text: Керувати
+        lock: Закрити обговорення
+        unlock: Відкрити обговорення
+        edit:
+          aria_label: "Редагувати пост: %{title}"
+          text: Редагувати
+        more:
+          title: "Більше параметрів для посту: %{title}"
+          icon: Більше...
+        stats: Статистика
+        archive: Архівувати пост
+        unarchive: Розархівувати пост
+        author: Автор
+        co_authors: Співавтори
+        series_author_change_warning: Зміна автора для серійних постів недоступна.
+        icon: Деталі
+        author_is: "АВТОР: "
+        save: Зберегти
+        submit: Підтвердити зміну автора
+      followers:
+        heading: Панель керування » Підписники
+        empty: У вас ще немає підписників...
+      following_orgs:
+        heading: Панель керування » Відстежувані проєкти
+        empty: Ви ще не відстежуєте жоден проєкт...
+      following_pods:
+        heading: Панель керування » Відстежувані подкасти
+        empty: Ви ще не відстежуєте жоден подкаст...
+      following_tags:
+        heading: Панель керування » Відстежувані теги
+        empty_html: "<span>Відстежуйте теги, щоб персоналізувати свою стрічку. Популярні теги можна переглянути <a href=%{link}>тут</a>.</span>"
+      following_users:
+        heading: Панель керування » Відстежувані користувачі
+        empty: Ви ще не відстежуєте жодного користувача...
+      hidden_tags:
+        heading: Панель керування » Приховані теги
+        empty_html: "<span>У вас немає прихованих тегів...</span>"
+      tags:
+        following_button: Відстежується
+        options:
+          icon: Параметри
+          hide: Приховати тег
+        unhide_button: Показати тег
+      listings:
+        meta:
+          title: Панель оголошень
+      posts:
+        heading: Пости
+        archived: Показати архівовані
+        statuses: Показати короткі пости
+        full: Показати повні пости
+        option:
+          creation-desc: Нещодавно створені
+          published-desc: Нещодавно опубліковані
+          views-desc: Найбільше переглядів
+          reactions-desc: Найбільше реакцій
+          comments-desc: Найбільше коментарів
+          aria_label: Сортувати за
+        org: "%{name} (%{num})"
+        personal: Особисті
+        empty:
+          desc: Тут можна керувати своїми постами, але ви ще нічого не написали.
+          new: Напишіть свій перший пост зараз
+          status_desc: Ви ще не маєте коротких постів тут...
+      subscriptions:
+        meta:
+          title: Підписки %{title}
+        heading: Підписки
+        subhead:
+          text_html: "%{for} %{source}"
+          for: для
+        empty: У вас ще немає підписників для цього %{kind}...
+      summary:
+        reactions: Усього реакцій на пости
+        views: Усього переглядів постів
+        comments: Усього коментарів
+        listings: Створено оголошень
+        credits: Доступні бали
+        lt_500: "< 500"

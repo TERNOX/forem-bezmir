@@ -1,0 +1,13 @@
+uk:
+  xml:
+    opensearch:
+      short_name: "Пошук у %{community}"
+      description: Знайдіть дописи зі спільноти %{community}.
+    user:
+      image: "Аватар користувача %{user}"
+  json:
+    author: Активний автор у спільноті %{community}
+  mailer:
+    adjust: Налаштувати параметри електронної пошти
+    adjust_only_html: Не бажаєте отримувати такі листи? Змініть налаштування електронної пошти за посиланням %{path}
+    unsubscribe: Відписатися

@@ -1,0 +1,123 @@
+uk:
+  api_secrets_controller:
+    generated: 'Ваш API-ключ згенеровано: %{secret}'
+    revoked: Ваш API-ключ скасовано.
+  application_controller:
+    bad_request: 'Помилка: некоректний запит'
+    not_authorized: 'Помилка: доступ заборонено'
+    please_sign_in: Увійдіть у свій обліковий запис
+  articles_controller:
+    deleted: Статтю успішно видалено.
+  comments_controller:
+    create:
+      success: створено
+      failure: коментар уже існує
+      authorization_error: Ваші привілеї призупинено.
+    delete:
+      error: Сталася помилка; коментар НЕ видалено.
+      notice: Коментар успішно видалено.
+    markdown: 'Сталася помилка у вашому markdown: %{error}'
+    markdown_html: "<p>😔 Сталася помилка у вашому markdown</p><hr><p>%{error}</p>"
+    moderated: Недоступно через модерацію
+  confirmations_controller:
+    email_sent: Лист надіслано! Якщо Ви не отримали інструкції, зверніться до служби підтримки: %{email}.
+  credits_controller:
+    done:
+      one: "%{count} новий бал придбано!"
+      other: "%{count} нових балів придбано!"
+  devices_controller:
+    not_found: Не знайдено
+  discussion_locks_controller:
+    locked: Обговорення успішно заблоковано!
+    unlocked: Обговорення успішно розблоковано!
+  email_subscriptions_controller:
+    badge_notifications: сповіщення про досягнення
+    comment_notifications: сповіщення про коментарі
+    digest_emails: "%{community} дайджест-листи"
+    follower_notifications: сповіщення про підписників
+    mention_notifications: сповіщення про згадки
+    this_list: цей список
+    unread_notifications: сповіщення про непрочитане
+    newsletter: розсилка
+  feedback_messages_controller:
+    error_fill: "Переконайтеся, що всі поля заповнені. 🤖 Можливі інші помилки: %{errors}"
+    n_a: Н/Д
+    submitted: Ваш звіт надіслано
+  follows_controller:
+    already_followed: уже підписано
+    daily_limit: Досягнуто денний ліміт підписок!
+    followed: підписано
+    unfollowed: відписано
+  github_repos_controller:
+    repo_not_found: Репозиторій GitHub не знайдено
+    github_unauthorized: 'GitHub: доступ заборонено — %{e_message}'
+  image_uploads_controller:
+    server_error: Сталася помилка сервера!
+  listings_controller:
+    deleted: Оголошення успішно видалено.
+    no_credit: Недостатньо доступних балів
+  omniauth_callbacks_controller:
+    log_in_error: 'Помилка входу: %{e}'
+    username_taken: ім’я користувача вже зайняте
+  organizations_controller:
+    secret_updated: Секрет проєкту оновлено
+    deletion_scheduled: 'Видалення проєкту "%{organization_name}" заплановано. Ви отримаєте сповіщення, коли процес буде завершено.'
+    not_deleted: Проєкт не видалено; Ви маєте бути адміністратором, єдиним учасником і не мати статей, пов’язаних із проєктом.
+    created: Проєкт успішно створено, і Ви є адміністратором.
+    updated: Проєкт успішно оновлено.
+  podcasts_controller:
+    podcast_suggested: Подкаст запропоновано
+  profiles_controller:
+    updated: Профіль успішно оновлено
+  rating_votes_controller:
+    not_upserted_successfully: Не вдалося оновити голос
+  registrations_controller:
+    error:
+      recaptcha: Потрібно пройти перевірку reCAPTCHA ✅
+      domain: не входить до списку дозволених доменів.
+  response_templates_controller:
+    response_template_error: 'Помилка шаблону відповіді: %{errors}'
+    created: Ваш шаблон відповіді "%{title}" створено.
+    deleted: Ваш шаблон відповіді "%{title}" видалено.
+    updated: Ваш шаблон відповіді "%{title}" оновлено.
+  social_previews_controller:
+    fonts: Roboto|Roboto+Condensed
+  stories:
+    pinned_articles_controller:
+      not_found: не знайдено
+  stories_controller:
+    404_bio_not_found: 404 — біографію не знайдено
+    searching: "...пошук"
+  stripe_active_cards_controller:
+    cannot_remove: Неможливо видалити картку, якщо у Вас активна підписка. Спочатку скасуйте її.
+    cannot_update: Виникла проблема з оновленням платіжних даних.
+    updated: Вашу платіжну інформацію оновлено.
+    removed: Картку успішно видалено.
+  tag_adjustments_controller:
+    failure: 'Помилка: %{errors}'
+    destroyed: Змінення тегу видалено
+  tags_controller:
+    tag_successfully_updated: "Тег успішно оновлено! 👍"
+  users_controller:
+    removed_admin: "%{name} більше не адміністратор."
+    removed_member: "%{name} більше не є учасником Вашого проєкту."
+    added_admin: "%{name} тепер адміністратор."
+    provide_email: Будь ласка, вкажіть адресу електронної пошти, щоб видалити обліковий запис.
+    provide_email_delete: Будь ласка, вкажіть адресу електронної пошти, щоб видалити обліковий запис.
+    send_export: "Експорт буде надіслано Вам на електронну пошту найближчим часом."
+    invalid_secret: Наданий секрет проєкту недійсний.
+    username_blank: Ім’я користувача не може бути порожнім
+    deletion_in_progress: Ви вже подали запит на видалення облікового запису. Перевірте свою електронну пошту для подальших інструкцій.
+    joined_org: Ви приєдналися до проєкту %{organization_name}.
+    left_org: Ви покинули проєкт.
+    deletion_requested: Ви надіслали запит на видалення облікового запису. Перевірте електронну пошту для подальших інструкцій.
+    log_in_to_delete: Щоб видалити обліковий запис, необхідно увійти.
+    deletion_scheduled: Видалення Вашого облікового запису заплановано. Ви отримаєте сповіщення, коли процес буде завершено.
+    removed_identity: Ваш обліковий запис %{provider} успішно від’єднано.
+    updated_config: Ваші налаштування оновлено. Оновіть сторінку, щоб побачити зміни.
+    updated_profile: Ваш профіль успішно оновлено.
+    token_expired: Термін дії токена минув. Будь ласка, запросіть новий. Токени дійсні лише 12 годин після початку процесу видалення облікового запису.
+    notifications_settings_updated: Налаштування сповіщень оновлено.
+  video_states_controller:
+    related_article_not_found: Пов’язану статтю не знайдено
+    video_state_updated: Стан відео оновлено

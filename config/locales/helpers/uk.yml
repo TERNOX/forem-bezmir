@@ -1,0 +1,473 @@
+uk:
+  helpers:
+    label:
+      listing:
+        body_markdown: Текст (Markdown)
+        expires_at: Користувацька дата завершення
+        location: Місцезнаходження
+        organization_id: Опублікувати від імені проєкту
+        tag_list: Теги
+        title: Заголовок
+      organization:
+        name: Назва
+        slug: Ім’я користувача
+        profile_image: Зображення профілю
+        twitter_username: Ім’я користувача у Twitter
+        github_username: Ім’я користувача у GitHub
+        url: URL вебсайту
+        tag_line: Короткий слоган
+        summary: Короткий опис
+        location: Місцезнаходження
+        email: Пошта підтримки
+        company_size: Розмір проєкту
+        story: Наша історія
+        tech_stack: Наш стек
+        cta_body_markdown: Основний текст
+        cta_button_text: Текст посилання
+        cta_button_url: URL посилання
+        proof: Підтвердження
+      podcast:
+        android_url: Android URL
+        description: Опис
+        feed_url: URL стрічки
+        image: Зображення
+        itunes_url: iTunes URL
+        main_color_hex: Основний колір (hex)
+        overcast_url: Overcast URL
+        pattern_image: Фоновий візерунок
+        slug: Слаг
+        soundcloud_url: SoundCloud URL
+        title: Заголовок
+        twitter_username: Ім’я користувача у Twitter
+        website_url: URL вебсайту
+      response_template:
+        title: Заголовок
+        content: Текст коментаря (Markdown)
+      user:
+        name: Ім’я
+        email: Електронна пошта
+        username: Ім’я користувача
+        profile_image: Зображення профілю
+      users_notification_setting:
+        email_newsletter: Надсилати мені щотижневу розсилку
+        email_digest_periodic: Надсилати мені періодичний дайджест топпостів за моїми тегами
+        email_tag_mod_newsletter: Надсилати мені листи модератора тегів
+        email_community_mod_newsletter: Надсилати мені листи модератора спільноти
+        email_comment_notifications: Надсилати мені лист, коли хтось відповідає мені в гілці коментарів
+        email_follower_notifications: Надсилати мені лист, коли хтось новий підписується на мене
+        email_mention_notifications: Надсилати мені лист, коли хтось згадує мене
+        email_badge_notifications: Надсилати мені лист, коли я отримую значок
+        email_unread_notifications: Іноді нагадувати мені про непрочитані сповіщення у %{community}
+        mobile_mention_notifications: Надсилати push-сповіщення, коли хтось згадує мене
+        mobile_comment_notifications: Надсилати push-сповіщення, коли хтось відповідає мені в гілці коментарів
+        welcome_notifications: Іноді надсилати поради щодо покращення досвіду у %{community}
+        email_community_broadcast: Надсилати мені листи широкомовної розсилки спільноти
+        mobile_new_follower_notifications: Надсилати push-сповіщення, коли з’являється новий підписник
+        mobile_unread_notifications: Надсилати push-сповіщення про непрочитані сповіщення у %{community}
+        mod_team_notifications: Надсилати сповіщення команди модераторів
+        reaction_notifications: Надсилати сповіщення, коли хтось реагує на мій контент, зокрема коментарі чи пости
+        mod_roundrobin_notifications: Надсилати сповіщення про активність нових учасників
+      users_setting:
+        feed_url: URL RSS-стрічки
+        email_community_broadcast: Надсилати мені листи широкомовної розсилки спільноти
+        mobile_new_follower_notifications: Надсилати push-сповіщення, коли з’являється новий підписник
+        mobile_unread_notifications: Надсилати push-сповіщення про непрочитані сповіщення у %{community}
+        mod_team_notifications: Надсилати сповіщення команди модераторів
+        reaction_notifications: Надсилати сповіщення, коли хтось реагує на мій контент, зокрема коментарі чи пости
+      placeholder:
+        user:
+          name: Тарас Нечупара
+          email: taras.nechupara@example.com
+          username: tarasn
+          feed_url: https://yoursite.zp.ua/feed
+        organization:
+          name: Найкращий проєкт на світі
+          slug: bestproject
+          url: https://yoursite.zp.ua/
+          location: Запоріжжя
+          email: neko99@example.com
+          company_size: "..."
+          story: "..."
+          tech_stack: "..."
+          cta_body_markdown: "..."
+          cta_button_text: Відвідати сайт
+          cta_button_url: https://yoursite.zp.ua/feed
+          proof: "..."
+        response_template:
+          title: "..."
+      page_entries_info:
+        more_pages:
+          display_entries: Показано %{entry_name} %{from}–%{to} із %{count} загалом
+      listing_helper:
+        option:
+          one: "%{count} опція"
+          other: "%{count} опції"
+      video:
+        title: Заголовок
+        description: Опис
+        video_url: URL відео
+        video_source_url_key: Ключ URL джерела відео
+        video_thumbnail_url: URL мініатюри відео
+        video_closed_caption_track_url: URL доріжки субтитрів
+        video_source_url: URL джерела відео
+        video_code: Код відео
+        video_source: Джерело відео
+        video_embed: Вбудоване відео
+        video_embed_html: Вбудоване відео (HTML)
+        video_embed_html_5: Вбудоване відео (HTML5)
+        video_embed_html_5_with_caption: Вбудоване відео HTML5 із субтитрами
+        video_embed_html_5_with_caption_and_autoplay: Вбудоване відео HTML5 із субтитрами та автозапуском
+        video_embed_html_5_with_autoplay: Вбудоване відео HTML5 з автозапуском
+        video_embed_html_5_with_caption_and_autoplay_and_loop: Вбудоване відео HTML5 із субтитрами, автозапуском і зацикленням
+        video_embed_html_5_with_autoplay_and_loop: Вбудоване відео HTML5 з автозапуском і зацикленням
+        video_embed_html_5_with_caption_and_loop: Вбудоване відео HTML5 із субтитрами та зацикленням
+        video_embed_html_5_with_loop: Вбудоване відео HTML5 із зацикленням
+        video_embed_html_5_with_caption_and_autoplay_and_loop_and_muted: Вбудоване відео HTML5 із субтитрами, автозапуском, зацикленням і без звуку
+        video_embed_html_5_with_autoplay_and_loop_and_muted: Вбудоване відео HTML5 з автозапуском, зацикленням і без звуку
+        video_embed_html_5_with_caption_and_loop_and_muted: Вбудоване відео HTML5 із субтитрами, зацикленням і без звуку
+        video_embed_html_5_with_loop_and_muted: Вбудоване відео HTML5 із зацикленням і без звуку
+        video_embed_html_5_with_caption_and_autoplay_and_muted: Вбудоване відео HTML5 із субтитрами, автозапуском і без звуку
+        video_embed_html_5_with_autoplay_and_muted: Вбудоване відео HTML5 з автозапуском і без звуку
+        video_embed_html_5_with_caption_and_muted: Вбудоване відео HTML5 із субтитрами і без звуку
+        video_embed_html_5_with_muted: Вбудоване відео HTML5 без звуку
+        video_embed_html_5_with_caption_and_autoplay_and_loop_and_muted_and_controls: Вбудоване відео HTML5 із субтитрами, автозапуском, зацикленням, без звуку та з елементами керування
+        video_embed_html_5_with_autoplay_and_loop_and_muted_and_controls: Вбудоване відео HTML5 з автозапуском, зацикленням, без звуку та з елементами керування
+        video_embed_html_5_with_caption_and_loop_and_muted_and_controls: Вбудоване відео HTML5 із субтитрами, зацикленням, без звуку та з елементами керування
+        video_embed_html_5_with_loop_and_muted_and_controls: Вбудоване відео HTML5 із зацикленням, без звуку та з елементами керування
+        video_embed_html_5_with_caption_and_autoplay_and_muted_and_controls: Вбудоване відео HTML5 із субтитрами, автозапуском, без звуку та з елементами керування
+        video_embed_html_5_with_autoplay_and_muted_and_controls: Вбудоване відео HTML5 з автозапуском, без звуку та з елементами керування
+        video_embed_html_5_with_caption_and_muted_and_controls: Вбудоване відео HTML5 із субтитрами, без звуку та з елементами керування
+        video_embed_html_5_with_muted_and_controls: Вбудоване відео HTML5 без звуку та з елементами керування
+        video_embed_html_5_with_caption_and_autoplay_and_controls: Вбудоване відео HTML5 із субтитрами, автозапуском та елементами керування
+        video_embed_html_5_with_autoplay_and_controls: Вбудоване відео HTML5 з автозапуском та елементами керування
+        video_embed_html_5_with_caption_and_controls: Вбудоване відео HTML5 із субтитрами та елементами керування
+        video_embed_html_5_with_controls: Вбудоване відео HTML5 з елементами керування
+        video_embed_html_5_with_caption_and_autoplay_and_loop_and_controls: Вбудоване відео HTML5 із субтитрами, автозапуском, зацикленням та елементами керування
+        video_embed_html_5_with_autoplay_and_loop_and_controls: Вбудоване відео HTML5 з автозапуском, зацикленням та елементами керування
+        video_embed_html_5_with_caption_and_loop_and_controls: Вбудоване відео HTML5 із субтитрами, зацикленням та елементами керування
+        video_embed_html_5_with_loop_and_controls: Вбудоване відео HTML5 із зацикленням та елементами керування
+        video_embed_html_5_with_caption_and_autoplay_and_loop_and_muted_and_controls_and_playsinline: Вбудоване відео HTML5 із субтитрами, автозапуском, зацикленням, без звуку, з елементами керування та playsinline
+        video_embed_html_5_with_autoplay_and_loop_and_muted_and_controls_and_playsinline: Вбудоване відео HTML5 з автозапуском, зацикленням, без звуку, з елементами керування та playsinline
+        video_embed_html_5_with_caption_and_loop_and_muted_and_controls_and_playsinline: Вбудоване відео HTML5 із субтитрами, зацикленням, без звуку, з елементами керування та playsinline
+        video_embed_html_5_with_loop_and_muted_and_controls_and_playsinline: Вбудоване відео HTML5 із зацикленням, без звуку, з елементами керування та playsinline
+        video_embed_html_5_with_caption_and_autoplay_and_muted_and_playsinline: Вбудоване відео HTML5 із субтитрами, автозапуском, без звуку та playsinline
+        video_embed_html_5_with_autoplay_and_muted_and_playsinline: Вбудоване відео HTML5 з автозапуском, без звуку та playsinline
+        video_embed_html_5_with_caption_and_muted_and_playsinline: Вбудоване відео HTML5 із субтитрами, без звуку та playsinline
+        video_embed_html_5_with_muted_and_playsinline: Вбудоване відео HTML5 без звуку та з playsinline
+        video_embed_html_5_with_caption_and_autoplay_and_playsinline: Вбудоване відео HTML5 із субтитрами, автозапуском і playsinline
+        video_embed_html_5_with_autoplay_and_playsinline: Вбудоване відео HTML5 з автозапуском і playsinline
+        video_embed_html_5_with_caption_and_playsinline: Вбудоване відео HTML5 із субтитрами і playsinline
+        video_embed_html_5_with_playsinline: Вбудоване відео HTML5 з playsinline
+        video_embed_html_5_with_caption_and_autoplay_and_loop_and_playsinline: Вбудоване відео HTML5 із субтитрами, автозапуском, зацикленням і playsinline
+        video_embed_html_5_with_autoplay_and_loop_and_playsinline: Вбудоване відео HTML5 з автозапуском, зацикленням і playsinline
+        video_embed_html_5_with_caption_and_loop_and_playsinline: Вбудоване відео HTML5 із субтитрами, зацикленням і playsinline
+        video_embed_html_5_with_loop_and_playsinline: Вбудоване відео HTML5 із зацикленням і playsinline
+        video_embed_html_5_with_caption_and_autoplay_and_loop_and_muted_and_controls_and_playsinline_and_poster: Вбудоване відео HTML5 із субтитрами, автозапуском, зацикленням, без звуку, з елементами керування, playsinline та з постером
+        video_embed_html_5_with_autoplay_and_loop_and_muted_and_controls_and_playsinline_and_poster: Вбудоване відео HTML5 з автозапуском, зацикленням, без звуку, з елементами керування, playsinline та з постером
+        video_embed_html_5_with_caption_and_loop_and_muted_and_controls_and_playsinline_and_poster: Вбудоване відео HTML5 із субтитрами, зацикленням, без звуку, з елементами керування, playsinline та з постером
+        video_embed_html_5_with_loop_and_muted_and_controls_and_playsinline_and_poster: Вбудоване відео HTML5 із зацикленням, без звуку, з елементами керування, playsinline та з постером
+        video_embed_html_5_with_caption_and_autoplay_and_muted_and_controls_and_playsinline_and_poster: Вбудоване відео HTML5 із субтитрами, автозапуском, без звуку, з елементами керування, playsinline та з постером
+        video_embed_html_5_with_autoplay_and_muted_and_controls_and_playsinline_and_poster: Вбудоване відео HTML5 з автозапуском, без звуку, з елементами керування, playsinline та з постером
+        video_embed_html_5_with_caption_and_muted_and_controls_and_playsinline_and_poster: Вбудоване відео HTML5 із субтитрами, без звуку, з елементами керування, playsinline та з постером
+        video_embed_html_5_with_muted_and_controls_and_playsinline_and_poster: Вбудоване відео HTML5 без звуку, з елементами керування, playsinline та з постером
+        video_embed_html_5_with_caption_and_autoplay_and_controls_and_playsinline_and_poster: Вбудоване відео HTML5 із субтитрами, автозапуском, з елементами керування, playsinline та з постером
+        video_embed_html_5_with_autoplay_and_controls_and_playsinline_and_poster: Вбудоване відео HTML5 з автозапуском, з елементами керування, playsinline та з постером
+        video_embed_html_5_with_caption_and_controls_and_playsinline_and_poster: Вбудоване відео HTML5 із субтитрами, з елементами керування, playsinline та з постером
+        video_embed_html_5_with_controls_and_playsinline_and_poster: Вбудоване відео HTML5 з елементами керування, playsinline та з постером
+        video_embed_html_5_with_caption_and_autoplay_and_loop_and_controls_and_playsinline_and_poster: Вбудоване відео HTML5 із субтитрами, автозапуском, зацикленням, з елементами керування, playsinline та з постером
+        video_embed_html_5_with_autoplay_and_loop_and_controls_and_playsinline_and_poster: Вбудоване відео HTML5 з автозапуском, зацикленням, з елементами керування, playsinline та з постером
+        video_embed_html_5_with_caption_and_loop_and_controls_and_playsinline_and_poster: Вбудоване відео HTML5 із субтитрами, зацикленням, з елементами керування, playsinline та з постером
+        video_embed_html_5_with_loop_and_controls_and_playsinline_and_poster: Вбудоване відео HTML5 із зацикленням, з елементами керування, playsinline та з постером
+      admin:
+        user_helper:
+          today: Сьогодні
+          yesterday: Учора
+          org_join: Приєднався до проєкту
+          org_overflow:
+            one: "%{count} інший"
+            other: "%{count} інших"
+      application_helper:
+        subtitle:
+          week: тиждень
+          month: місяць
+          year: рік
+          infinity: весь час
+          latest: останні
+        title_text: Заголовок
+        follow:
+          text:
+            default: Стежити
+            Organization: Стежити
+            Tag: Стежити
+            User: Стежити
+          aria_label:
+            default: 'Стежити за %{type}: %{name}'
+            Organization: 'Стежити за проєктом: %{name}'
+            Tag: 'Стежити за тегом: %{name}'
+            User: 'Стежити за користувачем: %{name}'
+        app_logo: Логотип застосунку
+        required: обов’язково
+      articles_helper:
+        recently_created: Нещодавно створені
+        recently_published: Нещодавно опубліковані
+        most_views: Найбільше переглядів
+        most_reactions: Найбільше реакцій
+        most_comments: Найбільше коментарів
+        logo: Логотип
+      authentication_helper:
+        email_password: Електронна пошта або пароль
+        any_of_those: будь-що з наведеного
+        that: те
+        reminder: Нагадування
+        invite_only: Лише за запрошенням
+      comments_helper:
+        ama: AMA
+        ask_me_anything: Питайте що завгодно
+        author: Автор
+        nbsp_likes_html:
+          one: "&nbsp;%{count} вподобання"
+          other: "&nbsp;%{count} вподобань"
+      feedback_messages_helper:
+        offender:
+          body: Тіло повідомлення для порушника
+          subject: Тема повідомлення для порушника
+        reporter:
+          body: Тіло повідомлення для репортера
+          subject: Тема повідомлення для репортера
+        affected:
+          body: Тіло повідомлення для постраждалого
+          subject: Тема повідомлення для постраждалого
+      organization_helper:
+        option: Опція
+      rate_limit_checker_helper:
+        day:
+          one: "%{count} день"
+          other: "%{count} днів"
+        general: Загальне
+        published:
+          title: Обмежити кількість створених постів
+          description: Скільки постів можна створити протягом будь-яких 30 секунд?
+        antispam:
+          title: Обмежити кількість постів від нового учасника
+        thing:
+          posts: пости
+          comments: коментарі
+        update:
+          title: Обмежити кількість оновлень поста
+          description: Скільки оновлень можна зробити протягом будь-яких 30 секунд?
+        upload:
+          title: Обмежити кількість завантажених зображень
+          description: Скільки зображень можна завантажити протягом будь-яких 30 секунд?
+        user:
+          title: Обмежити кількість змін у власному акаунті
+          description: Скільки змін можна зробити в обліковому записі протягом будь-яких 30 секунд?
+        follow:
+          title: Обмежити кількість підписок за день
+          description: На скількох людей можна підписатися за день?
+        reaction:
+          title: Обмежити кількість реакцій на пост або коментар
+          description: Скільки разів можна відреагувати на пост або коментар протягом будь-яких 30 секунд?
+        feedback:
+          title: Обмежити кількість скарг на зловживання
+          description: Скільки скарг можна надіслати протягом будь-яких 5 хвилин?
+        comment:
+          title: Обмежити кількість створених коментарів
+          description: Скільки коментарів можна створити протягом будь-яких 30 секунд?
+        comment_antispam:
+          title: Обмежити кількість коментарів від нового учасника
+        mention:
+          title: Обмежити кількість @-згадок у пості або коментарі
+          description: Скільки разів можна @-згадати інших користувачів у пості або коментарі?
+        organization:
+          title: Обмежити кількість створених проєктів
+          description: Скільки проєктів можна створити протягом будь-яких 5 хвилин?
+        subscription:
+          title: Обмежити кількість підписок на поштову розсилку (тег liquid)
+          description: Скільки підписок на розсилку можна зробити протягом будь-яких 30 секунд?
+        recipient:
+          title: Обмежити кількість листів, які ми надсилаємо
+          description: Скільки листів ми можемо надіслати людині протягом будь-яких 2 хвилин?
+        confirmation:
+          title: Обмежити кількість листів-підтверджень
+          description: Скільки разів ми можемо надіслати лист-підтвердження людині протягом 2 хвилин?
+        listing:
+          title: Обмежити кількість створених оголошень
+          description: Скільки оголошень можна створити протягом будь-якої 1 хвилини?
+      settings_helper:
+        novice: Новачок
+        beginner: Початківець
+        mid_level: Середній рівень
+        advanced: Просунутий
+        expert: Експерт
+      social_link_helper:
+        n_a: Н/Д
+    social_link_helper:
+      n_a: Н/Д
+    placeholder:
+      organization:
+        name: Acme Inc.
+        slug: acmeinc
+        url: https://yoursite.com
+        location: Галіфакс, Нова Шотландія
+        email: mail@example.com
+        company_size: "..."
+        story: "..."
+        tech_stack: "..."
+        cta_body_markdown: "..."
+        cta_button_text: Відвідати сайт Acme
+        cta_button_url: https://example.com
+        proof: "..."
+      response_template:
+        title: "..."
+      user:
+        name: John Doe
+        email: john.doe@example.com
+        username: johndoe
+        feed_url: https://yoursite.com/feed
+    application_helper:
+      app_logo: Логотип застосунку
+      follow:
+        aria_label:
+          Organization: 'Стежити за проєктом: %{name}'
+          Tag: 'Стежити за тегом: %{name}'
+          User: 'Стежити за користувачем: %{name}'
+          default: 'Стежити за %{type}: %{name}'
+        text:
+          Organization: Стежити
+          Tag: Стежити
+          User: Стежити
+          default: Стежити
+      required: Обов’язково
+      subtitle:
+        week: Топпости цього тижня
+        month: Топпости цього місяця
+        year: Топпости цього року
+        infinity: Усі пости
+        latest: Останні пости
+      title_text: "%{title} — %{timeframe}"
+    articles_helper:
+      logo: Логотип %{service_name}
+      most_comments: Найбільше коментарів
+      most_reactions: Найбільше реакцій
+      most_views: Найбільше переглядів
+      recently_created: Нещодавно створені
+      recently_published: Нещодавно опубліковані
+    authentication_helper:
+      any_of_those: будь-що з наведеного
+      email_password: Електронна пошта та пароль
+      reminder: Ви спочатку використовували %{method} для автентифікації, тож можете скористатися %{dem} — або надіслати собі <a href="%{link}" style="color:black">магічне посилання</a>.
+      that: те
+      invite_only: Ви не можете це зробити, доки не вимкнете режим «Лише за запрошенням»
+    comments_helper:
+      ama: ama
+      ask_me_anything: Питайте що завгодно
+      author: Автор
+      nbsp_likes_html:
+        one: "&nbsp;вподобання"
+        other: "&nbsp;вподобань"
+    feedback_messages_helper:
+      offender:
+        body: |
+          Вітаємо,
+
+          Нам повідомили, що Ви порушили Кодекс поведінки %{community} та/або Умови користування.
+
+          Якщо така поведінка триватиме, ми можемо призупинити Ваш обліковий запис %{community}.
+
+          Якщо Ви вважаєте, що сталася помилка, відповідайте на цей лист — ми переглянемо ситуацію ще раз.
+
+          Команда %{community}
+        subject: "Порушення Кодексу поведінки %{community}"
+      reporter:
+        body: |
+          Вітаємо,
+          Дякуємо за позначення контенту, що може порушувати Кодекс поведінки %{community} та/або наші Умови користування. Ми розглядаємо Ваш звіт і вживемо відповідних
+          заходів.
+          Дякуємо за допомогу в підтримці позитивного та інклюзивного середовища для всіх!
+          Команда %{community}
+        subject: "Звіт %{community}"
+      affected:
+        body: |
+          Вітаємо,
+
+          Ми помітили деякі коментарі (зроблені іншими) під Вашим постом, що порушують Кодекс поведінки %{community} та/або наші Умови користування. Ми не толеруємо таку поведінку та
+          вживаємо відповідних заходів.
+
+          Дякуємо, що Ви з нами. Якщо маєте питання — пишіть нам. Ми відкриті до зворотного зв’язку та ідей, працюючи над відкритою та інклюзивною спільнотою.
+
+          Команда %{community}
+        subject: Попереджувальне повідомлення від %{community}
+    listing_helper:
+      option:
+        one: "%{cl_name} (%{count} бал)"
+        other: "%{cl_name} (%{count} балів)"
+    organization_helper:
+      option: "%{org_name} (%{unspent})"
+    rate_limit_checker_helper:
+      day:
+        one: день
+        other: дні
+      general: Скільки %{thing} може створити новий учасник (%{timeframe} або менше) протягом будь-якого 5-хвилинного періоду?
+      published:
+        title: Обмежити кількість створених постів
+        description: Скільки постів можна створити протягом будь-яких 30 секунд?
+      antispam:
+        title: Обмежити кількість постів, створених новим учасником
+      update:
+        title: Обмежити кількість оновлень поста
+        description: Скільки оновлень можна зробити протягом будь-яких 30 секунд? Оновіть документацію API у разі змін.
+      upload:
+        title: Обмежити кількість завантажених зображень
+        description: Скільки зображень можна завантажити протягом будь-яких 30 секунд?
+      user:
+        title: Обмежити кількість змін у власному обліковому записі
+        description: Скільки змін можна зробити у своєму акаунті протягом будь-яких 30 секунд?
+      follow:
+        title: Обмежити кількість підписок за день
+        description: На скількох людей можна підписатися за день?
+      reaction:
+        title: Обмежити кількість реакцій на пост або коментар
+        description: Скільки разів можна відреагувати на пост або коментар протягом будь-яких 30 секунд?
+      feedback:
+        title: Обмежити кількість скарг на зловживання
+        description: Скільки разів можна поскаржитися протягом будь-яких 5 хвилин?
+      comment:
+        title: Обмежити кількість створених коментарів
+        description: Скільки коментарів можна створити протягом будь-яких 30 секунд?
+      comment_antispam:
+        title: Обмежити кількість коментарів від нового учасника
+      mention:
+        title: Обмежити кількість @-згадок у пості або коментарі
+        description: Скільки разів можна @-згадати інших користувачів у пості або коментарі?
+      listing:
+        title: Обмежити кількість створених оголошень
+        description: Скільки оголошень можна створити протягом будь-якої 1 хвилини?
+      organization:
+        title: Обмежити кількість створених проєктів
+        description: Скільки проєктів можна створити протягом будь-яких 5 хвилин?
+      subscription:
+        title: Обмежити кількість підписок на тег розсилки (liquid)
+        description: Скільки разів можна підписатися на розсилку протягом будь-яких 30 секунд?
+      recipient:
+        title: Обмежити кількість загальних листів, які ми надсилаємо
+        description: Скільки листів ми можемо надіслати людині протягом будь-яких 2 хвилин?
+      confirmation:
+        title: Обмежити кількість листів-підтверджень
+        description: Скільки разів ми можемо надіслати лист-підтвердження протягом 2 хвилин?
+      thing:
+        posts: пости
+        comments: коментарі
+    settings_helper:
+      advanced: Просунутий
+      beginner: Початківець
+      expert: Експерт
+      mid_level: Середній рівень
+      novice: Новачок
+    admin:
+      user_helper:
+        today: Сьогодні, %{date}
+        yesterday: Учора, %{date}
+        org_join: ", "
+        org_overflow:
+          one: "%{orgs} і ще %{count} інший"
+          other: "%{orgs} і ще %{count} інших"
