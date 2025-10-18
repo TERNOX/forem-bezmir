@@ -1,0 +1,93 @@
+# Original locale: devise.en.yml
+---
+uk:
+  devise:
+    confirmations:
+      confirmed: Ваш email address has been successfully confirmed.
+      send_instructions: Ви will receive an email з instructions для how до confirm ваш email address у a few хвилини.
+      send_paranoid_instructions: Якщо ваш email address exists у our database, ви will receive an email з instructions для how до confirm ваш email address у a few хвилини.
+    failure:
+      already_authenticated: Ви are already signed у.
+      inactive: Ваш account є not activated yet.
+      invalid: Unable до login.
+      last_attempt: Ви маєте one more attempt before ваш account є locked.
+      locked: Unable до login.
+      not_found_in_database: Unable до login.
+      timeout: Ваш session прострочено. Будь ласка sign у again до продовжувати.
+      unauthenticated: Ви need до sign у або sign up before continuing.
+      unconfirmed: Ви маєте до confirm ваш email address before continuing.
+      magic_link_invalid: Invalid або прострочено login link.
+    mailer:
+      confirmation_instructions:
+        subject: Confirmation instructions
+      email_changed:
+        subject: Електронна пошта Changed
+      password_change:
+        subject: Пароль Changed
+      reset_password_instructions:
+        subject: Reset password instructions
+      unlock_instructions:
+        subject: Unlock instructions
+      magic_link:
+        subject: Тут's ваш magic login link ✨
+    omniauth_callbacks:
+      failure: Could not authenticate ви від %{kind} because "%{reason}".
+      success: Успіхfully authenticated від %{kind} account.
+    passwords:
+      no_token: Ви можемо't access this сторінка without coming від a password reset email. Якщо ви do come від a password reset email, будь ласка make sure ви used the full URL provided.
+      reset_instructions_sent: Ваш password reset instructions маєте been sent.
+      reset_password:
+        email_placeholder: ви@email.com
+        forgot_password: Send me a Sign-у Link
+        forgot_password_description: Enter the email address associated з ваш account, і ми'll send ви a one-time link або password reset.
+        go_back: Go back
+        send_reset_link_button: Send password reset link
+      send_instructions: Ви will receive an email з instructions на how до reset ваш password у a few хвилини.
+      send_paranoid_instructions: Якщо ваш email address exists у our database, ви will receive a password recovery link о ваш email address у a few хвилини.
+      updated: Ваш password has been changed successfully. Ви are now signed у.
+      updated_not_active: Ваш password has been changed successfully.
+    registrations:
+      agreement:
+        sign_in_html: Від signing у, ви are agreeing до our <a href="%{privacy_path}">privacy policy</a>, <a href="%{terms_path}">terms з use</a> і <a href="%{code_з_conduct_path}">code з conduct</a>.
+        sign_up_html: Від signing up, ви are agreeing до our <a href="%{privacy_path}">privacy policy</a>, <a href="%{terms_path}">terms з use</a> і <a href="%{code_з_conduct_path}">code з conduct</a>.
+      already_have_an_account_html: Already маєте an account? <a href="%{sign_up_path}">Увійти</a>.
+      create_account_html: Новий до %{community_name}? <a href="%{sign_up_path}">Створити account</a>.
+      destroyed: Bye! Ваш account has been successfully cancelled. Ми hope до see ви again soon.
+      errors:
+        bummer: Sorry до be a bummer...
+        mobile_app_no_new_account_html: Unfortunately, ми do not support creating new accounts right now на our mobile app. Якщо ви want create a new account до join %{community_name}, будь ласка do that на the web о <a href="%{path}">%{path}></a>
+      invite_only_disclaimer_html: Since this є an invite-only community, ви cannot join without an invitation. Якщо ви would like до request an invitation, будь ласка contact the community адмін о %{contact_link}
+      or: АБО
+      signed_up: Ласкаво просимо! Ви маєте signed up successfully.
+      signed_up_but_inactive: Ви маєте signed up successfully. However, ми could not sign ви у because ваш account є not yet activated.
+      signed_up_but_locked: Ви маєте signed up successfully. However, ми could not sign ви у because ваш account є locked.
+      signed_up_but_unconfirmed: A message з a confirmation link has been sent до ваш email address. Будь ласка follow the link до activate ваш account.
+      title:
+        invite_only_commuty: "%{community_name} є invite only."
+        join_community: Join the %{community_name}
+        welcome_back_community: Join the %{community_name}
+      update_needs_confirmation: Ви updated ваш account successfully, but ми need до verify ваш new email address. Будь ласка check ваш email і follow the confirmation link до confirm ваш new email address.
+      updated: Ваш account has been updated successfully.
+      updated_but_not_signed_in: Ваш account has been updated successfully, but since ваш password was changed, ви need до sign у again.
+    sessions:
+      already_signed_out: Signed out successfully.
+      signed_in: Signed у successfully.
+      signed_out: Signed out successfully.
+    unlocks:
+      send_instructions: Ви will receive an email з instructions для how до unlock ваш account у a few хвилини.
+      send_paranoid_instructions: Якщо ваш account exists, ви will receive an email з instructions для how до unlock it у a few хвилини.
+      unlocked: Ваш account has been unlocked successfully. Будь ласка sign у до продовжувати.
+    passwordless:
+      not_found_in_database: Could not find a користувач для that email address
+      magic_link_sent: A login link has been sent до ваш email address. Будь ласка follow the link до log у до ваш account.
+      magic_link_sent_paranoid: Якщо ваш account exists, ви will receive an email з a login link. Будь ласка follow the link до log у до ваш account.
+  errors:
+    messages:
+      already_confirmed: was already confirmed, будь ласка try signing у
+      confirmation_period_expired: needs до be confirmed within %{period}, будь ласка request a new one
+      expired: has прострочено, будь ласка request a new one
+      not_found: not found
+      not_locked: was not locked
+      not_saved:
+        one: '1 error prohibited this %{resource} від being saved:'
+        other: "%{count} errors prohibited this %{resource} від being saved:"

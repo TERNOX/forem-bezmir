@@ -1,0 +1,34 @@
+# Original locale: devise_invitable.en.yml
+---
+uk:
+  devise:
+    failure:
+      invited: Ви маєте a pending invitation, accept it до finish creating ваш account.
+    invitations:
+      edit:
+        header: Set ваш password
+        submit_button: Let's Get Started
+      invitation_removed: Ваш invitation was removed.
+      invitation_token_invalid: The invitation token provided є not valid!
+      new:
+        header: Send invitation
+        submit_button: Send an invitation
+      no_invitations_remaining: Ні invitations remaining
+      send_instructions: An invitation email has been sent до %{email}.
+      updated: Ваш password was set successfully. Ви are now signed у.
+      updated_not_active: Ваш password was set successfully.
+    mailer:
+      invitation_instructions:
+        accept_instructions: Ви можемо accept the invitation від clicking this link
+        accept: Accept Invitation
+        accept_until: This invitation will expire after %{due_date}.
+        hello: Привіт
+        ignore: Якщо ви don't want до accept the invitation, будь ласка ignore this email. Ваш account won't be created until ви access the link above і set ваш password.
+        someone_invited_you: Ви’ve been invited до join the %{community_name} community о %{url}.
+        subject: Invitation instructions
+  time:
+    formats:
+      devise:
+        mailer:
+          invitation_instructions:
+            accept_until_format: "%B %d, %Y %I:%M %p"

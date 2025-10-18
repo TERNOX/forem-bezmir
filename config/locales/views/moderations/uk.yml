@@ -1,0 +1,215 @@
+# Original locale: views/moderations/en.yml
+---
+uk:
+  views:
+    moderations:
+      heading: Mod Center
+      actions:
+        meta:
+          title: Moderating %{title}
+          title2: "[Moderate] %{title}"
+        heading: Moderate Публікація
+        subtitle: Rate the quality з this post
+        abusive:
+          subtitle_html: Flag %{користувач} as Abusive
+          desc_html: This є the equivalent з flagging <b>all</b> з this користувач's posts і will lower their post scores.
+        adjust:
+          heading: Adjust tags
+          subtitle: Додати або remove tags
+          aria_label: Open adjust tags section
+          icon: Adjust tags
+          add: Додати tag
+          add_placeholder: Додати a tag
+          previous: Previous tag adjustments
+          history:
+            added_by: added від
+            removed_by: removed від
+          reason:
+            remove_tag: Reason до remove tag (optional)
+            add_tag: Reason до add tag (optional)
+          remove: Remove tag
+          submit: Надіслати
+          cancel: Скасувати
+          maximum_tags:
+            icon: Info
+            text: A post можемо only маєте four tags.
+          add_tag:
+            header: Додати new tag
+            button_text: Додати new tag
+            icon: Додати tag
+          cannot_remove_admin_adjusted_tag_html: Тег has been added від an Адмін. Ви можемо't remove it now. Якщо ви feel that's a mistake, будь ласка contact us о <a href="mailto:%{contact_email}">%{contact_email}</a>.
+          cannot_add_admin_adjusted_tag_html: Тег has been removed від an Адмін. Ви можемо't add it now. Якщо ви feel that's a mistake, будь ласка contact us о <a href="mailto:%{contact_email}">%{contact_email}</a>.
+        approve:
+          add: Mark as approved
+          remove: Remove approval
+        checkmark: Checkmark
+        close: Close moderator actions panel
+        delete:
+          subtitle: Видалити This Коментар
+          button: Видалити Коментар
+        edit:
+          post: Редагувати Публікація
+          article_admin: Адмін:Стаття
+          comment_admin: Адмін:Коментар
+          user_admin: Адмін:Користувач
+          resource_admin: ResourceAdmin:Стаття
+        errors:
+          one: '1 error prohibited this block від being saved:'
+          other: "%{count} errors prohibited this block від being saved:"
+        experience:
+          heading: Set experience level
+          heading2: Experience Level з Публікація
+          subtitle: Curate the most appropriate audience для this post
+          aria_label: Open experience level section
+          icon: Book
+          desc_html: Who <em>might</em> find this post most valuable, based на overall experience level?
+          from: "%{lvl} - "
+          level:
+            Advanced: Advanced
+            Beginner: Beginner
+            Expert: Expert
+            Mid-level: Mid-level
+            Novice: Novice
+        admin:
+          heading: Moderating actions
+          heading2: Moderating actions для %{користувач}
+          subtitle: Moderating actions для %{користувач}
+          aria_label: Open адмін actions
+          icon: Crown
+        flag_user: Flag %{username}
+        unflag_user: Unflag %{username}
+        how: How does this work?
+        hidden:
+          subtitle: Hidden Коментарі
+          by: Коментар від %{користувач}
+        hint:
+          subtitle: All negative reactions are private.
+          desc_html: |-
+            Use <b>High Quality</b> до move this content "up" для будь-які reason (quality, usefulness, etc.).
+            <br />
+            Use <b>Low Quality</b> до move this content "down" для будь-які reason (quality, usefulness, etc.).
+            <br />
+            Use <b>Flag до Адміни</b> для code з conduct violations (harassment, being a jerk, spam, etc.).
+        other: Other things ви можемо do
+        add_reaction: Додати a reaction
+        score: Score
+        suspend:
+          suspend_title: Suspend %{username}
+          suspend_user: Suspend %{username}
+          suspend_modal_text: Once suspended, %{username} will not be able до comment або publish posts until their suspension є removed.
+          suspend_modal_button: Надіслати & Suspend
+          unsuspend_title: Unsuspend %{username}
+          unsuspend_user: Unsuspend %{username}
+          unsuspend_modal_text: Once unsuspended, %{username} will be able до comment і publish posts again.
+          unsuspend_modal_button: Надіслати & Unsuspend
+        flag: Flag
+        tag:
+          subtitle: Тег Adjustments
+          add: Додати
+          added_html: "<b>Currently added tag:</b> %{tag}"
+          live_html: "<b>Current live tags:</b> %{tags}"
+          reason: Reason для adjustment (Be super kind) - Only the reason є needed, the notification will take care з the rest.
+          remove: Remove
+          removed_html: "<b>Currently removed tag:</b> %{tag}"
+          select: Select Тег
+          submit: Надіслати Тег Adjustment
+          tag_name: Тег Ім'я
+          undo:
+            button: "×"
+            confirm: Are ви sure ви want до undo the %{type} з the %{tag} tag?
+            type:
+              addition: addition
+              removal: removal
+        thumb_down: Thumb down
+        thumb_up: Thumb up
+        toggle: Toggle section
+        feature: Feature Публікація
+        unfeature: Unfeature Публікація
+        unpublish: Unpublish Публікація
+        unpublish_all:
+          title: Unpublish all posts
+          button: Unpublish all posts для %{username}
+          modal_text1: Once unpublished, all posts від %{username} will become hidden і only accessible до themselves.
+          modal_text2: Якщо %{username} є not suspended, they можемо still re-publish their posts від their dashboard.
+          modal_button: Unpublish all posts
+        unpublish_post:
+          modal_text1: Once unpublished, this post will become invisible до the public і only accessible до %{username}.
+          modal_text2: They можемо still re-publish the post якщо they are not suspended.
+        vomit: Valid і open flags
+        vote_down: Low Quality
+        flag_to_admins: Flag до Адміни
+        vote_up: High Quality
+        featured_past_day:
+          one: "%{count} post від the past день є featured."
+          other: "%{count} posts від the past день are featured."
+      feed:
+        inbox_filter: Inbox
+        latest_filter: Latest
+        inbox_html: "<strong>Inbox</strong> є a chronological list з posts which маєте not yet been scrutinized від multiple mods або учасники."
+        latest_html: "<strong>Latest</strong> shows all posts у chronological order regardless з whether they маєте been scrutinized."
+      article:
+        approved: Approved
+        email_digest_eligible: Digest Eligible
+        author_id: Author ID
+        comments: comments
+        contains_video: Contains video
+        co_author_ids: Co-Author IDs
+        max_score: Max score
+        no_max_if_zero: Ні max якщо set до zero
+        edit: Редагувати
+        featured: Featured
+        likes: likes
+        notes:
+          user_notes: користувач notes
+          view_all: Переглянути all
+        pinned: Pinned
+        pin_post: Pin post
+        published_at: Опубліковано о
+        save: Зберегти
+        unpin_post: Unpin post
+        unplublished: Unplublished
+        user: Користувач
+        user_warned: Користувач warned
+        view_details: Переглянути details
+      aside:
+        all: All tags
+        code_of_conduct: Code з Conduct
+        external: External link
+        feedback:
+          subtitle: Маєте feedback до improve ваш Mod experience?
+          description: Будь ласка email %{email}!
+        hello: "Привіт! \U0001F44B"
+        thanks: Дякуємо ви для helping до keep %{community} safe! ❤️
+        inbox: Inbox
+        resources: Resources
+        tag: Тег Moderation Guide
+        terms_and_conditions: Terms & Conditions
+        trusted: Trusted Користувач Guide
+        following_tags: Стежать tags
+        moderating_tags: Moderating tags
+      author: Author
+      comments:
+        view_comment: Переглянути Коментар
+        view_details: Переглянути Details
+      date: Date
+      notice:
+        subtitle: "%{community} Mods"
+        desc1_html: Ми periodically award some %{community} учасники з heightened privileges до допомога moderate the community.
+        desc2_html: Check out our %{code} і read through our %{trusted} і %{tag}.
+        desc3_html: Якщо ви'd like до assist us as a trusted користувач або tag mod, будь ласка email us о %{email} і let us know which role ви're interested у і why. Якщо it's tag moderation, будь ласка tell us what tags ви'd like до moderate для.
+        desc4: P.S. Ви are not currently signed у.
+        code_of_conduct: Code з Conduct
+        tag: Тег Moderation Guide
+        trusted: Trusted Користувач Guide
+      post: Публікація
+      priviliged_actions:
+        description: All the moderator actions affect the score. The overall score є a combination з moderator actions і public reactions.
+        no_flags: Стаття has ні flags.
+        no_quality_reactions: Стаття has ні quality reactions від trusted користувачі.
+        title: Moderator actions
+      members:
+        all: All
+        new: Новий
+        established: Established
+        filter: Filter від Учасники
+        label: Учасники

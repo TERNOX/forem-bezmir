@@ -1,0 +1,27 @@
+# Original locale: views/actions/en.yml
+---
+uk:
+  views:
+    actions:
+      copy:
+        text: Copied до Clipboard
+        button: Copy link
+      more:
+        title: More...
+        aria_label: Поділитися post options
+      share:
+        facebook:
+          text: Поділитися до Facebook
+        hackernews:
+          text: Поділитися до Hacker Новийs
+        linkedin:
+          text: Поділитися до LinkedIn
+        mastodon:
+          text: Поділитися до Mastodon
+        reddit:
+          text: Поділитися до Reddit
+        twitter:
+          text: Поділитися до X
+          query: '"%{article}" від %{author}'
+        link: Поділитися Публікація via...
+        report: Поскаржитися Abuse

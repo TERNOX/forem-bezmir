@@ -1,0 +1,125 @@
+# Original locale: controllers/en.yml
+---
+uk:
+  api_secrets_controller:
+    generated: 'Ваш API Key has been generated: %{secret}'
+    revoked: Ваш API Key has been revoked.
+  application_controller:
+    bad_request: 'Помилка: Bad Request'
+    not_authorized: 'Помилка: not authorized'
+    please_sign_in: Будь ласка sign у
+  articles_controller:
+    deleted: Стаття was successfully deleted.
+  comments_controller:
+    create:
+      success: created
+      failure: comment already exists
+      authorization_error: Ваш privileges маєте been suspended.
+    delete:
+      error: Something went wrong; Коментар NOT deleted.
+      notice: Коментар was successfully deleted.
+    markdown: 'Там was an error у ваш markdown: %{error}'
+    markdown_html: "<p>\U0001F614 Там was an error у ваш markdown</p><hr><p>%{error}</p>"
+    moderated: Not allowed due до moderation action
+  confirmations_controller:
+    email_sent: Електронна пошта sent! Будь ласка contact support о %{email} якщо ви are маючи труднощі receiving ваш confirmation instructions.
+  credits_controller:
+    done:
+      one: "%{count} new credits purchased!"
+      other: "%{count} new credits purchased!"
+  devices_controller:
+    not_found: Not Found
+  discussion_locks_controller:
+    locked: Discussion was successfully locked!
+    unlocked: Discussion was successfully unlocked!
+  email_subscriptions_controller:
+    badge_notifications: badge notifications
+    comment_notifications: comment notifications
+    digest_emails: "%{community} digest emails"
+    follower_notifications: follower notifications
+    mention_notifications: mention notifications
+    this_list: this list
+    unread_notifications: unread notifications
+    newsletter: newsletter
+  feedback_messages_controller:
+    error_fill: "Make sure the forms are filled. \U0001F916 Other possible errors: %{errors}"
+    n_a: N/A
+    submitted: Ваш report є submitted
+  follows_controller:
+    already_followed: already followed
+    daily_limit: Daily account follow limit reached!
+    followed: followed
+    unfollowed: unfollowed
+  github_repos_controller:
+    repo_not_found: GitHub repository not found
+    github_unauthorized: 'GitHub Unauthorized: %{e_message}'
+  image_uploads_controller:
+    server_error: A server error has occurred!
+  listings_controller:
+    deleted: Listing was successfully deleted.
+    no_credit: Not enough available credits
+  omniauth_callbacks_controller:
+    log_in_error: 'Увійти error: %{e}'
+    username_taken: username has already been taken
+  organizations_controller:
+    secret_updated: Ваш org secret was updated
+    deletion_scheduled: 'Ваш організація: "%{організація_name}" deletion є scheduled. Ви''ll be notified when it''s deleted.'
+    not_deleted: Ваш організація was not deleted; ви must be an адмін, the only учасник у the організація, і маєте ні articles connected до the організація.
+    created: Ваш організація was successfully created і ви are an адмін.
+    updated: Ваш організація was successfully updated.
+  podcasts_controller:
+    podcast_suggested: Podcast suggested
+  profiles_controller:
+    updated: Ваш profile has been updated
+  rating_votes_controller:
+    not_upserted_successfully: Not Upserted Успіхfully
+  registrations_controller:
+    error:
+      recaptcha: Ви must complete the recaptcha ✅
+      domain: є not included у allowed domains.
+  response_templates_controller:
+    response_template_error: 'Відповідь template error: %{errors}'
+    created: Ваш відповідь template "%{title}" was created.
+    deleted: Ваш відповідь template "%{title}" was deleted.
+    updated: Ваш відповідь template "%{title}" was updated.
+  social_previews_controller:
+    fonts: Roboto|Roboto+Condensed
+  stories:
+    pinned_articles_controller:
+      not_found: not found
+  stories_controller:
+    404_bio_not_found: 404 bio not found
+    searching: "...searching"
+  stripe_active_cards_controller:
+    cannot_remove: Можемо't remove card якщо ви маєте an active membership. Будь ласка cancel ваш membership first.
+    cannot_update: Там was a problem updating ваш billing info.
+    updated: Ваш billing information has been updated
+    removed: Ваш card has been successfully removed.
+  tag_adjustments_controller:
+    failure: 'Failure: %{errors}'
+    destroyed: Тег adjustment destroyed
+  tags_controller:
+    tag_successfully_updated: "Тег successfully updated! \U0001F44D "
+  users_controller:
+    removed_admin: "%{name} є ні longer an адмін."
+    removed_member: "%{name} є ні longer part з ваш організація."
+    added_admin: "%{name} є now an адмін."
+    provide_email: Будь ласка, provide an email до delete ваш account.
+    provide_email_delete: Будь ласка, provide an email до delete ваш account
+    send_export: " The export will be emailed до ви shortly."
+    invalid_secret: The given організація secret was invalid.
+    username_blank: Ім'я користувача cannot be blank
+    deletion_in_progress: Ви маєте already requested account deletion. Будь ласка, check ваш email для further instructions.
+    joined_org: Ви маєте joined the %{організація_name} організація.
+    left_org: Ви маєте left ваш організація.
+    deletion_requested: Ви маєте requested account deletion. Будь ласка, check ваш email для further instructions.
+    log_in_to_delete: Ви must be logged у до proceed з account deletion.
+    deletion_scheduled: Ваш account deletion є scheduled. Ви'll be notified when it's deleted.
+    removed_identity: Ваш %{provider} account was successfully removed.
+    updated_config: Ваш config has been updated. Refresh до see all changes.
+    updated_profile: Ваш profile was successfully updated.
+    token_expired: Ваш token has прострочено, будь ласка request a new one. Tokens only last для 12 години after account deletion є initiated.
+    notifications_settings_updated: Ваш notifications settings маєте been updated.
+  video_states_controller:
+    related_article_not_found: Related article not found
+    video_state_updated: Video state updated

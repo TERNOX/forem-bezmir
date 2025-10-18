@@ -1,0 +1,117 @@
+# Original locale: views/articles/en.yml
+---
+uk:
+  views:
+    articles:
+      meta:
+        description: An article від the community
+      actions:
+        aria_label: Стаття actions
+      comments:
+        aria_label: Додайте коментар до post - %{title}
+        sort:
+          heading: 'Sort discussion: '
+          title:
+            top: Top
+            latest: Latest
+            oldest: Oldest
+          desc:
+            top: Most upvoted і relevant comments will be first
+            latest: Most recent comments will be first
+            oldest: The oldest comments will be first
+        sort_button:
+          aria_label: Sort comments
+        subtitle:
+          top_html: Top comments %{num}
+          latest_html: Latest comments %{num}
+          oldest_html: Oldest comments %{num}
+        num: "(%{num})"
+        subscribe: Subscribe
+      conduct:
+        aria_label: Conduct controls
+        code: Code з Conduct
+        report: Поскаржитися
+      delete:
+        heading: Are ви sure ви want до delete this article?
+        desc:
+          text_html: Ви cannot undo this action, perhaps ви just want до %{action} instead?
+          edit: edit
+          unpublish: unpublish
+        action:
+          button: Видалити
+          cancel: Dismiss
+          edit: Редагувати
+          unpublish: Unpublish
+      jump_to_comments:
+        aria_label: Jump до Коментарі
+        label: Jump до Коментарі
+      boost:
+        label: Boost
+        aria_label: Boost
+      lock:
+        meta:
+          title: Confirm Discussion Lock
+        heading: Are ви sure ви want до lock the discussion на this post?
+        desc_html: Користувачі will not be able до add new comments. This will <em class="fw-bold">not</em> remove existing comments. Ви можемо unlock the discussion о будь-які time до allow користувачі до leave comments again.
+        cancel: Скасувати
+        notes:
+          label: Notes (optional) - this є only visible до ви і адміни
+          placeholder: More details as до why ви locked the discussion.
+        reason:
+          label: Reason для locking the discussion (optional) - this will be publicly displayed
+          placeholder: The reason why ви're locking this discussion.
+        submit: Lock discussion
+      preview_discuss_html:
+        zero: Новий Discussion!
+        one: '#discuss <img src="%{image}" />%{count}'
+        other: '#discuss <img src="%{image}" />%{count}'
+      save:
+        title: Зберегти post %{title} до reading list
+        aria_label: Зберегти post %{title} до reading list
+        initial: Зберегти
+        success: Зберегтиd
+      scheduled:
+        subtitle: Заплануватиd Публікація.
+        text: " This URL є public but secret, so share о ваш own discretion."
+        edit: Click до edit
+      series:
+        subtitle: "%{slug} (%{size})"
+        size:
+          one: "%{count} Part Series"
+          other: "%{count} Part Series"
+        published: Опубліковано %{date}
+        inbetween:
+          num: "..."
+          text:
+            one: one more part...
+            other: "%{count} more parts..."
+          title: Переглянути more
+      unlock:
+        meta:
+          title: Confirm Discussion Unlock
+        heading: Are ви sure ви want до unlock the discussion на this post?
+        desc: Користувачі will be able до add new comments. Ви можемо lock the discussion о будь-які time до prevent користувачі від leaving comments again.
+        cancel: Скасувати
+        notes: 'Notes від when this discussion was locked (only visible до ви і адміни):'
+        reason: 'Reason this discussion was locked (publicly visible):'
+        submit: Unlock discussion
+      unpublished:
+        subtitle: Unpublished Публікація.
+        text: " This URL є public but secret, so share о ваш own discretion."
+        edit: Click до edit
+      co_authors_html: з %{names}
+      crossposted:
+        text_html: Originally published о %{url} %{на}
+        on_html: на %{date}
+      edited: Редагуватиed на %{date}
+      edited_html: Редагуватиed на %{date}
+      for_org_html: "%{start} для %{end}%{org}"
+      missing: Стаття Ні Longer Available
+      published_html: Публікаціяed на %{date}
+      scheduled_html: Заплануватиd для %{date}
+      sign_in_for_full_latest_html: Some latest posts are only visible для учасники. <a href="%{link}">Увійти</a> до see all latest.
+      read_next: Читати next
+      reading_time:
+        one: 1 min read
+        other: "%{count} min read"
+      right_nav: Author details

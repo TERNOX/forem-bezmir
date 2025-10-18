@@ -1,0 +1,38 @@
+# Original locale: views/podcasts/en.yml
+---
+uk:
+  views:
+    podcasts:
+      meta:
+        title: Podcasts
+        description: Discover technical podcasts для %{учасник}
+        og:
+          title: Podcasts на %{community}
+      browse: Browse
+      heading: Podcasts
+      close: "×"
+      form:
+        heading: Suggest a Podcast
+        errors:
+          one: '1 error while creating a podcast:'
+          other: "%{count} errors while creating a podcast:"
+        owner: I am the owner з this podcast
+        return: "< return до podcasts"
+        suggest: Suggest
+      list: podcasts
+      listen: Click тут до download/listen
+      source: Episode source
+      statuses:
+        ssl_failed: SSL certificate verify failed while fetching podcast's feed_url
+        unparsable: Podcast's rss couldn't be parsed
+        unplayable: This podcast may not be playable у the browser
+        unreachable: Podcast's feed_url є not reachable
+      speed: 1x
+      tag: podcast
+      initializing: initializing...
+      unsupported: Ваш browser does not support the audio element.
+      featured_shows: Featured shows
+      latest_episodes: Latest episodes
+      suggest_a_podcast: Suggest a Podcast
+      view_all_podcasts: Переглянути all podcasts
+      follow: Стежити

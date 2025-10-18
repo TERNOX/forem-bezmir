@@ -1,0 +1,15 @@
+# Original locale: utils/en.yml
+---
+uk:
+  xml:
+    opensearch:
+      short_name: "%{community} Пошук"
+      description: Find posts від %{community}.
+    user:
+      image: "%{користувач} profile image"
+  json:
+    author: Active %{community} author
+  mailer:
+    adjust: Adjust ваш email settings
+    adjust_only_html: Don't want до get emails like this? Adjust ваш email settings о %{path}
+    unsubscribe: Unsubscribe

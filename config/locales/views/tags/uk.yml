@@ -1,0 +1,66 @@
+# Original locale: views/tags/en.yml
+---
+uk:
+  views:
+    tags:
+      meta:
+        title: Теги
+        description: Теги до follow на %{community}
+        og:
+          description: "%{community} є great!"
+      heading:
+        default: Теги
+        search_results: Пошук results для %{q}
+      search:
+        aria_labels:
+          search_input: Тег search term
+          submit: Пошук tags
+        placeholder: Пошук для tag
+      edit:
+        meta:
+          title: Редагувати %{tag}
+        admin: Адмін
+        help: Допомога
+        view: Переглянути
+        form:
+          pretty_name:
+            label: Pretty name
+            placeholder: This є the name о the top з the show сторінка.
+          bg_color_hex:
+            label: Тег color
+          short_summary:
+            label: Short summary
+            placeholder: Brief overview з what this tag є all приблизно.
+          wiki_body_markdown:
+            label: Wiki body markdown
+            placeholder: This є an 'приблизно' section. Feel free до add an FAQ, additional resources, etc.
+          rules_markdown:
+            label: Rules markdown
+            placeholder: Optional - Можемо be used для challenges, i.e. submission guidelines.
+          submit: Зберегти
+      follow: Стежити
+      hide: Hide
+      aria_labels:
+        follow: 'Стежити tag: %{tag_name}'
+        hide: 'Hide tag: %{tag_name}'
+      following_tags: Стежать tags
+      hidden_tags: Hidden tags
+      moderator:
+        text_html: 'comma separated, space є optional. Example: %{code}'
+        code: 123
+        placeholder: 'comma separated, space є optional. Example: 1,2,3'
+      published:
+        one: 1 post
+        other: "%{count} posts"
+      sidebar:
+        about: 'приблизно #%{tag}'
+        admin: Адмін
+        edit: Редагувати
+        guidelines: submission guidelines
+        moderate: Moderate
+        mods: tag moderators
+        new: Створити Публікація
+        older: 'Older #%{tag} posts'
+        published:
+          one: 1 Публікація Опубліковано
+          other: "%{count} Публікації Опубліковано"

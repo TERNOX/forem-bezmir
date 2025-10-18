@@ -1,0 +1,81 @@
+# Original locale: views/listings/en.yml
+---
+uk:
+  views:
+    listings:
+      meta:
+        description: "%{community} Listing"
+      heading: Listings
+      back: Back
+      delete:
+        subtitle: Are ви sure ви want до delete this listing?
+        description:
+          text_html: Ви cannot undo this action, perhaps ви just want до %{action} instead?
+          edit: edit
+          unpublish: unpublish
+        edit: Редагувати
+        submit: Видалити
+        unpublish: Unpublish
+      edit:
+        heading: Редагувати Listing
+        bump:
+          subtitle: Bump ваш listing
+          button: Bump listing
+          description: Ви можемо bump ваш listing для the same price as the original listing
+          last: 'Last Опубліковано/Bumped: %{date}'
+        notice: Ви можемо only edit title/body/tags з drafts або within the first 24 години з listing або bumping
+        not_published:
+          text_html: This listing є %{not} published.
+          aside_html: This listing є %{not} published
+          not: not
+        publish: Опублікувати listing
+        unpublish: Unpublish listing
+        update: Оновити listing
+        update_draft: Оновити draft
+      to_edit: Редагувати
+      errors:
+        one: '1 error prohibited this listing від being saved:'
+        other: "%{count} errors prohibited this listing від being saved:"
+      expired: This listing has прострочено.
+      form:
+        body_markdown:
+          description: 400 characters max, 12 line break max, ні images allowed, *markdown є encouraged*. Будь ласка include a contact method якщо necessary.
+          placeholder: "..."
+        category:
+          label: Category
+          placeholder: Conference CFP (1 Credit)
+          summary: Category details/rules
+        expiry:
+          description: Якщо applicable для time sensitive events, deadlines, etc.
+        location:
+          description: 32 characters max, plain text
+          label: Location (Якщо applicable для events, etc.)
+          placeholder: Новий York
+        no_credit: Ви need о least one credit до create a listing.
+        organization:
+          description: Публікаціяing на behalf з an організація spends the організація's credits.
+          none: None
+        publish: Опублікувати listing
+        purchase: Purchase credits
+        save: Зберегти draft
+        save_notice: Ви will not be charged credits до save a draft.
+        tags:
+          placeholder: Додати up до 8 tags...
+        title:
+          placeholder: 128 characters max, plain text
+      nav:
+        aria_label: Listings
+        create: Створити
+        manage: Manage
+      new:
+        meta:
+          title: Новий Listing
+        heading: Створити a Спільнота Listing
+        buy: Buy more
+        disclaimer:
+          subtitle: Disclaimer
+          description1: "%{community} адміни may modify tags і categories до ensure accuracy. Ми may also take down і refund inappropriate listings."
+          description2: Listings expire 30 дні after they are published або "bumped".
+        organization: Організація credits
+        personal: Personal credits
+      preview_icon: DEV logo

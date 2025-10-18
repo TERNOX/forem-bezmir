@@ -1,0 +1,6 @@
+# Original locale: decorators/en.yml
+---
+uk:
+  decorators:
+    article_decorator:
+      tagged_with: " Тегged з %{cached_tag_list}."

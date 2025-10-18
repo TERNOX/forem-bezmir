@@ -1,0 +1,25 @@
+# Original locale: validators/en.yml
+---
+uk:
+  validators:
+    bytesize_validator:
+      non_negative: ":maximum must be a non-negative Integer"
+    color_contrast_validator:
+      must_be_darker: must be darker для accessibility
+    emoji_only_validator:
+      invalid_emoji: contains non-emoji characters або invalid emoji
+    existing_published_article_id_validator:
+      default: must be a valid published Стаття identifier
+    profile_validator:
+      bio_too_long: Bio є too long
+    cross_model_slug_validator:
+      is_taken: has already been taken
+      is_invalid: є invalid
+      is_reserved: є reserved
+      too_many_subdirectories: has too many subdirectories
+    valid_domain_csv_validator:
+      invalid_list_format: must be a comma-separated list з valid domains
+    iso3166_hash_validator:
+      is_blank: must be provided
+      invalid_key: contains an invalid ISO 3166 code
+      invalid_value: must маєте values `:з_regions` або `:without_regions`

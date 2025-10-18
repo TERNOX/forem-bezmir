@@ -1,0 +1,81 @@
+# Original locale: views/auth/en.yml
+---
+uk:
+  views:
+    auth:
+      background: forem background
+      create:
+        aria_label: Створити new account
+        text: Створити account
+      creator:
+        text1: Let's start ваш Forem journey!
+        text2: Створити ваш адмін account first.
+        text3: Then ми'll walk ви through ваш Forem setup.
+        hint:
+          aria_label: Редагувати username
+          icon: Редагувати username
+          text_html: "%{start}Ваш username will be %{end}%{button}"
+        submit: Створити my account
+      already_have_an_account: Already маєте an account?
+      sign_in: Увійти
+      login:
+        aria_label: Увійти
+        text: Увійти
+        forgot: Forgot password?
+      provider:
+        text: "%{action} з %{provider}"
+        login: Продовжити
+        signup: Зареєструватися
+        email:
+          icon: email
+          text: Зареєструватися з Електронна пошта
+      register:
+        errors:
+          one: Whoops, ми found %{count} problem
+          other: Whoops, ми found %{count} problems
+        allow:
+          one_html: Registration restricted до <strong>@%{domain}</strong> emails.
+          list: Registration restricted до the following emails
+        create: Створити ваш account
+        field:
+          name:
+            aria_label: Ім'я
+            label: Ім'я
+          username:
+            aria_label: Ім'я користувача
+            desc: A username можемо only contain letters, numbers і underscores. The maximum username length можемо be 30 characters.
+            label: Ім'я користувача
+          email:
+            aria_label: Електронна пошта
+            label: Електронна пошта
+            placeholder: john@example.com
+          password:
+            aria_label: Пароль
+            desc: Minimum 8 characters
+            label: Пароль
+            placeholder: "••••••••"
+            hide: Hide password
+            show: Show password
+          confirm:
+            aria_label: Пароль Confirmation
+            label: Пароль Confirmation
+          required: "* - required"
+        secret:
+          label: Новий Forem Secret
+          placeholder: As provided від ваш Forem host
+          hide: Hide new Forem secret
+          show: Show new Forem secret
+        submit: Зареєструватися
+      wizard:
+        meta:
+          title: Let's get started з Forem
+        heading: Let's start ваш Forem journey
+        step_1: Створити an account. It will be the first super адмін account.
+        step_2_html: Once ви sign up below, ви можемо configure ваш community о %{path}.
+        step_3: Там є lots ви можемо do as an адмін, but там є a learning curve.
+        step_4: Будь ласка reach out до the Forem команда якщо ви are unsure приблизно щось!
+        step_5: "Для Empowering Спільнота \U0001F331"
+      tagline: Ми are a place where coders share, stay up-до-date і grow their careers.
+      title:
+        text_html: "%{name} є a community з %{maybe_size}amazing %{label}"
+        size: "%{num} "

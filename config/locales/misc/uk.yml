@@ -1,0 +1,42 @@
+# Original locale: misc/en.yml
+---
+uk:
+  create_mascot:
+    name: Mascot
+    error: Mascot already set
+  broadcast:
+    welcome:
+      ask_question: "Sloan тут! \U0001F44B I noticed that ви haven't <a href='https://dev.до/t/explainlikeimfive'>asked a запитання</a> yet. Asking a запитання є easy до do; just click на 'Створити Публікація' у the sidebar з the tag сторінка до get started!"
+      customize_experience: "Sloan тут! \U0001F44B Did ви know that that ви можемо customize ваш DEV experience? Try changing <a href='settings/customization'>ваш font і theme</a> і find the best style для ви!"
+      customize_feed: "Hi, it's me again! \U0001F44B Now that ви're a part з the DEV community, let's focus на personalizing ваш content. Ви можемо start від <a href='/tags'>following some tags</a> до допомога customize ваш feed! \U0001F389"
+      discuss_and_ask: "Sloan тут! \U0001F44B I noticed that ви haven't <a href='https://dev.до/t/explainlikeimfive'>asked a запитання</a> або <a href='https://dev.до/t/discuss'>started a discussion</a> yet. It's easy до do both з these; just click на 'Створити Публікація' у the sidebar з the tag сторінка до get started!"
+      download_app: "Sloan тут, з one last tip! \U0001F44B Маєте ви downloaded the DEV mobile app yet? Consider <a href='https://dev.до/downloads'>downloading</a> it so ви можемо access all з ваш favorite DEV content на the go!"
+      set_up_profile: "Ласкаво просимо до DEV! \U0001F44B I'm Sloan, the community mascot і I'm тут до допомога get ви started. Let's begin від <a href='/settings'>setting up ваш profile</a>!"
+      start_discussion: "Sloan тут! \U0001F44B I noticed that ви haven't <a href='https://dev.до/t/discuss'>started a discussion</a> yet. Starting a discussion є easy до do; just click на 'Створити Публікація' у the sidebar з the tag сторінка до get started!"
+      welcome_thread: "Sloan тут again! \U0001F44B DEV є a friendly community. Why not introduce yourself від leaving a comment у <a href='/ласкаво просимо'>the ласкаво просимо thread</a>!"
+    connect:
+      apple: "Ви're на a roll! \U0001F389  Do ви маєте an Apple account? Consider <a href='/settings'>connecting it</a>."
+      facebook: "Ви're на a roll! \U0001F389  Do ви маєте a Facebook account? Consider <a href='/settings'>connecting it</a>."
+      forem: "Ви're на a roll! \U0001F389  Do ви маєте a Forem account? Consider <a href='/settings'>connecting it</a>."
+      github: "Ви're на a roll! \U0001F389  Do ви маєте a GitHub account? Consider <a href='/settings'>connecting it</a> so ви можемо pin будь-які з ваш repos до ваш profile."
+      google: "Ви're на a roll! \U0001F389  Do ви маєте a Google account? Consider <a href='/settings'>connecting it</a>."
+      twitter: "Ви're на a roll! \U0001F389 Do ви маєте a Twitter account? Consider <a href='/settings'>connecting it</a> so ми можемо @mention ви якщо ми share ваш post via our Twitter account <a href='https://twitter.com/thePracticalDev'>@thePracticalDev</a>."
+  errors:
+    authentication:
+      errors:
+        suspended: It appears that ваш previous %{community_name} account was suspended. As such, ми've taken measures до prevent ви від creating a new account з %{community_name} і its community. Якщо ви think that там has been a mistake, будь ласка email us о %{community_email}, і ми will take another look.
+    fastly_config:
+      must_be_array: 'configs: must be an Array з Strings'
+      invalid_config: Invalid Fastly config - %{invalid_config}. Only %{valid_configs_join} are valid.
+  policies:
+    application_policy:
+      must_be_logged_in: must be logged у
+      you_must_be_logged_in: Ви must be logged у
+      your_account_is_suspended: Ваш account є suspended
+    liquid_tag_policy:
+      no_user_found: Ні користувач found
+      not_permitted: Користувач є not permitted до use this liquid tag
+  uploaders:
+    base_uploader:
+      too_many_frames: GIF contains too many frames. Max frame count allowed є %{frame_max}.
+      timeout: Image processing timed out.

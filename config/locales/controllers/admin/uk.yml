@@ -1,0 +1,209 @@
+# Original locale: controllers/admin/en.yml
+---
+uk:
+  admin_controller:
+    dashboard:
+      title: Адмін Панель
+      welcome: Ласкаво просимо до the адмін dashboard
+    users:
+      title: Manage Користувачі
+      suspend: Suspend
+      unsuspend: Unsuspend
+      ban: Заборонити
+      unban: Зняти заборону
+      delete: Видалити
+      edit: Редагувати
+      view: Переглянути
+    articles:
+      title: Manage Статті
+      delete: Видалити
+      edit: Редагувати
+      view: Переглянути
+      publish: Опублікувати
+      unpublish: Unpublish
+    comments:
+      title: Manage Коментарі
+      delete: Видалити
+      edit: Редагувати
+      view: Переглянути
+      moderate: Moderate
+    reports:
+      title: Manage Поскаржитисяs
+      view: Переглянути
+      resolve: Resolve
+      dismiss: Dismiss
+    settings:
+      title: Manage Налаштування
+      save: Зберегти
+      cancel: Скасувати
+  admin:
+    articles_controller:
+      saved: Стаття saved!
+      pinned: Стаття Pinned!
+      unpinned: Стаття Unpinned!
+    badge_achievements_controller:
+      deleted: Badge achievement has been deleted!
+      rewarded: Badges are being rewarded. The task will finish shortly.
+      congrats: "Congrats на ваш achievement! \U0001F389 І дякуємо ви для being such a vital part з %{community}!"
+      award: Будь ласка choose a badge до award
+      wrong: Something went wrong.
+    badges_controller:
+      created: Badge has been created!
+      updated: Badge has been updated!
+    broadcasts_controller:
+      created: Broadcast has been created!
+      deleted: Broadcast has been deleted!
+      updated: Broadcast has been updated!
+      wrong: Something went wrong з deleting the broadcast.
+    bulk_assign_role_controller:
+      role_assigment: Role %{role} assigned до користувач.
+      role_blank: Будь ласка choose a role до add.
+      success_message: Roles are being added. The task will finish shortly.
+    consumer_apps_controller:
+      created: "%{app} has been created!"
+      deleted: "%{app} has been deleted!"
+      updated: "%{app} has been updated!"
+      wrong: Something went wrong з deleting %{app}.
+    billboards_controller:
+      created: Billboard has been created!
+      deleted: Billboard has been deleted!
+      updated: Billboard has been updated!
+      wrong: Something went wrong з deleting the Billboard.
+    emails_controller:
+      created: Електронна поштаs has been created!
+      drafted: Електронна пошта has been drafted!
+      activated: Електронна пошта has been activated!
+      deleted: Електронна пошта has been deleted!
+      updated: Електронна пошта has been updated!
+      wrong: Something went wrong з deleting the Електронна пошта.
+    gdpr_delete_requests_controller:
+      deleted: Успіхfully marked as deleted
+    extensions_controller:
+      update_success: Extensions маєте been updated.
+    html_variants_controller:
+      fork: "%{name} FORK-%{rand}"
+      created: HTML Variant has been created!
+      deleted: HTML Variant has been deleted!
+      updated: HTML Variant has been updated!
+      wrong: Something went wrong з deleting the HTML Variant.
+    invitations_controller:
+      duplicate: 'Invitation was not sent. Там є already a registered користувач з the email: %{email}'
+      create_success: The invite has been sent до the користувач's email.
+      destroy_success: Invite cancelled для %{email}.
+      resend_success: Invite resent до %{email}.
+    listing_categories_controller:
+      created: Listing Category has been created!
+      updated: Listing Category has been updated!
+      deleted: Listing Category has been deleted!
+    listings_controller:
+      updated: Listing updated successfully
+      destroyed: "'%{title}' was destroyed successfully"
+      no_credit: Not enough available credits
+    mods_controller:
+      trusted: "%{username} now has a Trusted role!"
+    navigation_links_controller:
+      deleted: Navigation Link %{link} deleted
+      created: 'Успіхfully created navigation link: %{link}'
+      updated: 'Успіхfully updated navigation link: %{link}'
+    organization_memberships_controller:
+      not_exist: 'Організація #%{org_id} does not exist.'
+      wrong: Something went wrong з removing the користувач від %{org}
+      added: Користувач was successfully added до %{org}
+      removed: Користувач was successfully removed від %{org}
+      updated: Користувач was successfully updated до %{type}
+    organizations_controller:
+      credit_updated: Успіхfully updated credits
+      deletion_scheduled: Організація, "%{організація_name}", deletion є scheduled.
+      error: 'Ваш організація, %{організація_name}, could not be deleted: %{error}.'
+    pages_controller:
+      updated: Сторінка has been successfully updated.
+      created: Сторінка has been successfully created.
+      deleted: Сторінка has been successfully deleted.
+      code_of_conduct:
+        title: Code з Conduct
+        description: A сторінка that describes how до behave на this platform
+      privacy_policy:
+        title: Privacy Policy
+        description: A сторінка that describes the privacy policy
+      terms_of_use:
+        title: Terms з Use
+        description: A сторінка that describes the terms з use для the application
+    podcasts_controller:
+      new_owner_added: Новий owner added!
+      no_such_user: Ні such користувач
+      scheduled: 'Podcast''s episodes fetching was scheduled (%{title}, #%{id})'
+      updated: Podcast updated
+    profile_field_groups_controller:
+      deleted: Group %{group} deleted
+      updated: Group %{group} updated
+      created: 'Успіхfully created group: %{group}'
+    profile_fields_controller:
+      created: Профіль field %{field} created
+      deleted: Профіль field %{field} deleted
+      updated: Профіль field %{field} updated
+    response_templates_controller:
+      saved: 'Відповідь Template: "%{title}" saved successfully.'
+      updated: The відповідь template "%{title}" was updated.
+      deleted: The відповідь template "%{title}" was deleted.
+    secrets_controller:
+      not_in_vault: Not У Vault
+      updated: Secret %{key} was successfully updated у Vault.
+      value: "%{first8}******"
+    settings_controller:
+      confirmation: My username є @%{username} і this action є 100% safe і appropriate.
+    spaces_controller:
+      update_success: Space has been updated.
+    subforems_controller:
+      created: Subforum has been created!
+      created_with_ai: Subforem has been created! Details are being generated у the background.
+      updated: Subforum has been updated!
+      deleted: Subforum has been deleted!
+    tags:
+      moderators_controller:
+        not_found: Ім'я користувача "%{username}" was not found
+        not_found_or: 'Користувач ID #%{користувач_id} was not found, або their account has errors: %{errors}'
+        removed: "@%{username} - ID #%{користувач_id} was removed as a tag moderator."
+        added: "%{username} was added as a tag moderator!"
+    tags_controller:
+      created: "%{tag_name} has been created!"
+      updated: "%{tag_name} tag successfully updated!"
+      update_fail: 'The tag update failed: %{errors}'
+    tools_controller:
+      article_busted: 'Стаття #%{article} was successfully busted'
+      user_busted: 'Користувач #%{користувач} was successfully busted'
+      link_busted: "%{link} was successfully busted"
+    users_controller:
+      exported: Data exported до the %{receiver}. The job will complete momentarily.
+      email_fail: Електронна пошта failed до send!
+      email_sent: Електронна пошта sent!
+      confirm_sent: Confirmation email sent!
+      verify_sent: Verification email sent!
+      manual_verification_sent: Електронна пошта manually verified!
+      full_delete_html: "@%{користувач} (email: %{email}, користувач_id: %{id}) has been fully deleted. Якщо this є a GDPR delete, delete them від Mailchimp & Google Analytics і confirm на %{the_сторінка}."
+      no_email: ні email
+      parameter_missing: Both subject і body are required!
+      role_removed: 'Role: %{role} has been successfully removed від the користувач!'
+      identity_removed: The %{provider} identity was successfully deleted і backed up.
+      the_page: the сторінка
+      banished: This користувач є being banished у the background. The job will complete soon.
+      unlocked: Unlocked Користувач account!
+      unpublished: Публікації are being unpublished у the background. The job will complete soon.
+      updated: Користувач has been updated
+      updated_json: Успіх! %{username} has been updated.
+      credits_added: Credits маєте been added!
+      credits_removed: Credits маєте been removed.
+      tag_not_found: Тег "%{tag_name}" was not found
+    welcome_controller:
+      thread_content: |
+        ---
+        title: Ласкаво просимо Thread - v0
+        published: false
+        description: Introduce yourself до the community!
+        tags: ласкаво просимо
+        ---
+
+        Hey там! Ласкаво просимо до %{community}!
+
+        ![ЛАСКАВО ПРОСИМО ДО THE INTERNET](https://slack-imgs.com/?c=1&url=http%3A%2F%2Fmedia0.giphy.com%2Fmedia%2FzhbrTTpmSCYog%2Fgiphy-downsized.gif)
+
+        Leave a comment below до introduce yourself до the community!✌️

@@ -1,0 +1,59 @@
+# Original locale: views/credits/en.yml
+---
+uk:
+  views:
+    credits:
+      meta:
+        title: Credits
+      ledger:
+        class:
+          listing: Listing
+        category: Category
+        item: Item
+        cost: Cost (credits)
+        date: Date
+        misc: Miscellaneous items
+      listing:
+        create: Створити a Listing
+        dashboard: Go до Listings Панель
+      new:
+        meta:
+          title: Purchase Credits
+        heading: Purchase credits для @%{name}
+        hook:
+          text_html: Credits are used для %{listings} as well as upcoming products і services.
+          listings: "%{community} listings"
+        form:
+          amount:
+            label: Amount до Purchase
+            placeholder: Enter будь-які amount
+          method:
+            label: Payment Method
+            number: "**** **** **** %{last}"
+            exp: "%{mm}/%{yy}"
+            add: Додати Новий Card
+          submit: Complete Purchase
+          submitting: Надіслатиting...
+          note_org: "*All org адміни маєте access до credits owned від організація"
+        switch:
+          org: Switch до %{name}
+          user: Switch до personal purchase
+        status:
+          subtitle:
+            org: How many credits does %{name} маєте?
+            user: How many credits do I currently маєте?
+          desc:
+            org: "%{name} has %{count} credits."
+            user: Ви маєте %{count} credits.
+        how:
+          subtitle: How можемо I earn credits?
+          desc_html: Учасники receive <strong>5 credits</strong> для every profile badge ви earn.
+      purchase: Purchase additional credits
+      tag: 'Тег: %{name}'
+      status:
+        user:
+          one: Ви маєте %{count} personal credit до spend
+          other: Ви маєте %{count} personal credits до spend
+        org_html:
+          one: "%{name} has %{num} credit до spend"
+          other: "%{name} has %{num} credits до spend"

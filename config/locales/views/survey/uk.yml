@@ -1,0 +1,8 @@
+# Original locale: views/survey/en.yml
+---
+uk:
+  views:
+    survey:
+      enter_response: Enter ваш відповідь тут...
+      thank_you_response: Дякуємо ви для ваш відповідь.
+      thank_you_completing: Дякуємо ви для завершення the опитування!
