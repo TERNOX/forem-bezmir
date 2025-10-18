@@ -1,0 +1,45 @@
+# Original locale: views/liquids/en.yml
+---
+uk:
+  views:
+    liquids:
+      github:
+        view: Переглянути на GitHub
+      medium:
+        logo: Medium Logo
+      poll:
+        show_results: Just show me the results
+      reddit:
+        author: 'Author: %{author}'
+        see: See Full Публікація
+      stackexchange:
+        answer:
+          text_html: "%{answer} re: %{title}"
+          answer: answer
+        answers: 'Answers: %{count}'
+        comments: 'Коментарі: %{count}'
+        open:
+          answer: Open Full Answer
+          article: Open Full Стаття
+          question: Open Full Запитання
+      twitter:
+        view: Переглянути на Twitter
+      user_subscription:
+        confirm:
+          subtitle: Confirm subscribe
+          button_text: Confirm subscription
+          cancel_text: Скасувати
+          text_html: Ви'll share ваш email address, username, name, і %{community} profile URL з %{username}. Once ви do this, ви cannot undo this.
+        logged_out: Ви must first sign у до %{community}.
+        sign_in: Увійти
+        subscribe:
+          apple:
+            button: Subscribe
+            desc_html: Hey, там! It looks like when ви created ваш %{community} account ви signed up з Apple using a private relay email address. Якщо ви'd like до subscribe, будь ласка %{update} first до a different email address.
+            update: update ваш email address у Налаштування
+          button: Subscribe
+          desc_html: Ви'll subscribe з the email address associated з ваш %{community} account. До use a different email address, ви можемо %{update}.
+          update: update ваш email address у Налаштування
+      wikipedia:
+        logo: Wikipedia Logo
+        view: Переглянути на Wikipedia

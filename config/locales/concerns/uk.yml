@@ -1,0 +1,7 @@
+# Original locale: concerns/en.yml
+---
+uk:
+  concerns:
+    image_uploads:
+      too_long: filename too long - the max є %{max} characters.
+      is_not_file: invalid file type. Будь ласка upload a valid image.

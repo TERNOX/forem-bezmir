@@ -1,0 +1,26 @@
+# Original locale: views/manager/en.yml
+---
+uk:
+  views:
+    manager:
+      meta:
+        title: Manage %{title}
+      error:
+        pins: "Uh Oh! %{error} \U0001F62C"
+      tools:
+        heading: 'Tools:'
+        subtitle: 'Experience Level з Публікація:'
+        text_html: Є ваш post written more для a beginner або an advanced audience? Adjust this level as a <em>gentle</em> indicator which will допомога show the post до the people who will benefit the most.
+      nav:
+        dashboard: Панель
+        text: "\U0001F449 Manage Ваш Публікація"
+      rating:
+        heading: Experience Level з Публікація
+        text: Who є this post most relevant для?
+        lower: "\U0001F448 Beginner"
+        higher: "Expert \U0001F449"
+      tips:
+        heading: 'Tips:'
+        text_1: Write ваш own tweet приблизно the post, describing personally why ви wrote it або why people might find it useful. Ми may retweet ви.
+        text_2_html: 'Поділитися до link aggregators such as <a href="https://www.reddit.com">Reddit</a>. Try до choose the most topic-specific subreddits, such as <a href="https://www.reddit.com/r/javascript">/r/javascript</a> або <a href="https://www.reddit.com/r/python">/r/python</a>, etc. <em>Попередження: jerks і trolls may be lurking.</em>'
+        text_3: Поділитися з ваш co-workers або local communities. Ask people до leave запитання для ви у the comments. It's a great way до spark additional discussion.

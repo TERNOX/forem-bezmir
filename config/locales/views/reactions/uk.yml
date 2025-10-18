@@ -1,0 +1,43 @@
+# Original locale: views/reactions/en.yml
+---
+uk:
+  views:
+    reactions:
+      category:
+        hands: Hands
+        like: Подобається
+        readinglist: Читання list
+        thinking: Thinking
+        thumbsup: Thumbs up
+        thumbsdown: Thumbs down
+        unicorn: Unicorn
+        vomit: Flag
+        lightbulb: Lightbulb
+        raised_hands: Raised hands
+        rocket: Rocket
+        exploding_head: Exploding head
+        fire: Fire
+      drawer_button: Додати reaction
+      summary:
+        count_html:
+          one: "%{count}%{start} reaction%{end}"
+          other: "%{count}%{start} reactions%{end}"
+        title: Реакції
+      like:
+        title: Подобається
+        aria_label: Подобається
+        icon: Favorite heart button
+        text: Подобається
+      unicorn:
+        title: Unicorn
+        aria_label: React з unicorn
+      readingList:
+        title: Зберегти
+        aria_label: Додати до reading list
+        icon: Зберегти button
+        text: Зберегти
+      subscribe:
+        title: Subscribe до Коментарі
+        aria_label: Subscribe до Коментарі
+        icon: Зберегти button
+        text: Subscribe до Коментарі

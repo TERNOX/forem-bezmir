@@ -1,0 +1,33 @@
+# Original locale: views/search/en.yml
+---
+uk:
+  views:
+    search:
+      heading: Пошук results%{для}
+      for: " для %{query}"
+      placeholder: Пошук...
+      find_related_posts: Find related posts...
+      icon:
+        aria_label: Пошук
+        title: Пошук
+      powered_by: Powered від Algolia
+      suggestions:
+        submit_search: Надіслати search для advanced filtering.
+        displaying_recommendations: Displaying Algolia Recommendations — Start typing до search
+      nav:
+        posts: Публікації
+        podcasts: Podcasts
+        people: People
+        comments: Коментарі
+        my_posts: My posts only
+        organizations: Організації
+        tags: Теги
+      sort:
+        aria_label: Пошук result sort options
+        relevance: Most Relevant
+        newest: Новийest
+        oldest: Oldest
+      meta:
+        title: Пошук Results%{для}
+        for: " для %{query}"
+        description: "%{site} => Пошук Results"

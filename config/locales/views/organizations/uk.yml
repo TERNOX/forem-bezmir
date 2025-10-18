@@ -1,0 +1,46 @@
+# Original locale: views/organizations/en.yml
+---
+uk:
+  views:
+    organizations:
+      dropdown: Організація actions
+      empty: 404 bio not found
+      external:
+        icon: External link icon
+      follow: Стежити
+      github:
+        icon: GitHub logo
+      joined:
+        icon: Joined
+        text_html: Joined на %{date}
+      location:
+        icon: Location
+      logo: "%{org} profile picture"
+      size: Employees
+      sponsor:
+        text: "%{level} Спільнота Sponsor ❤️"
+        level:
+          gold: Gold
+          silver: Silver
+          bronze: Bronze
+          tag: Тег
+          media: Media
+          devrel: Devrel
+      stack: Our stack
+      story: Our story
+      side:
+        post:
+          icon: Публікація
+          text:
+            one: 1 post published
+            other: "%{count} posts published"
+        member:
+          icon: Учасник
+          text:
+            one: 1 учасник
+            other: "%{count} учасники"
+      support: Support email
+      team: Meet the команда
+      all_members: See All Учасники
+      twitter:
+        icon: Twitter logo

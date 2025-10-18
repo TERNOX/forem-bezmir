@@ -1,0 +1,141 @@
+# Original locale: models/en.yml
+---
+uk:
+  models:
+    api_secret:
+      api_limit_reached: API secret limit з 10 per користувач has been reached
+    application_record:
+      uninferrable: Could not infer a decorator для %{class}.
+    article:
+      a_post_by: A post від %{користувач_name}
+      video_unpermitted: cannot be added від учасник without permission
+      video_processing: cannot be set до true якщо video є still processing
+      cannot_search_tags_for: 'Cannot search tags для: %{tag}'
+      cannot_search_tags_for_tags: 'Cannot search tags для: %{tags}'
+      unique_coauthor: co-author IDs must be unique
+      too_many_tags: exceed the maximum з 4 tags
+      is_too_long: є too long.
+      invalid_date: must be entered у DD/MM/YYYY format з current або past date
+      series_unpermitted: must be one ви маєте permission до post до
+      invalid_coauthor: must be valid користувач IDs
+      same_author: must not be the same користувач as the author
+      must_not_have_spaces: must not маєте spaces
+      published: Опубліковано
+      unique_url: has already been taken. Електронна пошта %{email} для further details.
+      future_or_current_published_at: only future або current published_о allowed
+      immutable_published_at: updating published_о для articles that маєте already been published є not allowed
+      mention_too_many:
+        one: Ви cannot mention more ніж %{count} користувачі у a post!
+        other: Ви cannot mention more ніж %{count} користувачі у a post!
+    audience_segment:
+      type_ofs:
+        manual: Managed elsewhere
+        trusted: Are trusted
+        posted: Маєте о least one post
+        no_posts_yet: Маєте not posted yet
+        dark_theme: Маєте enabled dark theme
+        light_theme: Маєте enabled light theme
+        no_experience: Маєте not set an experience level
+        experience1: Маєте experience level one
+        experience2: Маєте experience level two
+        experience3: Маєте experience level three
+        experience4: Маєте experience level four
+        experience5: Маєте experience level five
+    billboard:
+      invalid_location: "%{location} є not an enabled target ISO 3166-2 code"
+    broadcast:
+      single_active: Ви можемо only маєте one active announcement broadcast
+    comment:
+      deleted: "[deleted]"
+      has_been_deleted: "%{type} has been deleted."
+      hidden: "[hidden від post author]"
+      image_only: "[image]"
+      is_not_valid: є not valid.
+      locked: the discussion є locked на this Публікація
+      published_article: є not a published article
+      type:
+        Article: Стаття
+        item: item
+        PodcastEpisode: Podcast episode
+      suspended_too_many: Користувач suspended для too many spammy interactions, triggered від autovomit.
+      mention_too_many:
+        one: Ви cannot mention more ніж %{count} користувачі у a comment!
+        other: Ви cannot mention more ніж %{count} користувачі у a comment!
+    feedback_message:
+      reported: "(ви) previously reported this URL."
+    github_issue:
+      issue_comment_not_found: Issue comment %{issue_id} not found
+      issue_not_found: Issue %{issue_id} not found
+    html_variant:
+      no_edits: cannot change once published і approved
+    identity:
+      no_email_msg: Ні email found. Будь ласка relink ваш %{provider} account до avoid errors.
+    listing:
+      too_many_tags: exceed the maximum з 8 tags
+      too_many_linebreaks: has too many linebreaks. Ні more ніж 12 allowed.
+      image_not_allowed: є not allowed до include images.
+      liquid_not_allowed: є not allowed до include liquid tags.
+    mention:
+      is_not_valid: є not valid.
+    organization:
+      integer_only: Integer only. Ні sign allowed.
+      reserved_word: "%<value>s є a reserved word. Зв'язатися site адміни для допомога registering ваш організація."
+    page:
+      body_must_exist: must exist якщо body_html або body_json doesn't exist.
+    podcast_episode_appearance:
+      provided_role_is_not_valid: provided role є not valid
+    poll_skip:
+      cannot_vote_more_than_once: cannot vote more ніж once у one poll
+    poll_vote:
+      cannot_vote_more_than_once: cannot vote more ніж once у one poll
+    profile_pin:
+      only_five: cannot маєте more ніж five total pinned posts
+      pin_unpermitted: must маєте proper permissions для pin
+    rating_vote:
+      not_permitted: є not permitted до take this action.
+    reaction:
+      is_not_valid: є not valid.
+    response_template:
+      user_nil_only: cannot маєте a користувач ID associated.
+      comment_markdown: Коментар templates must use Markdown as its content type.
+      email_text: Електронна пошта templates must use plain text або HTML as its content type.
+      limit_reached: Відповідь template limit з 30 per користувач has been reached
+    settings:
+      campaign:
+        share_your_project: Поділитися ваш project
+      community:
+        message: may not include the "<" nor ">" character
+        new_forem: Новий Forem
+        user: користувач
+      general:
+        community_sponsors: Спільнота Sponsors
+        the_community_mascot: The community mascot
+      user_experience:
+        message: 'must be be a 3 або 6 character hex (starting з #)'
+    tag:
+      alias_for: alias_для must refer до an existing tag
+    tag_adjustment:
+      too_many_tags: 4 tags max per article.
+      unpermitted: does not маєте privilege до adjust these tags
+      not_live: selected для removal є not a current live tag.
+      unique: можемо't be an already adjusted tag
+    tweet:
+      tweet_not_found: Tweet not found
+      authentication_error: Authentication error; будь ласка contact ваш Forem адмін приблизно possible missing Twitter keys
+    user:
+      could_not_send: confirmation could not be sent. %{e_message}
+      password_not_matched: doesn't match password confirmation
+      has_been_banished: has been banished.
+      user_could_not_be_saved: Користувач could not be saved. %{e_message}
+    user_block:
+      cant_be_the_same: можемо't be the same as the blocked_id
+    user_subscription:
+      non_apple: Можемо't subscribe з an Apple private relay. Будь ласка update email.
+      source_not_found: Source not found. Будь ласка make sure ваш %{source} є active!
+      not_enabled: Користувач subscriptions are not enabled для the source.
+    users:
+      deleted_user:
+        name: "[Видалитиd Користувач]"
+      setting:
+        invalid_hex: є not a valid hex color
+        invalid_rss: є not a valid RSS/Atom feed

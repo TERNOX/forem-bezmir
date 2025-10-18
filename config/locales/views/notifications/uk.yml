@@ -1,0 +1,104 @@
+# Original locale: views/notifications/en.yml
+---
+uk:
+  views:
+    notifications:
+      meta:
+        description: Сповіщення inbox для %{community}
+        og:
+          title: Сповіщення - %{community}
+      heading: Сповіщення
+      article:
+        published_html: "%{користувач} published %{title}"
+        mod_greeting: "Hey %{користувач} \U0001F44B"
+        welcome_html: "%{користувач} є new до the community. Будь ласка check out their post і drop a nice reply до make them feel ласкаво просимо!"
+        mod_opt_out: Don't want до receive these notifications?
+        change_settings: Change settings
+      badge:
+        heading_html: Ви received the %{badge} badge
+        awarded_html: "Ви also get %{credits} до use для %{listings} якщо ви маєте щось ви'd like до promote. \U0001F389"
+        credits:
+          one: "%{count} new credits"
+          other: "%{count} new credits"
+        listings: community listings
+        more: More information приблизно listings
+        profile: Visit ваш profile
+      broadcast:
+        visit_html: Visit %{settings} до manage ваш notifications.
+        settings: Налаштування
+      comment:
+        commented_html: "%{користувач} commented на %{title}"
+        first_html: "%{користувач} wrote their first comment на %{title}"
+        first_reply: "Give them their first reply! \U0001F389"
+        left_html: "%{користувач} just left a comment на %{title}."
+        replied_html: "%{користувач} replied до a thread у %{title}"
+        mod_greeting: "Hey %{користувач} \U0001F44B"
+        welcome_html: "%{користувач} є new до the community. Будь ласка drop a nice reply до make them feel ласкаво просимо."
+        mod_opt_out: Don't want до receive these notifications?
+        change_settings: Change settings
+      error:
+        subtitle: An error occurred!
+        desc: This has been logged і ми're tracking it.
+      follow:
+        and_html: "%{first} і %{секунда} followed ви!"
+        and_other_html:
+          one: "%{first} і %{others} followed ви!"
+          other: "%{first} і %{others} followed ви!"
+        others:
+          one: "%{count} others"
+          other: "%{count} others"
+        single_html: "%{name} followed ви!"
+      load: Load More
+      mention:
+        article_html: "%{користувач} mentioned ви у a post%{якщо_org}"
+        comment_html: "%{користувач} mentioned ви у a comment"
+        article_mobile: "%{користувач} mentioned ви у the post %{title}"
+        comment_mobile: "%{користувач} mentioned ви у a comment на %{title}"
+        if_org_html: " under %{org}"
+      milestone:
+        heading_html: Ваш post %{title} passed %{type}!
+        check: Check ваш dashboard
+        intro: "\U0001F389\U0001F389\U0001F389\U0001F389\U0001F389\U0001F389\U0001F389\U0001F389"
+        type:
+          View:
+            one: "%{count} views"
+            other: "%{count} views"
+          Reaction:
+            one: "%{count} reactions"
+            other: "%{count} reactions"
+      nav:
+        aria_label: Сповіщення
+        all: All
+        comments: Коментарі
+        posts: Публікації
+      new_post:
+        if_org_html: " under %{org}"
+        verb_html: "%{користувач} made a new post%{якщо_org}"
+      reacted:
+        and_html: "%{first} і %{last}"
+        and_other_html:
+          one: "%{first} і %{count} others"
+          other: "%{first} і %{count} others"
+        verb_html:
+          one: "%{start}%{actors} reacted до %{title} з%{end} %{reactions}"
+          other: "%{start}%{actors} reacted до %{title} з%{end} %{reactions}"
+        your:
+          article: ваш article
+          comment: ваш comment
+          unknown: ви
+      settings: Налаштування
+      tag:
+        heading: "Hey там \U0001F44B"
+        add_html: Moderators added the <strong>%{tag}</strong> tag до ваш post %{title}. Mods felt this tag represented ваш article.
+        check_html: Check out %{other} which may be more appropriate
+        other: other popular tags
+        reason: 'Reason для action:'
+        remove_html: Moderators removed the <strong>%{tag}</strong> tag від ваш post %{title}. Certain tags маєте special submission guidelines, і mods need до adjust tags до best fit the community.
+        support_html: "Дякуємо для being part з %{community}! %{email} \U0001F917"
+      subforem:
+        heading: "Ваш post was moved \U0001F44B"
+        change_html: Ваш post %{title} was automatically moved від %{old_community_link} до %{new_community_link}.
+        reason: 'Reason для move:'
+        misc_explanation: This є our open discussion space where all types з content are ласкаво просимо для general conversation і community interaction that may not fit into our other communities.
+        explanation_html: This helps ensure ваш content reaches the most appropriate audience within our network і maintains the quality з each community.
+        support_html: "Дякуємо для being part з %{community}! %{email} \U0001F917"

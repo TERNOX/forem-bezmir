@@ -1,0 +1,38 @@
+# Original locale: mailers/en.yml
+---
+uk:
+  mailers:
+    digest_mailer:
+      from: Digest
+      more_top_posts: more top %{community} posts
+      more_top_posts_based: more top %{community} posts based на ваш interests
+      more_top_posts_from: more top reads від the community
+      more_trending_posts: more trending %{community} posts
+      more_trending_posts_picked: more trending %{community} posts picked для ви
+      other_posts: other posts ви might like
+      other_community_posts: other %{community} posts ви might like
+      other_top_posts: other top %{community} posts
+      other_trending_posts: other trending %{community} posts
+    custom_mailer:
+      from: Новийsletter
+    notify_mailer:
+      account_deleted: "%{community} - Account Deletion Confirmation"
+      deletion_requested: "%{community} - Account Deletion Requested"
+      trusted: Congrats! Ви're now a "trusted" користувач на %{community}!
+      base_subscriber: Congrats! Ви're now subscribed до DEV++
+      moderator: 'Congrats! Ви''re now a moderator для #%{tag_name}'
+      subforem_moderator: Congrats! Ви're now a moderator для %{subforem_name}
+      new_follower: just followed ви на %{community}
+      new_mention: "%{name} just mentioned ви у their %{type}"
+      org_deleted: "%{community} - Організація Deletion Confirmation"
+      new_reply: "%{name} replied до ваш %{type}"
+      feedback: Дякуємо для ваш report на %{community}
+      export: The export з ваш content є ready
+      unread_notifications:
+        one: "\U0001F525 Ви маєте %{count} unread notifications на %{community}"
+        other: "\U0001F525 Ви маєте %{count} unread notifications на %{community}"
+      new_badge: Ви just got a badge
+      video_upload: Ваш video upload є complete
+    verification_mailer:
+      from: "%{community} Електронна пошта Verification <%{email}>"
+      verify_ownership: Verify Ваш %{community} Account Ownership

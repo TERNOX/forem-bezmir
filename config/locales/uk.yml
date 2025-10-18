@@ -1,0 +1,235 @@
+# Original locale: en.yml
+---
+uk:
+  div: div
+  span: span
+  img: img
+  contact_prompts:
+    if_any_questions_html: <a href="/contact">Зв'яжіться з нами</a> якщо ви маєте будь-які запитання.
+    if_continued_trouble_html: <a href="/contact">Зв'яжіться з нами</a> якщо ви продовжуєте мати труднощі.
+    if_we_can_help_html: <a href="/contact">Зв'яжіться з нами</a> якщо там є щось, з чим ми можемо допомогти.
+  core:
+    add_comment: Додати коментар
+    beta: beta
+    comment: Коментар
+    copy_link: Copy link
+    edit_profile: Редагувати profile
+    follow: Стежити
+    follow_back: Стежити у відповідь
+    following: Стежать
+    like: Подобається
+    loading: loading...
+    reaction: Реакція
+    report_abuse: Поскаржитися
+    search: Пошук
+    success_settings: Успіхfully updated settings.
+    search_placeholder: Пошук...
+    search_find_related_posts: Find related posts...
+    search_powered_by: Powered від Algolia
+    search_submit_search: Надіслати search для advanced filtering.
+    search_displaying_recommendations: Displaying Algolia Recommendations — Start typing до search
+    article_form_save_changes: Зберегти changes
+    article_form_schedule: Запланувати
+    article_form_publish: Опублікувати
+    article_form_loading_preview: Завантаження preview
+    article_form_preview_loaded: Попередній перегляд loaded
+    comments_preview: Попередній перегляд
+    comments_continue_editing: Продовжити редагування
+    survey_enter_response: Enter ваш відповідь тут...
+    survey_thank_you_response: Дякуємо ви для ваш відповідь.
+    survey_thank_you_completing: Дякуємо ви для завершення the опитування!
+    dashboard_analytics_readers: Читатиers
+    dashboard_analytics_comments: Коментарі
+    dashboard_analytics_reactions: Реакції
+    stats_by: від
+    editor_new_title: Заголовок нової публікації...
+    editor_body_placeholder: Write ваш post content тут...
+    tags_field_label: Додати up до 4 tags
+    tags_field_placeholder: Додати up до 4 tags...
+    counted_organization:
+      one: "%{count} організація"
+      other: "%{count} організації"
+    counted_user:
+      one: "%{count} person"
+      other: "%{count} people"
+    not_following: Ви're not following anyone
+    following_everyone: Ви're following %{details} (everyone)
+    you_are_following: Ви're following
+    and: і
+  datetime:
+    distance_in_words_ago:
+      about_x_hours:
+        one: приблизно 1 година тому
+        other: приблизно %{count} години тому
+      about_x_months:
+        one: приблизно 1 місяць тому
+        other: приблизно %{count} місяці тому
+      about_x_years:
+        one: приблизно 1 рік тому
+        other: приблизно %{count} роки тому
+      almost_x_years:
+        one: almost 1 рік тому
+        other: almost %{count} роки тому
+      half_a_minute: half a хвилина тому
+      less_than_x_seconds:
+        one: менше ніж 1 секунда тому
+        other: менше ніж %{count} секунди тому
+      less_than_x_minutes:
+        one: менше ніж a хвилина тому
+        other: менше ніж %{count} хвилини тому
+      over_x_years:
+        one: понад 1 рік тому
+        other: понад %{count} роки тому
+      x_seconds:
+        one: 1 секунда тому
+        other: "%{count} секунди тому"
+      x_minutes:
+        one: 1 хвилина тому
+        other: "%{count} хвилини тому"
+      x_days:
+        one: 1 день тому
+        other: "%{count} дні тому"
+      x_months:
+        one: 1 місяць тому
+        other: "%{count} місяці тому"
+      x_years:
+        one: 1 рік тому
+        other: "%{count} роки тому"
+    expired_ago:
+      about_x_hours:
+        one: Прострочено приблизно 1 година тому
+        other: Прострочено приблизно %{count} години тому
+      about_x_months:
+        one: Прострочено приблизно 1 місяць тому
+        other: Прострочено приблизно %{count} місяці тому
+      about_x_years:
+        one: Прострочено приблизно 1 рік тому
+        other: Прострочено приблизно %{count} роки тому
+      almost_x_years:
+        one: Прострочено almost 1 рік тому
+        other: Прострочено almost %{count} роки тому
+      half_a_minute: Прострочено half a хвилина тому
+      less_than_x_seconds:
+        one: Прострочено менше ніж 1 секунда тому
+        other: Прострочено менше ніж %{count} секунди тому
+      less_than_x_minutes:
+        one: Прострочено менше ніж a хвилина тому
+        other: Прострочено менше ніж %{count} хвилини тому
+      over_x_years:
+        one: Прострочено понад 1 рік тому
+        other: Прострочено понад %{count} роки тому
+      x_seconds:
+        one: Прострочено 1 секунда тому
+        other: Прострочено %{count} секунди тому
+      x_minutes:
+        one: Прострочено 1 хвилина тому
+        other: Прострочено %{count} хвилини тому
+      x_days:
+        one: Прострочено 1 день тому
+        other: Прострочено %{count} дні тому
+      x_months:
+        one: Прострочено 1 місяць тому
+        other: Прострочено %{count} місяці тому
+      x_years:
+        one: Прострочено 1 рік тому
+        other: Прострочено %{count} роки тому
+    expires_in:
+      about_x_hours:
+        one: Expires у приблизно 1 година
+        other: Expires у приблизно %{count} години
+      about_x_months:
+        one: Expires у приблизно 1 місяць
+        other: Expires у приблизно %{count} місяці
+      about_x_years:
+        one: Expires у приблизно 1 рік
+        other: Expires у приблизно %{count} роки
+      almost_x_years:
+        one: Expires у almost 1 рік
+        other: Expires у almost %{count} роки
+      half_a_minute: Expires у half a хвилина
+      less_than_x_seconds:
+        one: Expires у менше ніж 1 секунда
+        other: Expires у менше ніж %{count} секунди
+      less_than_x_minutes:
+        one: Expires у менше ніж a хвилина
+        other: Expires у менше ніж %{count} хвилини
+      over_x_years:
+        one: Expires у понад 1 рік
+        other: Expires у понад %{count} роки
+      x_seconds:
+        one: Expires у 1 секунда
+        other: Expires у %{count} секунди
+      x_minutes:
+        one: Expires у 1 хвилина
+        other: Expires у %{count} хвилини
+      x_days:
+        one: Expires у 1 день
+        other: Expires у %{count} дні
+      x_months:
+        one: Expires у 1 місяць
+        other: Expires у %{count} місяці
+      x_years:
+        one: Expires у 1 рік
+        other: Expires у %{count} роки
+  billboard:
+    promoted: Promoted
+    menu:
+      aria_label: Toggle dropdown menu
+      icon: Dropdown menu
+      close: Close
+      manage_preferences: Manage preferences
+      what_is_a_billboard: What's a billboard?
+      report_billboard: Поскаржитися billboard
+      edit_billboard: Редагувати billboard
+  errors:
+    messages:
+      accepted: must be accepted
+      bad_protocol: must start з %{protocols}
+      bad_uri: є an invalid url
+      blank: можемо't be blank
+      confirmation: doesn't match %{attribute}
+      contains_prohibited_characters: contains non-alphanumeric або prohibited unicode characters
+      empty: можемо't be empty
+      equal_to: must be equal до %{count}
+      even: must be even
+      exclusion: є reserved
+      general: 'Помилка: %{errors}'
+      greater_than: must be greater ніж %{count}
+      greater_than_or_equal_to: must be greater ніж або equal до %{count}
+      inclusion: є not included у the list
+      invalid: є invalid
+      less_than: must be менше ніж %{count}
+      less_than_or_equal_to: must be менше ніж або equal до %{count}
+      model_invalid: 'Validation failed: %{errors}'
+      not_a_number: є not a number
+      not_an_integer: must be an integer
+      odd: must be odd
+      other_than: must be other ніж %{count}
+      present: must be blank
+      required: must exist
+      taken: has already been taken
+      too_long:
+        one: є too long (maximum є 1 character)
+        other: є too long (maximum є %{count} characters)
+      too_short:
+        one: є too short (minimum є 1 character)
+        other: є too short (minimum є %{count} characters)
+      try_again_email: 'An error occurred. Будь ласка try again або send an email до: %{email}'
+      wrong_length:
+        one: є the wrong length (should be 1 character)
+        other: є the wrong length (should be %{count} characters)
+  time:
+    formats:
+      admin_user: "%Y-%m-%d, %H:%M"
+      comment: "%B %d, %Y"
+      email_verified: "%b %e '%y, %H:%M"
+      github: "%b %d, %Y"
+      json: "%b %e, %Y"
+      medium: "%b %-d, %Y"
+      members: "%d %b"
+      members_with_year: "%d %b, %Y"
+      reddit: "%b %e '%y"
+      short: "%b %-e"
+      short_with_yy: "%b %-d '%y"
+      short_with_year: "%b %-e, %Y"
+      stackexchange: "%b %e '%y"

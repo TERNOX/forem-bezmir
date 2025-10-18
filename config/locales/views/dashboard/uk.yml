@@ -1,0 +1,165 @@
+# Original locale: views/dashboard/en.yml
+---
+uk:
+  views:
+    dashboard:
+      meta:
+        title: Панель - %{site}
+      heading: Панель
+      actions:
+        mobile:
+          posts: Публікації (%{num})
+          followers: Підписники (%{num})
+          following_tags: Стежать tags (%{num})
+          following_users: Стежать користувачі (%{num})
+          following_orgs: Стежать організації (%{num})
+          following_pods: Стежать podcasts (%{num})
+          hidden_tags: Hidden tags (%{num})
+        posts: Публікації
+        series: Series
+        followers: Підписники
+        following_tags: Стежать tags
+        following_users: Стежать користувачі
+        following_orgs: Стежать організації
+        following_pods: Стежать podcasts
+        hidden_tags: Hidden tags
+        listings: Listings
+        analytics: Analytics
+        for_org: Analytics для %{org}
+        upload: Upload a video
+      analytics:
+        meta:
+          title: Analytics
+        heading: Analytics для %{name}
+        back: Back до Main Панель
+        your: Ваш Панель
+        org: "%{org} Analytics Панель"
+        readers: Читатиers
+        comments: Коментарі
+        reactions: Реакції
+      article:
+        heading:
+          text_html: "%{archived}%{title}"
+          archived: "[Archived] "
+        archived: Archived
+        published: 'Опубліковано:'
+        published_html: 'Опубліковано: %{date}'
+        edited: 'Редагуватиed:'
+        edited_html: 'Редагуватиed: %{date}'
+        series: 'Series:'
+        series_html: "<strong>Series:</strong> %{series}"
+        draft: Чернетка
+        scheduled: Заплануватиd
+        scheduled_at: 'Заплануватиd:'
+        language: 'Language:'
+        reactions:
+          title: Реакції
+          icon: Реакції
+          text_html:
+            one: "%{num} reaction"
+            other: "%{num} reactions"
+        comments:
+          title: Коментарі
+          icon: Коментарі
+          text_html:
+            one: "%{num} comment"
+            other: "%{num} comments"
+        views:
+          title: Перегляди
+          icon: Перегляди
+          lt_25: "< 25"
+          text_html:
+            one: "%{scale} view"
+            other: "%{scale} views"
+          u_25: under 25
+        subscriptions:
+          title: Subscriptions
+          icon: Data
+          number: Subscriptions (%{num})
+        delete: Видалити
+        unpin: Unpin
+        pin:
+          title: Pin до profile
+          button: Pin до profile
+          text: Pin
+        manage:
+          aria_label: 'Manage post: %{title}'
+          text: Manage
+        lock: Lock discussion
+        unlock: Unlock discussion
+        edit:
+          aria_label: 'Редагувати post: %{title}'
+          text: Редагувати
+        more:
+          title: 'More options для post: %{title}'
+          icon: More...
+        stats: Stats
+        archive: Archive post
+        unarchive: Unarchive post
+        author: Author
+        co_authors: Co-authors
+        series_author_change_warning: Ні author changes allowed для series posts.
+        icon: Details
+        author_is: 'AUTHOR: '
+        save: Зберегти
+        submit: Надіслати author change
+      followers:
+        heading: Панель » Підписники
+        empty: Ви don't маєте будь-які followers yet...
+      following_orgs:
+        heading: Панель » Стежать організації
+        empty: Ви don't follow будь-які організації yet...
+      following_pods:
+        heading: Панель » Стежать podcasts
+        empty: Ви don't follow будь-які podcasts yet...
+      following_tags:
+        heading: Панель » Стежать tags
+        empty_html: "<span>Стежити tags до personalize ваш feed. Ви можемо explore popular tags <a href=%{link}>тут</a></span>."
+      following_users:
+        heading: Панель » Стежать користувачі
+        empty: Ви don't follow будь-які користувачі...
+      hidden_tags:
+        heading: Панель » Hidden tags
+        empty_html: "<span>Ви don't маєте будь-які hidden tags...</span>"
+      tags:
+        following_button: Стежать
+        options:
+          icon: Options
+          hide: Hide tag
+        unhide_button: Unhide
+      listings:
+        meta:
+          title: Listings Панель
+      posts:
+        heading: Публікації
+        archived: Show archived
+        statuses: Show quickie posts
+        full: Show full posts
+        option:
+          creation-desc: Recently Створитиd
+          published-desc: Recently Опубліковано
+          views-desc: Most Перегляди
+          reactions-desc: Most Реакції
+          comments-desc: Most Коментарі
+          aria_label: Sort Від
+        org: "%{name} (%{num})"
+        personal: Personal
+        empty:
+          desc: This є where ви можемо manage ваш posts, but ви haven't written щось yet.
+          new: Write ваш first post now
+          status_desc: Ви don't маєте будь-які quickie posts тут yet...
+      subscriptions:
+        meta:
+          title: Subscriptions %{title}
+        heading: Subscriptions
+        subhead:
+          text_html: "%{для} %{source}"
+          for: для
+        empty: Ви don't маєте будь-які subscribers для this %{kind} yet...
+      summary:
+        reactions: Total post reactions
+        views: Total post views
+        comments: Total post comments
+        listings: Listings created
+        credits: Credits available
+        lt_500: "< 500"

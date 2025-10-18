@@ -1,0 +1,130 @@
+# Original locale: views/misc/en.yml
+---
+uk:
+  views:
+    auth:
+      welcome_to_subforem: Ласкаво просимо до %{community_name} — part з the Forem network!
+      create:
+        text: Створити account
+        aria_label: Створити new account
+      login:
+        text: Увійти
+        aria_label: Увійти
+    badges:
+      meta:
+        title: Badges
+      all:
+        one: Show one badge
+        other: Show all %{count} badges
+      heading: Badges
+      desc: Receive badges для being awesome! Click на a badge до see how ви можемо earn it.
+      icon_close: Close
+      gotit: Got it
+      indicator: "%{користувач} earned this badge %{number} times."
+    campaign:
+      subtitle: Історії (%{count})
+      view: See all posts
+    deep_links:
+      subtitle: Opening the mobile app...
+      alert:
+        subtitle: Whoops! Did ви get stuck trying до open the mobile app?
+        desc_html: Make sure it's installed і try again. Якщо the problem persists contact %{email}
+        back: Take me back
+        again: Try again
+        install: Install the app
+    email_subscriptions:
+      unsubscribe:
+        heading: "Ви маєте been unsubscribed від %{type}. \U0001F614"
+        description_html: Ви will ні longer receive emails like this. Якщо ви'd like до re-subscribe або manage ваш full email preferences, будь ласка %{link}.
+        link: click тут
+      invalid:
+        heading: Token прострочено або invalid
+        description_html: Будь ласка %{signin} до manage ваш email preferences.
+        signin: sign-у
+    hamburger:
+      icon: Navigation menu
+      icon_close: Close
+      icon_left: Left menu
+      icon_right: Right menu
+    logo:
+      color_1:
+        label: Brand color 1
+        description: Used для backgrounds, borders etc.
+      color_2:
+        label: Brand color 2
+        description_html: Used для texts (usually put на <em>Brand color 1</em>).
+      preview:
+        icon: App logo
+        text: 'Попередній перегляд:'
+    mailers:
+      contact_mailto_html: Зв'яжіться з нами о <a href="mailto:%{contact_email}">%{contact_email}</a> якщо там є щось more ми можемо допомогти з.
+    onboardings:
+      meta:
+        title: Ласкаво просимо до %{community}
+      heading: Ви're now a part з the community!
+      subtitle: SUGGESTED THINGS ВИ МОЖЕМО DO
+      close: Close Ласкаво просимо Message
+      settings_html: "<span class=\"emoji\">\U0001F485\U0001F3FC</span>Customize ваш profile"
+      welcome_html: "<span class=\"emoji\">\U0001F60A</span>Join the Ласкаво просимо thread"
+      write_html: "<span class=\"emoji\">✍\U0001F3FE</span>Write ваш first %{community} post"
+      join_subscription_html: "<span class=\"emoji\">\U0001F680</span>Join DEV++"
+    pins:
+      article: Pinned
+      pinned: "\U0001F4CC Pinned! (pinned posts display chronologically, 5 max)"
+      removed: "\U0001F5D1 Pin removed"
+      error: Ви можемо only маєте five pins
+    profile:
+      color:
+        label: Brand color
+        description: Used для backgrounds, borders etc.
+    reading_list:
+      meta:
+        title: Читання List
+        description: My saved posts.
+        og:
+          title: Читання List - %{community}
+    series:
+      meta:
+        description: Переглянути %{title} на %{site}
+      heading: "%{користувач}'s Series"
+      empty: This користувач doesn't маєте будь-які series
+      list:
+        heading: "%{series} Series' Статті"
+        back: Back до %{користувач}'s Series
+        empty: This series doesn't маєте будь-які articles
+    stats:
+      meta:
+        title: Stats для Ваш Стаття
+      heading_html: Stats для "%{article}"
+      period:
+        aria_label: Analytics period
+        week: Week
+        month: Місяць
+        infinity: Infinity
+      readers: Читатиers Коротко
+      followers: Новий Підписники Коротко
+      reactions: Реакції Коротко
+      comments: Коментарі Коротко
+      traffic:
+        text: Traffic Source Коротко
+        source: Source
+        views: Перегляди
+      reactions_history: Реакції History
+      by: від
+    sticky:
+      joined: Joined
+      default_cta: Learn more
+      email: Електронна пошта
+      hot: Hot
+      location: Location
+      more_from_html: More від %{actor}
+      no_summary: Публікації у this tag
+      trending_html: Trending на %{app}
+    videos:
+      meta:
+        title: Videos
+        og:
+          description: All videos на %{community}
+      heading: "%{community} на Video"
+      beta_html: "<strong>Video є beta:</strong> %{contact}"
+      upload: "\U0001F3A5 Upload Video File \U0001F64C"

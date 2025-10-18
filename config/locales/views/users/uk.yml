@@ -1,0 +1,99 @@
+# Original locale: views/users/en.yml
+---
+uk:
+  views:
+    users:
+      meta:
+        og:
+          title: "%{користувач} — %{community} Профіль"
+      comments_locked_cta:
+        title: Want до connect з %{користувач}?
+        description: Створити an account до connect з %{користувач}. Ви можемо also sign у below до proceed якщо ви already маєте an account.
+        create_account: Створити Account
+        already_have_an_account: Already маєте an account?
+        sign_in: Увійти
+      comments:
+        all:
+          one: All comments
+          other: All comments
+        last:
+          one: Recent comments
+          other: Recent comments
+        recent: Recent comments
+        view: Переглянути all activity
+        view_all:
+          one: Переглянути all comments
+          other: Переглянути all comments
+        view_last:
+          one: Переглянути recent comments
+          other: Переглянути recent comments
+      github:
+        heading: GitHub Repositories
+        fork: Fork
+        stars:
+          one: 1 star
+          other: "%{count} stars"
+      pin_icon: Pin
+      pinned: Pinned
+      profile_fields:
+        bio:
+          label: Bio
+          placeholder: A short bio...
+        display_email_on_profile: Display email на profile
+        location:
+          label: Location
+          placeholder: Halifax, Nova Scotia
+        website:
+          label: Website URL
+          placeholder: https://yoursite.com
+        education: Education
+        currently learning: Currently learning
+        currently hacking on: Currently hacking на
+        available for: Available для
+        skills/languages: Skills/Languages
+        work: Work
+      side:
+        comment:
+          icon: Коментар
+          text:
+            one: 1 comment written
+            other: "%{count} comments written"
+        org: Організації
+        post:
+          icon: Публікація
+          text:
+            one: 1 post published
+            other: "%{count} posts published"
+        tag:
+          icon: Тег
+          text:
+            one: 1 tag followed
+            other: "%{count} tags followed"
+      signout:
+        meta:
+          title: Confirm Signout - %{community}
+        heading: Are ви sure ви want до sign out?
+        'yes': Так, sign out
+      block: Заблокувати @%{користувач}
+      details: "%{користувач} profile details"
+      dropdown: Користувач actions
+      email_icon: Електронна пошта address
+      empty: 404 bio not found
+      flag: Flag @%{користувач}
+      follow: Стежити
+      joined:
+        icon: Joined
+        text_html: Joined на %{date}
+      location_icon: Location
+      logo: "%{користувач} profile picture"
+      more: More info приблизно @%{користувач}
+      send_pm:
+        code: code з conduct
+        notice_html: All private interactions <b>must</b> abide від the %{code}.
+        placeholder: Enter ваш message тут...
+        submit: Send
+      spam: Mark @%{користувач} as Spam
+      social: "%{service} website"
+      unflag: Unflag @%{користувач}
+      unspam: Set @%{користувач} у Good standing
+      website: Personal website

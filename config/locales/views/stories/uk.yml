@@ -1,0 +1,53 @@
+# Original locale: views/stories/en.yml
+---
+uk:
+  views:
+    stories:
+      meta:
+        description_tagged: "%{tag} content на %{name}"
+        page: " Сторінка %{сторінка}"
+        rss: "%{name} RSS Feed"
+      status_placeholder: What's на ваш mind?
+      status_expanded_placeholder: Щось до add?
+      submit: Публікація
+      status_hint_html: "<strong>Quickie Публікації</strong> show up у the feed but not notifications або ваш profile — <a href='/new'>Open Full Редагуватиабо</a>"
+      heading: Публікації
+      discuss: "#discuss"
+      follow: Стежити
+      menu:
+        aria_left: nav-button-left
+        aria_right: nav-button-right
+      sort:
+        aria_label: Переглянути posts від
+        aria_tagged: Переглянути tagged posts від
+        relevant: Relevant
+        week: Week
+        month: Місяць
+        year: Рік
+        infinity: Infinity
+        latest: Latest
+        signin_html: "\U0001F44B <a href=\"%{path}\">Увійти</a> для the ability до sort posts від <strong>relevant</strong>, <strong>latest</strong>, або <strong>top</strong>."
+        top: Top
+      feed:
+        discover: Discover
+        following: Стежать
+        top_this_week: Top this week
+        top_this_month: Top this місяць
+        top_this_year: Top this рік
+        top_this_infinity: Top з all time
+        no_results:
+          discover:
+            title: Ні posts found
+            description: Check back later для або make ваш own post!
+            action_text: Створити Публікація
+            action_href: "/new"
+          following:
+            title: Ні posts від people ви follow
+            description: Стежити some учасники до see their latest posts у ваш feed.
+            action_text: Back до discover tab
+            action_href: "/discover"
+          default:
+            title: Ні posts found
+            description: Check back later для ore make ваш own post!
+            action_text: Створити Публікація
+            action_href: "/new"

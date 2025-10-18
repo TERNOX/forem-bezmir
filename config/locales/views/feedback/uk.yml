@@ -1,0 +1,21 @@
+# Original locale: views/feedback/en.yml
+---
+uk:
+  views:
+    feedback:
+      meta:
+        title: Feedback
+      heading: Дякуємо ви для ваш report.
+      home: Return до головна сторінка
+      form:
+        rude_or_vulgar: Rude або vulgar
+        harassment: Harassment або hate speech
+        spam: Spam або copyright issue
+        listings: Inappropriate listings message/category
+        other: Other
+        url: Поскаржитисяed URL
+        message:
+          subtitle: Message
+          description: Будь ласка provide будь-які additional information або context that will допомога us understand і handle the situation.
+          placeholder: "..."
+        submit: Send Feedback

@@ -1,0 +1,158 @@
+# Original locale: views/comments/en.yml
+---
+uk:
+  views:
+    comments:
+      meta:
+        title_root: Discussion з %{title}
+        description: An article від the community
+        og:
+          title: Discussion з %{title}
+          title_rel: "%{root} — %{site}"
+          title_root: "[Discussion] %{title} — %{site}"
+          description: "%{site} Коментар"
+      parent:
+        subtitle_html: "%{start}Discussion на: %{end}%{title}"
+        metadata_html: "%{name}%{на}"
+        date: " на %{date}"
+        full: Full discussion
+        read: Читати full post
+        view: Переглянути post
+        view_full:
+          one: Переглянути full discussion (%{count} comment)
+          other: Переглянути full discussion (%{count} comments)
+        reply_html: "%{start}Replies для:%{end} %{title}"
+      delete:
+        heading: Are ви sure ви want до delete this comment?
+        desc_html: Ви cannot undo this action, perhaps ви just want до %{action} instead?
+        action: Редагувати
+        submit: Видалити
+        edit: Редагувати
+        cancel: Dismiss
+        comment_deleted: Коментар deleted
+      collapse: Collapse
+      edit: Редагуватиing comment
+      edited:
+        text_html: "&bull; Редагуватиed на %{date}"
+        short_html: "&bull; Редагуватиed"
+      expand: Expand
+      visible_signed_in:
+        text_html: Some comments may only be visible до logged-у visitors. %{sign_у} до view all comments.
+        sign_in: Увійти
+      hidden:
+        text_html: Some comments маєте been hidden від the post's author - %{info}
+        info: find out more
+        comment_hidden: Коментар hidden від post author
+      hider:
+        description_html: Are ви sure ви want до hide this comment? It will become hidden у ваш post, but will still be visible via the comment's %{permalink}.
+        hide_child: Hide child comments as well
+        note_html: Для further actions, ви may consider blocking this person і/або %{reporting}
+        permalink: permalink
+        reporting: reporting abuse
+        submit: Confirm
+      locked: The discussion has been locked. Новий comments можемо't be added.
+      orphan:
+        deleted: "[Коментар від a deleted post]"
+      re:
+        text_html: "%{re}%{title}"
+        re: 'Re: '
+      settings:
+        meta:
+          title: Коментар Налаштування
+        heading: Коментар Налаштування
+        state:
+          show:
+            subtitle: Showing thread notifications
+            desc: Ви will receive all notifications для this comment і будь-які з ваш comments у this chain.
+          mute:
+            subtitle: Muting thread notifications
+            desc: All notifications для this comment і будь-які з ваш comments у the thread are currently muted.
+        subscribe:
+          subtitle: Subscription
+          desc: Ви are still subscribed до all comments у the broader thread, which will mean ви will still receive notifications для replies до this comment.
+          mute: Mute notifications
+          unmute: Unmute notifications
+      quality:
+        low: Коментар marked as low quality/non-constructive від the community.
+        superlow: Коментар score below hiding threshold, displayed only для адміни
+        conduct: Переглянути Code з Conduct
+        hidden:
+          icon: Info
+          text:
+            visible_in_permalink: Коментар hidden від post author - thread only visible у this permalink
+            accessible_via_permalink: Коментар hidden від post author - thread only accessible via permalink
+      write:
+        errors:
+          one: '1 error prohibited this comment від being saved:'
+          other: "%{count} errors prohibited this comment від being saved:"
+        field:
+          aria_label: Додайте коментар до the discussion
+          placeholder: Додати до the discussion
+          submit: Upload
+          templates: Templates
+          upload: Upload image
+          use: Use a відповідь template
+          guide:
+            title: Markdown Guide
+            icon: Редагуватиабо guide
+        template:
+          article: This post comes з a comment template
+          create:
+            subtitle: Створити template
+            desc: Templates let ви quickly answer FAQs або store snippets для re-use.
+          moderator: Trusted Користувач
+          personal: Personal
+        submit: Надіслати
+        preview: Попередній перегляд
+        continue_editing: Продовжити редагування
+        cancel: Dismiss
+      menu:
+        aria_label: Toggle dropdown menu
+        icon: Dropdown menu
+        copy:
+          aria_label: Copy link до %{користувач}'s comment
+          text: Copy link
+        settings:
+          aria_label: Go до %{користувач}'s comment settings
+        action:
+          aria_label: "%{action} %{користувач}'s comment"
+          hide: Hide
+          unhide: Unhide
+          hide_text: Hide
+          unhide_text: Unhide
+        moderate:
+          aria_label: Moderate %{користувач}'s comment
+        report:
+          aria_label: Поскаржитися %{користувач}'s comment as abusive або violating our code з conduct і/або terms і conditions
+      footer:
+        heart:
+          aria_label: like
+          title: Подобається
+          icon: 'Подобається comment: '
+          count_html: "%{num}%{likes}"
+          text: Подобається
+        reply:
+          aria_label: Reply до a comment...
+          icon: Коментар button
+          done: Replied
+          text: Reply
+          placeholder: Reply...
+        thread:
+          icon: Thread
+          text: Thread
+        view:
+          icon: Переглянути button
+          text: Переглянути
+        subscribe:
+          icon: Subscribe button
+          text: Subscribe до comments
+      count:
+        one: "%{count} comment"
+        other: "%{count} comments"
+      empty: Новий
+      add: Додати Коментар
+      summary:
+        count_html:
+          one: "%{count}%{start} comment%{end}"
+          other: "%{count}%{start} comments%{end}"
+        title: Коментарі

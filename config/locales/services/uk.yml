@@ -1,0 +1,115 @@
+# Original locale: services/en.yml
+---
+uk:
+  services:
+    analytics_service:
+      no_stats: Ви можемо't view this article's stats
+    article_with_video_creation_service:
+      unpublished_video: Unpublished Video ~ %{rand}
+    authentication:
+      authenticator:
+        not_allowed: Sorry, but the domain для ваш email address є not allowed. This Forem may маєте limited signup до only specified email domains або blocked this specific domain від joining.
+      providers:
+        apple:
+          name: "%{first} %{last}"
+        not_available: Provider %{name} є not available!
+        not_enabled: Provider %{name} є not enabled!
+    badges:
+      award_beloved_comment:
+        message: "Ви're famous! [This є the comment](%{comment}) для which ви're being recognized. \U0001F604"
+      award_streak:
+        longest: 16 weeks! Ви've achieved the longest writing streak possible. Keep up the amazing contributions до our community!
+        message:
+          one: "Congrats на achieving this streak! Consistent writing є hard. The next streak badge ви можемо get є the %{count} Week Badge. \U0001F609"
+          other: "Congrats на achieving this streak! Consistent writing є hard. The next streak badge ви можемо get є the %{count} Week Badge. \U0001F609"
+      award_yearly_club:
+        message:
+          one: Happy %{community} birthday! Можемо ви believe it's been %{count} рік already?!
+          other: Happy %{community} birthday! Можемо ви believe it's been %{count} роки already?!
+      congrats: "Congrats на ваш achievement! \U0001F389 І дякуємо ви для being such a vital part з %{community}!"
+      thank_you: Дякуємо ви so much для ваш contributions!
+      community_wellness:
+        first: Дякуємо ви для participating у constructive conversation! Ви posted two або more comments this week. Keep it up до продовжувати the streak!
+        longest: 32 weeks! Ви've achieved the longest streak possible для the Спільнота Wellness badge. Amazing job engaging у the community. Keep up ваш amazing contributions до our community!
+        other: Congrats на achieving a %{weeks} week streak для the Спільнота Wellness Badge! Keep the constructive comments flowing до продовжувати the streak!
+      thumbs_up: Дякуємо ви для ваш efforts reviewing posts і reaching %{count} thumbs-up reactions!
+    broadcasts:
+      welcome_notification:
+        generator:
+          welcome: 'Ласкаво просимо Notification: %{key}'
+    error_messages:
+      clean:
+        parse_error: Там was a problem parsing the front-matter YAML. Perhaps ви need до escape a quote або a colon або something. Електронна пошта %{email} якщо ви are маючи труднощі.
+    html:
+      parser:
+        enter_fullscreen_mode: Enter fullscreen mode
+        exit_fullscreen_mode: Exit fullscreen mode
+    markdown_processor:
+      parser:
+        invalid_markdown_detected: Invalid markdown detected!
+    moderator:
+      banish_user:
+        spam_account: spam account
+      manage_activity_and_roles:
+        need_super: Ви need super адмін status до take this action
+      merge_user:
+        duplicate: The користувач has duplicate authentication methods на the two accounts. Будь ласка double check і delete the identity that the користувач є ні longer using. This є usually the already-deleted social account, або the authentication method tied до the користувач до be deleted.
+        multiple: The користувач being deleted already has two або more authentication methods. Are ви sure this є the right користувач до be deleted? Якщо so, a super адмін will need до do this від the console до be safe.
+        same_user: Ви cannot merge the same two користувач IDs
+    notifications:
+      new_comment:
+        new: "\U0001F4AC Новий Коментар"
+      new_mention:
+        new: "\U0001F5E3️ Новий Mention"
+    payments:
+      customer:
+        usd: usd
+      errors:
+        select_payment_method: Будь ласка select a payment method
+      process_credit_purchase:
+        charge:
+          one: Purchase з %{count} credits.
+          other: Purchase з %{count} credits.
+    rate_limit_checker:
+      invalid_key: 'Invalid Cache Key: ні unique component present'
+      limit_reached:
+        one: Rate limit reached, try again у %{count} секунди
+        other: Rate limit reached, try again у %{count} секунди
+    slack:
+      messengers:
+        article_fetched_feed:
+          body: |
+            Новий Стаття Retrieved via RSS: %{title}
+            %{url}
+        article_published:
+          body: |
+            Новий Стаття Опубліковано: %{title}
+            %{url}
+        feedback:
+          anonymous_report: "*Anonymous report:"
+          final_message: |-
+            %{користувач_detail}
+            Category: %{category}
+            Internal Поскаржитися: %{reports_url}
+            *_ Поскаржитисяed URL: %{reported_url} _*
+            -----
+            *Message:* %{message}
+          body: |
+            *Logged у користувач:*
+            reporter: %{username} - %{url}
+            email: <mailto:%{email}|%{email}>
+        potential_spammer:
+          body: 'Potential spam користувач! %{url}
+
+            '
+    spam:
+      article_handler:
+        suspended_too_many: Користувач suspended для too many spammy articles, triggered від autovomit.
+    user_subscriptions:
+      create_from_controller_params:
+        source_not_found: Source not found.
+        email_mismatch: Subscriber email mismatch.
+    users:
+      remove_role:
+        remove_self: Адміни cannot remove roles від themselves.
+        error: Там was an issue removing this role. %{e_message}

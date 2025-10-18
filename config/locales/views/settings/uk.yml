@@ -1,0 +1,278 @@
+# Original locale: views/settings/en.yml
+---
+uk:
+  views:
+    settings:
+      meta:
+        title: Налаштування
+      account:
+        connect: Connect %{provider} Account
+        emails: Account emails
+        primary: Primary email
+        provider_email: "%{provider} email"
+        provider_profile: "%{provider} profile settings"
+        delete:
+          heading: Видалити account
+          desc1: 'Deleting ваш account will:'
+          desc1a: |
+            Видалити ваш profile, along з ваш authentication associations.
+
+            This does not include applications permissions. Ви will маєте до remove them yourself:
+          desc1b: Видалити будь-які і all content ви маєте, such as articles, comments, або ваш reading list.
+          desc1c: Allow ваш username до become available до anyone.
+          desc2_html: Будь ласка, %{provide} до fully delete ваш account.
+          provide: provide an email
+          submit: Видалити Account
+        export:
+          heading: Export content
+          desc: Ви можемо request an export з all ваш content. Currently ми only support the export з ваш posts і comments, якщо ви маєте будь-які. They will be emailed до ваш inbox.
+          label: Request an export з ваш content
+          requested: Ви маєте recently requested an export з ваш content. Будь ласка check ваш email.
+          submit: Надіслати Data Request
+        remove:
+          heading: Remove OAuth Associations
+          desc1: Ви можемо remove one з ваш authentication methods. Ми'll still need one до authenticate ви.
+          desc2: 'Removing an OAuth association will:'
+          desc2a: remove ваш ability до sign у з that account
+          desc2b: remove the associated URL від ваш profile
+          desc3: |
+            Note that this does not revoke our OAuth app access;
+            ви will маєте до do so у ваш settings для the specific provider:
+          confirm: Are ви absolutely sure ви want до remove ваш %{provider} account?
+          submit: Remove %{provider}
+          unable_to_remove: Ви are unable до remove one з ваш authentication methods as ви need a remaining method до authenticate ви. Будь ласка add another authentication method above before continuing.
+      billing:
+        heading: Billing
+        add: Додати Credit Card
+        another: "+ Додати Another Credit Card"
+        cards: Ваш Credit Cards
+        exp: Expires %{місяць} / %{рік}
+        label: Додати Card
+        number: "%{brand} ending у %{last}"
+        make: Make primary
+        primary: primary
+        remove: Remove card
+      characters: 'Available characters used: '
+      complete:
+        heading: Confirm ваш email до complete ваш profile.
+        desc: While ви're о it, go ahead і fill everything out.
+        github: Connect ваш github account as well до complete ваш identity.
+        twitter: Connect ваш twitter account as well до complete ваш identity.
+      custom:
+        adjacent: Permit Nearby External Sponsors (When publishing)
+        announce: Announcements
+        announce_desc: Announcements inform ви на important site-wide information, like updates і events.
+        announce_field: Display Announcements (When browsing)
+        appearance: Appearance
+        basic: Basic markdown
+        content: Content
+        editor: Редагуватиабо Version
+        fixed: Fixed до window
+        font: Base Читання Font
+        level: What є ваш approximate experience level (1-5)?
+        level_desc: This will not be displayed на ваш profile або anywhere publicly. It helps gently determine what content ви are shown along з tags ви follow etc.
+        navbar: Site Navbar
+        rich: Rich + markdown
+        save: Зберегти
+        sponsor: Sponsors
+        sponsor_desc_html: Ви маєте the option до disable billboards від external sponsors. Our wonderful partners допомога sustain the platform, і ми strive до ensure that their presence є constructive і valuable до the community, but ви are ласкаво просимо до make use з this setting якщо ви wish. More details у our <a href="/billboards">billboards FAQ</a>.
+        sponsor_field: Display External Sponsors (When browsing)
+        static: Static top з сторінка
+        subforem_reassignment: Content Relocation
+        subforem_reassignment_desc: When ваш content є marked as off-topic для its current subforem, it may be automatically moved до a more appropriate subforem. Ви можемо disable this automatic relocation якщо ви prefer до keep ваш content у its original location.
+        subforem_reassignment_field: Вимкнути automatic relocation з my content до other subforems
+        theme: Site Theme
+        writing: Writing
+      danger: Danger Zone
+      destroy:
+        heading: Destroy ваш account
+        desc: 'Deleting ваш account will:'
+        desc_1_html: delete ваш profile, along з ваш Twitter і/або GitHub associations. This does not include app permissions. Ви will маєте до remove them yourself на %{twitter} і %{github}.
+        desc_2: delete будь-які і all content ви маєте, such as articles, comments, або ваш reading list.
+        desc_3: allow ваш username до become available до anyone.
+        click: click тут
+        confirm_html: 'Для confirmation, type the words: <code>%{word}</code>'
+        ghost_html: Якщо ви would like до keep ваш content under the %{ghost} account, будь ласка %{click}
+        github: GitHub profile settings
+        submit: Видалити account
+        to_delete: 'До delete ваш account:'
+        twitter: Twitter profile settings
+        type: Type у ваш username
+        username: username
+        word: delete my account
+      email: Електронна пошта verification.
+      errors:
+        org:
+          one: '1 error prohibited ваш організація profile від being saved:'
+          other: "%{count} errors prohibited ваш організація profile від being saved:"
+        profile:
+          one: '1 error prohibited ваш profile від being saved:'
+          other: "%{count} errors prohibited ваш profile від being saved:"
+      extensions:
+        api:
+          heading: "%{community} API Keys"
+          desc_html: Ви можемо generate personal API keys до use для authentication з the %{community} API.  The API є still у its beta stage. The %{doc} contains further information.
+          active:
+            heading: Active API keys (never share these!)
+            created: 'Створитиd: %{time}'
+          doc: documentation
+          gen:
+            heading: Generate a new Key
+            label: Опис
+            text: What's this API key для?
+            placeholder: My Project Ім'я
+            submit: Generate API Key
+          revoke: Revoke
+        comment:
+          heading: Коментар templates
+          desc_html: Створити і save <strong>comment templates</strong> that ви можемо reuse.
+          add: Додати new comment template
+          confirm: 'Are ви sure ви want до delete: %{template}?'
+          create: Створити a new відповідь template
+          cue: Memorable cue для template
+          edit: Редагувати
+          edit_template: Редагувати comment template
+          remove: Remove
+          save: Зберегти template
+          saved: Зберегтиd templates
+          trusted: Trusted користувач templates
+        github:
+          heading: GitHub
+          desc1: Pin ваш GitHub repositories до ваш profile.
+          desc2: Repositories will disappear від ваш profile якщо ви remove the OAuth association з GitHub.
+        rss:
+          heading: Опублікуватиing до %{community} від RSS
+          desc1_html: Публікації will land у ваш %{dashboard} <strong>as drafts</strong>, і then ви можемо publish від там.
+          desc2: Formatting will typically look good, but ви may маєте до make manual fixes. У the case з Medium, ви may маєте до manually fix embeds.
+          desc3_html: До find out more приблизно how drafts are created від ваш feed, read this %{guide}.
+          desc4: Ваш feed will be fetched every time ви submit this form і updates will be automatically fetched periodically thereafter.
+          desc5_html: 'FYI: Medium RSS feed URLs are <em>https://medium.com/feed/@ваш_username</em>'
+          desc6: Від submitting ваш RSS Feed URL, ви agree that ви own і/або маєте permission до syndicate the associated content.
+          dashboard: dashboard
+          fetch: Fetch feed now
+          guide: guide
+          last_html: 'Last Fetched: %{time}'
+          mark_canonical_html: Mark the RSS source as canonical URL від default <p class='crayons-field__description'>Якщо ви check this box, the post will automatically mark the feed source as the canonical URL.</p>
+          referential_html: Replace self-referential links з %{community}-specific links <p class='crayons-field__description'>Якщо ви check this box, the post will automatically change будь-які URLs included у the post до refer до the version з that article на %{community} якщо available. This є primarily meant для folks migrating their entire blog onto %{community}.</p>
+          save: Зберегти Feed Налаштування
+          submit: Надіслати Feed Налаштування
+      finalize_html: Ви маєте requested a change до %{email}. Check ваш inbox для the verification link до finalize the change.
+      for_html: Налаштування для %{name}
+      group:
+        user: Користувач
+        Basic: Basic
+        Branding: Branding
+        Coding: Coding
+        Work: Work
+      new_org: Створити або Join Організація
+      notifications:
+        email: Електронна пошта notifications
+        general: General notifications
+        general_desc_html: Сповіщення that only appear на the %{сторінка}.
+        mobile: Mobile notifications
+        moderator: Moderator notifications
+        page: notifications сторінка
+        save: Зберегти
+      org:
+        admin:
+          admin: Адмін
+          copy:
+            button:
+              aria_label: Copy організація secret code до clipboard
+            icon: Copy до clipboard
+            input:
+              aria_label: Організація secret (до be rotated regularly)
+            text: Copied до clipboard!
+          cta: Call-до-action box
+          cta_desc: Customizable text that appears до the right з every post для ваш організація.
+          delete:
+            heading: Видалити Організація
+            confirm: 'Are ви absolutely sure ви want до delete ваш організація: %{name}?'
+            desc_html: |-
+              Ви можемо delete ваш організація якщо ви:
+              <ul>
+                <li>are the only учасник у the організація</li>
+                <li>are an адмін з the організація</li>
+                <li>the організація has ні posts</li>
+                <li>і the організація has ні credits</li>
+              </ul>
+            submit: Видалити "%{name}"
+            questions_html: Запитання? Електронна пошта us о %{email} для допомога.
+            unmet: Ваш організація currently does not meet the above requirements. Будь ласка remove all other учасники і організація posts first.
+          details: Організація details
+          form:
+            slug: 'Ваш організація''s URL є: %{slug}'
+            tag_line: Limit з 60 characters
+            summary: Limit з 250 characters
+            location: Limit з 64 characters
+            email: Limit з 64 characters
+            company_size: Enter a number
+            story: Limit з 640 characters
+            tech_stack: Limit з 640 characters
+            cta_body_markdown: 'Limited markdown: _italic_ і **bold** є okay. Links, і headers etc. will not show up. 256 character limit.'
+            cta_button_text: Limit з 20 characters
+            submit: Зберегти
+          gen:
+            confirm: Are ви sure ви want до generate a new secret? All outstanding secrets will be invalid.
+            text: Ви should rotate this regularly!
+            submit: Generate new secret
+          grow: Grow the команда
+          invite: 'Invite teammates від sending them the secret і the following instructions:'
+          inst1_html: Зареєструватися о %{url}
+          inst2_html: Navigate до %{url}
+          inst3_html: Paste the secret code below і click <b>Join Організація</b>
+          make:
+            confirm: Are ви sure ви want до give %{користувач} адмін status?
+            title: Make адмін
+            text: Make адмін
+          members: Організація Учасники
+          remove:
+            confirm: Are ви sure ви want remove %{користувач} від the організація?
+            title: Remove від org
+            text: Remove від org
+          revoke:
+            confirm: Are ви sure ви want до take away адмін status від %{користувач}?
+            title: Revoke адмін status
+            text: Revoke адмін status
+          secret_code: 'Ваш secret code є:'
+          you: Ви
+        create:
+          heading: Створити An Організація
+          notice: Ви must маєте ваш організація's permission до submit this form. Dishonesty may result у a permanent suspension.
+          proof: This є just a quick blurb indicating або link that shows that ви clearly are associated з this організація.
+          required: Starred fields are required
+          slug: Ваш організація URL will be %{url}/{username}
+          submit: Створити Організація
+        join:
+          heading: Join An Організація
+          desc: Provided до ви від an org адмін
+          label: Secret code
+          placeholder: "..."
+          submit: Join Організація
+        leave:
+          confirm: Are ви sure ви want до leave this організація?
+          submit: Leave Організація
+        divider: АБО
+      password:
+        heading: Set new password
+        desc_html: |-
+          Якщо ваш account was created using social account authentication, ви may prefer до add an email
+          log у. Якщо ви signed up з a social media account, <a href="%{path}">
+          будь ласка reset the password</a> для ваш primary email address (%{email}) у
+          order до enable this. Будь ласка note that email login є у addition до social login rather ніж
+          a replacement для it, so ваш authenticated social account will продовжувати до be linked до ваш
+          account.
+        current: Current password
+        confirm: Confirm new password
+        new: Пароль
+        submit: Set Новий Пароль
+      previous: Там є an existing account authorized з that social account.
+      tab:
+        Profile: Профіль
+        Customization: Customization
+        Notifications: Сповіщення
+        Account: Account
+        Billing: Billing
+        Organization: Організація
+        Extensions: Extensions
+      save_profile: Зберегти Профіль Information

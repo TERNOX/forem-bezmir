@@ -1,0 +1,29 @@
+# Original locale: views/editor/en.yml
+---
+uk:
+  views:
+    editor:
+      meta:
+        title: Редагувати Публікація
+      heading:
+        new: Новий Публікація
+      create: Створити Публікація
+      close:
+        icon: Close
+        title: Close the editor
+      cover_image:
+        add: Додати a cover image
+        change: Change
+      edit: Редагувати
+      modes: Переглянути post modes
+      new_title: Заголовок нової публікації...
+      preview: Попередній перегляд
+      video:
+        progress:
+          heading: "⏳ Video Transcoding У Progress ⏳"
+          notice_1: Ви'll get an email when this process finishes.
+          notice_2: This є an ordinary unpublished post. Додати title/tags/body/etc, і then mark as published after the video є done processing.
+        submit_image:
+          button: Надіслати Change
+          text: 'Попередній перегляд Image URL: '
+          placeholder: Новий Thumbnail URL

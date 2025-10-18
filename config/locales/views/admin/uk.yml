@@ -1,0 +1,474 @@
+# Original locale: views/admin/en.yml
+---
+uk:
+  views:
+    admin:
+      articles:
+        flags:
+          score: Score affected від a particular flag
+        priviliged_actions:
+          description: All the moderator actions affect the score. The overall score є a combination з moderator actions і public reactions.
+          no_flags: Стаття has ні flags.
+          no_quality_reactions: Стаття has ні quality reactions від trusted користувачі.
+          title: Moderator actions
+        noindex:
+          reason: 'Not indexed на search engines: '
+          reasons:
+            unpublished: Unpublished
+            below_minimum_score: Below minimum indexing score і not featured
+            below_minimum_date: Опубліковано before minimum index date
+            negative_score: Negative score
+            unknown: Unknown
+      comments:
+        flags:
+          score: Score affected від a particular flag
+        priviliged_actions:
+          description: All the moderator actions affect the score. The overall score є a combination з moderator actions і public reactions.
+          no_flags: Коментар has ні flags.
+          no_quality_reactions: Коментар has ні quality reactions від trusted користувачі.
+          title: Moderator actions
+      shared:
+        flags:
+          actions:
+            mark_as_invalid: Mark as Invalid
+            mark_as_valid: Mark as Valid
+          invalid:
+            title: Flag marked as invalid від адмін
+            value: Invalid
+          open:
+            title: Open Flag
+            value: Open
+          unidentified:
+            title: Unidentified
+            value: Unidentified
+          valid:
+            title: Flag marked as valid від адмін
+            value: Valid
+      users:
+        heading: Учасники
+        aria_paginate: Paginate користувачі
+        table:
+          compact_subtitle: Учасники
+          joined_on: Joined на
+          last_activity: Last activity
+          heading:
+            member: Учасник
+            status: Status
+            last_joined: Last activity & Joined на
+            orgs: Організації
+            actions: Actions
+        empty:
+          text1: Ні учасники found under these filters.
+          text2: Try broadening або removing the filters.
+        download:
+          aria_label: Download учасник data
+          heading: Download учасник data
+          desc1: Ваш data will be downloaded as a Comma Separated Values (.csv) file.
+          desc2: Values listed are Ім'я, Ім'я користувача, Електронна пошта address, Status, Joining date, Last activity, і Організації.
+          submit: Download
+          cancel: Скасувати
+          name: Ім'я
+          username: Ім'я користувача
+          email: Електронна пошта address
+          status: Status
+          join: Joining date
+          last_activity: Last activity
+          orgs: Організації
+        search:
+          aria_expand: Expand search
+          aria_field: Пошук учасник від name, username або email
+          aria_label: Пошук
+          icon: search
+          placeholder: Пошук учасник...
+        filters:
+          aria_clear: Clear all filters
+          aria_label: Filter
+          aria_remove: 'Remove filter: %{value}'
+          aria_more_roles: See more roles
+          heading: Filters
+          applied: Applied filters
+          join: Joining date
+          creation: Спільнота creation
+          today: Today
+          clear: Clear all
+          clear_filter:
+            aria_roles: Clear учасник roles filter
+            aria_status: Clear statuses filter
+            aria_orgs: Clear організації filter
+            text: Clear filter
+          clear_filters: Clear filters
+          desc: Учасники who match будь-які з the selected filters will be displayed
+          summary:
+            roles: Учасник roles
+            status: Status
+            join: Joining date
+            orgs: Організації
+          legend:
+            roles: Учасник roles
+            status: Status
+            orgs: Організації
+          more_roles: See more roles
+          submit: Apply filters
+          cancel: Скасувати
+        invite:
+          aria_email: 'Invitation actions: %{email}'
+          resend: Resend invite
+          cancel: Скасувати invite
+        actions:
+          assign_role:
+            text: Assign role
+            heading: Додати role
+            role: Role
+            select: Select role
+            note: 'Додати a note до this action:'
+            submit: Додати
+            warning: 'Comma Delimited, All Lowercase, Ні @ Symbol Required У Front З Ім''я користувачаs Попередження: Ім''я користувачаs are case-sensitive і must be all lowercase! This task will fail silently when supplied з incorrect usernames.'
+          add_org:
+            text: Додати організація
+            heading: Додати організація
+            add: Додати %{користувач} до an організація
+            edit: Редагувати %{користувач}'s role о an організація
+            id: Організація ID
+            role: Role
+            role_desc_html: Ви можемо assign %{користувач} до be an Адмін або a regular учасник.
+            admin: адмін
+            member: учасник
+            submit: Додати організація
+          adjust_credit:
+            text: Adjust credit balance
+            heading: Adjust balance
+            desc_html: "%{користувач} currently has %{credits}."
+            credits_html: "%{amount} credits"
+            adjust: Adjust balance
+            selector_html: "%{action}%{amount}%{credits}"
+            add: Додати
+            unit: credits
+            aria_credits: Amount з credits до add або remove
+            note: 'Додати a note до this action:'
+            submit: Adjust balance
+          bulk_assign_role:
+            text: Bulk Assign Role
+          copy_email: Copy email address
+        danger:
+          desc1: This action є irreversible.
+          desc3: Be careful з this action.
+        banish:
+          heading: Заборонитиish %{користувач}
+          desc2_html: Once banished, ми will delete all content created від %{користувач} і change their username до @spam_###.
+          notice_html: This є not a new користувач. Only Super Адміни або Support Адміни are allowed до banish %{користувач}.
+          submit_html: Заборонитиish %{користувач}
+        delete:
+          heading: Видалити %{користувач}'s account
+          onsubmit: Are ви sure? This action є irreversible.
+          desc2: Once deleted, all data relating до %{користувач} will be removed від our database.
+          notice: Only Super Адміни are allowed до delete користувачі.
+          submit: Видалити now
+        update_email:
+          heading: Оновити Користувач Електронна пошта
+          desc_html: Користувач's current email є %{email}.
+          new_email: Новий email
+          submit: Оновити email
+          success: Електронна пошта updated successfully.
+          error: Failed до update email.
+        export:
+          heading: Export %{користувач}'s data
+          desc1_html: Choose between sending the exported data до either ваш Адмін contact email, %{contact}, або до %{користувач}'s %{користувач_email} directly.
+          desc2: Exported data includes a користувач's posts і comments.
+          user_email: користувач email
+          to_admin: Export до Адмін
+          to_user: Export до Користувач
+          confirm: Are ви sure ви want до export this користувач's content до %{email}?
+        merge:
+          heading: Merge користувачі
+          onsubmit: Are ви sure? This є extremely destructive і irreversible. Merging will delete all the other користувачі content і combine it з this користувач
+          desc2_html: Make sure ви are currently на the сторінка з the користувач ви want до <strong>keep</strong>. Once merged, the account entered below will be merged і deleted.
+          id: Користувач ID
+          submit: Merge і delete
+        social:
+          heading: Remove social accounts
+          desc_html: |
+            <p>Sometimes користувачі encounter sign-у issues when they....</p>
+            <ol>
+              <li>create an account на %{community} з a social account, і</li>
+              <li>remove the original social account, і</li>
+              <li>attempt до sign у again using the same, removed social account.</li>
+            </ol>
+            <p>Якщо this є the case, removing the social accounts below можемо допомога restore their social accounts. До verify якщо this є the case, follow steps 1 і 2 below. Якщо verified, follow through all steps до restore their social accounts.</p>
+          howto:
+            subtitle: How до restore a social account
+            first_html: 'Check their social account''s UID via these third party tools: %{twitter_uid} і %{github_uid}'
+            twitter_uid: Twitter UID
+            github_uid: GitHub UID
+            second: Check whether або not it matches the corresponding UID below.
+            third: Remove the respective account якщо it doesn't match.
+            fourth: Ask the користувач до reauthorize their social account via %{app}
+          onsubmit: Are ви sure? This should only be done as a solution для the listed example(s).
+          uid: 'UID:'
+          username: 'Ім''я користувача:'
+          no_data: Ні data available...
+          submit: Remove
+        unpublish:
+          heading: Unpublish all posts
+          onsubmit: Are ви sure? All posts will be unavailable до the community.
+          text1_html: Once unpublished, all posts від %{username} will become hidden і only accessible до themselves.
+          text2_html: Якщо %{username} є not suspended, they можемо still re-publish their posts від their dashboard.
+          note: 'Note:'
+          note_placeholder: Note text
+          submit: Unpublish all posts
+        emails:
+          confirm: Resend confirmation
+          empty1: Ні previous emails found для %{користувач}.
+          empty2: Будь-які emails sent до %{email} will be found тут.
+          previous: Previous emails (%{num})
+          send: Send an email
+          to: 'До: %{користувач} (%{email})'
+          subject: Subject
+          subject_placeholder: What do ви want до say у the subject line?
+          body: Body
+          body_placeholder: What do ви want до say?
+          send_submit: Send email
+          not_confirmed:
+            subtitle: Електронна пошта not confirmed
+            desc: "%{користувач}'s email hasn't been confirmed yet."
+          not_verified:
+            subtitle: Електронна пошта not verified
+            desc: "%{користувач}'s email hasn't been verified yet."
+          verify: Send new verification email email
+          manually_verify: Manually verify email
+          verified_html: Last verified на %{time}
+          reverify: Reverify
+        flags:
+          empty1: Ні flags received against %{користувач} yet.
+          empty2: Будь-які flags received against %{користувач} will be found тут.
+          type:
+            article: Публікація "%{title}"
+            comment: Коментар на "%{title}"
+            profile: Користувач's profile
+          origin_html: Flagged від %{користувач}
+          score: Стаття і comment score affected від particular flag
+          total_score: Стаття і comment score affected від користувач flags
+        notes:
+          empty1: Ні previous notes found для %{користувач}.
+          empty2: Будь-які notes added для %{користувач} will be found тут.
+          previous: Previous notes (%{num})
+          note_by: Note від %{author} на %{time}
+          reason_by_html: "%{reason} %{від}"
+          by_html: від %{author}
+          write: Write a користувач note
+          note: Note
+          note_placeholder: Додати a note...
+          submit: Надіслати
+          unknown_user: Unknown користувач
+          unknown_user_html: "<em>Unknown користувач</em>\n"
+        overview:
+          comments: Коментарі
+          posts: Публікації
+          reactions: Реакції
+          followers: Підписники
+          following: Стежать
+          badges: Badges
+          learn: Learn more
+          credits:
+            subtitle: Credits
+            aria_learn: Learn more приблизно credits
+            icon: Wallet
+            desc: 'Grant/remove credits до purchase classified listings. '
+            button: Adjust balance
+          orgs:
+            subtitle: Організації
+            aria_edit: Редагувати %{org} організація membership
+            aria_learn: Learn more приблизно організації
+            aria_revoke: Revoke %{org} організація membership
+            icon: Організації
+            desc: 'Додати this учасник до організації у ваш community. '
+            empty: Not part з будь-які організація yet.
+            button: Додати організація
+            type:
+              admin: Адмін
+              member: Учасник
+              guest: Guest
+            revoke_confirm: Are ваш sure ви want до remove %{користувач} від %{org}?
+            submit: Надіслати
+          roles:
+            subtitle: Roles
+            aria_learn: Learn more приблизно roles
+            icon: Roles
+            desc: 'Grant this учасник permissions від assigning a role. '
+            empty: Ні roles assigned yet.
+            button: Assign role
+            locked: Ви можемо't remove this role.
+            remove: 'Remove role:'
+            remove_confirm: Are ви sure?
+            remove_confirm_super_admin: Ви are removing super адмін access від this account. Do this carefully і always ensure ви retain access до one або more super адмін accounts
+            name:
+              admin: Адмін
+              codeland_admin: Codeland Адмін
+              comment_suspended: Коментар Suspended
+              limited: Limited
+              creator: Creator
+              super_moderator: Super Moderator
+              podcast_admin: Podcast Адмін
+              restricted_liquid_tag: Restricted Liquid Тег
+              single_resource_admin: Single Resource Адмін
+              resource_admin_article: Стаття Адмін
+              resource_admin_badge: Badge Адмін
+              resource_admin_badge_achievement: Badge Achievement Адмін
+              resource_admin_broadcast: Broadcast Адмін
+              resource_admin_comment: Коментар Адмін
+              resource_admin_config: Config Адмін
+              resource_admin_billboard: Billboard Адмін
+              resource_admin_data_update_script: Data Оновити Script Адмін
+              resource_admin_feedback_message: Feedback Message Адмін
+              resource_admin_html_variant: HTML Variant Адмін
+              resource_admin_listing_category: Listing Category Адмін
+              resource_admin_page: Сторінка Адмін
+              resource_admin_tag: Тег Адмін
+              super_admin: Super Адмін
+              support_admin: Support Адмін
+              suspended: Suspended
+              tag_moderator: Тег Moderator
+              tech_admin: Tech Адмін
+              trusted: Trusted
+              warned: Warned
+          tag_mod:
+            subtitle: Теги
+            aria_learn: Learn more приблизно tag moderation
+            icon: Mod
+            desc: 'Додати a tag that this учасник можемо moderate. '
+            remove: 'Remove tag:'
+            notice_html: Додатиing tags для moderation є also possible through a particular %{tag_сторінка}, від providing the username (%{username}).
+            tag_page: tag's сторінка
+        priviliged_actions:
+          description: The користувач flags affect the scores з articles і comments. Each valid або open користувач flag further reduces the score з the article і comment.
+          no_flags: Ні flags received against this користувач yet.
+          title: Flags received
+        profile:
+          locked:
+            icon: Access locked
+            text: This користувач has locked access.
+            unlock: Unlock access
+          id: ID %{userid}
+          since_html: Учасник since %{time}
+          not_member: Користувач has not accepted their invitation yet.
+          email: Електронна пошта
+          github: GitHub
+          twitter: Twitter
+          visit: Visit profile
+          options:
+            icon: Options
+            update_email: Оновити Користувач Електронна пошта
+            export: Export data
+            merge: Merge користувачі
+            unpublish: Unpublished all posts
+            remove_social: Remove social accounts
+            banish: Заборонитиish користувач
+            delete: Видалити користувач
+        reports:
+          subtitle: Поскаржитисяs submitted від %{користувач} (%{num})
+          for_html: Для %{url}
+          empty1: Ні comment або post has been reported yet.
+          empty2: Будь-які comment або post reported від %{користувач} will be found тут.
+          category:
+            rude or vulgar: Rude або vulgar
+            harrassment: Harrassment
+            spam: Spam
+            listings: Listings
+            other: Other
+          status:
+            Open: Open
+            Resolved: Resolved
+            Invalid: Invalid
+        reputation:
+          change: Change reputation modifier
+          change_note: Reason для change
+          desc_html: This changes the points awarded до reactions given від the користувач, increasing або decreasing their impact на article і comment score. The користувач's current's reputation modifier є <strong>%{reputation_modifier}</strong>.
+          heading: Change reputation modifier
+          reputation_modifier: Новий reputation modifier
+          submit: Change reputation modifier
+          success: Успіхfully changed користувач's reputation modifier до %{reputation_modifier}.
+          error: Failed до change користувач's reptuation modifier (select between 0 і 5)
+        max_score:
+          change: Change maximum score
+          change_note: Reason для change
+          desc_html: This changes the maximum score a користувач можемо achieve. 0 means unlimited. The користувач's current maximum score є <strong>%{max_score}</strong>.
+          heading: Change maximum score
+          max_score: Новий maximum score
+          submit: Change maximum score
+          success: Успіхfully changed користувач's maximum score до %{max_score}.
+          error: Failed до change користувач's maximum score (select between 0 і 100)
+        unpublish_logs:
+          subtitle_html: Unpublished від %{користувач} на %{time}
+          posts: 'Публікації:'
+          edit: Редагувати
+          republished: "(was republished)"
+          comments: 'Коментарі:'
+          commentable: commentable
+          created: 'Створитиd о: %{time}'
+        tabs:
+          overview: Overview
+          notes: Notes
+          emails: Електронна поштаs
+          reports: Поскаржитисяs
+          flags: Flags
+          articles: Статті
+          comments: Коментарі
+          unpublish_logs: Unpublish All History
+        status_title: Current status
+        status_reader: 'Current status:'
+        more_orgs:
+          one: "+ %{count}"
+          other: "+ %{count}"
+        roles:
+          Admin: Адмін
+          Tech Admin: Tech Адмін
+          Super Admin: Super Адмін
+          Resource Admin: Resource Адмін
+          'Resource Admin: Article': 'Resource Адмін: Стаття'
+          'Resource Admin: Badge': 'Resource Адмін: Badge'
+          'Resource Admin: BadgeAchievement': 'Resource Адмін: BadgeAchievement'
+          'Resource Admin: Broadcast': 'Resource Адмін: Broadcast'
+          'Resource Admin: Comment': 'Resource Адмін: Коментар'
+          'Resource Admin: Config': 'Resource Адмін: Config'
+          'Resource Admin: Billboard': 'Resource Адмін: Billboard'
+          'Resource Admin: DataUpdateScript': 'Resource Адмін: DataОновитиScript'
+          'Resource Admin: FeedbackMessage': 'Resource Адмін: FeedbackMessage'
+          'Resource Admin: HtmlVariant': 'Resource Адмін: HtmlVariant'
+          'Resource Admin: ListingCategory': 'Resource Адмін: ListingCategory'
+          'Resource Admin: Page': 'Resource Адмін: Сторінка'
+          'Resource Admin: Tag': 'Resource Адмін: Тег'
+          Super Moderator: Super Moderator
+        statuses:
+          Warned: Warned
+          Comment Suspended: Коментар Suspended
+          Limited: Limited
+          Suspended: Suspended
+          Spam: Spam
+          Good Standing: Good Standing
+          Good standing: Good standing
+          Trusted: Trusted
+          Base Subscriber: Base Subscriber
+        max_score_title: Maximum score
+        max_score_reader: 'Maximum score:'
+        identities:
+          facebook: Facebook
+          github: GitHub
+          twitter: Twitter
+      organizations:
+        profile:
+          id: ID %{organizationid}
+          since_html: Організація since %{time}
+          email: Електронна пошта
+          github: GitHub
+          twitter: Twitter
+          visit: Visit організація
+          total_members: "%{count} учасники"
+        delete:
+          heading: Видалити %{організація}
+          onsubmit: Are ви sure? This action є irreversible.
+          desc2: 'Note: Deleting організація, %{організація}, will dissasociate the existing учасники і articles від the організація but will not delete them.'
+          role_notice: Only Super Адміни are allowed до delete організації.
+          credits_notice: Ви cannot delete an організація that has associated credits.
+          submit: Видалити organizion now
+        options:
+          delete: Видалити організація
+          icon: Options

@@ -1,0 +1,11 @@
+# Original locale: kaminari.en.yml
+---
+uk:
+  views:
+    pagination:
+      aria_next: Next сторінка
+      aria_previous: Previous сторінка
+  helpers:
+    page_entries_info:
+      more_pages:
+        display_entries: "%{first}&nbsp;-&nbsp;%{last} з %{total}"
