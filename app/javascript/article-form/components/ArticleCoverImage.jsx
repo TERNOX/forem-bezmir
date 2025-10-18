@@ -158,7 +158,7 @@ export const ArticleCoverImage = ({ onMainImageUrlChange, mainImage, coverImageH
     handleMainImageUpload(event);
   };
 
-  const uploadLabel = mainImage ? 'Change' : 'Add a cover image';
+  const uploadLabel = mainImage ? 'Змінити обкладинку' : 'Додати обкладинку';
 
   // When the component is rendered in an environment that supports a native
   // image picker for image upload we want to add the aria-label attr and the
@@ -167,7 +167,7 @@ export const ArticleCoverImage = ({ onMainImageUrlChange, mainImage, coverImageH
   const extraProps = useNativeUpload()
     ? {
         onClick: initNativeImagePicker,
-        'aria-label': 'Upload cover image',
+        'aria-label': 'Завантажити обкладинку',
       }
     : {};
 
@@ -193,7 +193,7 @@ export const ArticleCoverImage = ({ onMainImageUrlChange, mainImage, coverImageH
         <div className="flex items-center">
           {uploadingImage && (
             <span class="lh-base pl-1 border-0 py-2 inline-block">
-              <Spinner /> Uploading...
+              <Spinner /> Завантаження...
             </span>
           )}
 

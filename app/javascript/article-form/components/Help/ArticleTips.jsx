@@ -5,20 +5,17 @@ export const ArticleTips = () => (
     data-testid="article-publishing-tips"
     className="crayons-article-form__help crayons-article-form__help--tags"
   >
-    <h4 className="mb-2 fs-l">Publishing Tips</h4>
+    <h4 className="mb-2 fs-l">Поради з публікації</h4>
     <ul className="list-disc pl-6 color-base-70">
       <li>
-        Ensure your post has a cover image set to make the most of the home feed
-        and social media platforms.
+Переконайтеся, що ваша публікація має обкладинку, щоб максимально ефективно використовувати домашню стрічку та соціальні мережі.
       </li>
       <li>
-        Share your post on social media platforms or with your co-workers or
-        local communities.
+Поділіться своєю публікацією в соціальних мережах, з друзьями та мамою.
       </li>
       <li>
-        Ask people to leave questions for you in the comments. It's a great way
-        to spark additional discussion describing personally why you wrote it or
-        why people might find it helpful.
+
+Попросіть людей залишати вам питання в коментарях. Це чудовий спосіб створити додаткову дискусію.
       </li>
     </ul>
   </div>

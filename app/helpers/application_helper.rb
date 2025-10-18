@@ -276,6 +276,8 @@ module ApplicationHelper
       "https://www.linkedin.com/in/#{handle}"
     elsif social_media_type.to_s == "youtube"
       "https://www.youtube.com/@#{handle}"
+    elsif social_media_type.to_s == "telegram"
+      "https://t.me/#{handle}"
     else
       "https://#{social_media_type}.com/#{handle}"
     end

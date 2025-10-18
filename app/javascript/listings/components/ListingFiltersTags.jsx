@@ -18,7 +18,7 @@ export const ListingFiltersTags = ({
     <div className="relative pb-2 m:pb-3 px-3 m:px-0">
       <input
         type="text"
-        placeholder="Search..."
+        placeholder="Пошук..."
         id="listings-search"
         aria-label="Search listings"
         autoComplete="off"

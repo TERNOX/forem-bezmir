@@ -100,8 +100,8 @@ export const Tag = ({ id, name, isFollowing, isHidden }) => {
     });
   };
 
-  const hideButtonLabel = hidden ? 'Unhide' : 'Hide';
-  const followButtonLabel = following ? 'Following' : 'Follow';
+  const hideButtonLabel = hidden ? 'Показувати' : 'Сховати';
+  const followButtonLabel = following ? 'Слідкуєте' : 'Слідкувати';
 
   if (!hidden) {
     followingButton = (

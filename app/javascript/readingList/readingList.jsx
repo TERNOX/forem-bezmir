@@ -229,7 +229,7 @@ export class ReadingList extends Component {
               aria-label="Filter reading list by text"
               onKeyUp={this.onSearchBoxType}
               type="text"
-              placeholder="Search..."
+              placeholder="Пошук..."
               className="crayons-textfield mb-2 s:mb-0"
             />
             <MediaQuery

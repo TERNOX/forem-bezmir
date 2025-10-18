@@ -6,7 +6,7 @@ export const ArticleCoverImage = ({ article }) => {
     <div
       className="crayons-article__cover crayons-article__cover__image__feed"
       style={{
-        aspectRatio: `auto 1000 / ${article.main_image_height}`,
+
       }}
     >
       <a

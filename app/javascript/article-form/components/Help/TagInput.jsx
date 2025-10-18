@@ -5,20 +5,30 @@ export const TagInput = () => (
     data-testid="basic-tag-input-help"
     className="crayons-article-form__help crayons-article-form__help--tags"
   >
-    <h4 className="mb-2 fs-l">Tagging Guidelines</h4>
+    <h4 className="mb-2 fs-l">Шо по теґам?</h4>
     <ul className="list-disc pl-6 color-base-70">
       <li>
-        Tags help people find your post - think of them as the topics or
-        categories that best describe your post.
+Теґи допомагають людям знаходити ваш допис.
+
       </li>
       <li>
-        Add up to four comma-separated tags per post. Use existing tags whenever
-        possible.
+Теґи - це теми або категорії, які найкраще описують ваш допис.
+
       </li>
       <li>
-        Some tags have special posting guidelines - double check to make sure
-        your post complies with them.
+Додавайте до чотирьох тегів, розділених комами, до кожного допису. Комбінуйте теги, щоб охопити відповідні підспільноти.
+
       </li>
+	  
+      <li>
+Використовуйте наявні теги, коли це можливо.
+
+      </li>
+      <li>
+Для деяких теґів, наприклад як “моягра“, існують особливі правила публікації.
+
+      </li> 
+	  
     </ul>
   </div>
 );

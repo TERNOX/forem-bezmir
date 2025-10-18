@@ -172,4 +172,4 @@ Preview.propTypes = {
   }).isRequired,
 };
 
-Preview.displayName = 'Preview';
+Preview.displayName = 'Передперегляд';

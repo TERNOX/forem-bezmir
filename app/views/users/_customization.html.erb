@@ -57,63 +57,6 @@
   <% end %>
 
   <div class="crayons-card crayons-card--content-rows">
-    <h2 class="crayons-subtitle-1">
-      <%= t("views.settings.custom.content") %>
-    </h2>
-    <div class="crayons-field">
-      <%= f.label :experience_level, t("views.settings.custom.level"), class: "crayons-field__label" %>
-      <div class="theme-selector-field grid grid-cols-5">
-        <% user_experience_levels.each_with_index do |exp, i| %>
-          <%= render partial: "experience_selector", locals: { f: f, exp: exp, i: i, label: user_experience_labels } %>
-        <% end %>
-      </div>
-      <p>
-        <%= t("views.settings.custom.level_desc") %>
-      </p>
-    </div>
-  </div>
-  <div id="sponsors" class="crayons-card crayons-card--content-rows">
-    <header>
-      <h2 class="crayons-subtitle-1">
-        <%= t("views.settings.custom.sponsor") %>
-      </h2>
-      <p>
-        <%= t("views.settings.custom.sponsor_desc_html") %>
-      </p>
-    </header>
-
-    <fieldset class="grid gap-4">
-      <div class="crayons-field crayons-field--checkbox">
-        <%= f.check_box :display_sponsors, class: "crayons-checkbox" %>
-        <%= f.label :display_sponsors, t("views.settings.custom.sponsor_field"), class: "crayons-field__label" %>
-      </div>
-
-      <div class="crayons-field crayons-field--checkbox">
-        <%= f.check_box :permit_adjacent_sponsors, class: "crayons-checkbox" %>
-        <%= f.label :permit_adjacent_sponsors, t("views.settings.custom.adjacent"), class: "crayons-field__label" %>
-      </div>
-    </fieldset>
-  </div>
-
-  <div class="crayons-card crayons-card--content-rows">
-    <header>
-      <h2 class="crayons-subtitle-1">
-        <%= t("views.settings.custom.announce") %>
-      </h2>
-      <p>
-        <%= t("views.settings.custom.announce_desc") %>
-      </p>
-    </header>
-
-    <fieldset class="grid gap-4">
-      <div class="crayons-field crayons-field--checkbox">
-        <%= f.check_box :display_announcements, class: "crayons-checkbox" %>
-        <%= f.label :display_announcements, t("views.settings.custom.announce_field"), class: "crayons-field__label" %>
-      </div>
-    </fieldset>
-  </div>
-
-  <div class="crayons-card crayons-card--content-rows">
     <header>
       <h2 class="crayons-subtitle-1">
         <%= t("views.settings.custom.subforem_reassignment") %>

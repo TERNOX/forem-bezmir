@@ -31,12 +31,7 @@
             <%= I18n.t("billboard.menu.what_is_a_billboard") %>
           </a>
         </li>
-      <li>
-        <a class="crayons-link crayons-link--block" href='/settings/customization#sponsors'>
-          <%= crayons_icon_tag("setting", width: 16, height: 16, aria_hidden: true, class: "c-btn__icon") %>
-          <%= I18n.t("billboard.menu.manage_preferences") %>
-        </a>
-      </li>
+
       <% if user_signed_in? %>
         <li class="js-admin-billboard-link hidden">
           <a class="crayons-link crayons-link--block" href="/admin/customization/billboards/<%= billboard.id %>/edit" data-no-instant>

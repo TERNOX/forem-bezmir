@@ -95,9 +95,9 @@ InstantClick.on('change', () => {
   const searchElement = document.getElementById('search-input');
   const articleContainer = document.getElementById('article-show-container');
   if (searchElement && articleContainer?.dataset?.articleId) {
-    searchElement.placeholder = 'Find related posts...';
+    searchElement.placeholder = 'Знайти релевантні дописи...';
   } else {
-    searchElement.placeholder = 'Search...';
+    searchElement.placeholder = 'Пошук...';
   }
 });
 

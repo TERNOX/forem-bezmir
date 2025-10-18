@@ -45,8 +45,8 @@ uk:
         aria_label: Перейти до коментарів
         label: Перейти до коментарів
       boost:
-        label: Підсилити
-        aria_label: Підсилити
+        label: Репост
+        aria_label: Репост
       lock:
         meta:
           title: Підтвердження блокування обговорення
