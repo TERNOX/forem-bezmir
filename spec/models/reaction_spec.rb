@@ -49,15 +49,16 @@ RSpec.describe Reaction do
     let(:author) { create(:user) }
     let(:reactor) { create(:user) }
     let(:article) { create(:article, user: author) }
+    let(:comment) { create(:comment, user: author, commentable: article) }
 
     it "increments the author's reputation when a like is created" do
       expect do
-        create(:reaction, reactable: article, user: reactor, category: "like")
+        create(:reaction, reactable: comment, user: reactor, category: "like")
       end.to change { author.reload.reputation_score }.by(1)
     end
 
     it "decrements the author's reputation when the like is removed" do
-      reaction = create(:reaction, reactable: article, user: reactor, category: "like")
+      reaction = create(:reaction, reactable: comment, user: reactor, category: "like")
 
       expect do
         reaction.destroy
@@ -65,7 +66,7 @@ RSpec.describe Reaction do
     end
 
     it "removes reputation credit when the reaction becomes invalid" do
-      reaction = create(:reaction, reactable: article, user: reactor, category: "like")
+      reaction = create(:reaction, reactable: comment, user: reactor, category: "like")
 
       expect do
         reaction.update!(status: "invalid")
@@ -74,7 +75,13 @@ RSpec.describe Reaction do
 
     it "does not change reputation for non-like reactions" do
       expect do
-        create(:reaction, reactable: article, user: reactor, category: "unicorn")
+        create(:reaction, reactable: comment, user: reactor, category: "unicorn")
+      end.not_to change { author.reload.reputation_score }
+    end
+
+    it "does not count likes on articles toward reputation" do
+      expect do
+        create(:reaction, reactable: article, user: reactor, category: "like")
       end.not_to change { author.reload.reputation_score }
     end
   end

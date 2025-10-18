@@ -265,7 +265,7 @@ class Reaction < ApplicationRecord
   def counts_for_reputation?(category_value = category, status_value = status, reactable_type_value = reactable_type)
     category_value == "like" &&
       %w[valid confirmed].include?(status_value) &&
-      %w[Article Comment].include?(reactable_type_value)
+      reactable_type_value == "Comment"
   end
 
   def reputation_recipient
@@ -322,7 +322,7 @@ class Reaction < ApplicationRecord
   end
 
   def previous_reputation_recipient
-    return unless %w[Article Comment].include?(reactable_type_before_last_save)
+    return unless reactable_type_before_last_save == "Comment"
 
     previous_reactable_for_reputation&.user
   end
@@ -330,7 +330,7 @@ class Reaction < ApplicationRecord
   def previous_reactable_for_reputation
     previous_type = reactable_type_before_last_save
     previous_id = reactable_id_before_last_save
-    return unless previous_type && previous_id
+    return unless previous_type == "Comment" && previous_id
 
     previous_type.safe_constantize&.find_by(id: previous_id)
   end
