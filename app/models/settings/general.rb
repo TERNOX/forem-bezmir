@@ -108,6 +108,7 @@ module Settings
       instagram: nil,
       twitch: nil,
       mastodon: nil,
+	  telegram: nil,
       youtube: nil,
       linkedin: nil,
       bluesky: nil

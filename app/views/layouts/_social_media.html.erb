@@ -1,6 +1,7 @@
 <% compact_margin = Settings::General.social_media_handles.values.compact_blank.count > 5 %>
 <% Settings::General.social_media_handles.each do |social_media_type, handle| %>
   <% next if handle.blank? %>
+    <% target_url = social_media_type == "telegram" ? handle : "#{handle}" %>
   <a
     href="<%= social_media_constructed_url(social_media_type, handle) %>"
     target="_blank"
