@@ -86,17 +86,17 @@ class Tag < ActsAsTaggableOn::Tag
   scope :supported, -> { where(supported: true) }
   scope :from_subforem, lambda { |subforem_id = nil|
     subforem_id ||= RequestStore.store[:subforem_id]
-    # Include subforem_relationships and return tags that are in that relationship
-    if subforem_id.present? && subforem_id == RequestStore.store[:root_subforem_id]
-      # No additional conditions; just return the current scope
-      where(supported: true)
-    elsif subforem_id.present?
-      joins(:subforem_relationships)
-        .where(subforem_relationships: { subforem_id: subforem_id })
-    else
-      # No subforem_id provided, so return all tags
-      where(supported: true)
-    end
+
+    # For requests that are not scoped to a specific subforem (either because there isn't
+    # one or because we are on the root forem), we need to return all tags. Historically
+    # the tag index has never filtered on the `supported` flag and the majority of tags in
+    # existing forems have this flag set to false. Restricting by it results in an empty
+    # tag listing which also breaks tag search. Limiting to supported tags only makes
+    # sense when a subforem explicitly defines its own tag relationships.
+    return all if subforem_id.blank? || subforem_id == RequestStore.store[:root_subforem_id]
+
+    joins(:subforem_relationships)
+      .where(subforem_relationships: { subforem_id: subforem_id, supported: true })
   }
 
   scope :suggested_for_onboarding, -> { where(suggested: true) }
