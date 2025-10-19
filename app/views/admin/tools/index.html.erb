@@ -30,4 +30,12 @@
   <% end %>
 </div>
 
+<div class="crayons-card p-6 mb-6">
+  <h2 class="crayons-subtitle-1 mb-4"><%= t("views.admin.tools.reputation.heading") %></h2>
+  <p class="mb-6"><%= t("views.admin.tools.reputation.description_html") %></p>
+  <%= form_tag recalculate_reputation_admin_tools_path do %>
+    <%= submit_tag t("views.admin.tools.reputation.submit"), class: "crayons-btn" %>
+  <% end %>
+</div>
+
 <%= render "admin/shared/image_uploader" %>

@@ -43,6 +43,19 @@ module Admin
       end
     end
 
+    def recalculate_reputation
+      result = Users::RecalculateReputation.call
+      flash[:success] = I18n.t(
+        "views.admin.tools.reputation.success",
+        users: result[:users],
+        likes: result[:likes],
+      )
+    rescue StandardError => e
+      flash[:danger] = e.message
+    ensure
+      redirect_to admin_tools_path
+    end
+
     private
 
     def handle_dead_path

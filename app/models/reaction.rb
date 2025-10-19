@@ -1,5 +1,6 @@
 class Reaction < ApplicationRecord
   REACTABLE_TYPES = %w[Comment Article User].freeze
+  REPUTATION_REACTABLE_TYPES = %w[Comment Article].freeze
   STATUSES = %w[valid invalid confirmed archived].freeze
 
   belongs_to :reactable, polymorphic: true
@@ -58,6 +59,7 @@ class Reaction < ApplicationRecord
 
   before_save :assign_points
   after_create :notify_slack_channel_about_vomit_reaction, if: -> { category == "vomit" }
+  before_destroy :store_reputation_snapshot
   before_destroy :bust_reactable_cache_without_delay
   before_destroy :bust_reaction_counts_cache
   before_destroy :update_reactable, unless: :destroyed_by_association
@@ -65,6 +67,9 @@ class Reaction < ApplicationRecord
   after_commit :bust_reactable_cache, :update_reactable, :bust_reaction_counts_cache, on: %i[create update]
   after_commit :record_field_test_event, on: %i[create]
   after_commit :check_for_reaction_ring, on: :create
+  after_commit :increment_recipient_reputation, on: :create
+  after_commit :adjust_recipient_reputation_on_update, on: :update
+  after_commit :decrement_recipient_reputation, on: :destroy
 
   class << self
     def count_for_article(id)
@@ -250,11 +255,86 @@ class Reaction < ApplicationRecord
   def check_for_reaction_ring
     # Only check for public reactions on articles
     return unless visible_to_public? && reactable_type == "Article"
-    
+
     # Only check if user has enough reactions to potentially be in a ring
     return unless user.reactions.public_category.only_articles.where(created_at: 3.months.ago..).count >= 50
-    
+
     # Schedule ring detection asynchronously
     Spam::ReactionRingDetectionWorker.perform_async(user_id)
+  end
+
+  def counts_for_reputation?(category_value = category, status_value = status, reactable_type_value = reactable_type)
+    category_value == "like" &&
+      %w[valid confirmed].include?(status_value) &&
+      reactable_type_value.in?(REPUTATION_REACTABLE_TYPES)
+  end
+
+  def reputation_recipient
+    @reputation_recipient || target_user
+  end
+
+  def adjust_recipient_reputation(delta, recipient: reputation_recipient)
+    return if delta.zero? || recipient.nil?
+
+    update_sql = <<~SQL.squish
+      reputation_score = CASE
+        WHEN COALESCE(reputation_score, 0) + ? < 0 THEN 0
+        ELSE COALESCE(reputation_score, 0) + ?
+      END
+    SQL
+
+    User.where(id: recipient.id).update_all([update_sql, delta, delta])
+  end
+
+  def increment_recipient_reputation
+    adjust_recipient_reputation(1) if counts_for_reputation?
+  end
+
+  def decrement_recipient_reputation
+    return unless @counted_for_reputation_before_destroy
+
+    adjust_recipient_reputation(-1)
+  end
+
+  def adjust_recipient_reputation_on_update
+    previous_status = status_before_last_save || status
+    previous_category = category_before_last_save || category
+    previous_type = reactable_type_before_last_save || reactable_type
+    reactable_changed = saved_change_to_reactable_id? || saved_change_to_reactable_type?
+
+    previously_counted = counts_for_reputation?(previous_category, previous_status, previous_type)
+    currently_counted = counts_for_reputation?
+
+    if reactable_changed
+      adjust_recipient_reputation(-1, recipient: previous_reputation_recipient) if previously_counted
+      adjust_recipient_reputation(1, recipient: target_user) if currently_counted
+      return
+    end
+
+    return if previously_counted == currently_counted
+
+    delta = currently_counted ? 1 : -1
+    adjust_recipient_reputation(delta)
+  end
+
+  def store_reputation_snapshot
+    @counted_for_reputation_before_destroy = counts_for_reputation?
+    @reputation_recipient = target_user if @counted_for_reputation_before_destroy
+  end
+
+  def previous_reputation_recipient
+    return unless reactable_type_before_last_save.in?(REPUTATION_REACTABLE_TYPES)
+
+    previous_reactable_for_reputation.then do |reactable|
+      reactable.is_a?(User) ? reactable : reactable&.user
+    end
+  end
+
+  def previous_reactable_for_reputation
+    previous_type = reactable_type_before_last_save
+    previous_id = reactable_id_before_last_save
+    return unless previous_type.in?(REPUTATION_REACTABLE_TYPES) && previous_id
+
+    previous_type.safe_constantize&.find_by(id: previous_id)
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_10_07_131428) do
+ActiveRecord::Schema[7.0].define(version: 2025_10_18_221955) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "ltree"
@@ -1593,6 +1593,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_10_07_131428) do
     t.datetime "remember_created_at", precision: nil
     t.string "remember_token"
     t.float "reputation_modifier", default: 1.0
+    t.integer "reputation_score", default: 0, null: false
     t.datetime "reset_password_sent_at", precision: nil
     t.string "reset_password_token"
     t.boolean "saw_onboarding", default: false
