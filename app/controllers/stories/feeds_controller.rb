@@ -42,14 +42,16 @@ module Stories
 
     def assign_feed_stories
       params[:type_of] = "discover" if params[:type_of].blank?
+      timeframe = community_feed? ? Timeframe::LATEST_TIMEFRAME : params[:timeframe]
+      params[:timeframe] = timeframe if community_feed?
 
-      stories = if params[:timeframe].in?(Timeframe::FILTER_TIMEFRAMES)
+      stories = if timeframe.in?(Timeframe::FILTER_TIMEFRAMES)
                   timeframe_feed
-                elsif params[:type_of] == "following" && user_signed_in? && params[:timeframe] == Timeframe::LATEST_TIMEFRAME
+                elsif params[:type_of] == "following" && user_signed_in? && timeframe == Timeframe::LATEST_TIMEFRAME
                   latest_following_feed
                 elsif params[:type_of] == "following" && user_signed_in?
                   relevant_following_feed
-                elsif params[:timeframe] == Timeframe::LATEST_TIMEFRAME
+                elsif timeframe == Timeframe::LATEST_TIMEFRAME
                   latest_feed
                 elsif user_signed_in?
                   signed_in_base_feed

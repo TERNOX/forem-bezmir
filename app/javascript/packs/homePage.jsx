@@ -23,6 +23,17 @@ const frontPageFeedPathNames = new Map([
   ['/following/latest', 'latest']
 ]);
 
+function determineFeedTimeFrame(url = new URL(window.location.href)) {
+  const normalizedPath = removeLocalePath(url.pathname);
+  const pathTimeFrame = frontPageFeedPathNames.get(normalizedPath) || '';
+
+  if (url.searchParams.get('feed_view') === 'community') {
+    return 'latest';
+  }
+
+  return pathTimeFrame;
+}
+
 /**
  * Renders tags followed in the left side bar of the homepage.
  *
@@ -90,7 +101,7 @@ function renderSidebar() {
   }
 }
 
-const feedTimeFrame = frontPageFeedPathNames.get(window.location.pathname);
+const feedTimeFrame = determineFeedTimeFrame();
 const homeFeedEl = document.getElementById('homepage-feed');
 
 if (document.getElementById('sidebar-nav-followed-tags')) {
@@ -124,9 +135,11 @@ if (document.getElementById('sidebar-nav-followed-tags')) {
           }
 
           const url = new URL(window.location);
-          const changedFeedTimeFrame = frontPageFeedPathNames.get(url.pathname);
+          const changedFeedTimeFrame = determineFeedTimeFrame(url);
 
-          if (!frontPageFeedPathNames.has(url.pathname)) {
+          const normalizedPath = removeLocalePath(url.pathname);
+
+          if (!frontPageFeedPathNames.has(normalizedPath)) {
             return;
           }
 

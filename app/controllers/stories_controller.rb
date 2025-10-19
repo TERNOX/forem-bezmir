@@ -277,10 +277,13 @@ class StoriesController < ApplicationController
   end
 
   def assign_feed_stories
-    if params[:timeframe].in?(Timeframe::FILTER_TIMEFRAMES)
-      @stories = Articles::Feeds::Timeframe.call(params[:timeframe])
+    timeframe = community_feed? ? Timeframe::LATEST_TIMEFRAME : params[:timeframe]
+    params[:timeframe] = timeframe if community_feed?
+
+    if timeframe.in?(Timeframe::FILTER_TIMEFRAMES)
+      @stories = Articles::Feeds::Timeframe.call(timeframe)
       @stories = filter_community_stories(@stories)
-    elsif params[:timeframe] == Timeframe::LATEST_TIMEFRAME
+    elsif timeframe == Timeframe::LATEST_TIMEFRAME
       @stories = Articles::Feeds::Latest.call(minimum_score: Settings::UserExperience.home_feed_minimum_score)
       @stories = filter_community_stories(@stories)
     else
