@@ -38,7 +38,14 @@ module Homepage
     attribute :published_at_int, ->(article) { article.published_at.to_i }
     attribute :tag_list, ->(article) { article.cached_tag_list.to_s.split(", ") }
     attribute :flare_tag, ->(article, params) { params.dig(:tag_flares, article.id) }
-    
+
+    attribute :pinned, &:pinned?
+    attribute :main_image_background_hex_color, &:main_image_background_hex_color
+    attribute :main_image_height, &:main_image_height
+    attribute :main_image, if: proc { |article| article.main_image? } do |article|
+      ApplicationController.helpers.cloud_cover_url(article.main_image, article.subforem_id)
+    end
+
     # Only include special title methods for status articles
     attribute :title_finalized_for_feed, if: proc { |article| article.type_of == "status" }
     attribute :title_for_metadata, if: proc { |article| article.type_of == "status" }
