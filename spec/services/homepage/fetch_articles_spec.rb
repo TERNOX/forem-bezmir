@@ -10,13 +10,13 @@ RSpec.describe Homepage::FetchArticles, type: :service do
 
       result = described_class.call.first
 
-      keys = %i[
+      base_keys = %i[
         class_name cloudinary_video_url comments_count flare_tag id path
-        public_reactions_count public_reaction_categories
+        pinned public_reactions_count public_reaction_categories
         published_at_int readable_publish_date reading_time tag_list title
         user user_id video_duration_string
       ]
-      expect(result.keys.sort).to match_array(keys)
+      expect(result.keys).to include(*base_keys)
 
       expect(result[:class_name]).to eq("Article")
       expect(result[:cloudinary_video_url]).to eq(article.cloudinary_video_url)
@@ -24,6 +24,7 @@ RSpec.describe Homepage::FetchArticles, type: :service do
       expect(result[:id]).to eq(article.id)
       expect(result[:path]).to eq(article.path)
       expect(result[:public_reactions_count]).to eq(article.public_reactions_count)
+      expect(result[:pinned]).to be(false)
 
       expect(result[:published_at_int]).to eq(article.published_at.to_i)
       expect(result[:readable_publish_date]).to eq(article.readable_publish_date)
@@ -56,6 +57,23 @@ RSpec.describe Homepage::FetchArticles, type: :service do
       expect(organization[:name]).to eq(article.organization.name)
       expect(organization[:profile_image_90]).to eq(article.organization.profile_image_90)
       expect(organization[:slug]).to eq(article.organization.slug)
+    end
+
+    it "returns cover metadata when available" do
+      article = create(
+        :article,
+        main_image: "https://res.cloudinary.com/demo/image/upload/sample.jpg",
+        main_image_background_hex_color: "#123456",
+        main_image_height: 420,
+      )
+
+      result = described_class.call(user_id: article.user_id).find { |attrs| attrs[:id] == article.id }
+
+      expect(result[:main_image]).to eq(
+        ApplicationController.helpers.cloud_cover_url(article.main_image, article.subforem_id),
+      )
+      expect(result[:main_image_background_hex_color]).to eq("#123456")
+      expect(result[:main_image_height]).to eq(420)
     end
   end
 end
