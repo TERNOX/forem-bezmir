@@ -2,6 +2,7 @@ import { addFullScreenModeControl } from '../utilities/codeFullscreenModeSwitche
 import { initializeDropdown } from '../utilities/dropdownUtils';
 import { setupBillboardInteractivity } from '../utilities/billboardInteractivity';
 import { embedGists } from '../utilities/gist';
+import { initializeImageLightbox } from './initializers/initializeImageLightbox';
 import { isNativeAndroid, copyToClipboard } from '@utilities/runtime';
 
 // Open in new tab backfill
@@ -147,3 +148,11 @@ focusOnComments();
 // Temporary Ahoy Stats for comment section clicks on controls
 backfillLinkTarget();
 renderBottomContent();
+initializeImageLightbox();
+
+if (!window.__foremLightboxInstantClickBound) {
+  window.__foremLightboxInstantClickBound = true;
+  InstantClick.on('change', () => {
+    initializeImageLightbox();
+  });
+}
