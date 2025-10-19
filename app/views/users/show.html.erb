@@ -87,12 +87,14 @@
               </span>
             <% end %>
 
-            <span class="profile-header__meta__item">
-              <span aria-hidden="true" class="mr-2 shrink-0">⭐</span>
-              <span>
-                <%= t("views.users.reputation.text_html", score: number_with_delimiter(@user.reputation_score)) %>
-              </span>
-            </span>
+<span class="profile-header__meta__item">
+  <span aria-hidden="true" class="mr-2 shrink-0">⭐</span>
+  <span>
+    <%= t("views.users.reputation.title") %>:
+    <b><%= number_with_delimiter(@user.reputation_score) %></b>
+  </span>
+</span>
+
 
             <span class="profile-header__meta__item">
               <%= crayons_icon_tag(:cake, class: "mr-2 shrink-0", title: t("views.users.joined.icon")) %>

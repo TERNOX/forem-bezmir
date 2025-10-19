@@ -68,6 +68,9 @@ uk:
           text:
             one: 1 теґ відстежується
             other: "%{count} теґів відстежується"
+      reputation:
+        title: Репутація
+        text_html: "Репутація: %{score}"
       signout:
         meta:
           title: Підтвердити вихід — Куток
