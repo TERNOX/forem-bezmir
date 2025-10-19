@@ -49,12 +49,12 @@ export const ReactionsCount = ({ article }) => {
     const reactionText = `${
       totalReactions == 1
         ? locale('core.reaction')
-        : `${locale('core.reaction')}s`
+        : `${locale('core.reaction')}`
     }`;
     return (
       <span className="aggregate_reactions_counter">
         <span className="hidden s:inline" title="Number of reactions">
-          {totalReactions}&nbsp;{reactionText}
+          {reactionText}:&nbsp;{totalReactions}
         </span>
       </span>
     );

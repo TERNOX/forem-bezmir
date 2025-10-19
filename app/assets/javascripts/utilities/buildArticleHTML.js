@@ -184,7 +184,7 @@ function buildArticleHTML(article, currentUserId = null) {
 
     var reactionsCount = article.public_reactions_count;
     var reactionsDisplay = '';
-    var reactionsText = reactionsCount === 1 ? 'reaction' : 'reactions';
+    var reactionsText = reactionsCount === 1 ? 'Реакція' : 'Реакції';
     var reactionIcons = document.getElementById('reaction-category-resources');
 
     if (article.class_name !== 'User' && reactionsCount > 0 && reactionIcons) {
@@ -210,7 +210,7 @@ function buildArticleHTML(article, currentUserId = null) {
                                 ${icons.join('')}
                             </span>
                             <span class="aggregate_reactions_counter">
-                              <span class="hidden s:inline">${reactionsCount}&nbsp;${reactionsText}</span>
+                              <span class="hidden s:inline">${reactionsText}:&nbsp;${reactionsCount}</span>
                             </span>
                         </span>
                           </div>
@@ -250,7 +250,7 @@ function buildArticleHTML(article, currentUserId = null) {
         article.organization.profile_image_90.replace('media.dev.to/', 'media2.dev.to/').replace('/cdn-cgi/', '/dynamic/') +
         '" class="crayons-logo__image" loading="lazy"/></a>';
       forOrganization =
-        '<span><span class="crayons-story__tertiary fw-normal"> for </span><a href="/' +
+        '<span><span class="crayons-story__tertiary fw-normal"> для </span><a href="/' +
         article.organization.slug +
         '" class="crayons-story__secondary fw-medium">' +
         article.organization.name +
