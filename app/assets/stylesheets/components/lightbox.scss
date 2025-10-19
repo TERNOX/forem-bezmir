@@ -20,8 +20,8 @@
 
 .c-lightbox__container {
   position: relative;
-  max-width: min(1080px, 100%);
-  width: min(1080px, 100%);
+  max-width: 1080px;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
