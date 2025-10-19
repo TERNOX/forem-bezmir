@@ -5,10 +5,10 @@ require "exifr/jpeg"
 describe ArticleImageUploader, type: :uploader do
   include CarrierWave::Test::Matchers
 
-  let(:image_jpg) { fixture_file_upload("800x600.jpg", "image/jpeg") }
-  let(:image_png) { fixture_file_upload("800x600.png", "image/png") }
-  let(:image_webp) { fixture_file_upload("800x600.webp", "image/webp") }
-  let(:image_pdf) { fixture_file_upload("800x600.pdf", "application/pdf") }
+  let(:image_jpg) { fixture_file_upload("1600x900.jpg", "image/jpeg") }
+  let(:image_png) { fixture_file_upload("1600x900.png", "image/png") }
+  let(:image_webp) { fixture_file_upload("1600x900.webp", "image/webp") }
+  let(:image_pdf) { fixture_file_upload("1600x900.pdf", "application/pdf") }
   let(:image_with_gps) { fixture_file_upload("image_gps_data.jpg", "image/jpeg") }
   let(:high_frame_count) { fixture_file_upload("high_frame_count.gif", "image/gif") }
 

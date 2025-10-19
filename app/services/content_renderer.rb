@@ -23,7 +23,7 @@ class ContentRenderer
   # @param prefix_images_options [Hash] options for Html::Parser#prefix_all_images
   # @return [ContentRenderer::Result]
   def process(link_attributes: {},
-              prefix_images_options: { width: 800, synchronous_detail_detection: false })
+              prefix_images_options: { width: 1700, synchronous_detail_detection: false })
     if prefix_images_options[:synchronous_detail_detection] && ApplicationConfig["AWS_BUCKET_NAME"].present? && FeatureFlag.enabled?(:store_images) # rubocop:disable Layout/LineLength
       markdown_text = input
       markdown_pattern = /!\[.*?\]\((.*?)\)/
