@@ -414,19 +414,60 @@ function buildArticleHTML(article, currentUserId = null) {
         '</div></a>';
     }
 
+    var articleTitle = filterXSS(
+      article.type_of === 'status' && article.title_finalized
+        ? article.title_finalized
+        : article.title,
+    );
+
+    var articleTitleForFeed = filterXSS(
+      article.type_of === 'status' && article.title_finalized_for_feed
+        ? article.title_finalized_for_feed
+        : article.title,
+    );
+
     var navigationLink = `
       <a
         href="${article.path}"
         aria-labelledby="article-link-${article.id}"
         class="crayons-story__hidden-navigation-link"
       >
-        ${filterXSS(article.type_of === 'status' && article.title_finalized ? article.title_finalized : article.title)}
+        ${articleTitle}
       </a>
     `;
 
     let feedContentAttribute = '';
     if (article.class_name === 'Article') {
       feedContentAttribute = `data-feed-content-id="${article.id}"`;
+    }
+
+    var mainImageBackgroundColor = article.main_image_background_hex_color || '#dddddd';
+    var mainImageHeightAttribute = '';
+    if (article.main_image_height) {
+      mainImageHeightAttribute = `height="${article.main_image_height}"`;
+    }
+
+    var feedStyleIsRich =
+      !!document.querySelector('.crayons-article__cover__image__feed');
+    var shouldRenderCover =
+      !!article.main_image &&
+      !article.cloudinary_video_url &&
+      !article.video &&
+      (feedStyleIsRich || article.pinned);
+
+    var coverImageHTML = '';
+    if (shouldRenderCover) {
+      var aspectRatioStyle = '';
+      if (article.main_image_height) {
+        aspectRatioStyle = `style="aspect-ratio: auto 1000 / ${article.main_image_height};"`;
+      }
+
+      coverImageHTML = `
+        <div class="crayons-article__cover crayons-article__cover__image__feed" ${aspectRatioStyle}>
+          <a href="${article.path}" title="${articleTitle}" aria-label="article" class="crayons-article__cover__image__feed crayons-story__cover__image">
+            <img src="${article.main_image}" width="1000" ${mainImageHeightAttribute} style="background-color:${mainImageBackgroundColor};" class="crayons-article__cover__image__feed" alt="Cover image for ${articleTitle}">
+          </a>
+        </div>`;
     }
 
     return `<article class="crayons-story"
@@ -437,6 +478,7 @@ function buildArticleHTML(article, currentUserId = null) {
         ${navigationLink}\
         <div role="presentation">\
           ${videoHTML}\
+          ${coverImageHTML}\
           <div class="crayons-story__body crayons-story__body-${article.type_of}">\
             <div class="crayons-story__top">\
               ${meta}
@@ -444,7 +486,7 @@ function buildArticleHTML(article, currentUserId = null) {
             <div class="crayons-story__indention">
               <h3 class="crayons-story__title crayons-story__title-${article.type_of}">
                 <a href="${article.path}" id="article-link-${article.id}">
-                  ${filterXSS(article.type_of === 'status' && article.title_finalized_for_feed ? article.title_finalized_for_feed : article.title)}
+                  ${articleTitleForFeed}
                 </a>
               </h3>\
               ${article.type_of !== 'status' ? `<div class="crayons-story__tags">${tagString}</div>` : ''}\
