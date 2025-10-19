@@ -146,7 +146,7 @@ module Settings
 
     setting :geos_with_allowed_default_email_opt_in, type: :array, default: %w[]
 
-    setting :default_content_language, type: :string, default: "en",
+    setting :default_content_language, type: :string, default: "uk",
                                        validates: { inclusion: Languages::Detection.codes }
 
     # Algolia

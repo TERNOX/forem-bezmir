@@ -177,7 +177,7 @@ module OmniauthHelpers
           "picture" => "https://dummyimage.com/400x400.jpg",
           "email" => "john@example.com",
           "email_verified" => "true",
-          "locale" => "en",
+          "locale" => "uk",
           "hd" => "company.com"
         }
       }

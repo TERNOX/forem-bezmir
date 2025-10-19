@@ -299,6 +299,12 @@ RSpec.describe "StoriesIndex" do
         allow(Settings::UserExperience).to receive(:default_locale).and_return("fr")
         get "/"
       end
+	  
+    context "with default_locale configured to uk" do
+      before do
+        allow(Settings::UserExperience).to receive(:default_locale).and_return("uk")
+        get "/"
+      end
 
       it "names proper locale" do
         expect(I18n.locale).to eq(:fr)

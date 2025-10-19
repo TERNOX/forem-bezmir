@@ -10,7 +10,7 @@
   see <https://developer.mozilla.org//docs/Web/JavaScript/Reference/Global_Objects/DateTimeFormat>
   for more information.
 */
-const DEFAULT_LOCALE = 'uk-UA';
+const DEFAULT_LOCALE = 'uk';
 const KYIV_TIME_ZONE = 'Europe/Kyiv';
 
 export function timestampToLocalDateTime(timestamp, locale, options) {

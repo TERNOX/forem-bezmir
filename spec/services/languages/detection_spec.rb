@@ -5,7 +5,7 @@ RSpec.describe Languages::Detection, type: :service do
 
   describe "codes" do
     it "returns an array including a couple of popular languages" do
-      expect(described_class.codes).to include("en", "es", "fr")
+      expect(described_class.codes).to include("en", "es", "fr", "uk")
     end
   end
 
