@@ -165,7 +165,7 @@ function buildArticleHTML(article, currentUserId = null) {
       commentsCount = article.comments_count || '0';
     }
 
-    var commentsAriaLabelText = `aria-label="Add a comment to post - ${article.title}"`;
+    var commentsAriaLabelText = `aria-label="Коментувати допис - ${article.title}"`;
 
     if (article.class_name !== 'User') {
       commentsDisplay =
@@ -175,12 +175,10 @@ function buildArticleHTML(article, currentUserId = null) {
         commentsAriaLabelText +
         'class="crayons-btn crayons-btn--s crayons-btn--ghost crayons-btn--icon-left "><svg class="crayons-icon" width="24" height="24" xmlns="http://www.w3.org/2000/svg"><path d="M10.5 5h3a6 6 0 110 12v2.625c-3.75-1.5-9-3.75-9-8.625a6 6 0 016-6zM12 15.5h1.5a4.501 4.501 0 001.722-8.657A4.5 4.5 0 0013.5 6.5h-3A4.5 4.5 0 006 11c0 2.707 1.846 4.475 6 6.36V15.5z"/></svg>';
       if (commentsCount > 0) {
-        commentsDisplay +=
-          commentsCount +
-          '<span class="hidden s:inline">&nbsp;comments</span></a>';
+        commentsDisplay +='<span class="hidden s:inline">Коментарі:&nbsp;'+commentsCount+'</span></a>';
       } else {
         commentsDisplay +=
-          '<span class="hidden s:inline">Add&nbsp;Comment</span></a>';
+          '<span class="hidden s:inline">Коментувати</span></a>';
       }
     }
 
@@ -459,13 +457,13 @@ function buildArticleHTML(article, currentUserId = null) {
     if (shouldRenderCover) {
       var aspectRatioStyle = '';
       if (article.main_image_height) {
-        aspectRatioStyle = `style="aspect-ratio: auto 1000 / ${article.main_image_height};"`;
+        aspectRatioStyle = `style="aspect-ratio: auto;"`;
       }
 
       coverImageHTML = `
         <div class="crayons-article__cover crayons-article__cover__image__feed" ${aspectRatioStyle}>
           <a href="${article.path}" title="${articleTitle}" aria-label="article" class="crayons-article__cover__image__feed crayons-story__cover__image">
-            <img src="${article.main_image}" width="1000" ${mainImageHeightAttribute} style="background-color:${mainImageBackgroundColor};" class="crayons-article__cover__image__feed" alt="Cover image for ${articleTitle}">
+            <img src="${article.main_image}" width="1000" ${mainImageHeightAttribute} ;" class="crayons-article__cover__image__feed" alt="Cover image for ${articleTitle}">
           </a>
         </div>`;
     }
