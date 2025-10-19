@@ -16,5 +16,32 @@ RSpec.describe Homepage::ArticleSerializer, type: :serializer do
       response = described_class.serialized_collection_from(relation: Article.all)
       expect(JSON.parse(response.to_json)[0].dig("user", "name")).to eq(user.name)
     end
+
+    it "includes cover image attributes when available" do
+      article.update!(
+        main_image: "https://example.com/test.png",
+        main_image_background_hex_color: "#123456",
+        main_image_height: 420,
+      )
+
+      allow(ApplicationController.helpers).to receive(:cloud_cover_url).and_call_original
+
+      response = described_class.serialized_collection_from(relation: Article.where(id: article.id))
+      serialized_article = response.first
+
+      expect(serialized_article[:main_image]).to eq(
+        ApplicationController.helpers.cloud_cover_url(article.main_image, article.subforem_id),
+      )
+      expect(serialized_article[:main_image_background_hex_color]).to eq("#123456")
+      expect(serialized_article[:main_image_height]).to eq(420)
+    end
+
+    it "marks an article as pinned when it matches the pinned article id" do
+      allow(PinnedArticle).to receive(:id).and_return(article.id)
+
+      response = described_class.serialized_collection_from(relation: Article.where(id: article.id))
+
+      expect(response.first[:pinned]).to be(true)
+    end
   end
 end

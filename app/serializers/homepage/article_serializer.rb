@@ -39,10 +39,21 @@ module Homepage
     attribute :tag_list, ->(article) { article.cached_tag_list.to_s.split(", ") }
     attribute :flare_tag, ->(article, params) { params.dig(:tag_flares, article.id) }
 
-    attribute :pinned, &:pinned?
-    attribute :main_image_background_hex_color, &:main_image_background_hex_color
-    attribute :main_image_height, &:main_image_height
-    attribute :main_image, if: proc { |article| article.main_image? } do |article|
+    attribute :pinned, if: proc { |article| article.is_a?(::Article) } do |article|
+      article.id == PinnedArticle.id
+    end
+
+    attribute :main_image_background_hex_color,
+              if: proc { |article| article.respond_to?(:main_image_background_hex_color) } do |article|
+      article.main_image_background_hex_color
+    end
+
+    attribute :main_image_height, if: proc { |article| article.respond_to?(:main_image_height) } do |article|
+      article.main_image_height
+    end
+
+    attribute :main_image,
+              if: proc { |article| article.respond_to?(:main_image?) && article.main_image? } do |article|
       ApplicationController.helpers.cloud_cover_url(article.main_image, article.subforem_id)
     end
 
