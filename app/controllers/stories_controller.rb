@@ -378,7 +378,11 @@ class StoriesController < ApplicationController
 
   def filter_community_stories(stories)
     return stories unless community_feed?
-    return stories.where.not(organization_id: COMMUNITY_ORGANIZATION_IDS) if stories.respond_to?(:where)
+    if stories.respond_to?(:where)
+      return stories
+        .where(organization_id: nil)
+        .or(stories.where.not(organization_id: COMMUNITY_ORGANIZATION_IDS))
+    end
 
     Array(stories).reject { |article| excluded_organization?(article) }
   end
