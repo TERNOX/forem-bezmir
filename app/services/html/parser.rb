@@ -63,10 +63,12 @@ module Html
     def wrap_all_images_in_links
       doc = Nokogiri::HTML.fragment(@html)
 
-      doc.search("p img").each do |image|
+      doc.search("img").each do |image|
         next if image.parent.name == "a"
 
-        image.swap("<a href='#{image.attr('src')}' class='article-body-image-wrapper'>#{image}</a>")
+        image.swap(
+          "<a href='#{image.attr('src')}' class='article-body-image-wrapper' data-lightbox='true'>#{image}</a>"
+        )
       end
 
       @html = doc.to_html
