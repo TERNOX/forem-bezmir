@@ -19,6 +19,15 @@ RSpec.describe "Search::FeedContent (Simple)" do
       it "includes type_of in the ATTRIBUTES list" do
         expect(Homepage::ArticlesQuery::ATTRIBUTES).to include(:type_of)
       end
+
+      it "includes cover related columns in the ATTRIBUTES list" do
+        expect(Homepage::ArticlesQuery::ATTRIBUTES).to include(
+          :main_image,
+          :main_image_background_hex_color,
+          :main_image_height,
+          :subforem_id,
+        )
+      end
     end
 
     context "when testing the methods exist on Article model" do

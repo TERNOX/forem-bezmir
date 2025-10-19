@@ -17,6 +17,14 @@ module Homepage
         .pluck(:attributes)
     end
 
+    def self.attribute_value(article, attribute_name)
+      if article.respond_to?(:has_attribute?) && article.has_attribute?(attribute_name)
+        article[attribute_name]
+      elsif article.respond_to?(attribute_name)
+        article.public_send(attribute_name)
+      end
+    end
+
     attributes(
       :class_name,
       :cloudinary_video_url,
@@ -38,7 +46,29 @@ module Homepage
     attribute :published_at_int, ->(article) { article.published_at.to_i }
     attribute :tag_list, ->(article) { article.cached_tag_list.to_s.split(", ") }
     attribute :flare_tag, ->(article, params) { params.dig(:tag_flares, article.id) }
-    
+
+    attribute :pinned, if: proc { |article| article.is_a?(::Article) } do |article|
+      article.id == PinnedArticle.id
+    end
+
+    attribute :main_image_background_hex_color,
+              if: proc { |article| Homepage::ArticleSerializer.attribute_value(article, :main_image_background_hex_color).present? } do |article|
+      Homepage::ArticleSerializer.attribute_value(article, :main_image_background_hex_color)
+    end
+
+    attribute :main_image_height,
+              if: proc { |article| Homepage::ArticleSerializer.attribute_value(article, :main_image_height).present? } do |article|
+      Homepage::ArticleSerializer.attribute_value(article, :main_image_height)
+    end
+
+    attribute :main_image,
+              if: proc { |article| Homepage::ArticleSerializer.attribute_value(article, :main_image).present? } do |article|
+      main_image = Homepage::ArticleSerializer.attribute_value(article, :main_image)
+      subforem_id = Homepage::ArticleSerializer.attribute_value(article, :subforem_id)
+
+      ApplicationController.helpers.cloud_cover_url(main_image, subforem_id)
+    end
+
     # Only include special title methods for status articles
     attribute :title_finalized_for_feed, if: proc { |article| article.type_of == "status" }
     attribute :title_for_metadata, if: proc { |article| article.type_of == "status" }

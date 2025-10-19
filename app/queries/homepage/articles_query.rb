@@ -6,11 +6,15 @@ module Homepage
       crossposted_at
       displayed_comments_count
       id
+      main_image
+      main_image_background_hex_color
+      main_image_height
       organization_id
       path
       public_reactions_count
       published_at
       reading_time
+      subforem_id
       title
       type_of
       user_id
