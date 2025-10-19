@@ -404,6 +404,15 @@ export const initializeArticleLightbox = () => {
     registerTrigger(gallery.mainTrigger, gallery.groupId, 0);
   });
 
+  const addDefaultLink = (link) => {
+    const item = createItemFromLink(link);
+    if (!item.src) {
+      return;
+    }
+    const index = defaultItems.push(item) - 1;
+    registerTrigger(link, defaultGroupId, index);
+  };
+
   const remainingLinks = Array.from(articleBody.querySelectorAll('a[href]')).filter((link) => {
     if (!link.querySelector('img')) {
       return false;
@@ -417,14 +426,18 @@ export const initializeArticleLightbox = () => {
     return isImageHref(link.getAttribute('href') || '');
   });
 
-  remainingLinks.forEach((link) => {
-    const item = createItemFromLink(link);
-    if (!item.src) {
-      return;
-    }
-    const index = defaultItems.push(item) - 1;
-    registerTrigger(link, defaultGroupId, index);
-  });
+  remainingLinks.forEach(addDefaultLink);
+
+  const articleCoverLink = document.querySelector('.crayons-article__cover[href]');
+  if (
+    articleCoverLink &&
+    articleCoverLink.querySelector('img') &&
+    !articleCoverLink.classList.contains('js-no-lightbox') &&
+    articleCoverLink.dataset.noLightbox !== 'true' &&
+    isImageHref(articleCoverLink.getAttribute('href') || '')
+  ) {
+    addDefaultLink(articleCoverLink);
+  }
 
   if (defaultItems.length) {
     groups.set(defaultGroupId, defaultItems);
