@@ -186,7 +186,7 @@ RSpec.describe "ArticlesUpdate" do
       attributes[:published] = true
       put "/articles/#{article.id}", params: { article: attributes }
       article.reload
-      published_at_utc = article.published_at.in_time_zone("UTC").strftime("%m/%d/%Y %H:%M")
+      published_at_utc = article.published_at.in_time_zone("Kyiv").strftime("%m/%d/%Y %H:%M")
       expect(published_at_utc).to eq("#{tomorrow.strftime('%m/%d/%Y')} 15:00")
     end
 
@@ -208,7 +208,7 @@ RSpec.describe "ArticlesUpdate" do
       attributes[:timezone] = "America/Mexico_City"
       put "/articles/#{draft.id}", params: { article: attributes }
       draft.reload
-      published_at_utc = draft.published_at.in_time_zone("UTC").strftime("%m/%d/%Y %H:%M")
+      published_at_utc = draft.published_at.in_time_zone("Kyiv").strftime("%m/%d/%Y %H:%M")
       draft.published_at.in_time_zone(attributes[:timezone])
       expected_time = "#{(tomorrow + 1.day).strftime('%m/%d/%Y')} 00:00"
       expect(published_at_utc).to eq(expected_time)

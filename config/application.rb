@@ -80,7 +80,8 @@ module PracticalDeveloper
     config.i18n.load_path += Dir[Rails.root.join("config/locales/**/*.yml")]
 
     config.i18n.fallbacks = [:en]
-
+	config.time_zone = "Kyiv"
+	
     # Authorization / Authentication exception handling.
     config.action_dispatch.rescue_responses["Pundit::NotAuthorizedError"] = :not_found
     config.action_dispatch.rescue_responses["ApplicationPolicy::NotAuthorizedError"] = :not_found
