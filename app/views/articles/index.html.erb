@@ -54,6 +54,15 @@
       <header class="p-2 px-3 m:p-0 m:px-0 m:mb-2 fs-l">
         <h1 class="screen-reader-only"><%= t("views.stories.heading") %></h1>
         <%= render "articles/feed_nav" %>
+        <% community_feed_active = params[:feed_view] == "community" %>
+        <% base_query_params = request.query_parameters.except("feed_view") %>
+        <% target_query_params = community_feed_active ? base_query_params : base_query_params.merge("feed_view" => "community") %>
+        <% target_path = request.path %>
+        <% query_string = target_query_params.to_query %>
+        <% target_path = "#{target_path}?#{query_string}" if query_string.present? %>
+        <div class="mt-2">
+          <%= link_to "Спільнота", target_path, class: "crayons-btn crayons-btn--s #{community_feed_active ? "crayons-btn--primary" : "crayons-btn--ghost"}", role: "button", "aria-pressed": community_feed_active %>
+        </div>
       </header>
 
       <% if user_signed_in? %>

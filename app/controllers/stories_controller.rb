@@ -1,6 +1,8 @@
 class StoriesController < ApplicationController
   helper ProfileHelper
 
+  COMMUNITY_ORGANIZATION_IDS = [1, 2].freeze
+
   DEFAULT_HOME_FEED_ATTRIBUTES_FOR_SERIALIZATION = {
     only: %i[
       title path id user_id comments_count public_reactions_count organization_id
@@ -277,18 +279,22 @@ class StoriesController < ApplicationController
   def assign_feed_stories
     if params[:timeframe].in?(Timeframe::FILTER_TIMEFRAMES)
       @stories = Articles::Feeds::Timeframe.call(params[:timeframe])
+      @stories = filter_community_stories(@stories)
     elsif params[:timeframe] == Timeframe::LATEST_TIMEFRAME
       @stories = Articles::Feeds::Latest.call(minimum_score: Settings::UserExperience.home_feed_minimum_score)
+      @stories = filter_community_stories(@stories)
     else
       @default_home_feed = true
       feed = Articles::Feeds::LargeForemExperimental.new(page: @page, tag: params[:tag])
       @featured_story, @stories = feed.featured_story_and_default_home_feed(user_signed_in: user_signed_in?)
-      @stories = @stories.to_a
+      @stories = filter_community_stories(@stories.to_a)
       @stories = @stories.reject { |article| article.title == "[Boost]" }
     end
 
     @pinned_article = pinned_article&.decorate
+    @pinned_article = nil if excluded_organization?(@pinned_article)
     @featured_story = (featured_story || Article.new)&.decorate
+    @featured_story = Article.new.decorate if excluded_organization?(@featured_story)
 
     @stories = ArticleDecorator.decorate_collection(@stories)
   end
@@ -361,6 +367,23 @@ class StoriesController < ApplicationController
       .limited_column_select
       .where.not(id: @pinned_stories.map(&:id))
       .order(published_at: :desc).page(@page).per(user_signed_in? ? 2 : SIGNED_OUT_RECORD_COUNT))
+  end
+
+  def community_feed?
+    params[:feed_view] == "community"
+  end
+
+  def filter_community_stories(stories)
+    return stories unless community_feed?
+    return stories.where.not(organization_id: COMMUNITY_ORGANIZATION_IDS) if stories.respond_to?(:where)
+
+    Array(stories).reject { |article| excluded_organization?(article) }
+  end
+
+  def excluded_organization?(article)
+    return false unless article
+
+    COMMUNITY_ORGANIZATION_IDS.include?(article.organization_id)
   end
 
   def assign_user_github_repositories

@@ -4,6 +4,8 @@ module Stories
 
     before_action :current_user_by_token, only: [:show]
 
+    COMMUNITY_ORGANIZATION_IDS = [1, 2].freeze
+
     def show
       @page = (params[:page] || 1).to_i
       # This most recent test has concluded with a winner. Preserved as a comment awaiting next test
@@ -33,6 +35,7 @@ module Stories
 
       pinned_article = PinnedArticle.get
       return if pinned_article.nil? || @stories.detect { |story| story.id == pinned_article.id }
+      return if community_feed? && excluded_organization?(pinned_article)
 
       @stories.prepend(pinned_article.decorate)
     end
@@ -53,6 +56,8 @@ module Stories
                 else
                   signed_out_base_feed
                 end
+
+      stories = filter_community_stories(stories)
 
       ArticleDecorator.decorate_collection(stories)
     end
@@ -187,6 +192,23 @@ module Stories
 
         @cached_subforem_logos[subforem_id] ||= Settings::General.logo_png(subforem_id: subforem_id)
       end
+    end
+
+    def community_feed?
+      params[:feed_view] == "community"
+    end
+
+    def filter_community_stories(stories)
+      return stories unless community_feed?
+      return stories.where.not(organization_id: COMMUNITY_ORGANIZATION_IDS) if stories.respond_to?(:where)
+
+      Array(stories).reject { |article| excluded_organization?(article) }
+    end
+
+    def excluded_organization?(article)
+      return false unless article
+
+      COMMUNITY_ORGANIZATION_IDS.include?(article.organization_id)
     end
   end
 end
