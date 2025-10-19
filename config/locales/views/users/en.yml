@@ -69,8 +69,8 @@ en:
             one: 1 tag followed
             other: "%{count} tags followed"
       reputation:
-        title: Comment reputation
-        text_html: "Comment reputation: %{score}"
+        title: Reputation
+        text_html: "Reputation from post and comment likes: %{score}"
       signout:
         meta:
           title: Confirm Signout - %{community}

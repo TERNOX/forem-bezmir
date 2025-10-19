@@ -1,5 +1,6 @@
 class Reaction < ApplicationRecord
   REACTABLE_TYPES = %w[Comment Article User].freeze
+  REPUTATION_REACTABLE_TYPES = %w[Comment Article].freeze
   STATUSES = %w[valid invalid confirmed archived].freeze
 
   belongs_to :reactable, polymorphic: true
@@ -265,7 +266,7 @@ class Reaction < ApplicationRecord
   def counts_for_reputation?(category_value = category, status_value = status, reactable_type_value = reactable_type)
     category_value == "like" &&
       %w[valid confirmed].include?(status_value) &&
-      reactable_type_value == "Comment"
+      reactable_type_value.in?(REPUTATION_REACTABLE_TYPES)
   end
 
   def reputation_recipient
@@ -322,15 +323,17 @@ class Reaction < ApplicationRecord
   end
 
   def previous_reputation_recipient
-    return unless reactable_type_before_last_save == "Comment"
+    return unless reactable_type_before_last_save.in?(REPUTATION_REACTABLE_TYPES)
 
-    previous_reactable_for_reputation&.user
+    previous_reactable_for_reputation.then do |reactable|
+      reactable.is_a?(User) ? reactable : reactable&.user
+    end
   end
 
   def previous_reactable_for_reputation
     previous_type = reactable_type_before_last_save
     previous_id = reactable_id_before_last_save
-    return unless previous_type == "Comment" && previous_id
+    return unless previous_type.in?(REPUTATION_REACTABLE_TYPES) && previous_id
 
     previous_type.safe_constantize&.find_by(id: previous_id)
   end
