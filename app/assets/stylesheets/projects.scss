@@ -1,0 +1,141 @@
+.projects-directory {
+  padding-top: 2rem;
+  padding-bottom: 4rem;
+
+  &__intro {
+    margin-bottom: 2rem;
+  }
+
+  &__controls {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+
+    @media (min-width: 768px) {
+      align-items: flex-end;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+  }
+
+  &__controls-form {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    @media (min-width: 768px) {
+      flex-direction: row;
+      align-items: flex-end;
+    }
+  }
+
+  &__search-field,
+  &__sort-field {
+    width: 100%;
+
+    @media (min-width: 768px) {
+      max-width: 360px;
+    }
+  }
+
+  &__sort-field {
+    @media (min-width: 768px) {
+      max-width: 240px;
+    }
+  }
+
+  &__grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: 1fr;
+
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  &__card {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    height: 100%;
+  }
+
+  &__card-header {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1rem;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  &__image {
+    width: 72px;
+    height: 72px;
+    border-radius: 16px;
+    object-fit: cover;
+  }
+
+  &__title {
+    margin: 0;
+  }
+
+  &__tagline {
+    margin: 0.25rem 0 0;
+  }
+
+  &__summary {
+    margin: 0;
+    color: var(--color-base-70);
+  }
+
+  &__meta {
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  }
+
+  &__meta-item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.35rem;
+    align-items: baseline;
+  }
+
+  &__meta-label {
+    color: var(--color-base-70);
+    font-size: 0.875rem;
+  }
+
+  &__meta-value {
+    font-weight: 600;
+  }
+
+  &__external-link {
+    align-self: flex-start;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+  }
+
+  &__loading,
+  &__empty,
+  &__error {
+    margin-top: 2rem;
+    text-align: center;
+  }
+
+  &__error {
+    color: var(--color-negative);
+  }
+
+  &__noscript {
+    margin-top: 1.5rem;
+  }
+}

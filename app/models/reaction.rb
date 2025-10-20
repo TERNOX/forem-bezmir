@@ -60,6 +60,7 @@ class Reaction < ApplicationRecord
   before_save :assign_points
   after_create :notify_slack_channel_about_vomit_reaction, if: -> { category == "vomit" }
   before_destroy :store_reputation_snapshot
+  before_destroy :store_organization_reputation_snapshot
   before_destroy :bust_reactable_cache_without_delay
   before_destroy :bust_reaction_counts_cache
   before_destroy :update_reactable, unless: :destroyed_by_association
@@ -70,6 +71,9 @@ class Reaction < ApplicationRecord
   after_commit :increment_recipient_reputation, on: :create
   after_commit :adjust_recipient_reputation_on_update, on: :update
   after_commit :decrement_recipient_reputation, on: :destroy
+  after_commit :increment_organization_reputation, on: :create
+  after_commit :adjust_organization_reputation_on_update, on: :update
+  after_commit :decrement_organization_reputation, on: :destroy
 
   class << self
     def count_for_article(id)
@@ -336,5 +340,78 @@ class Reaction < ApplicationRecord
     return unless previous_type.in?(REPUTATION_REACTABLE_TYPES) && previous_id
 
     previous_type.safe_constantize&.find_by(id: previous_id)
+  end
+
+  def organization_counts_for_reputation?(category_value = category, status_value = status, reactable_record = reactable)
+    return false unless category_value == "like"
+    return false unless status_value.in?(%w[valid confirmed])
+    return false unless reactable_record.is_a?(Article)
+
+    reactable_record.organization.present?
+  end
+
+  def organization_reputation_recipient
+    organization = reactable.is_a?(Article) ? reactable.organization : nil
+    organization if organization_counts_for_reputation?
+  end
+
+  def adjust_organization_reputation(delta, organization: organization_reputation_recipient)
+    return if delta.zero? || organization.nil?
+
+    update_sql = <<~SQL.squish
+      reputation_score = CASE
+        WHEN COALESCE(reputation_score, 0) + ? < 0 THEN 0
+        ELSE COALESCE(reputation_score, 0) + ?
+      END
+    SQL
+
+    Organization.where(id: organization.id).update_all([update_sql, delta, delta])
+  end
+
+  def increment_organization_reputation
+    adjust_organization_reputation(1) if organization_counts_for_reputation?
+  end
+
+  def decrement_organization_reputation
+    return unless @organization_counted_for_reputation_before_destroy
+
+    adjust_organization_reputation(-1, organization: @organization_reputation_recipient)
+  end
+
+  def adjust_organization_reputation_on_update
+    previous_status = status_before_last_save || status
+    previous_category = category_before_last_save || category
+    previous_reactable = previous_reactable_for_reputation
+    previous_organization = organization_for(previous_reactable)
+    current_organization = organization_reputation_recipient
+
+    previously_counted = organization_counts_for_reputation?(previous_category, previous_status, previous_reactable)
+    currently_counted = organization_counts_for_reputation?
+
+    reactable_changed = saved_change_to_reactable_id? || saved_change_to_reactable_type?
+    organization_changed = previous_organization != current_organization
+
+    if reactable_changed || organization_changed
+      adjust_organization_reputation(-1, organization: previous_organization) if previously_counted && previous_organization
+      adjust_organization_reputation(1, organization: current_organization) if currently_counted && current_organization
+      return
+    end
+
+    return if previously_counted == currently_counted
+
+    target = currently_counted ? current_organization : previous_organization
+    delta = currently_counted ? 1 : -1
+    adjust_organization_reputation(delta, organization: target)
+  end
+
+  def store_organization_reputation_snapshot
+    @organization_counted_for_reputation_before_destroy = organization_counts_for_reputation?
+    @organization_reputation_recipient = organization_reputation_recipient if @organization_counted_for_reputation_before_destroy
+  end
+
+  def organization_for(record)
+    return unless record.respond_to?(:organization)
+
+    record.organization
   end
 end

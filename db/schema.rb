@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_10_18_221955) do
+ActiveRecord::Schema[7.0].define(version: 2025_10_19_220000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "ltree"
@@ -911,6 +911,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_10_18_221955) do
     t.string "secret"
     t.string "slug"
     t.integer "spent_credits_count", default: 0, null: false
+    t.integer "reputation_score", default: 0, null: false
     t.string "story"
     t.text "summary"
     t.string "tag_line"
@@ -920,6 +921,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_10_18_221955) do
     t.integer "unspent_credits_count", default: 0, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.string "url"
+    t.index ["reputation_score"], name: "index_organizations_on_reputation_score"
     t.index ["secret"], name: "index_organizations_on_secret", unique: true
     t.index ["slug"], name: "index_organizations_on_slug", unique: true
   end

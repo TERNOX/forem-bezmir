@@ -1,0 +1,26 @@
+---
+uk:
+  views:
+    projects:
+      index:
+        title: "Проєкти · %{community}"
+        heading: "Організації та проєкти"
+        description: "Знаходьте організації спільноти та стежте за їхніми активностями."
+        search_label: "Швидкий пошук"
+        search_placeholder: "Швидкий пошук організацій..."
+        sort_label: "Сортування"
+        sort_options:
+          reputation_desc: "Найвища репутація"
+          reputation_asc: "Найнижча репутація"
+          newest: "Найновіші"
+          oldest: "Найстаріші"
+        apply_filters: "Застосувати"
+        empty_state: "За вибраними параметрами поки немає проєктів."
+        reputation_label: "Репутація"
+        created_label: "Створено"
+        posts_label: "Публікацій"
+        visit_link: "Відкрити сайт"
+        load_more: "Показати ще проєкти"
+        error: "Не вдалося завантажити проєкти. Спробуйте ще раз."
+        logo_alt: "Логотип %{name}"
+        enable_javascript: "Увімкніть JavaScript, щоб переглядати проєкти."
