@@ -319,7 +319,7 @@ RSpec.describe ApplicationHelper do
     it "returns cloudinary-manipulated link" do
       image = helper.optimized_image_url(Faker::Placeholdit.image)
       expect(image).to start_with("https://res.cloudinary.com")
-        .and include("image/fetch/", "/c_limit,f_auto,fl_progressive,q_80,w_500/")
+        .and include("image/fetch/", "/c_limit,f_auto,fl_progressive,q_80,w_700/")
     end
 
     it "returns an ASCII domain for Unicode input" do

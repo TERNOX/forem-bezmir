@@ -29,7 +29,7 @@ module MarkdownProcessor
     end
 
     # @param prefix_images_options [Hash] params, that need to be passed further to HtmlParser#prefix_all_images
-    def finalize(link_attributes: {}, prefix_images_options: { width: 800, synchronous_detail_detection: false })
+    def finalize(link_attributes: {}, prefix_images_options: { width: 1500, synchronous_detail_detection: false })
       options = { hard_wrap: true, filter_html: false, link_attributes: link_attributes }
       renderer = Redcarpet::Render::HTMLRouge.new(options)
       markdown = Redcarpet::Markdown.new(renderer, Constants::Redcarpet::CONFIG)
