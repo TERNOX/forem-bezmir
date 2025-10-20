@@ -87,6 +87,25 @@ RSpec.describe "Search", :proper_status do
       expect(Homepage::FetchArticles).to have_received(:call).with(hash_including(tags: %w[ruby]))
     end
 
+    context "when viewing the community feed" do
+      it "excludes articles from the configured organizations" do
+        excluded_org = create(:organization)
+        allowed_org = create(:organization)
+        excluded_article = create(:article, organization: excluded_org)
+        allowed_article = create(:article, organization: allowed_org)
+        personal_article = create(:article, organization: nil)
+
+        stub_const("SearchController::COMMUNITY_ORGANIZATION_IDS", [excluded_org.id])
+
+        get search_feed_content_path(homepage_params.merge(feed_view: "community"))
+
+        result_ids = response.parsed_body["result"].map { |article| article["id"] }
+
+        expect(result_ids).to include(allowed_article.id, personal_article.id)
+        expect(result_ids).not_to include(excluded_article.id)
+      end
+    end
+
     context "when searching for articles" do
       it "calls Search::Article without a class_name" do
         allow(Search::Article).to receive(:search_documents)
