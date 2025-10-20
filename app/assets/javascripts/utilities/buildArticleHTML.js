@@ -463,7 +463,7 @@ function buildArticleHTML(article, currentUserId = null) {
       coverImageHTML = `
         <div class="crayons-article__cover crayons-article__cover__image__feed" ${aspectRatioStyle}>
           <a href="${article.path}" title="${articleTitle}" aria-label="article" class="crayons-article__cover__image__feed crayons-story__cover__image">
-            <img src="${article.main_image}" width="1000" ${mainImageHeightAttribute} ;" class="crayons-article__cover__image__feed" alt="Cover image for ${articleTitle}">
+            <img src="${article.main_image}" width="1000" ${mainImageHeightAttribute} ;" class="crayons-article__cover__image__feed" alt="Обкладинка для ${articleTitle}">
           </a>
         </div>`;
     }

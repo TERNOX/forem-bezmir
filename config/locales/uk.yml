@@ -107,42 +107,67 @@ uk:
   datetime:
     distance_in_words_ago:
       about_x_hours:
-        one: приблизно годину тому
-        other: приблизно %{count} годин тому
+        one: "приблизно %{count} годину тому"
+        few: "приблизно %{count} години тому"
+        many: "приблизно %{count} годин тому"
+        other: "приблизно %{count} години тому"
       about_x_months:
-        one: приблизно місяць тому
-        other: приблизно %{count} місяців тому
+        one: "приблизно %{count} місяць тому"
+        few: "приблизно %{count} місяці тому"
+        many: "приблизно %{count} місяців тому"
+        other: "приблизно %{count} місяця тому"
       about_x_years:
-        one: приблизно рік тому
-        other: приблизно %{count} років тому
+        one: "приблизно %{count} рік тому"
+        few: "приблизно %{count} роки тому"
+        many: "приблизно %{count} років тому"
+        other: "приблизно %{count} року тому"
       almost_x_years:
-        one: майже рік тому
-        other: майже %{count} років тому
-      half_a_minute: пів хвилини тому
+        one: "майже %{count} рік тому"
+        few: "майже %{count} роки тому"
+        many: "майже %{count} років тому"
+        other: "майже %{count} року тому"
+      half_a_minute: "пів хвилини тому"
       less_than_x_seconds:
-        one: менше секунди тому
-        other: менше %{count} секунд тому
+        one: "менше %{count} секунди тому"
+        few: "менше %{count} секунди тому"
+        many: "менше %{count} секунд тому"
+        other: "менше %{count} секунди тому"
       less_than_x_minutes:
-        one: менше хвилини тому
-        other: менше %{count} хвилин тому
+        one: "менше %{count} хвилини тому"
+        few: "менше %{count} хвилини тому"
+        many: "менше %{count} хвилин тому"
+        other: "менше %{count} хвилини тому"
       over_x_years:
-        one: понад рік тому
-        other: понад %{count} років тому
+        one: "понад %{count} рік тому"
+        few: "понад %{count} роки тому"
+        many: "понад %{count} років тому"
+        other: "понад %{count} року тому"
       x_seconds:
-        one: секунду тому
-        other: "%{count} секунд тому"
+        one: "%{count} секунду тому"
+        few: "%{count} секунди тому"
+        many: "%{count} секунд тому"
+        other: "%{count} секунди тому"
       x_minutes:
-        one: хвилину тому
-        other: "%{count} хвилин тому"
+        one: "%{count} хвилину тому"
+        few: "%{count} хвилини тому"
+        many: "%{count} хвилин тому"
+        other: "%{count} хвилини тому"
       x_days:
-        one: день тому
-        other: "%{count} днів тому"
+        one: "%{count} день тому"
+        few: "%{count} дні тому"
+        many: "%{count} днів тому"
+        other: "%{count} дня тому"
       x_months:
-        one: місяць тому
-        other: "%{count} місяців тому"
+        one: "%{count} місяць тому"
+        few: "%{count} місяці тому"
+        many: "%{count} місяців тому"
+        other: "%{count} місяця тому"
       x_years:
-        one: рік тому
-        other: "%{count} років тому"
+        one: "%{count} рік тому"
+        few: "%{count} роки тому"
+        many: "%{count} років тому"
+        other: "%{count} року тому"
+
     expired_ago:
       about_x_hours:
         one: Прострочено приблизно годину тому
