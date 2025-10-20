@@ -410,11 +410,19 @@ function paginate(tag, params, requiresApproval) {
     JSON.parse(params),
   );
 
+  const currentFeedView = new URL(window.location.href).searchParams.get(
+    'feed_view',
+  );
+
   if (tag && tag.length > 0) {
     searchHash.tag_names = searchHash.tag_names || [];
     searchHash.tag_names.push(tag);
   }
   searchHash.approved = requiresApproval === 'true' ? 'true' : '';
+
+  if (currentFeedView) {
+    searchHash.feed_view = currentFeedView;
+  }
 
   var homeEl = document.getElementById('index-container');
   if (homeEl.dataset.feed === 'base-feed') {
@@ -463,7 +471,12 @@ function paginate(tag, params, requiresApproval) {
   let useStoriesFeed = (homeEl.dataset.feed === 'base-feed' || homeEl.dataset.feed === 'latest') && homeEl.dataset.feedContextType === 'home' && homeEl.dataset.feedUseStoriesEndpoint === 'true';
   let feedTypeOf = localStorage?.getItem('current_feed') || 'discover';
   let latestString = homeEl.dataset.feed === 'latest' ? '/latest' : '';
-  let url = useStoriesFeed ? `/stories/feed${latestString}/?page=${nextPage + 2}&type_of=${feedTypeOf}` : `/search/feed_content?${searchParams.toString()}`;
+  const feedViewParam = currentFeedView
+    ? `&feed_view=${encodeURIComponent(currentFeedView)}`
+    : '';
+  let url = useStoriesFeed
+    ? `/stories/feed${latestString}/?page=${nextPage + 2}&type_of=${feedTypeOf}${feedViewParam}`
+    : `/search/feed_content?${searchParams.toString()}`;
   fetch(url, {
     method: 'GET',
     headers: {
