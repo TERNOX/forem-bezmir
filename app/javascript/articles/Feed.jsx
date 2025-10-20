@@ -8,7 +8,7 @@ import { initializeDropdown } from '@utilities/dropdownUtils';
 
 /* global userData sendHapticMessage showLoginModal buttonFormData renderNewSidebarCount */
 
-export const Feed = ({ timeFrame, renderFeed, afterRender }) => {
+export const Feed = ({ timeFrame, feedView, renderFeed, afterRender }) => {
   const { reading_list_ids = [] } = userData(); // eslint-disable-line camelcase
   const [bookmarkedFeedItems, setBookmarkedFeedItems] = useState(
     new Set(reading_list_ids),
@@ -20,11 +20,15 @@ export const Feed = ({ timeFrame, renderFeed, afterRender }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchFeedItems(timeFrame = '', page = 1) {
+    async function fetchFeedItems(timeFrame = '', page = 1, currentFeedView = '') {
       const feedTypeOf = localStorage?.getItem('current_feed') || 'discover';
       const billboardUrlComponent = document.body.dataset.dynamicUrlComponent || 'bb';
+      const feedViewParam =
+        currentFeedView && currentFeedView.length > 0
+          ? `&feed_view=${encodeURIComponent(currentFeedView)}`
+          : '';
       const promises = [
-        fetch(`/stories/feed/${timeFrame}?page=${page}&type_of=${feedTypeOf}`, {
+        fetch(`/stories/feed/${timeFrame}?page=${page}&type_of=${feedTypeOf}${feedViewParam}`, {
           method: 'GET',
           headers: {
             Accept: 'application/json',
@@ -77,7 +81,7 @@ export const Feed = ({ timeFrame, renderFeed, afterRender }) => {
         if (onError) setOnError(false);
         setIsLoading(true);
 
-        fetchFeedItems(timeFrame).then(
+        fetchFeedItems(timeFrame, 1, feedView).then(
           ([
             feedPosts = [],
             feedFirstBillboard,
@@ -140,7 +144,7 @@ export const Feed = ({ timeFrame, renderFeed, afterRender }) => {
       }
     };
     organizeFeedItems();
-  }, [timeFrame, onError]);
+  }, [timeFrame, feedView, onError]);
 
   useEffect(() => {
     if (feedItems.length > 0) {
@@ -379,10 +383,12 @@ function initializeMainStatusForm() {
 
 Feed.defaultProps = {
   timeFrame: '',
+  feedView: '',
 };
 
 Feed.propTypes = {
   timeFrame: PropTypes.string,
+  feedView: PropTypes.string,
   renderFeed: PropTypes.func.isRequired,
 };
 

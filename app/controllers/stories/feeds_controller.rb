@@ -4,6 +4,8 @@ module Stories
 
     before_action :current_user_by_token, only: [:show]
 
+    COMMUNITY_ORGANIZATION_IDS = [1, 2].freeze
+
     def show
       @page = (params[:page] || 1).to_i
       # This most recent test has concluded with a winner. Preserved as a comment awaiting next test
@@ -33,26 +35,31 @@ module Stories
 
       pinned_article = PinnedArticle.get
       return if pinned_article.nil? || @stories.detect { |story| story.id == pinned_article.id }
+      return if community_feed? && excluded_organization?(pinned_article)
 
       @stories.prepend(pinned_article.decorate)
     end
 
     def assign_feed_stories
       params[:type_of] = "discover" if params[:type_of].blank?
+      timeframe = community_feed? ? Timeframe::LATEST_TIMEFRAME : params[:timeframe]
+      params[:timeframe] = timeframe if community_feed?
 
-      stories = if params[:timeframe].in?(Timeframe::FILTER_TIMEFRAMES)
+      stories = if timeframe.in?(Timeframe::FILTER_TIMEFRAMES)
                   timeframe_feed
-                elsif params[:type_of] == "following" && user_signed_in? && params[:timeframe] == Timeframe::LATEST_TIMEFRAME
+                elsif params[:type_of] == "following" && user_signed_in? && timeframe == Timeframe::LATEST_TIMEFRAME
                   latest_following_feed
                 elsif params[:type_of] == "following" && user_signed_in?
                   relevant_following_feed
-                elsif params[:timeframe] == Timeframe::LATEST_TIMEFRAME
+                elsif timeframe == Timeframe::LATEST_TIMEFRAME
                   latest_feed
                 elsif user_signed_in?
                   signed_in_base_feed
                 else
                   signed_out_base_feed
                 end
+
+      stories = filter_community_stories(stories)
 
       ArticleDecorator.decorate_collection(stories)
     end
@@ -187,6 +194,27 @@ module Stories
 
         @cached_subforem_logos[subforem_id] ||= Settings::General.logo_png(subforem_id: subforem_id)
       end
+    end
+
+    def community_feed?
+      params[:feed_view] == "community"
+    end
+
+    def filter_community_stories(stories)
+      return stories unless community_feed?
+      if stories.respond_to?(:where)
+        return stories
+          .where(organization_id: nil)
+          .or(stories.where.not(organization_id: COMMUNITY_ORGANIZATION_IDS))
+      end
+
+      Array(stories).reject { |article| excluded_organization?(article) }
+    end
+
+    def excluded_organization?(article)
+      return false unless article
+
+      COMMUNITY_ORGANIZATION_IDS.include?(article.organization_id)
     end
   end
 end

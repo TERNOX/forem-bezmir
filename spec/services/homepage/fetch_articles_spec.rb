@@ -75,5 +75,19 @@ RSpec.describe Homepage::FetchArticles, type: :service do
       expect(result[:main_image_background_hex_color]).to eq("#123456")
       expect(result[:main_image_height]).to eq(420)
     end
+
+    it "excludes articles from the provided organizations" do
+      excluded_org = create(:organization)
+      allowed_org = create(:organization)
+      excluded_article = create(:article, organization: excluded_org)
+      allowed_article = create(:article, organization: allowed_org)
+      personal_article = create(:article, organization: nil)
+
+      result = described_class.call(excluded_organization_ids: [excluded_org.id])
+      result_ids = result.map { |attrs| attrs[:id] }
+
+      expect(result_ids).not_to include(excluded_article.id)
+      expect(result_ids).to include(allowed_article.id, personal_article.id)
+    end
   end
 end

@@ -3,6 +3,8 @@ class SearchController < ApplicationController
   before_action :format_integer_params
   before_action :sanitize_params, only: %i[listings reactions feed_content]
 
+  COMMUNITY_ORGANIZATION_IDS = [1, 2].freeze
+
   LISTINGS_PARAMS = [
     :category,
     :listing_search,
@@ -35,6 +37,7 @@ class SearchController < ApplicationController
   FEED_PARAMS = [
     :approved,
     :class_name,
+    :feed_view,
     :id,
     :organization_id,
     :page,
@@ -120,6 +123,7 @@ class SearchController < ApplicationController
           sort_direction: params[:sort_direction],
           page: params[:page],
           per_page: params[:per_page],
+          excluded_organization_ids: community_feed? ? COMMUNITY_ORGANIZATION_IDS : nil,
         )
       elsif class_name.Comment?
         Search::Comment.search_documents(
@@ -232,5 +236,9 @@ class SearchController < ApplicationController
 
     direction = params[:sort_direction].downcase.to_sym
     params.delete(:sort_direction) unless direction.in?(VALID_SORT_DIRECTIONS)
+  end
+
+  def community_feed?
+    params[:feed_view] == "community"
   end
 end

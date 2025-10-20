@@ -139,6 +139,9 @@ export const renderFeed = async (timeFrame, afterRender) => {
 
   const { currentUser } = await getUserDataAndCsrfToken();
   const currentUserId = currentUser && currentUser.id;
+  const currentFeedView = new URL(window.location.href).searchParams.get(
+    'feed_view',
+  ) || '';
 
   const callback = ({
     pinnedItem,
@@ -187,6 +190,7 @@ export const renderFeed = async (timeFrame, afterRender) => {
   render(
     <Feed
       timeFrame={timeFrame}
+      feedView={currentFeedView}
       renderFeed={callback}
       afterRender={afterRender}
     />,
