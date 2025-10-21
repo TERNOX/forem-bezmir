@@ -1,4 +1,4 @@
-<% if @organization.company_size.present? || @organization.email.present? %>
+<% if @organization.company_size.present? || @organization.email.present? || @organization.reputation_score.present? %>
   <div class="profile-header__bottom fs-base">
     <% if @organization.email.present? %>
       <div class="crayons-definition">
@@ -15,6 +15,13 @@
       <div class="crayons-definition">
         <strong class="crayons-definition__title"><%= t("views.organizations.size") %></strong>
         <p class="crayons-definition__value"><%= @organization.company_size %></p>
+      </div>
+    <% end %>
+
+    <% if @organization.reputation_score.present? %>
+      <div class="crayons-definition">
+        <strong class="crayons-definition__title"><%= t("views.organizations.reputation") %></strong>
+        <p class="crayons-definition__value"><%= number_with_delimiter(@organization.reputation_score) %></p>
       </div>
     <% end %>
   </div>

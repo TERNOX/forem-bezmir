@@ -1,0 +1,26 @@
+---
+fr:
+  views:
+    projects:
+      index:
+        title: "Projects · %{community}"
+        heading: "Projects"
+        description: "Discover organizations sharing their work with the community."
+        search_label: "Search projects"
+        search_placeholder: "Quick search..."
+        sort_label: "Sort by"
+        sort_options:
+          reputation_desc: "Highest reputation"
+          reputation_asc: "Lowest reputation"
+          newest: "Newest"
+          oldest: "Oldest"
+        apply_filters: "Apply"
+        empty_state: "No projects match your filters yet."
+        reputation_label: "Reputation"
+        created_label: "Created"
+        posts_label: "Posts"
+        visit_link: "Visit website"
+        load_more: "Load more projects"
+        error: "We couldn’t load projects. Please try again."
+        logo_alt: "%{name} logo"
+        enable_javascript: "Enable JavaScript to explore projects."

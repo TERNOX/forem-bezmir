@@ -16,6 +16,7 @@ en:
         icon: Location
       logo: "%{org} profile picture"
       size: Employees
+      reputation: Reputação
       sponsor:
         text: "%{level} Community Sponsor ❤️"
         level:

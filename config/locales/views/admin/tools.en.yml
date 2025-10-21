@@ -4,6 +4,6 @@ en:
       tools:
         reputation:
           heading: Recalculate reputation
-          description_html: "<strong>Resets</strong> all member reputation scores to match the number of likes their posts and comments have received."
+          description_html: "<strong>Resets</strong> member and organization reputation scores to match the number of likes their posts, comments, and organization articles have received."
           submit: Recalculate now
-          success: "Recalculated reputation for %{users} members using %{likes} total post and comment likes."
+          success: "Recalculated reputation for %{users} members and %{organizations} organizations using %{likes} total post and comment likes and %{organization_likes} organization article likes."

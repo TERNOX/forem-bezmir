@@ -100,6 +100,50 @@ RSpec.describe Reaction do
         create(:reaction, reactable: article, user: reactor, category: "like")
       end.to change { author.reload.reputation_score }.by(1)
     end
+
+    context "when reacting to an organization's article" do
+      let(:organization) { create(:organization) }
+      let(:article) { create(:article, user: author, organization: organization) }
+
+      it "increments the organization's reputation" do
+        expect do
+          create(:reaction, reactable: article, user: reactor, category: "like")
+        end.to change { organization.reload.reputation_score }.by(1)
+      end
+
+      it "decrements the organization's reputation when the like is removed" do
+        reaction = create(:reaction, reactable: article, user: reactor, category: "like")
+
+        expect do
+          reaction.destroy
+        end.to change { organization.reload.reputation_score }.by(-1)
+      end
+
+      it "removes the organization's reputation credit when the reaction becomes invalid" do
+        reaction = create(:reaction, reactable: article, user: reactor, category: "like")
+
+        expect do
+          reaction.update!(status: "invalid")
+        end.to change { organization.reload.reputation_score }.by(-1)
+      end
+
+      it "does not change the organization's reputation for non-like reactions" do
+        expect do
+          create(:reaction, reactable: article, user: reactor, category: "unicorn")
+        end.not_to change { organization.reload.reputation_score }
+      end
+
+      it "transfers reputation when the reaction moves to a different organization's article" do
+        other_organization = create(:organization)
+        other_article = create(:article, user: author, organization: other_organization)
+        reaction = create(:reaction, reactable: article, user: reactor, category: "like")
+
+        expect do
+          reaction.update!(reactable: other_article)
+        end.to change { organization.reload.reputation_score }.by(-1)
+         .and change { other_organization.reload.reputation_score }.by(1)
+      end
+    end
   end
 
   describe "validations" do

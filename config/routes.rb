@@ -116,6 +116,7 @@ Rails.application.routes.draw do
     resources :bottom_items, only: [:index]
 
     resources :messages, only: [:create]
+    resources :projects, only: [:index]
     resources :articles, only: %i[update create destroy] do
       patch "/admin_unpublish", to: "articles#admin_unpublish"
       patch "/admin_featured_toggle", to: "articles#admin_featured_toggle"
@@ -162,6 +163,7 @@ Rails.application.routes.draw do
         get "/bulk", to: "tags#bulk", defaults: { format: :json }
       end
     end
+    resources :projects, only: [:index]
     resources :stripe_active_cards, only: %i[create update destroy]
     resources :stripe_subscriptions, only: %i[new edit destroy]
     resources :github_repos, only: %i[index] do

@@ -1,0 +1,24 @@
+<% content_for :title, t("views.projects.index.title", community: community_name) %>
+<%= javascript_include_tag "projects", defer: true %>
+
+<div class="crayons-layout crayons-layout--limited projects-directory">
+  <main class="crayons-layout__content">
+    <header class="projects-directory__intro">
+      <h1 class="crayons-title fw-bold"><%= t("views.projects.index.heading") %></h1>
+      <p class="color-base-70 fs-l"><%= t("views.projects.index.description") %></p>
+    </header>
+    <div
+      id="projects-directory-root"
+      data-initial-projects="<%= json_escape(@projects_payload.to_json) %>"
+      data-meta="<%= json_escape(@meta_payload.to_json) %>"
+      data-initial-query="<%= h(@initial_query) %>"
+      data-initial-sort="<%= h(@sort) %>"
+      data-per-page="<%= @per_page %>"
+    ></div>
+    <noscript>
+      <p class="projects-directory__noscript color-base-70">
+        <%= t("views.projects.index.enable_javascript") %>
+      </p>
+    </noscript>
+  </main>
+</div>

@@ -16,6 +16,7 @@ uk:
         icon: Локація
       logo: Зображення профілю %{org}
       size: Кількість учасників
+      reputation: Репутація
       sponsor:
         text: "%{level} Спонсор спільноти ❤️"
         level:
