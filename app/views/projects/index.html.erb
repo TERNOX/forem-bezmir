@@ -1,0 +1,75 @@
+<% title t("views.projects.meta.title") %>
+
+<%= content_for :page_meta do %>
+  <link rel="canonical" href="<%= app_url("/projects") %>" />
+  <meta name="description" content="<%= t("views.projects.meta.description", community: community_name) %>">
+  <%= meta_keywords_default %>
+
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="<%= app_url("/projects") %>" />
+  <meta property="og:title" content="<%= t("views.projects.meta.title") %>" />
+  <meta property="og:description" content="<%= t("views.projects.meta.og.description", community: community_name) %>" />
+  <meta property="og:image" content="<%= Settings::General.main_social_image %>" />
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@<%= Settings::General.social_media_handles["twitter"] %>">
+  <meta name="twitter:title" content="<%= t("views.projects.meta.title") %>">
+  <meta name="twitter:description" content="<%= t("views.projects.meta.og.description", community: community_name) %>">
+  <meta name="twitter:image:src" content="<%= Settings::General.main_social_image %>">
+<% end %>
+
+<main id="main-content" class="crayons-layout crayons-layout--header-inside projects-page">
+  <header class="crayons-page-header projects-page__header">
+    <div>
+      <h1 class="crayons-title"><%= t("views.projects.heading.title") %></h1>
+      <p class="projects-page__subtitle color-base-70 fs-base"><%= t("views.projects.heading.subtitle", community: community_name) %></p>
+    </div>
+    <p
+      class="projects-page__results color-base-70"
+      data-projects-summary
+      data-count-labels="<%= json_escape(@count_labels.to_json) %>"
+    >
+      <%= t("views.projects.results.count", count: @projects.size) %>
+    </p>
+  </header>
+
+  <section class="projects-controls" aria-label="<%= t("views.projects.controls.aria_label") %>">
+    <div class="projects-controls__search">
+      <label class="crayons-field" for="projects-search">
+        <span class="crayons-field__label"><%= t("views.projects.search.label") %></span>
+        <input
+          id="projects-search"
+          type="search"
+          name="q"
+          value="<%= @query %>"
+          class="crayons-textfield"
+          placeholder="<%= t("views.projects.search.placeholder") %>"
+          autocomplete="off"
+          data-projects-search
+        />
+      </label>
+    </div>
+    <div class="projects-controls__sort">
+      <label class="crayons-field" for="projects-sort">
+        <span class="crayons-field__label"><%= t("views.projects.sort.label") %></span>
+        <select id="projects-sort" class="crayons-select" data-projects-sort>
+          <% projects_sort_options.each do |option| %>
+            <option value="<%= option %>" <%= "selected" if option == @selected_sort %>>
+              <%= t("views.projects.sort.options.#{option.tr('-', '_')}") %>
+            </option>
+          <% end %>
+        </select>
+      </label>
+    </div>
+  </section>
+
+  <div
+    class="projects-grid"
+    data-projects-grid
+  >
+    <%= render partial: "projects/project_card", collection: @projects, as: :project %>
+  </div>
+  <p class="projects-empty color-base-60" data-projects-empty hidden><%= @empty_message %></p>
+</main>
+
+<%= javascript_include_tag "projectsIndex", defer: true %>

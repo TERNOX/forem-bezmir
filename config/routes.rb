@@ -162,6 +162,7 @@ Rails.application.routes.draw do
         get "/bulk", to: "tags#bulk", defaults: { format: :json }
       end
     end
+    get "/projects", to: "projects#index"
     resources :stripe_active_cards, only: %i[create update destroy]
     resources :stripe_subscriptions, only: %i[new edit destroy]
     resources :github_repos, only: %i[index] do

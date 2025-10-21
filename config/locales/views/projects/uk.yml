@@ -1,0 +1,44 @@
+---
+uk:
+  views:
+    projects:
+      meta:
+        title: Проєкти
+        description: Дізнавайтеся про проєкти спільноти та їхню активність на %{community}.
+        og:
+          description: Досліджуйте проєкти спільноти та найактивніших учасників на %{community}.
+      heading:
+        title: Проєкти спільноти
+        subtitle: Переглядайте всі проєкти на %{community}, стежте за їхніми оновленнями та знаходьте найактивніші ініціативи в одному місці.
+      controls:
+        aria_label: Фільтри проєктів
+      search:
+        label: Швидкий пошук
+        placeholder: Знайдіть проєкт
+      sort:
+        label: Сортувати проєкти
+        options:
+          created_at_desc: Найновіші проєкти
+          created_at_asc: Найстаріші проєкти
+          articles_count_desc: Найактивніші проєкти
+          articles_count_asc: Найменш активні проєкти
+      results:
+        count:
+          zero: Проєктів не знайдено
+          one: "%{count} проєкт"
+          few: "%{count} проєкти"
+          many: "%{count} проєктів"
+          other: "%{count} проєкта"
+      empty: Поки що жоден проєкт не відповідає пошуку.
+      card:
+        visit: Переглянути проєкт
+        created_at: Розпочато %{date}
+        posts_label: Кількість дописів
+        started_label: Дата старту проєкту
+        posts_count:
+          zero: Ще немає дописів
+          one: "%{count} допис"
+          few: "%{count} дописи"
+          many: "%{count} дописів"
+          other: "%{count} допису"
+        no_summary: Проєкт ще не додав опис.

@@ -1,0 +1,52 @@
+<% summary_text = strip_tags(project.summary.to_s).squish %>
+<% tagline_text = strip_tags(project.tag_line.to_s).squish %>
+<% description_text = summary_text.presence || tagline_text.presence || t("views.projects.card.no_summary") %>
+<% searchable = [project.name, summary_text, tagline_text].compact.join(" ").squish.mb_chars.downcase.to_s %>
+
+<article
+  class="projects-card crayons-card crayons-card--secondary p-5"
+  data-project-card
+  data-name="<%= project.name.mb_chars.downcase.to_s %>"
+  data-created-at="<%= project.created_at.to_i %>"
+  data-articles-count="<%= project.articles_count %>"
+  data-searchable="<%= searchable %>"
+>
+  <div class="projects-card__layout">
+    <a href="<%= project.path %>" class="projects-card__media" aria-hidden="true" tabindex="-1">
+      <img
+        src="<%= project.profile_image_url_for(length: 160) %>"
+        alt=""
+        width="96"
+        height="96"
+        class="projects-card__logo crayons-avatar"
+        loading="lazy"
+      />
+    </a>
+
+    <div class="projects-card__content">
+      <div class="projects-card__header">
+        <h2 class="projects-card__name"><%= link_to project.name, project.path, class: "projects-card__name-link" %></h2>
+        <% if tagline_text.present? %>
+          <p class="projects-card__tagline color-base-70 fs-s"><%= tagline_text %></p>
+        <% end %>
+      </div>
+
+      <p class="projects-card__summary fs-s color-base-70 truncate-at-3"><%= description_text %></p>
+
+      <dl class="projects-card__meta color-base-70 fs-xs">
+        <div class="projects-card__stat">
+          <dt class="sr-only"><%= t("views.projects.card.posts_label") %></dt>
+          <dd><%= t("views.projects.card.posts_count", count: project.articles_count) %></dd>
+        </div>
+        <div class="projects-card__stat">
+          <dt class="sr-only"><%= t("views.projects.card.started_label") %></dt>
+          <dd><%= t("views.projects.card.created_at", date: l(project.created_at.to_date, format: :long)) %></dd>
+        </div>
+      </dl>
+
+      <div class="projects-card__actions">
+        <%= link_to t("views.projects.card.visit"), project.path, class: "crayons-btn crayons-btn--primary" %>
+      </div>
+    </div>
+  </div>
+</article>

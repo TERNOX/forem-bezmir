@@ -1,0 +1,40 @@
+---
+en:
+  views:
+    projects:
+      meta:
+        title: Projects
+        description: Discover community projects and their latest activity on %{community}.
+        og:
+          description: Explore community projects and their most active collaborators on %{community}.
+      heading:
+        title: Community projects
+        subtitle: Browse every project on %{community}, follow their updates, and find the most active initiatives in one place.
+      controls:
+        aria_label: Project filters
+      search:
+        label: Quick search
+        placeholder: Search projects
+      sort:
+        label: Sort projects
+        options:
+          created_at_desc: Newest projects
+          created_at_asc: Oldest projects
+          articles_count_desc: Most active projects
+          articles_count_asc: Least active projects
+      results:
+        count:
+          zero: No projects found
+          one: "%{count} project"
+          other: "%{count} projects"
+      empty: No projects match your search yet.
+      card:
+        visit: View project
+        created_at: Started %{date}
+        posts_label: Posts published
+        started_label: Project start date
+        posts_count:
+          zero: No posts yet
+          one: "%{count} post"
+          other: "%{count} posts"
+        no_summary: This project has not added a summary yet.
