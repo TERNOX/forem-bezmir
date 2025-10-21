@@ -2,5 +2,9 @@
   display: block;
   width: 100%;
   background-color: transparent;
-  color-scheme: light dark;
+  color-scheme: light;
+}
+
+body.dark-theme .ltag__steam-iframe {
+  color-scheme: dark;
 }
