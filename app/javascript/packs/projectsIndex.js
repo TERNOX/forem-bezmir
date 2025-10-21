@@ -133,6 +133,8 @@ function initializeProjectsPage() {
       const text = card.dataset.searchable || '';
       const matches = !query || text.includes(query);
       card.classList.toggle('projects-card--hidden', !matches);
+      card.toggleAttribute('hidden', !matches);
+      card.setAttribute('aria-hidden', matches ? 'false' : 'true');
       if (matches) {
         visibleCount += 1;
       }

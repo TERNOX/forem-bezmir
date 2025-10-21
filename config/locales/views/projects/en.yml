@@ -4,35 +4,37 @@ en:
     projects:
       meta:
         title: Projects
-        description: Discover community organizations and their latest activity on %{community}.
+        description: Discover community projects and their latest activity on %{community}.
         og:
-          description: Explore community organizations and their most active projects on %{community}.
+          description: Explore community projects and their most active collaborators on %{community}.
       heading:
         title: Community projects
-        subtitle: Browse every organization on %{community}, follow their updates, and find the most active initiatives in one place.
+        subtitle: Browse every project on %{community}, follow their updates, and find the most active initiatives in one place.
       controls:
         aria_label: Project filters
       search:
         label: Quick search
-        placeholder: Search organizations
+        placeholder: Search projects
       sort:
         label: Sort projects
         options:
-          created_at_desc: Newest organizations
-          created_at_asc: Oldest organizations
-          articles_count_desc: Most active organizations
-          articles_count_asc: Least active organizations
+          created_at_desc: Newest projects
+          created_at_asc: Oldest projects
+          articles_count_desc: Most active projects
+          articles_count_asc: Least active projects
       results:
         count:
-          zero: No organizations found
-          one: "%{count} organization"
-          other: "%{count} organizations"
+          zero: No projects found
+          one: "%{count} project"
+          other: "%{count} projects"
       empty: No projects match your search yet.
       card:
-        visit: View organization
-        created_at: Joined %{date}
+        visit: View project
+        created_at: Started %{date}
+        posts_label: Posts published
+        started_label: Project start date
         posts_count:
           zero: No posts yet
           one: "%{count} post"
           other: "%{count} posts"
-        no_summary: This organization has not added a summary yet.
+        no_summary: This project has not added a summary yet.

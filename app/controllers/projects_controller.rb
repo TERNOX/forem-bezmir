@@ -11,7 +11,7 @@ class ProjectsController < ApplicationController
   def index
     @query = params[:q].to_s.strip
     @selected_sort = permitted_sort(params[:sort])
-    @organizations = load_organizations
+    @projects = load_projects
     @count_labels = I18n.t("views.projects.results.count")
     @empty_message = I18n.t("views.projects.empty")
   end
@@ -22,7 +22,7 @@ class ProjectsController < ApplicationController
     SORT_OPTIONS.keys
   end
 
-  def load_organizations
+  def load_projects
     scope = if @query.present?
               Organization.search_organizations(@query)
             else

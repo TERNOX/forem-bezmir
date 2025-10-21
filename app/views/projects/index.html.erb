@@ -29,7 +29,7 @@
       data-projects-summary
       data-count-labels="<%= json_escape(@count_labels.to_json) %>"
     >
-      <%= t("views.projects.results.count", count: @organizations.size) %>
+      <%= t("views.projects.results.count", count: @projects.size) %>
     </p>
   </header>
 
@@ -67,7 +67,7 @@
     class="projects-grid"
     data-projects-grid
   >
-    <%= render partial: "projects/organization_card", collection: @organizations, as: :organization %>
+    <%= render partial: "projects/project_card", collection: @projects, as: :project %>
   </div>
   <p class="projects-empty color-base-60" data-projects-empty hidden><%= @empty_message %></p>
 </main>
