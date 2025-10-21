@@ -1,0 +1,135 @@
+.projects-page {
+  width: 100%;
+}
+
+.projects-page__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  flex-direction: column;
+}
+
+.projects-page__subtitle {
+  margin-top: 0.75rem;
+  max-width: 52ch;
+}
+
+.projects-page__results {
+  font-weight: 600;
+}
+
+.projects-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.projects-controls__search,
+.projects-controls__sort {
+  width: 100%;
+}
+
+.projects-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.projects-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  height: 100%;
+}
+
+.projects-card__header {
+  align-items: center;
+  color: inherit;
+  display: flex;
+  gap: 1rem;
+  text-decoration: none;
+}
+
+.projects-card__logo {
+  border-radius: 16px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
+  display: block;
+  object-fit: cover;
+}
+
+.projects-card__title {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.projects-card__name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+  word-break: break-word;
+}
+
+.projects-card__tagline {
+  margin: 0;
+}
+
+.projects-card__summary {
+  margin: 0;
+}
+
+.projects-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.projects-card__stat {
+  align-items: center;
+  background: var(--base-10);
+  border-radius: 9999px;
+  display: inline-flex;
+  gap: 0.375rem;
+  padding: 0.35rem 0.75rem;
+}
+
+.projects-card__actions {
+  margin-top: auto;
+}
+
+.projects-card--hidden {
+  display: none;
+}
+
+.projects-empty {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+@media (min-width: 640px) {
+  .projects-page__header {
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .projects-controls {
+    align-items: flex-end;
+    flex-direction: row;
+  }
+
+  .projects-controls__search {
+    flex: 1;
+  }
+
+  .projects-controls__sort {
+    flex-basis: 240px;
+  }
+}
+
+@media (min-width: 768px) {
+  .projects-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

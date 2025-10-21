@@ -1,0 +1,42 @@
+---
+uk:
+  views:
+    projects:
+      meta:
+        title: Проєкти
+        description: Дізнавайтеся про організації спільноти та їхню активність на %{community}.
+        og:
+          description: Досліджуйте організації спільноти та найактивніші проєкти на %{community}.
+      heading:
+        title: Проєкти спільноти
+        subtitle: Переглядайте всі організації на %{community}, стежте за їхніми оновленнями та знаходьте найактивніші ініціативи в одному місці.
+      controls:
+        aria_label: Фільтри проєктів
+      search:
+        label: Швидкий пошук
+        placeholder: Знайдіть організацію
+      sort:
+        label: Сортувати проєкти
+        options:
+          created_at_desc: Найновіші організації
+          created_at_asc: Найстаріші організації
+          articles_count_desc: Найактивніші організації
+          articles_count_asc: Найменш активні організації
+      results:
+        count:
+          zero: Організацій не знайдено
+          one: "%{count} організація"
+          few: "%{count} організації"
+          many: "%{count} організацій"
+          other: "%{count} організації"
+      empty: Поки що жоден проєкт не відповідає пошуку.
+      card:
+        visit: Переглянути організацію
+        created_at: Приєдналася %{date}
+        posts_count:
+          zero: Ще немає дописів
+          one: "%{count} допис"
+          few: "%{count} дописи"
+          many: "%{count} дописів"
+          other: "%{count} допису"
+        no_summary: Організація ще не додала опис.

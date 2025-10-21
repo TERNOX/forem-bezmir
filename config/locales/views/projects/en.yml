@@ -1,0 +1,38 @@
+---
+en:
+  views:
+    projects:
+      meta:
+        title: Projects
+        description: Discover community organizations and their latest activity on %{community}.
+        og:
+          description: Explore community organizations and their most active projects on %{community}.
+      heading:
+        title: Community projects
+        subtitle: Browse every organization on %{community}, follow their updates, and find the most active initiatives in one place.
+      controls:
+        aria_label: Project filters
+      search:
+        label: Quick search
+        placeholder: Search organizations
+      sort:
+        label: Sort projects
+        options:
+          created_at_desc: Newest organizations
+          created_at_asc: Oldest organizations
+          articles_count_desc: Most active organizations
+          articles_count_asc: Least active organizations
+      results:
+        count:
+          zero: No organizations found
+          one: "%{count} organization"
+          other: "%{count} organizations"
+      empty: No projects match your search yet.
+      card:
+        visit: View organization
+        created_at: Joined %{date}
+        posts_count:
+          zero: No posts yet
+          one: "%{count} post"
+          other: "%{count} posts"
+        no_summary: This organization has not added a summary yet.
