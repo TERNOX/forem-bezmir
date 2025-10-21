@@ -7,17 +7,28 @@ module Users
     end
 
     def call
-      counts = like_counts_by_recipient
+      user_counts = like_counts_by_recipient
+      organization_counts = organization_like_counts
 
-      User.transaction do
+      ActiveRecord::Base.transaction do
         User.update_all(reputation_score: 0)
+        Organization.update_all(reputation_score: 0)
 
-        counts.each do |user_id, score|
+        user_counts.each do |user_id, score|
           User.where(id: user_id).update_all(reputation_score: score)
+        end
+
+        organization_counts.each do |organization_id, score|
+          Organization.where(id: organization_id).update_all(reputation_score: score)
         end
       end
 
-      { users: counts.size, likes: counts.values.sum }
+      {
+        users: user_counts.size,
+        likes: user_counts.values.sum,
+        organizations: organization_counts.size,
+        organization_likes: organization_counts.values.sum,
+      }
     end
 
     private
@@ -45,6 +56,14 @@ module Users
         .joins("INNER JOIN articles ON articles.id = reactions.reactable_id")
         .where.not(articles: { user_id: nil })
         .group("articles.user_id")
+        .count
+    end
+
+    def organization_like_counts
+      Reaction.where(category: "like", status: VALID_STATUSES, reactable_type: "Article")
+        .joins("INNER JOIN articles ON articles.id = reactions.reactable_id")
+        .where.not(articles: { organization_id: nil })
+        .group("articles.organization_id")
         .count
     end
   end

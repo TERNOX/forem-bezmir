@@ -4,7 +4,8 @@ RSpec.describe Users::RecalculateReputation do
   describe ".call" do
     let!(:author) { create(:user, reputation_score: 10) }
     let!(:other_user) { create(:user, reputation_score: 5) }
-    let!(:article) { create(:article, user: author) }
+    let!(:organization) { create(:organization, reputation_score: 4) }
+    let!(:article) { create(:article, user: author, organization: organization) }
     let!(:comment) { create(:comment, user: author, commentable: article) }
 
     before do
@@ -24,7 +25,13 @@ RSpec.describe Users::RecalculateReputation do
     it "returns summary information" do
       result = described_class.call
 
-      expect(result).to eq(users: 1, likes: 2)
+      expect(result).to eq(users: 1, likes: 2, organizations: 1, organization_likes: 1)
+    end
+
+    it "updates organization reputation scores" do
+      described_class.call
+
+      expect(organization.reload.reputation_score).to eq(1)
     end
   end
 end
