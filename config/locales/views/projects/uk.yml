@@ -1,0 +1,18 @@
+---
+uk:
+  views:
+    projects:
+      index:
+        title: Проєкти спільноти
+        description: Знаходьте організації та знайомтеся з їхніми останніми дописами.
+        search_label: Пошук
+        search_placeholder: Знайти організації
+        sort_label: Сортувати
+        sort:
+          reputation_desc: Репутація (від більшої до меншої)
+          reputation_asc: Репутація (від меншої до більшої)
+          created_at_desc: Нові спочатку
+          created_at_asc: Старі спочатку
+        empty: За вибраними фільтрами поки що немає організацій.
+        created_at: Створено
+        reputation: Репутація

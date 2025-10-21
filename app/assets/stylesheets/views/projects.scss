@@ -1,0 +1,124 @@
+.projects-page {
+  padding: var(--su-8) var(--su-4);
+  display: grid;
+  gap: var(--su-6);
+}
+
+.projects-page__header {
+  display: grid;
+  gap: var(--su-2);
+}
+
+.projects-page__controls {
+  padding: var(--su-4);
+}
+
+.projects-page__form {
+  display: grid;
+  gap: var(--su-4);
+}
+
+.projects-page__field {
+  display: grid;
+  gap: var(--su-2);
+}
+
+.projects-page__label {
+  font-weight: 600;
+  color: var(--card-color-secondary);
+}
+
+.projects-page__input,
+.projects-page__select {
+  width: 100%;
+}
+
+.projects-grid {
+  display: grid;
+  gap: var(--su-4);
+  grid-template-columns: 1fr;
+}
+
+.projects-pagination {
+  margin-top: var(--su-6);
+  display: flex;
+  justify-content: center;
+}
+
+.project-card {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: var(--su-4);
+  align-items: start;
+}
+
+.project-card__image img {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border-radius: var(--radius);
+}
+
+.project-card__title {
+  margin: 0;
+  font-size: var(--fs-l);
+}
+
+.project-card__summary {
+  margin: 0;
+}
+
+.project-card__meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--su-2);
+  margin: 0;
+}
+
+.project-card__meta-item {
+  background: var(--card-color-secondary);
+  border-radius: var(--radius-sm);
+  padding: var(--su-2) var(--su-3);
+  display: grid;
+  gap: var(--su-1);
+}
+
+.project-card__meta-item dt {
+  margin: 0;
+  font-size: var(--fs-s);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--card-color-tertiary);
+}
+
+.project-card__meta-item dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.projects-empty {
+  margin: var(--su-8) 0;
+  text-align: center;
+  color: var(--card-color-secondary);
+}
+
+@media (min-width: 768px) {
+  .projects-page__form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: end;
+  }
+
+  .projects-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 639px) {
+  .project-card {
+    grid-template-columns: 1fr;
+  }
+
+  .project-card__image {
+    justify-self: center;
+  }
+}

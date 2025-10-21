@@ -1,0 +1,12 @@
+<% if organizations.any? %>
+  <div class="projects-list">
+    <div class="projects-grid">
+      <%= render partial: "projects/organization_card", collection: organizations, as: :organization %>
+    </div>
+    <div class="projects-pagination">
+      <%= paginate organizations, params: { q: @query, sort: @sort } %>
+    </div>
+  </div>
+<% else %>
+  <p class="projects-empty"><%= t("views.projects.index.empty") %></p>
+<% end %>

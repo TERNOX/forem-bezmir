@@ -1,0 +1,18 @@
+---
+en:
+  views:
+    projects:
+      index:
+        title: Community projects
+        description: Discover organizations and explore their latest work.
+        search_label: Search
+        search_placeholder: Search organizations
+        sort_label: Sort by
+        sort:
+          reputation_desc: Reputation (high to low)
+          reputation_asc: Reputation (low to high)
+          created_at_desc: Newest first
+          created_at_asc: Oldest first
+        empty: No organizations match your filters yet.
+        created_at: Created
+        reputation: Reputation

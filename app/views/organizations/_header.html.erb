@@ -53,6 +53,14 @@
           <% end %>
 
           <span class="profile-header__meta__item">
+            <%= crayons_icon_tag(:award, class: "mr-2 shrink-0", title: t("views.organizations.reputation.icon")) %>
+            <span>
+              <%= t("views.organizations.reputation.text") %>:
+              <%= number_with_delimiter(@organization.reputation_score) %>
+            </span>
+          </span>
+
+          <span class="profile-header__meta__item">
             <%= crayons_icon_tag(:cake, class: "mr-2 shrink-0", title: t("views.organizations.joined.icon")) %>
             <span>
               <%= t("views.organizations.joined.text_html", date: local_date(@user.created_at)) %>

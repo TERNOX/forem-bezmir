@@ -27,6 +27,9 @@ uk:
           devrel: DevRel
       stack: Наш стек
       story: Наша історія
+      reputation:
+        icon: Значок репутації
+        text: Репутація
       side:
         post:
           icon: Допис
