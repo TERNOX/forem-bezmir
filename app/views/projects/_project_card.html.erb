@@ -12,6 +12,7 @@
   data-searchable="<%= searchable %>"
 >
   <div class="projects-card__layout">
+  <div style="float: right;">
     <a href="<%= project.path %>" class="projects-card__media" aria-hidden="true" tabindex="-1">
       <img
         src="<%= project.profile_image_url_for(length: 160) %>"
@@ -23,10 +24,10 @@ style="
 	"
         class="projects-card__logo crayons-avatar"
         loading="lazy"
-		float: right;
+		
       />
     </a>
-
+</div>
     <div class="projects-card__content">
       <div class="projects-card__header">
         <h2 class="projects-card__name"><%= link_to project.name, project.path, class: "projects-card__name-link" %></h2>
@@ -48,9 +49,7 @@ style="
         </div>
       </dl>
 
-      <div class="projects-card__actions">
-        <%= link_to t("views.projects.card.visit"), project.path, class: "crayons-btn crayons-btn--primary" %>
-      </div>
+
     </div>
   </div>
 </article>
