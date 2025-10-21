@@ -80,6 +80,8 @@ en:
       invalid_speakerdeck_id: Invalid Speakerdeck Id
     spotify_tag:
       invalid_spotify_uri: Invalid Spotify URI or URL.
+    steam_tag:
+      invalid_url: Invalid Steam URL
     stackblitz_tag:
       invalid_options: Invalid Options
       invalid_stackblitz_id: Invalid Stackblitz Id
