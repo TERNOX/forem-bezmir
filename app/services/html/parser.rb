@@ -32,7 +32,7 @@ module Html
       self
     end
 
-    def prefix_all_images(width: 1500, synchronous_detail_detection: false, quality: "auto")
+    def prefix_all_images(width = 1500, synchronous_detail_detection: false, quality: "auto")
       # wrap with Cloudinary or allow if from giphy or githubusercontent.com
       doc = Nokogiri::HTML.fragment(@html)
 
@@ -280,7 +280,7 @@ module Html
 
     private
 
-    def img_of_size(source, width = 880, quality: "auto")
+    def img_of_size(source, width = 1500, quality: "auto")
       Images::Optimizer.call(source, width: width, quality: quality).gsub(",", "%2C")
     end
 

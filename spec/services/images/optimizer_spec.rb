@@ -138,7 +138,7 @@ RSpec.describe Images::Optimizer, type: :service do
       allow(ApplicationConfig).to receive(:[]).with("CROP_WITH_IMAGGA_SCALE").and_return("true")
       cloudinary_url = cl_image_path(image_url,
                                      type: "fetch",
-                                     quality: "auto",
+                                     quality: 82,
                                      sign_url: true,
                                      crop: "imagga_scale",
                                      flags: "progressive",
@@ -151,7 +151,7 @@ RSpec.describe Images::Optimizer, type: :service do
       allow(ApplicationConfig).to receive(:[]).with("CROP_WITH_IMAGGA_SCALE").and_return("true")
       cl_url = cl_image_path(image_url,
                              type: "fetch",
-                             quality: "auto",
+                             quality: 82,
                              sign_url: true,
                              crop: "fill",
                              flags: "progressive",
