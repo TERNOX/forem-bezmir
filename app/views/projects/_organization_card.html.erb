@@ -1,0 +1,24 @@
+<article class="project-card crayons-card">
+  <a href="<%= organization.path %>" class="project-card__image" aria-hidden="true" tabindex="-1">
+    <img src="<%= organization.profile_image_url_for(length: 150) %>" alt="" loading="lazy">
+  </a>
+  <div class="project-card__body">
+    <h2 class="project-card__title">
+      <a href="<%= organization.path %>"><%= sanitize organization.name %></a>
+    </h2>
+    <p class="project-card__summary color-base-70">
+      <% summary_text = organization.summary.presence || organization.tag_line.presence || t("views.organizations.empty") %>
+      <%= sanitize truncate(summary_text, length: 160) %>
+    </p>
+    <dl class="project-card__meta">
+      <div class="project-card__meta-item">
+        <dt><%= t("views.projects.index.reputation") %></dt>
+        <dd><%= number_with_delimiter(organization.reputation_score) %></dd>
+      </div>
+      <div class="project-card__meta-item">
+        <dt><%= t("views.projects.index.created_at") %></dt>
+        <dd><%= local_date(organization.created_at) %></dd>
+      </div>
+    </dl>
+  </div>
+</article>

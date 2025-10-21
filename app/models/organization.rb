@@ -59,6 +59,7 @@ class Organization < ApplicationRecord
   validates :text_color_hex, format: COLOR_HEX_REGEXP, allow_blank: true
   validates :twitter_username, length: { maximum: 15 }
   validates :unspent_credits_count, presence: true
+  validates :reputation_score, presence: true
   validates :url, length: { maximum: 200 }, url: { allow_blank: true, no_local: true }
 
   unique_across_models :slug, length: { in: 2..30 }

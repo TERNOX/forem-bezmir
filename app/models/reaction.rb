@@ -70,6 +70,9 @@ class Reaction < ApplicationRecord
   after_commit :increment_recipient_reputation, on: :create
   after_commit :adjust_recipient_reputation_on_update, on: :update
   after_commit :decrement_recipient_reputation, on: :destroy
+  after_commit :increment_organization_reputation, on: :create
+  after_commit :adjust_organization_reputation_on_update, on: :update
+  after_commit :decrement_organization_reputation, on: :destroy
 
   class << self
     def count_for_article(id)
@@ -269,10 +272,6 @@ class Reaction < ApplicationRecord
       reactable_type_value.in?(REPUTATION_REACTABLE_TYPES)
   end
 
-  def reputation_recipient
-    @reputation_recipient || target_user
-  end
-
   def adjust_recipient_reputation(delta, recipient: reputation_recipient)
     return if delta.zero? || recipient.nil?
 
@@ -294,6 +293,14 @@ class Reaction < ApplicationRecord
     return unless @counted_for_reputation_before_destroy
 
     adjust_recipient_reputation(-1)
+  end
+
+  def reputation_recipient
+    @reputation_recipient || target_user
+  end
+
+  def organization_reputation_recipient
+    @organization_reputation_recipient || organization_from_reactable(reactable)
   end
 
   def adjust_recipient_reputation_on_update
@@ -320,6 +327,8 @@ class Reaction < ApplicationRecord
   def store_reputation_snapshot
     @counted_for_reputation_before_destroy = counts_for_reputation?
     @reputation_recipient = target_user if @counted_for_reputation_before_destroy
+    @organization_counted_for_reputation_before_destroy = counts_for_reputation? && organization_reputation_recipient.present?
+    @organization_reputation_recipient = organization_reputation_recipient if @organization_counted_for_reputation_before_destroy
   end
 
   def previous_reputation_recipient
@@ -336,5 +345,64 @@ class Reaction < ApplicationRecord
     return unless previous_type.in?(REPUTATION_REACTABLE_TYPES) && previous_id
 
     previous_type.safe_constantize&.find_by(id: previous_id)
+  end
+
+  def increment_organization_reputation
+    adjust_organization_reputation(1) if counts_for_reputation? && organization_reputation_recipient.present?
+  end
+
+  def decrement_organization_reputation
+    return unless @organization_counted_for_reputation_before_destroy
+
+    adjust_organization_reputation(-1)
+  end
+
+  def adjust_organization_reputation_on_update
+    previous_status = status_before_last_save || status
+    previous_category = category_before_last_save || category
+    previous_type = reactable_type_before_last_save || reactable_type
+    previous_organization = previous_organization_reputation_recipient
+    current_organization = organization_reputation_recipient
+
+    previously_counted = counts_for_reputation?(previous_category, previous_status, previous_type) && previous_organization.present?
+    currently_counted = counts_for_reputation? && current_organization.present?
+
+    reactable_changed = saved_change_to_reactable_id? || saved_change_to_reactable_type?
+
+    if reactable_changed || previous_organization != current_organization
+      adjust_organization_reputation(-1, organization: previous_organization) if previously_counted
+      adjust_organization_reputation(1, organization: current_organization) if currently_counted
+      return
+    end
+
+    return if previously_counted == currently_counted
+
+    delta = currently_counted ? 1 : -1
+    adjust_organization_reputation(delta)
+  end
+
+  def adjust_organization_reputation(delta, organization: organization_reputation_recipient)
+    return if delta.zero? || organization.nil?
+
+    update_sql = <<~SQL.squish
+      reputation_score = CASE
+        WHEN COALESCE(reputation_score, 0) + ? < 0 THEN 0
+        ELSE COALESCE(reputation_score, 0) + ?
+      END
+    SQL
+
+    Organization.where(id: organization.id).update_all([update_sql, delta, delta])
+  end
+
+  def previous_organization_reputation_recipient
+    return unless reactable_type_before_last_save == "Article"
+
+    previous_reactable_for_reputation&.try(:organization)
+  end
+
+  def organization_from_reactable(record)
+    return unless record.is_a?(Article)
+
+    record.organization
   end
 end

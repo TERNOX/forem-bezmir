@@ -1,0 +1,33 @@
+<% title t("views.projects.index.title") %>
+
+<div class="projects-page crayons-layout crayons-layout--limited-l">
+  <header class="projects-page__header">
+    <h1 class="crayons-title"><%= t("views.projects.index.title") %></h1>
+    <p class="projects-page__description color-base-70"><%= t("views.projects.index.description") %></p>
+  </header>
+
+  <div class="projects-page__controls crayons-card crayons-card--secondary">
+    <%= form_with url: projects_path, method: :get, local: false,
+                  data: { turbo_frame: "projects_list", projects_search_form: true },
+                  class: "projects-page__form" do |form| %>
+      <div class="projects-page__field">
+        <%= form.label :q, t("views.projects.index.search_label"), class: "projects-page__label" %>
+        <%= form.search_field :q, value: @query, class: "projects-page__input crayons-textfield",
+                              placeholder: t("views.projects.index.search_placeholder"), autocomplete: "off" %>
+      </div>
+      <div class="projects-page__field projects-page__field--select">
+        <%= form.label :sort, t("views.projects.index.sort_label"), class: "projects-page__label" %>
+        <%= form.select :sort,
+                        options_for_select(@sort_options.keys.map { |key| [t("views.projects.index.sort.#{key}"), key] }, @sort),
+                        {},
+                        class: "projects-page__select crayons-select" %>
+      </div>
+    <% end %>
+  </div>
+
+  <%= turbo_frame_tag "projects_list" do %>
+    <%= render "projects/list", organizations: @organizations %>
+  <% end %>
+</div>
+
+<%= javascript_include_tag "projects", defer: true %>

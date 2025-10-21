@@ -114,6 +114,7 @@ Rails.application.routes.draw do
 
     resources :magic_links, only: %i[show create new]
     resources :bottom_items, only: [:index]
+    get "/projects", to: "projects#index"
 
     resources :messages, only: [:create]
     resources :articles, only: %i[update create destroy] do

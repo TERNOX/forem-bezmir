@@ -26,6 +26,9 @@ fr:
           devrel: Devrel
       stack: Our stack
       story: Our story
+      reputation:
+        icon: Reputation icon
+        text: Reputation
       side:
         post:
             icon: Post

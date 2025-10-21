@@ -49,6 +49,8 @@ module Admin
         "views.admin.tools.reputation.success",
         users: result[:users],
         likes: result[:likes],
+        organizations: result[:organizations],
+        organization_likes: result[:organization_likes],
       )
     rescue StandardError => e
       flash[:danger] = e.message
