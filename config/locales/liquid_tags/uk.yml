@@ -80,6 +80,8 @@ uk:
       invalid_speakerdeck_id: "Неправильний Speakerdeck ID"
     spotify_tag:
       invalid_spotify_uri: "Неправильний Spotify URI або URL."
+    steam_tag:
+      invalid_url: "Неправильний Steam URL"
     stackblitz_tag:
       invalid_options: "Неправильні параметри"
       invalid_stackblitz_id: "Неправильний Stackblitz ID"
