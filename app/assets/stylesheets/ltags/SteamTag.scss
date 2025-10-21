@@ -2,9 +2,19 @@
   display: block;
   width: 100%;
   background-color: transparent;
-  color-scheme: light;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  body:not(.light-theme) .ltag__steam-iframe {
+    color-scheme: dark;
+  }
 }
 
 body.dark-theme .ltag__steam-iframe {
   color-scheme: dark;
+}
+
+body.light-theme .ltag__steam-iframe {
+  color-scheme: light;
 }
