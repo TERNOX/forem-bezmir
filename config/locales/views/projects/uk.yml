@@ -32,7 +32,7 @@ uk:
       empty: Поки що жоден проєкт не відповідає пошуку.
       card:
         visit: Переглянути проєкт
-        created_at: Розпочато %{date}
+        created_at: Засновано: %{date}
         posts_label: Кількість дописів
         started_label: Дата старту проєкту
         posts_count:
@@ -41,4 +41,4 @@ uk:
           few: "%{count} дописи"
           many: "%{count} дописів"
           other: "%{count} допису"
-        no_summary: Проєкт ще не додав опис.
+        no_summary: Автор проєкту ще не додав опис.

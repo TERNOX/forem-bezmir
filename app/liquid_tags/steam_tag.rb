@@ -26,7 +26,7 @@ class SteamTag < LiquidTagBase
   end
 
   def widget_src
-    "https://store.steampowered.com/widget/#{@app_id}/"
+    "https://store.steampowered.com/widget/#{@app_id}/?l=ukrainian"
   end
 end
 

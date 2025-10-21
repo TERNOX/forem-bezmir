@@ -10,19 +10,15 @@
   data-created-at="<%= project.created_at.to_i %>"
   data-articles-count="<%= project.articles_count %>"
   data-searchable="<%= searchable %>"
+
 >
   <div class="projects-card__layout">
-  <div style="float: right;">
+  <div style="float: left;">
     <a href="<%= project.path %>" class="projects-card__media" aria-hidden="true" tabindex="-1">
       <img
         src="<%= project.profile_image_url_for(length: 160) %>"
         alt=""
-style="
-    width: 160px;
-    height: auto;
-	    margin: 20px;
-	"
-        class="projects-card__logo crayons-avatar"
+        class="projects-card__logo"
         loading="lazy"
 		
       />
@@ -41,11 +37,12 @@ style="
       <dl class="projects-card__meta color-base-70">
         <div class="projects-card__stat">
           <dd>
-		  <%= t("views.projects.card.posts_label") %>:&nbsp;
 		  <b><%= t("views.projects.card.posts_count", count: project.articles_count) %></dd></b>
         </div>
         <div class="projects-card__stat">
-          <dd><%= t("views.projects.card.created_at", date: l(project.created_at.to_date, format: :long)) %></dd>
+          <dd><%= t("views.projects.card.created_at", date: I18n.l(project.created_at.to_date, format: :short_with_year)) %></dd>
+		  
+		  
         </div>
       </dl>
 
