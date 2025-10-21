@@ -280,8 +280,8 @@ module Html
 
     private
 
-    def img_of_size(source, width = 1500, quality: 82)
-      Images::Optimizer.call(source, width: 1500, quality: 82).gsub(",", "%2C")
+    def img_of_size(source, width = 1500, quality: 81)
+      Images::Optimizer.call(source, width: 1720, quality: 81).gsub(",", "%2C")
     end
 
     def all_children_are_blank?(node)

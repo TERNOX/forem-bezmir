@@ -31,9 +31,14 @@
 }
 
 .projects-grid {
-  display: grid;
-  gap: 1.5rem;
-  grid-template-columns: repeat(1, minmax(0, 1fr));
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(2, 50%);
+	
+@media (max-width: 800px) {
+    .block {
+        grid-template-columns: repeat(1, 100%);
+    }
 }
 
 .projects-card {

@@ -16,10 +16,14 @@
       <img
         src="<%= project.profile_image_url_for(length: 160) %>"
         alt=""
-        width="96"
-        height="96"
+style="
+    width: 160px;
+    height: auto;
+	    margin: 20px;
+	"
         class="projects-card__logo crayons-avatar"
         loading="lazy"
+		float: right;
       />
     </a>
 
@@ -27,19 +31,19 @@
       <div class="projects-card__header">
         <h2 class="projects-card__name"><%= link_to project.name, project.path, class: "projects-card__name-link" %></h2>
         <% if tagline_text.present? %>
-          <p class="projects-card__tagline color-base-70 fs-s"><%= tagline_text %></p>
+          <p class="projects-card__tagline color-base-70"><%= tagline_text %></p>
         <% end %>
       </div>
 
-      <p class="projects-card__summary fs-s color-base-70 truncate-at-3"><%= description_text %></p>
+      <p class="projects-card__summary color-base-70 truncate-at-3"><%= description_text %></p>
 
-      <dl class="projects-card__meta color-base-70 fs-xs">
+      <dl class="projects-card__meta color-base-70">
         <div class="projects-card__stat">
-          <dt class="sr-only"><%= t("views.projects.card.posts_label") %></dt>
-          <dd><%= t("views.projects.card.posts_count", count: project.articles_count) %></dd>
+          <dd>
+		  <%= t("views.projects.card.posts_label") %>:&nbsp;
+		  <b><%= t("views.projects.card.posts_count", count: project.articles_count) %></dd></b>
         </div>
         <div class="projects-card__stat">
-          <dt class="sr-only"><%= t("views.projects.card.started_label") %></dt>
           <dd><%= t("views.projects.card.created_at", date: l(project.created_at.to_date, format: :long)) %></dd>
         </div>
       </dl>

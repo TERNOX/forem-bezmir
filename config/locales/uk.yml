@@ -302,6 +302,7 @@ uk:
       members: "%d %b"
       members_with_year: "%d %b, %Y"
       reddit: "%e %b '%y"
+      long: "%e %b '%y"
       short: "%-e %b, %H:%M"
       short_with_yy: "%-d %b '%y"
       short_with_year: "%-e %b, %Y"
