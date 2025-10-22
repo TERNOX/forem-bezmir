@@ -1,28 +1,73 @@
 'use strict';
 
 function secondsToHumanUnitAgo(seconds) {
+  const i18n =
+    typeof globalThis !== 'undefined' &&
+    globalThis.I18n &&
+    typeof globalThis.I18n.t === 'function'
+      ? globalThis.I18n
+      : null;
+
+  const fallbackFormatter = (unit) => (count) =>
+    `${count} ${unit}${count === 1 ? '' : ''} тому`;
+
   const times = [
-    ['сек', 1],
-    ['хв', 60],
-    ['год', 60 * 60],
-    ['день', 60 * 60 * 24],
-    ['тиждень', 60 * 60 * 24 * 7],
-    ['місяць', 60 * 60 * 24 * 30],
-    ['рік', 60 * 60 * 24 * 365],
+    {
+      seconds: 1,
+      translationKey: 'datetime.distance_in_words_ago.x_seconds',
+      fallback: fallbackFormatter('сек'),
+    },
+    {
+      seconds: 60,
+      translationKey: 'datetime.distance_in_words_ago.x_minutes',
+      fallback: fallbackFormatter('хв'),
+    },
+    {
+      seconds: 60 * 60,
+      translationKey: 'datetime.distance_in_words_ago.about_x_hours',
+      fallback: fallbackFormatter('год'),
+    },
+    {
+      seconds: 60 * 60 * 24,
+      translationKey: 'datetime.distance_in_words_ago.x_days',
+      fallback: fallbackFormatter('день'),
+    },
+    {
+      seconds: 60 * 60 * 24 * 30,
+      translationKey: 'datetime.distance_in_words_ago.x_months',
+      fallback: fallbackFormatter('місяць'),
+    },
+    {
+      seconds: 60 * 60 * 24 * 365,
+      translationKey: 'datetime.distance_in_words_ago.x_years',
+      fallback: fallbackFormatter('рік'),
+    },
   ];
 
-  if (seconds < times[0][1]) return 'прямо зараз';
+  if (seconds < times[0].seconds) {
+    if (i18n) {
+      return i18n.t('datetime.distance_in_words_ago.less_than_x_seconds', {
+        count: 1,
+      });
+    }
+
+    return 'прямо зараз';
+  }
 
   let scale = 0;
   // If the amount of seconds is more than a minute, we change the scale to minutes
   // If the amount of seconds then is more than an hour, we change the scale to hours
   // This continues until the unit above our current scale is longer than `seconds`, or doesn't exist
-  while (scale + 1 < times.length && seconds >= times[scale + 1][1]) scale += 1;
+  while (scale + 1 < times.length && seconds >= times[scale + 1].seconds) scale += 1;
 
-  const wholeUnits = Math.floor(seconds / times[scale][1]);
-  const unitName = times[scale][0] + (wholeUnits === 1 ? '' : '');
+  const timeScale = times[scale];
+  const wholeUnits = Math.floor(seconds / timeScale.seconds);
 
-  return wholeUnits + ' ' + unitName + ' тому';
+  if (i18n) {
+    return i18n.t(timeScale.translationKey, { count: wholeUnits });
+  }
+
+  return timeScale.fallback(wholeUnits);
 }
 
 /**
