@@ -116,6 +116,11 @@ export const Article = ({
 
           <div className="crayons-story__indention">
             <ContentTitle article={article} />
+            {article.type_of !== 'status' && article.first_paragraph_text && (
+              <p className="crayons-story__description truncate-at-4">
+                {article.first_paragraph_text}
+              </p>
+            )}
             {article.type_of !== 'status' && (<TagList tags={article.tag_list} flare_tag={article.flare_tag} />)}
 
             {article.type_of === 'status' && article.body_preview && article.body_preview.length > 0 && (<div className='crayons-story__contentpreview text-styles' dangerouslySetInnerHTML={{__html: article.body_preview}} />)}

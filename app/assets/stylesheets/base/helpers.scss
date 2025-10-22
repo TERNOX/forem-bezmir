@@ -12,6 +12,13 @@
   -webkit-box-orient: vertical;
 }
 
+.truncate-at-4 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+}
+
 .branded-2 {
   border-top: var(--su-2) solid var(--accent-brand);
 }

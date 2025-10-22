@@ -47,6 +47,11 @@ module Homepage
     attribute :tag_list, ->(article) { article.cached_tag_list.to_s.split(", ") }
     attribute :flare_tag, ->(article, params) { params.dig(:tag_flares, article.id) }
 
+    attribute :first_paragraph_text,
+              if: proc { |article| article.respond_to?(:first_paragraph_text) } do |article|
+      article.first_paragraph_text
+    end
+
     attribute :pinned, if: proc { |article| article.is_a?(::Article) } do |article|
       article.id == PinnedArticle.id
     end

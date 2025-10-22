@@ -193,6 +193,13 @@
     margin-right: var(--su-2);
   }
 
+  &__description {
+    margin: var(--su-2) 0;
+    color: var(--card-color-secondary);
+    font-size: var(--fs-base);
+    line-height: var(--lh-base);
+  }
+
   &__tags {
     margin-bottom: var(--su-2);
     margin-left: calc(var(--su-1) * -1);

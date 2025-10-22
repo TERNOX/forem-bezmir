@@ -742,6 +742,25 @@ class Article < ApplicationRecord
     processed_html_final
   end
 
+  def first_paragraph_text
+    return @first_paragraph_text if defined?(@first_paragraph_text)
+    if respond_to?(:has_attribute?) && !has_attribute?(:processed_html)
+      return @first_paragraph_text = nil
+    end
+    return @first_paragraph_text = nil if processed_html.blank?
+
+    first_paragraph = Nokogiri::HTML.fragment(processed_html).at_css("p")
+    return @first_paragraph_text = nil unless first_paragraph
+
+    text = ActionView::Base.full_sanitizer.sanitize(first_paragraph.inner_html).squish
+
+    if text.present? && text.match?(/\p{L}|\p{N}/)
+      @first_paragraph_text = text
+    else
+      @first_paragraph_text = nil
+    end
+  end
+
 
   def readable_publish_date
     relevant_date = displayable_published_at

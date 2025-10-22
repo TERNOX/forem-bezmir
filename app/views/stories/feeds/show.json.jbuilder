@@ -44,6 +44,11 @@ json.array!(@stories) do |article|
 
   json.extract! article, *article_methods_to_include
 
+  unless article.type_of == "status"
+    first_paragraph_text = article.first_paragraph_text
+    json.first_paragraph_text first_paragraph_text if first_paragraph_text.present?
+  end
+
   # Only load top_comments if the article has comments - major N+1 optimization
   if article.comments_count > 0
     # Use the preloaded comments to avoid additional queries

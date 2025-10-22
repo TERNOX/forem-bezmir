@@ -113,6 +113,11 @@
           <%= story.type_of == "status" && story.title_finalized_for_feed ? story.title_finalized_for_feed : story.title %>
         </a>
       </h2>
+      <% if story.type_of != "status" && story.first_paragraph_text.present? %>
+        <p class="crayons-story__description truncate-at-4">
+          <%= story.first_paragraph_text %>
+        </p>
+      <% end %>
       <% if story.type_of != 'status' %>
         <div class="crayons-story__tags">
           <% flare_tag = FlareTag.new(story, @tag).tag %>

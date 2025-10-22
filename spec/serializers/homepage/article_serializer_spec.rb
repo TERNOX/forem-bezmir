@@ -43,5 +43,13 @@ RSpec.describe Homepage::ArticleSerializer, type: :serializer do
 
       expect(response.first[:pinned]).to be(true)
     end
+
+    it "includes the sanitized first paragraph text when present" do
+      article.update!(processed_html: "<p>Hello <a href='/'>link</a></p><p>Next</p>")
+
+      response = described_class.serialized_collection_from(relation: Article.where(id: article.id))
+
+      expect(response.first[:first_paragraph_text]).to eq("Hello link")
+    end
   end
 end

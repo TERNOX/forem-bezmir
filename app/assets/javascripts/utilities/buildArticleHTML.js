@@ -468,6 +468,19 @@ function buildArticleHTML(article, currentUserId = null) {
         </div>`;
     }
 
+    var firstParagraphText = '';
+    if (article.first_paragraph_text) {
+      firstParagraphText = filterXSS(article.first_paragraph_text);
+    }
+
+    var firstParagraphHTML = '';
+    if (article.type_of !== 'status' && firstParagraphText) {
+      firstParagraphHTML = `
+              <p class="crayons-story__description truncate-at-4">
+                ${firstParagraphText}
+              </p>`;
+    }
+
     return `<article class="crayons-story"
       data-article-path="${article.path}"
       id="article-${article.id}"
@@ -487,6 +500,7 @@ function buildArticleHTML(article, currentUserId = null) {
                   ${articleTitleForFeed}
                 </a>
               </h3>\
+              ${firstParagraphHTML}\
               ${article.type_of !== 'status' ? `<div class="crayons-story__tags">${tagString}</div>` : ''}\
               ${(article.type_of === 'status' && article.body_preview && article.body_preview.length > 10) ? `<div class="crayons-story__contentpreview text-styles">${article.body_preview}</div>` : '' }\
               ${searchSnippetHTML}\
