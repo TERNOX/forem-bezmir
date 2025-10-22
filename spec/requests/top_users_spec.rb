@@ -1,8 +1,10 @@
 require "rails_helper"
 
 RSpec.describe "TopUsers", type: :request do
+  include ActiveSupport::Testing::TimeHelpers
+
   describe "GET /top_users" do
-    it "returns success and orders users by reputation" do
+    it "returns success, sets the page title, and orders users by reputation" do
       highest = create(:user, username: "highest", reputation_score: 250)
       middle = create(:user, username: "middle", reputation_score: 120)
       lower = create(:user, username: "lower", reputation_score: 30)
@@ -10,6 +12,10 @@ RSpec.describe "TopUsers", type: :request do
       get "/top_users"
 
       expect(response).to have_http_status(:ok)
+      document = Nokogiri::HTML(response.body)
+
+      expect(document.at_css("title").text).to eq(I18n.t("views.top_users.title"))
+
       body = response.body
 
       helper = ActionController::Base.helpers
@@ -39,6 +45,15 @@ RSpec.describe "TopUsers", type: :request do
       expect(response.body).to include(I18n.l(period, format: :long_month))
       expect(response.body).to include(monthly_user.username)
       expect(response.body).to include(I18n.t("views.top_users.reputation_label_month", month: I18n.l(period, format: :long_month)))
+    end
+
+    it "lists the current month tab even before data exists" do
+      travel_to(Time.zone.local(2025, 10, 10, 12, 0, 0)) do
+        get "/top_users"
+
+        current_label = I18n.l(Date.new(2025, 10, 1), format: :long_month)
+        expect(response.body).to include(current_label)
+      end
     end
   end
 end

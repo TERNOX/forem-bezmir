@@ -72,6 +72,8 @@ module Users
     end
 
     def award_top_ten
+      return if period >= Time.zone.today.beginning_of_month.to_date
+
       leaderboard = MonthlyUserReputation.for_period(period).order(:rank).limit(10).includes(:user)
       to_award = leaderboard.reject { |entry| entry.awarded_top_ten_at.present? }
       return if to_award.empty?

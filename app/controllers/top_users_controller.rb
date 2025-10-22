@@ -6,8 +6,12 @@ class TopUsersController < ApplicationController
   def index
     skip_authorization
 
-    @available_periods = available_periods
+    ensure_snapshot_for_period(current_period)
+
     @selected_period = parse_period(params[:period])
+    ensure_snapshot_for_period(@selected_period) if @selected_period.present?
+
+    @available_periods = available_periods
 
     if @selected_period
       @leaderboard_entries = entries_for_period(@selected_period)
@@ -20,13 +24,18 @@ class TopUsersController < ApplicationController
       @score_label = I18n.t("views.top_users.reputation_label")
       @description = I18n.t("views.top_users.description")
     end
-
   end
 
   private
 
   def available_periods
-    MonthlyUserReputation.distinct.order(period: :desc).pluck(:period)
+    periods = MonthlyUserReputation.distinct.pluck(:period)
+    periods << current_period
+    periods.compact.uniq.sort.reverse
+  end
+
+  def current_period
+    Time.zone.today.beginning_of_month.to_date
   end
 
   def parse_period(value)
@@ -34,11 +43,18 @@ class TopUsersController < ApplicationController
     return unless value.match?(/\A\d{4}-\d{2}\z/)
 
     date = Date.strptime(value, "%Y-%m")
-    return unless @available_periods.include?(date)
+    return unless available_periods.include?(date)
 
     date
   rescue ArgumentError
     nil
+  end
+
+  def ensure_snapshot_for_period(period)
+    return if period.blank?
+    return if MonthlyUserReputation.for_period(period).exists?
+
+    Users::CalculateMonthlyReputation.call(period: period)
   end
 
   def entries_for_all_time
