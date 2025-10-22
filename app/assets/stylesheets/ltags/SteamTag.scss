@@ -4,3 +4,17 @@
   background-color: var(--card-bg);
   color-scheme: light dark;
 }
+
+@media (prefers-color-scheme: dark) {
+  body:not(.light-theme) .ltag__steam-iframe {
+    color-scheme: dark;
+  }
+}
+
+body.dark-theme .ltag__steam-iframe {
+  color-scheme: dark;
+}
+
+body.light-theme .ltag__steam-iframe {
+  color-scheme: light;
+}

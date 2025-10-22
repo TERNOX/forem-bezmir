@@ -12,7 +12,7 @@ RSpec.describe SteamTag, type: :liquid_tag do
     it "renders the Steam widget iframe" do
       rendered = Liquid::Template.parse("{% embed #{steam_url} %}").render
 
-      expect(rendered).to include("src=\"https://store.steampowered.com/widget/#{app_id}/\"")
+      expect(rendered).to include("src=\"https://store.steampowered.com/widget/#{app_id}/?l=ukrainian&theme=dark&transparent=1\"")
       expect(rendered).to include("width=\"100%\"")
       expect(rendered).to include("height=\"200\"")
     end

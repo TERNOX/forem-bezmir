@@ -1,3 +1,4 @@
+import { initializeSteamIframeColorScheme } from '../liquidTags/steamIframe';
 import { initializeCommentDate } from './initializers/initializeCommentDate';
 import { initializeCommentPreview } from './initializers/initializeCommentPreview';
 import { initializeTimeFixer } from './initializers/initializeTimeFixer';
@@ -17,6 +18,7 @@ initializeNotifications();
 initializeTimeFixer();
 initializeDateHelpers();
 initializeGifVideos(document);
+initializeSteamIframeColorScheme();
 
 InstantClick.on('change', () => {
   initializeCommentDate();
@@ -24,6 +26,7 @@ InstantClick.on('change', () => {
   initializeSettings();
   initializeNotifications();
   initializeGifVideos(document);
+  initializeSteamIframeColorScheme();
 });
 
 window.showUserAlertModal = showUserAlertModal;
