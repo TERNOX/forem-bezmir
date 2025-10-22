@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_10_18_221955) do
+ActiveRecord::Schema[7.0].define(version: 2025_10_22_225456) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "ltree"
@@ -1411,6 +1411,15 @@ ActiveRecord::Schema[7.0].define(version: 2025_10_18_221955) do
     t.index ["social_preview_template"], name: "index_tags_on_social_preview_template"
     t.index ["supported"], name: "index_tags_on_supported"
     t.index ["taggings_count"], name: "index_tags_on_taggings_count"
+  end
+
+  create_table "top_seven_article_selections", force: :cascade do |t|
+    t.date "week_of", null: false
+    t.integer "article_ids", default: [], null: false, array: true
+    t.datetime "awarded_at", precision: nil
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
+    t.index ["week_of"], name: "index_top_seven_article_selections_on_week_of", unique: true
   end
 
   create_table "tweets", force: :cascade do |t|
