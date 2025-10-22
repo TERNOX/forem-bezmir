@@ -1,0 +1,6 @@
+en:
+  views:
+    top_users:
+      title: "Top community members"
+      description: "These are the 50 members with the highest reputation on the site."
+      reputation_label: "Reputation"

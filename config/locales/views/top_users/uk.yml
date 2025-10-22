@@ -1,0 +1,6 @@
+uk:
+  views:
+    top_users:
+      title: "Топ учасники спільноти"
+      description: "50 користувачів із найвищою репутацією на сайті."
+      reputation_label: "Репутація"
