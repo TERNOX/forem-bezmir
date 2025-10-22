@@ -1,9 +1,75 @@
 class TopUsersController < ApplicationController
+  helper TopUsersHelper
+
+  LeaderboardEntry = Struct.new(:user, :score, keyword_init: true)
+
   def index
     skip_authorization
 
-    @users = UserDecorator.decorate_collection(
-      User.registered.member.order(reputation_score: :desc).limit(50),
+    @available_periods = available_periods
+    @selected_period = parse_period(params[:period])
+
+    if @selected_period
+      @leaderboard_entries = entries_for_period(@selected_period)
+      @page_title = I18n.t("views.top_users.month_title", month: formatted_period(@selected_period))
+      @score_label = I18n.t("views.top_users.reputation_label_month", month: formatted_period(@selected_period))
+      @description = I18n.t("views.top_users.month_description", month: formatted_period(@selected_period))
+    else
+      @leaderboard_entries = entries_for_all_time
+      @page_title = I18n.t("views.top_users.title")
+      @score_label = I18n.t("views.top_users.reputation_label")
+      @description = I18n.t("views.top_users.description")
+    end
+
+  end
+
+  private
+
+  def available_periods
+    MonthlyUserReputation.distinct.order(period: :desc).pluck(:period)
+  end
+
+  def parse_period(value)
+    return if value.blank?
+    return unless value.match?(/\A\d{4}-\d{2}\z/)
+
+    date = Date.strptime(value, "%Y-%m")
+    return unless @available_periods.include?(date)
+
+    date
+  rescue ArgumentError
+    nil
+  end
+
+  def entries_for_all_time
+    users = User.registered.member.order(reputation_score: :desc).limit(50)
+    decorate_leaderboard(users.map { |user| LeaderboardEntry.new(user: user, score: user.reputation_score) })
+  end
+
+  def entries_for_period(period)
+    records = MonthlyUserReputation
+      .for_period(period)
+      .includes(:user)
+      .order(rank: :asc, score: :desc)
+      .limit(50)
+
+    decorate_leaderboard(
+      records.map { |record| LeaderboardEntry.new(user: record.user, score: record.score) },
     )
+  end
+
+  def decorate_leaderboard(entries)
+    decorated = UserDecorator.decorate_collection(entries.map(&:user))
+    decorated_by_id = decorated.index_by(&:id)
+
+    entries.each do |entry|
+      entry.user = decorated_by_id[entry.user.id]
+    end
+
+    entries
+  end
+
+  def formatted_period(period)
+    I18n.l(period, format: :long_month)
   end
 end

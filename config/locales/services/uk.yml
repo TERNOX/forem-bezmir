@@ -74,6 +74,9 @@ uk:
       limit_reached:
         one: Досягнуто ліміт. Спробуйте ще раз через %{count} секунду
         other: Досягнуто ліміт. Спробуйте ще раз через %{count} секунд
+    users:
+      calculate_monthly_reputation:
+        badge_message: "Вітаємо з потраплянням до топ-10 за %{month}!"
     slack:
       messengers:
         article_fetched_feed:

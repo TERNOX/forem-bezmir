@@ -1,22 +1,38 @@
-<% content_for :page_title, t("views.top_users.title") %>
+<% content_for :page_title, @page_title %>
 
 <div class="crayons-layout crayons-layout--limited top-users-page px-2 m:px-0">
   <div class="crayons-card p-4 m:p-6 mb-4">
-    <h1 class="fs-3xl fw-bold mb-2"><%= t("views.top_users.title") %></h1>
-    <p class="color-base-70 mb-0"><%= t("views.top_users.description") %></p>
+    <h1 class="fs-3xl fw-bold mb-2"><%= @page_title %></h1>
+    <p class="color-base-70 mb-0"><%= @description %></p>
   </div>
 
+  <% if @available_periods.any? %>
+    <nav class="crayons-tabs crayons-tabs--scrollable mb-4" aria-label="<%= t("views.top_users.tabs.aria") %>">
+      <ul class="crayons-tabs__list">
+        <li>
+          <%= link_to t("views.top_users.tabs.all_time"), top_users_path, class: top_users_tab_classes(@selected_period.nil?), "aria-current": (@selected_period.nil? ? "page" : nil) %>
+        </li>
+        <% @available_periods.each do |period| %>
+          <li>
+            <% label = I18n.l(period, format: :long_month) %>
+            <%= link_to label, top_users_path(period: period.strftime("%Y-%m")), class: top_users_tab_classes(@selected_period == period), "aria-current": (@selected_period == period ? "page" : nil) %>
+          </li>
+        <% end %>
+      </ul>
+    </nav>
+  <% end %>
+
   <ol class="top-users__list list-none m-0 p-0 crayons-card">
-    <% @users.each_with_index do |user, index| %>
+    <% @leaderboard_entries.each_with_index do |entry, index| %>
       <li class="top-users__item border-base-10 border-0 border-b px-4 py-6">
         <div class="flex items-center gap-4 flex-wrap">
           <div class="top-users__rank fs-xl fw-bold color-base-60 text-center">#<%= index + 1 %></div>
           <div class="flex-1 min-w-0">
-            <%= render "users/liquid", user: user, user_path: user.path %>
+            <%= render "users/liquid", user: entry.user, user_path: entry.user.path %>
           </div>
           <div class="top-users__score ml-auto text-right">
-            <div class="color-base-60 fw-medium fs-s"><%= t("views.top_users.reputation_label") %></div>
-            <div class="fs-xl fw-bold color-base-90"><%= number_with_delimiter(user.reputation_score) %></div>
+            <div class="color-base-60 fw-medium fs-s"><%= @score_label %></div>
+            <div class="fs-xl fw-bold color-base-90"><%= number_with_delimiter(entry.score) %></div>
           </div>
         </div>
       </li>

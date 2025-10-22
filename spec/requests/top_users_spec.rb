@@ -28,5 +28,17 @@ RSpec.describe "TopUsers", type: :request do
       document = Nokogiri::HTML(response.body)
       expect(document.css(".top-users__list > li").count).to eq(50)
     end
+
+    it "shows available monthly tabs and renders selected month" do
+      period = Date.new(2025, 10, 1)
+      monthly_user = create(:user, username: "monthly-star")
+      create(:monthly_user_reputation, user: monthly_user, period: period, score: 42, rank: 1)
+
+      get "/top_users", params: { period: "2025-10" }
+
+      expect(response.body).to include(I18n.l(period, format: :long_month))
+      expect(response.body).to include(monthly_user.username)
+      expect(response.body).to include(I18n.t("views.top_users.reputation_label_month", month: I18n.l(period, format: :long_month)))
+    end
   end
 end

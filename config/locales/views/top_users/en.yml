@@ -2,5 +2,11 @@ en:
   views:
     top_users:
       title: "Top community members"
+      month_title: "Top community members for %{month}"
       description: "These are the 50 members with the highest reputation on the site."
+      month_description: "Reputation earned between the first and last day of %{month}."
       reputation_label: "Reputation"
+      reputation_label_month: "Reputation earned in %{month}"
+      tabs:
+        aria: "Leaderboard periods"
+        all_time: "All time"

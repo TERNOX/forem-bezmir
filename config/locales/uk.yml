@@ -1,5 +1,8 @@
 ---
 uk:
+  date:
+    formats:
+      long_month: "%B %Y"
   div: div
   span: span
   img: img

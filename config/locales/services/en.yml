@@ -112,3 +112,5 @@ en:
       remove_role:
         remove_self: Admins cannot remove roles from themselves.
         error: There was an issue removing this role. %{e_message}
+      calculate_monthly_reputation:
+        badge_message: "Congrats on finishing in the monthly top 10 for %{month}!"
