@@ -19,7 +19,7 @@ const getPreferredTheme = () => {
 const applyThemeToIframes = () => {
   const theme = getPreferredTheme();
   document.querySelectorAll(STEAM_IFRAME_SELECTOR).forEach((iframe) => {
-    iframe.style.backgroundColor = 'transparent';
+    iframe.style.backgroundColor = 'var(--card-bg)';
     iframe.style.colorScheme = theme;
   });
 };
