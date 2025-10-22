@@ -70,26 +70,6 @@ uk:
     - жов
     - лис
     - гру
-    formats:
-    default: "%d.%m.%Y"
-    long_month: "%B %Y"
-    full: "%-d %B, %H:%M, %Y - %A"
-    full_month: "%B, %Y"
-    full_day: "%-d %B, %H:%M, %Y"
-    week_abbr: "%a"
-    admin_user: "%Y-%m-%d, %H:%M"
-    comment: "%d %B %Y"
-    email_verified: "%e %b '%y, %H:%M"
-    github: "%d %b %Y"
-    json: "%e %b %Y"
-    medium: "%-d %b %Y"
-    members: "%d %b"
-    members_with_year: "%d %b, %Y"
-    reddit: "%e %b '%y"
-    long: "%e %b '%y"
-    short_with_yy: "%-d %b '%y"
-    short_with_year: "%-e %b, %Y"
-    stackexchange: "%e %b '%y"
     month_names_with_day:
     -
     - січня
@@ -118,6 +98,26 @@ uk:
     - Жовтень
     - Листопад
     - Грудень
+    formats:
+        default: "%d.%m.%Y"
+        long_month: "%B %Y"
+        full: "%-d %B, %H:%M, %Y - %A"
+        full_month: "%B, %Y"
+        full_day: "%-d %B, %H:%M, %Y"
+        week_abbr: "%a"
+        admin_user: "%Y-%m-%d, %H:%M"
+        comment: "%d %B %Y"
+        email_verified: "%e %b '%y, %H:%M"
+        github: "%d %b %Y"
+        json: "%e %b %Y"
+        medium: "%-d %b %Y"
+        members: "%d %b"
+        members_with_year: "%d %b, %Y"
+        reddit: "%e %b '%y"
+        long: "%e %b '%y"
+        short_with_yy: "%-d %b '%y"
+        short_with_year: "%-e %b, %Y"
+        stackexchange: "%e %b '%y"
   datetime:
     distance_in_words_ago:
       about_x_hours:
