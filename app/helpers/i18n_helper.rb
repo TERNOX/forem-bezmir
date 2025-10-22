@@ -16,6 +16,8 @@ module I18nHelper
       }
     }
 
+    add_datetime_translations(translations)
+
     # Add conditional translations based on controller/action
     add_conditional_translations(translations)
 
@@ -23,6 +25,14 @@ module I18nHelper
   end
 
   private
+
+  def add_datetime_translations(translations)
+    return unless I18n.exists?("datetime.distance_in_words_ago", I18n.locale)
+
+    translations[I18n.locale.to_sym][:datetime] ||= {}
+    translations[I18n.locale.to_sym][:datetime][:distance_in_words_ago] =
+      I18n.t("datetime.distance_in_words_ago")
+  end
 
   # Adds conditional translations based on the current page context
   #
