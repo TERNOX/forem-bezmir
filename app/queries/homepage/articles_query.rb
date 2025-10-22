@@ -9,6 +9,7 @@ module Homepage
       main_image
       main_image_background_hex_color
       main_image_height
+      processed_html
       organization_id
       path
       public_reactions_count

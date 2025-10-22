@@ -130,6 +130,14 @@ RSpec.describe "Search", :proper_status do
         expect(Search::Article).to have_received(:search_documents)
       end
 
+      it "returns the first paragraph text when present" do
+        create(:article, body_markdown: "Hello world\n\nSecond paragraph")
+
+        get search_feed_content_path(homepage_params)
+
+        expect(response.parsed_body["result"].first["first_paragraph_text"]).to eq("Hello world")
+      end
+
       it "nullifies invalid sort directions" do
         allow(Search::Article).to receive(:search_documents).and_call_original
         article = create(:article)

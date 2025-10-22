@@ -28,6 +28,10 @@ RSpec.describe "Search::FeedContent (Simple)" do
           :subforem_id,
         )
       end
+
+      it "includes processed_html in the ATTRIBUTES list" do
+        expect(Homepage::ArticlesQuery::ATTRIBUTES).to include(:processed_html)
+      end
     end
 
     context "when testing the methods exist on Article model" do
