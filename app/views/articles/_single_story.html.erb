@@ -10,7 +10,7 @@
   <% elsif featured == true || (feed_style_preference == "rich" && story.main_image.present?) %>
     <div class="crayons-article__cover crayons-article__cover__image__feed" >
               <a href="<%= URL.article(story) %>" title="<%= story.type_of == "status" && story.title_finalized ? story.title_finalized : story.title %>" aria-label="article" class="crayons-article__cover__image__feed crayons-story__cover__image">
-        <img src="<%= cloud_cover_url(story.main_image) %>" width="1000" height="<%= story.main_image_height %>" style="background-color:<%= story.main_image_background_hex_color %>;" class="crayons-article__cover__image__feed" alt="Обкладинка для <%= story.type_of == "status" && story.title_finalized ? story.title_finalized : story.title %>">
+        <img src="<%= cloud_cover_url(story.main_image) %>" width="1000" height="<%= story.main_image_height %>" class="crayons-article__cover__image__feed" alt="Обкладинка для <%= story.type_of == "status" && story.title_finalized ? story.title_finalized : story.title %>">
       </a>
     </div>
   <% end %>

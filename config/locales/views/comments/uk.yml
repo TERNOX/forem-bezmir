@@ -149,9 +149,11 @@ uk:
         one: "%{count} коментар"
         other: "%{count} коментарів"
       empty: Новий
-      add: "Додати_коментар"
+      add: "Коментувати"
       summary:
         count_html:
-          one: "%{count}%{start}_коментар%{end}"
-          other: "%{count}%{start}_коментарів%{end}"
+          one: "%{count}%{start} коментар%{end}"
+          few: "%{count}%{start} коментаря%{end}"
+          many: "%{count}%{start} коментарів%{end}"
+          other: "%{count}%{start} коментарів%{end}"
         title: Коментарі

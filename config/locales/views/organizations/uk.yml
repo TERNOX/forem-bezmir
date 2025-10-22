@@ -10,8 +10,8 @@ uk:
       github:
         icon: Логотип GitHub
       joined:
-        icon: Приєднався
-        text_html: "Приєднався %{date}"
+        icon: Створено
+        text_html: "Створено %{date}"
       location:
         icon: Локація
       logo: Зображення профілю %{org}

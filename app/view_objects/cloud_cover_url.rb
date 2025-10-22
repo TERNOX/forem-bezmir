@@ -16,7 +16,7 @@ class CloudCoverUrl
 
     # Hardcode for YouTube thumbnails
     if (url&.include?("ytimg.com"))
-      height = 500
+      height = 800
       crop = "crop"
     end
 

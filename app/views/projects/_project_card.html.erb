@@ -40,7 +40,8 @@
 		  <b><%= t("views.projects.card.posts_count", count: project.articles_count) %></dd></b>
         </div>
         <div class="projects-card__stat">
-             <dd><%= t("views.projects.card.created_at", date: I18n.l(project.created_at.to_date, format: :short_with_yy)) %></dd>
+		
+             <dd><%= t("views.projects.card.created_at", date: local_date(@project.created_at.to_date)) %></dd>
 
 		  
 		  

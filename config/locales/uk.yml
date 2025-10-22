@@ -110,22 +110,22 @@ uk:
         one: "приблизно %{count} годину тому"
         few: "приблизно %{count} години тому"
         many: "приблизно %{count} годин тому"
-        other: "приблизно %{count} години тому"
+        other: "приблизно %{count} годин тому"
       about_x_months:
         one: "приблизно %{count} місяць тому"
         few: "приблизно %{count} місяці тому"
         many: "приблизно %{count} місяців тому"
-        other: "приблизно %{count} місяця тому"
+        other: "приблизно %{count} місяців тому"
       about_x_years:
         one: "приблизно %{count} рік тому"
         few: "приблизно %{count} роки тому"
         many: "приблизно %{count} років тому"
-        other: "приблизно %{count} року тому"
+        other: "приблизно %{count} років тому"
       almost_x_years:
         one: "майже %{count} рік тому"
         few: "майже %{count} роки тому"
         many: "майже %{count} років тому"
-        other: "майже %{count} року тому"
+        other: "майже %{count} років тому"
       half_a_minute: "пів хвилини тому"
       less_than_x_seconds:
         one: "менше %{count} секунди тому"
@@ -146,27 +146,27 @@ uk:
         one: "%{count} секунду тому"
         few: "%{count} секунди тому"
         many: "%{count} секунд тому"
-        other: "%{count} секунди тому"
+        other: "%{count} секунд тому"
       x_minutes:
         one: "%{count} хвилину тому"
         few: "%{count} хвилини тому"
         many: "%{count} хвилин тому"
-        other: "%{count} хвилини тому"
+        other: "%{count} хвилин тому"
       x_days:
         one: "%{count} день тому"
         few: "%{count} дні тому"
         many: "%{count} днів тому"
-        other: "%{count} дня тому"
+        other: "%{count} днів тому"
       x_months:
         one: "%{count} місяць тому"
         few: "%{count} місяці тому"
         many: "%{count} місяців тому"
-        other: "%{count} місяця тому"
+        other: "%{count} місяців тому"
       x_years:
         one: "%{count} рік тому"
         few: "%{count} роки тому"
         many: "%{count} років тому"
-        other: "%{count} року тому"
+        other: "%{count} років тому"
 
     expired_ago:
       about_x_hours:
