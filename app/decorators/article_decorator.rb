@@ -144,6 +144,8 @@ class ArticleDecorator < ApplicationDecorator
 
   delegate :body_preview, to: :object
 
+  delegate :first_paragraph_text, to: :object
+
   delegate :title_finalized, to: :object
 
   delegate :title_finalized_for_feed, to: :object

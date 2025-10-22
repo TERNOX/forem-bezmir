@@ -795,6 +795,26 @@ RSpec.describe Article do
       end
     end
 
+    describe "#first_paragraph_text" do
+      it "returns sanitized text from the first paragraph" do
+        article = build(:article, processed_html: "<p>Hello <a href='https://example.com'>world</a>!</p><p>Other</p>")
+
+        expect(article.first_paragraph_text).to eq("Hello world!")
+      end
+
+      it "returns nil when the first paragraph has no readable text" do
+        article = build(:article, processed_html: "<p><img src='image.jpg' alt=''></p><p>Visible text</p>")
+
+        expect(article.first_paragraph_text).to be_nil
+      end
+
+      it "returns nil when processed_html is blank" do
+        article = build(:article, processed_html: nil)
+
+        expect(article.first_paragraph_text).to be_nil
+      end
+    end
+
     describe "#body_text" do
       it "return a sanitized version of processed_html" do
         sanitized_html = ActionView::Base.full_sanitizer.sanitize(test_article.processed_html)
