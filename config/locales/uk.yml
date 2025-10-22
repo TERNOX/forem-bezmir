@@ -1,9 +1,5 @@
 ---
 uk:
-  date:
-    formats:
-      long_month: "%B %Y"
-      short_with_yy: "%-d %b '%y"
   div: div
   span: span
   img: img
@@ -76,6 +72,7 @@ uk:
     - гру
     formats:
     default: "%d.%m.%Y"
+    long_month: "%B %Y"
     full: "%-d %B, %H:%M, %Y - %A"
     full_month: "%B, %Y"
     full_day: "%-d %B, %H:%M, %Y"
