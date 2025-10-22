@@ -2,7 +2,11 @@ module Admin
   class ToolsController < Admin::ApplicationController
     layout "admin"
 
-    def index; end
+    def index
+      @top_seven_selections = TopSevenArticleSelection.ordered
+      article_ids = @top_seven_selections.flat_map(&:article_ids)
+      @top_seven_articles_by_id = Article.where(id: article_ids).includes(:user).index_by(&:id)
+    end
 
     def bust_cache
       flash[:success] =

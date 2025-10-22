@@ -7,3 +7,7 @@ en:
           description_html: "<strong>Resets</strong> all member reputation scores to match the number of likes their posts and comments have received."
           submit: Recalculate now
           success: "Recalculated reputation for %{users} members using %{likes} total post and comment likes."
+        top_seven:
+          heading: Weekly Top 7 preview
+          description_html: "Preview the seven most reacted posts for each week. These are the articles that will be considered when awarding the Top 7 badge."
+          empty_state: "No Top 7 selections have been recorded yet."
