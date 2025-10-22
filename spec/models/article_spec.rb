@@ -813,6 +813,15 @@ RSpec.describe Article do
 
         expect(article.first_paragraph_text).to be_nil
       end
+
+      it "returns nil without raising when processed_html was not selected" do
+        article = create(:article, processed_html: "<p>Hello <strong>world</strong></p>")
+
+        limited_article = Article.where(id: article.id).select(:id).first
+
+        expect { limited_article.first_paragraph_text }.not_to raise_error
+        expect(limited_article.first_paragraph_text).to be_nil
+      end
     end
 
     describe "#body_text" do

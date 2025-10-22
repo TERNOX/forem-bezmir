@@ -744,6 +744,9 @@ class Article < ApplicationRecord
 
   def first_paragraph_text
     return @first_paragraph_text if defined?(@first_paragraph_text)
+    if respond_to?(:has_attribute?) && !has_attribute?(:processed_html)
+      return @first_paragraph_text = nil
+    end
     return @first_paragraph_text = nil if processed_html.blank?
 
     first_paragraph = Nokogiri::HTML.fragment(processed_html).at_css("p")

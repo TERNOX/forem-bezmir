@@ -30,6 +30,22 @@ RSpec.describe "Stories::Feeds" do
       )
     end
 
+    it "exposes the sanitized first paragraph text when available" do
+      article.update!(processed_html: "<p>Hello <a href='/'>there</a></p><p>Next paragraph</p>")
+
+      get stories_feed_path
+
+      expect(response_article["first_paragraph_text"]).to eq("Hello there")
+    end
+
+    it "omits the first paragraph text when the first paragraph has no readable characters" do
+      article.update!(processed_html: "<p><img src='https://example.com/cat.png' alt=''></p><p>Visible</p>")
+
+      get stories_feed_path
+
+      expect(response_article).not_to have_key("first_paragraph_text")
+    end
+
     context "when there are no params passed (base feed) and user is NOT signed in" do
       it "returns feed when feed_strategy is basic" do
         allow(Settings::UserExperience).to receive(:feed_strategy).and_return("basic")
