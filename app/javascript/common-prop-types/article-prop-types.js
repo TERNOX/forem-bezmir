@@ -17,6 +17,7 @@ export const articlePropTypes = PropTypes.shape({
     bg_color_hex: PropTypes.string,
     text_color_hex: PropTypes.string,
   }),
+  first_paragraph_text: PropTypes.string,
   tag_list: PropTypes.arrayOf(PropTypes.string),
   cached_tag_list_array: PropTypes.arrayOf(PropTypes.string),
   podcast: PropTypes.shape({

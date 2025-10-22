@@ -210,6 +210,11 @@ Object {
                   </span>
                 </a>
               </h3>
+              <p
+                class="crayons-story__description truncate-at-4"
+              >
+                This is the start of the article rendered in feeds.
+              </p>
               <div
                 class="crayons-story__tags"
               >
@@ -466,24 +471,29 @@ Object {
               </div>
             </div>
           </div>
-          <div
-            class="crayons-story__indention"
-          >
-            <h3
-              class="crayons-story__title crayons-story__title-"
-            >
-              <a
-                href="http://example.com/some-post/path"
-                id="article-link-62407"
-              >
-                <span>
-                  Unbranded Home Loan Account
-                </span>
-              </a>
-            </h3>
             <div
-              class="crayons-story__tags"
+              class="crayons-story__indention"
             >
+              <h3
+                class="crayons-story__title crayons-story__title-"
+              >
+                <a
+                  href="http://example.com/some-post/path"
+                  id="article-link-62407"
+                >
+                  <span>
+                    Unbranded Home Loan Account
+                  </span>
+                </a>
+              </h3>
+              <p
+                class="crayons-story__description truncate-at-4"
+              >
+                This is the start of the article rendered in feeds.
+              </p>
+              <div
+                class="crayons-story__tags"
+              >
               <a
                 class="crayons-tag crayons-tag--filled"
                 href="/t/javascript"

@@ -77,6 +77,20 @@ describe('<Article /> component', () => {
     expect(queryByAltText('Emil99 profile')).toExist();
   });
 
+  it('renders the first paragraph preview when available', () => {
+    const { queryByText } = render(
+      <Article
+        {...commonProps}
+        isBookmarked={false}
+        article={article}
+      />,
+    );
+
+    expect(
+      queryByText(article.first_paragraph_text, { selector: 'p' }),
+    ).toBeInTheDocument();
+  });
+
   it('should render a featured article', () => {
     const { container, queryByAltText } = render(
       <Article
