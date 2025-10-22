@@ -42,5 +42,5 @@ uk:
           one: "%{count} допис"
           few: "%{count} дописи"
           many: "%{count} дописів"
-          other: "%{count} допису"
+          other: "%{count} дописів"
         no_summary: Автор проєкту ще не додав опис.
