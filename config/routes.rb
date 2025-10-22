@@ -327,6 +327,7 @@ Rails.application.routes.draw do
 
     # These routes are required by links in the sites and will most likely to be replaced by a db page
     get "/about", to: "pages#about"
+    get "/top_users", to: "top_users#index"
     get "/security", to: "pages#bounty"
     get "/community-moderation", to: "pages#community_moderation"
     get "/faq", to: "pages#faq"
