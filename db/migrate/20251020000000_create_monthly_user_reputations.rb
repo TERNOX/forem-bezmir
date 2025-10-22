@@ -1,4 +1,4 @@
-class CreateMonthlyUserReputations < ActiveRecord::Migration[7.1]
+class CreateMonthlyUserReputations < ActiveRecord::Migration[7.0]
   def change
     create_table :monthly_user_reputations do |t|
       t.references :user, null: false, foreign_key: true
