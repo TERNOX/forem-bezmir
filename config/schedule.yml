@@ -71,8 +71,8 @@ award_weekly_tag_badges:
     - award_tag
     - ""
 award_weekly_top_seven_badges:
-  description: "Awards 'Top 7' badges to the authors of the most reacted posts from the previous week (runs at 00:00 UTC on Monday)"
-  cron: "0 0 * * 1"
+  description: "Generates the top-articles digest selection, publishes the digest post, and awards the configured badge"
+  cron: "0 0 * * *"
   class: "Badges::AwardWeeklyTopSevenWorker"
 award_contributor_badges_from_github:
   description: "Awards 'GitHub contributor' badges to users (runs hourly on the 20th minute after the hour)"

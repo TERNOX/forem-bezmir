@@ -26,6 +26,27 @@ RSpec.describe "/admin/advanced/tools" do
     it "allows the request" do
       expect(response).to have_http_status(:ok)
     end
+
+    it "updates the top articles digest settings" do
+      post update_top_articles_digest_admin_tools_path, params: {
+        top_articles_digest: {
+          bot_api_key: "abc123",
+          title_template: "Digest {{current_date}}",
+          tags: "digest, weekly",
+          image_url: "https://example.com/image.png",
+          organization_id: "",
+          intro_paragraph: "Intro",
+          frequency: "weekly",
+          article_count: "5",
+          badge_slug: "top-7",
+        },
+      }
+
+      expect(response).to redirect_to(admin_tools_path(anchor: "top-articles-digest"))
+      expect(Settings::General.top_articles_digest_bot_api_key).to eq("abc123")
+      expect(Settings::General.top_articles_digest_tags).to eq(%w[digest weekly])
+      expect(Settings::General.top_articles_digest_article_count).to eq(5)
+    end
   end
 
   context "when the user is a single resource admin" do

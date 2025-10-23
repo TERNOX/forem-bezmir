@@ -38,14 +38,76 @@
   <% end %>
 </div>
 
-<div class="crayons-card p-6 mb-6">
-  <h2 class="crayons-subtitle-1 mb-4"><%= t("views.admin.tools.top_seven.heading") %></h2>
-  <p class="mb-6"><%= t("views.admin.tools.top_seven.description_html") %></p>
+<div class="crayons-card p-6 mb-6" id="top-articles-digest">
+  <h2 class="crayons-subtitle-1 mb-4"><%= t("views.admin.tools.top_articles_digest.heading") %></h2>
+  <p class="mb-6"><%= t("views.admin.tools.top_articles_digest.description_html") %></p>
 
+  <%= form_with url: update_top_articles_digest_admin_tools_path, method: :post, scope: :top_articles_digest, html: { class: "mb-6" } do |f| %>
+    <div class="grid gap-4">
+      <div class="crayons-field">
+        <%= f.label :bot_api_key, t("views.admin.tools.top_articles_digest.bot_api_key_label"), class: "crayons-field__label" %>
+        <p class="crayons-field__description"><%= t("views.admin.tools.top_articles_digest.bot_api_key_help_html") %></p>
+        <%= f.text_field :bot_api_key, value: @digest_configuration.bot_api_key, class: "crayons-textfield" %>
+      </div>
+
+      <div class="crayons-field">
+        <%= f.label :title_template, t("views.admin.tools.top_articles_digest.title_template_label"), class: "crayons-field__label" %>
+        <p class="crayons-field__description"><%= t("views.admin.tools.top_articles_digest.title_template_help_html") %></p>
+        <%= f.text_field :title_template, value: @digest_configuration.title_template, class: "crayons-textfield" %>
+      </div>
+
+      <div class="crayons-field">
+        <%= f.label :tags, t("views.admin.tools.top_articles_digest.tags_label"), class: "crayons-field__label" %>
+        <p class="crayons-field__description"><%= t("views.admin.tools.top_articles_digest.tags_help") %></p>
+        <%= f.text_field :tags, value: @digest_configuration.tags_array.join(", "), class: "crayons-textfield" %>
+      </div>
+
+      <div class="crayons-field">
+        <%= f.label :image_url, t("views.admin.tools.top_articles_digest.image_url_label"), class: "crayons-field__label" %>
+        <p class="crayons-field__description"><%= t("views.admin.tools.top_articles_digest.image_url_help") %></p>
+        <%= f.text_field :image_url, value: @digest_configuration.image_url, class: "crayons-textfield" %>
+      </div>
+
+      <div class="crayons-field">
+        <%= f.label :organization_id, t("views.admin.tools.top_articles_digest.organization_id_label"), class: "crayons-field__label" %>
+        <p class="crayons-field__description"><%= t("views.admin.tools.top_articles_digest.organization_id_help") %></p>
+        <%= f.text_field :organization_id, value: @digest_configuration.organization_id, class: "crayons-textfield" %>
+      </div>
+
+      <div class="crayons-field">
+        <%= f.label :intro_paragraph, t("views.admin.tools.top_articles_digest.intro_paragraph_label"), class: "crayons-field__label" %>
+        <p class="crayons-field__description"><%= t("views.admin.tools.top_articles_digest.intro_paragraph_help") %></p>
+        <%= f.text_area :intro_paragraph, value: @digest_configuration.intro_paragraph, class: "crayons-textfield", rows: 3 %>
+      </div>
+
+      <div class="crayons-field">
+        <%= f.label :frequency, t("views.admin.tools.top_articles_digest.frequency_label"), class: "crayons-field__label" %>
+        <p class="crayons-field__description"><%= t("views.admin.tools.top_articles_digest.frequency_help") %></p>
+        <% frequency_options = TopArticles::DigestConfiguration::FREQUENCY_OPTIONS.map { |value| [t("views.admin.tools.top_articles_digest.frequency_options.#{value}"), value] } %>
+        <%= f.select :frequency, options_for_select(frequency_options, @digest_configuration.frequency), {}, class: "crayons-select" %>
+      </div>
+
+      <div class="crayons-field">
+        <%= f.label :article_count, t("views.admin.tools.top_articles_digest.article_count_label"), class: "crayons-field__label" %>
+        <p class="crayons-field__description"><%= t("views.admin.tools.top_articles_digest.article_count_help") %></p>
+        <%= f.number_field :article_count, value: @digest_configuration.article_count, class: "crayons-textfield", min: 1 %>
+      </div>
+
+      <div class="crayons-field">
+        <%= f.label :badge_slug, t("views.admin.tools.top_articles_digest.badge_slug_label"), class: "crayons-field__label" %>
+        <p class="crayons-field__description"><%= t("views.admin.tools.top_articles_digest.badge_slug_help") %></p>
+        <%= f.text_field :badge_slug, value: @digest_configuration.badge_slug, class: "crayons-textfield" %>
+      </div>
+    </div>
+
+    <%= f.submit t("views.admin.tools.top_articles_digest.save_settings"), class: "crayons-btn mt-4" %>
+  <% end %>
+
+  <h3 class="crayons-subtitle-2 mb-2"><%= t("views.admin.tools.top_articles_digest.preview_heading") %></h3>
   <% if @top_seven_selections.any? %>
     <% @top_seven_selections.each do |selection| %>
       <section class="mb-6">
-        <h3 class="crayons-subtitle-2 mb-2"><%= selection.week_label %></h3>
+        <h4 class="crayons-subtitle-2 mb-2"><%= selection.period_label %></h4>
 
         <ol class="pl-6 list-decimal mb-4">
           <% selection.article_ids.each do |article_id| %>
@@ -58,15 +120,15 @@
           <% end %>
         </ol>
 
-        <% urls = selection.article_ids.filter_map do |article_id|
+        <% embeds = selection.article_ids.filter_map do |article_id|
              article = @top_seven_articles_by_id[article_id]
-             article ? app_url(article.path) : nil
+             article ? "{% embed #{app_url(article.path)} %}" : nil
            end.join("\n") %>
-        <%= text_area_tag "weekly_top_seven_#{selection.week_of}", urls, class: "crayons-textfield w-100", rows: 4, readonly: true %>
+        <%= text_area_tag "top_articles_digest_#{selection.week_of}", embeds, class: "crayons-textfield w-100", rows: 4, readonly: true %>
       </section>
     <% end %>
   <% else %>
-    <p class="color-base-70"><%= t("views.admin.tools.top_seven.empty_state") %></p>
+    <p class="color-base-70"><%= t("views.admin.tools.top_articles_digest.empty_state") %></p>
   <% end %>
 </div>
 

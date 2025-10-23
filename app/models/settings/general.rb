@@ -138,6 +138,26 @@ module Settings
       existing_published_article_id: true, allow_nil: true
     }
 
+    # Top articles digest
+    setting :top_articles_digest_bot_api_key, type: :string
+    setting :top_articles_digest_title_template,
+            type: :string,
+            default: "Top {{count}} posts from {{period_label}}"
+    setting :top_articles_digest_tags, type: :array, default: %w[top-7]
+    setting :top_articles_digest_image_url, type: :string
+    setting :top_articles_digest_organization_id, type: :integer
+    setting :top_articles_digest_intro_paragraph, type: :string
+    setting :top_articles_digest_frequency,
+            type: :string,
+            default: "weekly",
+            validates: {
+              inclusion: { in: TopArticles::DigestConfiguration::FREQUENCY_OPTIONS }
+            }
+    setting :top_articles_digest_article_count, type: :integer, default: 7
+    setting :top_articles_digest_badge_slug,
+            type: :string,
+            default: Badges::AwardTopSeven::BADGE_SLUG
+
     # Onboarding newsletter
     setting :onboarding_newsletter_content, type: :markdown
     setting :onboarding_newsletter_content_processed_html

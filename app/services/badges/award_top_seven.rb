@@ -2,14 +2,16 @@ module Badges
   class AwardTopSeven
     BADGE_SLUG = "top-7".freeze
 
-    def self.call(usernames, message_markdown = default_message_markdown)
+    def self.call(usernames, badge_slug: BADGE_SLUG, message_markdown: default_message_markdown)
       users = User.where(username: usernames)
-      
-      # The reputation modifier changes are now handled automatically 
+
+      return if users.blank? || badge_slug.blank?
+
+      # The reputation modifier changes are now handled automatically
       # via the BadgeAchievement callback when badges are awarded
       ::Badges::Award.call(
         users,
-        BADGE_SLUG,
+        badge_slug,
         message_markdown,
       )
     end
