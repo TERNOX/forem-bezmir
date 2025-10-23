@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_10_22_225456) do
+ActiveRecord::Schema[7.0].define(version: 2025_10_22_175824) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "ltree"
@@ -632,6 +632,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_10_22_225456) do
     t.float "recently_active_past_day_bonus_weight", default: 0.0, null: false
     t.float "score_weight", default: 1.0
     t.float "shuffle_weight", default: 0.0, null: false
+    t.float "status_weight", default: 0.0, null: false
     t.float "subforem_follow_weight", default: 0.0, null: false
     t.float "tag_follow_weight", default: 1.0
     t.datetime "updated_at", null: false
@@ -1413,15 +1414,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_10_22_225456) do
     t.index ["taggings_count"], name: "index_tags_on_taggings_count"
   end
 
-  create_table "top_seven_article_selections", force: :cascade do |t|
-    t.date "week_of", null: false
-    t.integer "article_ids", default: [], null: false, array: true
-    t.datetime "awarded_at", precision: nil
-    t.datetime "created_at", precision: nil, null: false
-    t.datetime "updated_at", precision: nil, null: false
-    t.index ["week_of"], name: "index_top_seven_article_selections_on_week_of", unique: true
-  end
-
   create_table "tweets", force: :cascade do |t|
     t.datetime "created_at", precision: nil, null: false
     t.text "extended_entities_serialized", default: "--- {}\n"
@@ -1602,7 +1594,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_10_22_225456) do
     t.datetime "remember_created_at", precision: nil
     t.string "remember_token"
     t.float "reputation_modifier", default: 1.0
-    t.integer "reputation_score", default: 0, null: false
     t.datetime "reset_password_sent_at", precision: nil
     t.string "reset_password_token"
     t.boolean "saw_onboarding", default: false
