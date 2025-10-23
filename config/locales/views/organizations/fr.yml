@@ -3,6 +3,7 @@ fr:
   views:
     organizations:
       empty: 404 bio not found
+      admin_settings: Paramètres d’administration
       external:
         icon: External link icon
       follow: Suivre

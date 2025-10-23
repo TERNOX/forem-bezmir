@@ -29,7 +29,18 @@
               </button>
 
               <div id="organization-profile-dropdownmenu" class="crayons-dropdown left-2 right-2 s:right-0 s:left-auto top-100 mt-1">
-                <span class="report-abuse-link-wrapper" data-path="/report-abuse?url=<%= organization_url(@organization) %>"></span>
+                <% if current_user&.any_admin? %>
+                  <span
+                    class="organization-admin-link-wrapper"
+                    data-path="<%= admin_content_manager_organization_path(@organization) %>"
+                    data-label="<%= t("views.organizations.admin_settings") %>"
+                  ></span>
+                <% end %>
+                <span
+                  class="report-abuse-link-wrapper"
+                  data-path="/report-abuse?url=<%= organization_url(@organization) %>"
+                  data-label="<%= t("views.actions.share.report") %>"
+                ></span>
               </div>
             </div>
         </div>
