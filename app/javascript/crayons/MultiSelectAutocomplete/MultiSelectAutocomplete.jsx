@@ -650,7 +650,7 @@ export const MultiSelectAutocomplete = ({
         </div>
         {showMaxSelectionsReached ? (
           <span className="p-3">
-            {`Only ${maxSelections} ${maxSelections == 1 ? 'selection' : 'selections'} allowed`}
+            {`Максимум ${maxSelections} ${maxSelections == 1 ? 'теґів' : 'теґів'} дозволено`}
           </span>
         ) : null}
         {suggestions.length > 0 && allowSelections ? (

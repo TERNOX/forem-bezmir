@@ -33,7 +33,7 @@ export const TagsField = ({ onInput, defaultValue, switchHelpContext }) => {
       fetchSuggestions={fetchSuggestions}
       staticSuggestions={topTags}
       staticSuggestionsHeading={
-        <h2 className="c-autocomplete--multi__top-tags-heading">Top tags</h2>
+        <h2 className="c-autocomplete--multi__top-tags-heading">Популярні теґи</h2>
       }
       labelText={locale('core.tags_field_label')}
       showLabel={false}

@@ -4,7 +4,7 @@ uk:
       title: "Топ учасники спільноти"
       month_title: "Топ учасники за %{month}"
       description: "50 користувачів із найвищою репутацією на сайті."
-      month_description: "Репутація, зароблена між першим і останнім днем %{month}."
+      month_description: "50 користувачів, що заробили найбільше репутації на сайті за %{month}."
       reputation_label: "Репутація"
       reputation_label_month: "Репутація, отримана за %{month}"
       tabs:

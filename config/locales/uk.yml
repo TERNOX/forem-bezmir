@@ -41,10 +41,10 @@ uk:
     dashboard_analytics_comments: Коментарі
     dashboard_analytics_reactions: Реакції
     stats_by: від
-    editor_new_title: Назва нового допису...
+    editor_new_title: Заголовок
     editor_body_placeholder: Напишіть текст вашого допису тут...
-    tags_field_label: Додайте до 4 теґів
-    tags_field_placeholder: Додайте до 4 теґів...
+    tags_field_label: Додайте до 6 теґів
+    tags_field_placeholder: Додайте до 6 теґів...
     counted_organization:
       one: "%{count} проєкт"
       other: "%{count} проєкти"
@@ -115,7 +115,7 @@ uk:
         members: "%d %b"
         members_with_year: "%d %b, %Y"
         reddit: "%e %b '%y"
-        long: "%e %b '%y"
+        long: "%e %b %Y"
         short_with_yy: "%-d %b '%y"
         short_with_year: "%-e %b, %Y"
         stackexchange: "%e %b '%y"
