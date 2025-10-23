@@ -154,10 +154,16 @@ const backToTopButton = document.getElementById('article-scroll-to-top');
 
 if (backToTopButton && backToTopButton.dataset.initialized !== 'true') {
   const toggleBackToTopVisibility = () => {
-    if (window.scrollY > window.innerHeight / 2) {
+    const shouldShow = window.scrollY > window.innerHeight / 2;
+
+    if (shouldShow) {
+      if (backToTopButton.hidden) {
+        backToTopButton.hidden = false;
+      }
       backToTopButton.classList.add('article-scroll-to-top--visible');
     } else {
       backToTopButton.classList.remove('article-scroll-to-top--visible');
+      backToTopButton.hidden = true;
     }
   };
 
