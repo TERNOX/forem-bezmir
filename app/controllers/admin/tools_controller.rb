@@ -6,6 +6,7 @@ module Admin
       @top_seven_selections = TopSevenArticleSelection.ordered
       article_ids = @top_seven_selections.flat_map(&:article_ids)
       @top_seven_articles_by_id = Article.where(id: article_ids).includes(:user).index_by(&:id)
+      @digest_configuration = TopArticles::DigestConfiguration.new
     end
 
     def bust_cache
@@ -60,6 +61,26 @@ module Admin
       redirect_to admin_tools_path
     end
 
+    def update_top_articles_digest
+      settings = digest_settings_params
+
+      Settings::General.set_top_articles_digest_bot_api_key(settings[:bot_api_key])
+      Settings::General.set_top_articles_digest_title_template(settings[:title_template])
+      Settings::General.set_top_articles_digest_tags(parse_tags(settings[:tags]))
+      Settings::General.set_top_articles_digest_image_url(settings[:image_url])
+      Settings::General.set_top_articles_digest_organization_id(settings[:organization_id].presence)
+      Settings::General.set_top_articles_digest_intro_paragraph(settings[:intro_paragraph])
+      Settings::General.set_top_articles_digest_frequency(settings[:frequency])
+      Settings::General.set_top_articles_digest_article_count(settings[:article_count])
+      Settings::General.set_top_articles_digest_badge_slug(settings[:badge_slug])
+
+      flash[:success] = I18n.t("views.admin.tools.top_articles_digest.updated")
+    rescue StandardError => e
+      flash[:danger] = e.message
+    ensure
+      redirect_to admin_tools_path(anchor: "top-articles-digest")
+    end
+
     private
 
     def handle_dead_path
@@ -91,6 +112,24 @@ module Admin
       ]
 
       EdgeCache::Bust.call(paths)
+    end
+
+    def digest_settings_params
+      params.require(:top_articles_digest).permit(
+        :bot_api_key,
+        :title_template,
+        :tags,
+        :image_url,
+        :organization_id,
+        :intro_paragraph,
+        :frequency,
+        :article_count,
+        :badge_slug,
+      )
+    end
+
+    def parse_tags(tags_string)
+      Array(tags_string.to_s.split(/[,\n;]/)).map(&:strip).reject(&:blank?)
     end
   end
 end

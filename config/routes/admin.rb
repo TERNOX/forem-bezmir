@@ -163,6 +163,7 @@ namespace :admin do
         get "feed_playground"
         post "feed_playground"
         post "recalculate_reputation"
+        post "update_top_articles_digest"
       end
     end
 

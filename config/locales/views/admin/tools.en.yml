@@ -7,7 +7,33 @@ en:
           description_html: "<strong>Resets</strong> all member reputation scores to match the number of likes their posts and comments have received."
           submit: Recalculate now
           success: "Recalculated reputation for %{users} members using %{likes} total post and comment likes."
-        top_seven:
-          heading: Weekly Top 7 preview
-          description_html: "Preview the seven most reacted posts for each week. These are the articles that will be considered when awarding the Top 7 badge."
-          empty_state: "No Top 7 selections have been recorded yet."
+        top_articles_digest:
+          heading: Top articles digest
+          description_html: "Configure the automated digest post and preview the articles that will be embedded."
+          bot_api_key_label: Community Bot API key
+          bot_api_key_help_html: "Paste the API key for the community bot account that should publish the digest. You can manage keys from the bot's profile."
+          title_template_label: Title template
+          title_template_help_html: "Use placeholders such as <code>{{current_date}}</code>, <code>{{period_label}}</code>, <code>{{period_start}}</code>, <code>{{period_end}}</code>, and <code>{{count}}</code>."
+          tags_label: Tags
+          tags_help: "Comma-separated list of tags to apply to the digest."
+          image_url_label: Cover image URL
+          image_url_help: "Optional. Provide a full URL to use as the article's main image."
+          organization_id_label: Organization ID
+          organization_id_help: "Optional. The bot must belong to the organization. Leave blank to publish from the bot's personal profile."
+          intro_paragraph_label: Intro paragraph
+          intro_paragraph_help: "Shown above the embedded articles in the digest body."
+          frequency_label: Cadence
+          frequency_help: "Determines how often the selection runs and when the digest is published."
+          frequency_options:
+            daily: Every day
+            weekly: Every week (Mondays)
+            biweekly: Every 2 weeks (Mondays)
+            monthly: Monthly (1st day)
+          article_count_label: Number of articles
+          article_count_help: "How many top posts should be embedded in each digest."
+          badge_slug_label: Badge slug
+          badge_slug_help: "Optional. When present, this badge slug is awarded to the featured authors."
+          save_settings: Save settings
+          preview_heading: Selection preview
+          empty_state: "No selections have been recorded yet."
+          updated: "Top articles digest settings updated."
