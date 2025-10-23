@@ -18,9 +18,22 @@ RSpec.describe Badges::AwardTopSeven, type: :service do
         end.to change(BadgeAchievement, :count).by(2)
       end
 
+      it "uses the configured badge slug" do
+        Settings::General.set_top_articles_badge_slug("top-digest")
+        allow(Badges::Award).to receive(:call)
+
+        described_class.call([user.username])
+
+        expect(Badges::Award).to have_received(:call).with(
+          User.where(username: [user.username]),
+          "top-digest",
+          Badges::AwardTopSeven.default_message_markdown,
+        )
+      end
+
       it "creates badge achievements for the correct users" do
         described_class.call([user.username, other_user.username])
-        
+
         expect(BadgeAchievement.where(user: user, badge: badge)).to exist
         expect(BadgeAchievement.where(user: other_user, badge: badge)).to exist
       end

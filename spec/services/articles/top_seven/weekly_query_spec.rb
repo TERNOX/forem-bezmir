@@ -5,6 +5,10 @@ RSpec.describe Articles::TopSeven::WeeklyQuery, type: :service do
   let(:range_start) { Time.zone.local(2024, 6, 3, 0, 0, 0) }
   let(:range_middle) { range_start + 2.days + 12.hours }
 
+  before do
+    allow(Settings::General).to receive(:top_articles_digest_excluded_organization_ids).and_return([])
+  end
+
   it "returns up to seven article ids ordered by reaction count" do
     travel_to(range_start + 1.week + 1.day) do
       articles = create_list(:article, 8)
@@ -37,7 +41,7 @@ RSpec.describe Articles::TopSeven::WeeklyQuery, type: :service do
   it "excludes articles that belong to filtered organizations" do
     travel_to(range_start + 1.week + 1.day) do
       excluded_org = create(:organization)
-      stub_const("Articles::TopSeven::WeeklyQuery::EXCLUDED_ORGANIZATION_IDS", [excluded_org.id])
+      allow(Settings::General).to receive(:top_articles_digest_excluded_organization_ids).and_return([excluded_org.id])
       excluded_article = create(:article, organization: excluded_org)
       included_article = create(:article)
 

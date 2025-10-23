@@ -138,6 +138,27 @@ module Settings
       existing_published_article_id: true, allow_nil: true
     }
 
+    # Top articles digest automation
+    setting :top_articles_digest_bot_api_key, type: :string
+    setting :top_articles_digest_title_template, type: :string,
+            default: "{{generated_on}}: Top {{count}} posts"
+    setting :top_articles_digest_tags, type: :array, default: %w[]
+    setting :top_articles_digest_image_url, type: :string, validates: { url: { allow_blank: true, no_local: true } }
+    setting :top_articles_digest_organization_id, type: :integer
+    setting :top_articles_digest_intro_markdown, type: :string
+    setting :top_articles_digest_frequency, type: :string, default: "weekly", validates: {
+      inclusion: { in: Articles::TopArticles::DigestPublisher::SUPPORTED_FREQUENCIES }
+    }
+    setting :top_articles_digest_article_limit, type: :integer, default: Articles::TopArticles::PeriodQuery::DEFAULT_LIMIT,
+            validates: {
+              numericality: { greater_than: 0, allow_nil: true }
+            }
+    setting :top_articles_digest_excluded_organization_ids, type: :array,
+            default: Articles::TopArticles::PeriodQuery::DEFAULT_EXCLUDED_ORGANIZATION_IDS
+    setting :top_articles_badge_slug, type: :string, default: Badges::AwardTopSeven::DEFAULT_BADGE_SLUG
+    setting :top_articles_digest_last_period_identifier, type: :string
+    setting :top_articles_digest_last_article_id, type: :integer
+
     # Onboarding newsletter
     setting :onboarding_newsletter_content, type: :markdown
     setting :onboarding_newsletter_content_processed_html

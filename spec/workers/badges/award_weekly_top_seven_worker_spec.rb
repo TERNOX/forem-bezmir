@@ -38,6 +38,24 @@ RSpec.describe Badges::AwardWeeklyTopSevenWorker do
     end
   end
 
+  it "respects the configured article limit" do
+    travel_to(current_time) do
+      Settings::General.set_top_articles_digest_article_limit(2)
+      articles = create_list(:article, 3)
+
+      create_list(:reaction, 5, reactable: articles[0], category: "like", created_at: reaction_time)
+      create_list(:reaction, 3, reactable: articles[1], category: "like", created_at: reaction_time)
+      create_list(:reaction, 2, reactable: articles[2], category: "like", created_at: reaction_time)
+
+      allow(Badges::AwardTopSeven).to receive(:call)
+
+      worker.perform
+
+      selection = TopSevenArticleSelection.last
+      expect(selection.article_ids).to eq([articles[0].id, articles[1].id])
+    end
+  end
+
   it "does not award badges twice for the same week" do
     travel_to(current_time) do
       article = create(:article)

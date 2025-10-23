@@ -132,6 +132,8 @@ pt:
       link_busted: '%{link} foi quebrado com sucesso'
       user_busted: 'Usuário #%{user} foi quebrado com sucesso'
       article_busted: 'Artigo #%{article} foi quebrado com sucesso'
+      top_articles_digest_updated: 'Configurações do resumo dos principais artigos atualizadas com sucesso'
+      top_articles_digest_missing: 'Não foi possível atualizar o resumo: configuração ausente'
     users_controller:
       role_removed: 'Função: %{role} foi removida com sucesso do usuário!'
       updated: Usuário foi atualizado
