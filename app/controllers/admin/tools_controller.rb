@@ -79,30 +79,30 @@ module Admin
 
     def current_digest_settings
       {
-        bot_api_key: Settings::General.top_articles_digest_bot_api_key,
-        title_template: Settings::General.top_articles_digest_title_template,
-        tags: Settings::General.top_articles_digest_tags.join(", "),
-        image_url: Settings::General.top_articles_digest_image_url,
-        organization_id: Settings::General.top_articles_digest_organization_id,
-        intro_markdown: Settings::General.top_articles_digest_intro_markdown,
-        frequency: Settings::General.top_articles_digest_frequency,
-        article_limit: Settings::General.top_articles_digest_article_limit,
-        badge_slug: Settings::General.top_articles_badge_slug,
+        bot_api_key: ::Settings::General.top_articles_digest_bot_api_key,
+        title_template: ::Settings::General.top_articles_digest_title_template,
+        tags: ::Settings::General.top_articles_digest_tags.join(", "),
+        image_url: ::Settings::General.top_articles_digest_image_url,
+        organization_id: ::Settings::General.top_articles_digest_organization_id,
+        intro_markdown: ::Settings::General.top_articles_digest_intro_markdown,
+        frequency: ::Settings::General.top_articles_digest_frequency,
+        article_limit: ::Settings::General.top_articles_digest_article_limit,
+        badge_slug: ::Settings::General.top_articles_badge_slug,
       }
     end
 
     def update_top_articles_digest!
       permitted = top_articles_digest_params
 
-      Settings::General.set_top_articles_digest_bot_api_key(permitted[:bot_api_key])
-      Settings::General.set_top_articles_digest_title_template(permitted[:title_template])
-      Settings::General.set_top_articles_digest_tags(permitted[:tags])
-      Settings::General.set_top_articles_digest_image_url(permitted[:image_url])
-      Settings::General.set_top_articles_digest_organization_id(permitted[:organization_id].presence)
-      Settings::General.set_top_articles_digest_intro_markdown(permitted[:intro_markdown])
-      Settings::General.set_top_articles_digest_frequency(permitted[:frequency])
-      Settings::General.set_top_articles_digest_article_limit(permitted[:article_limit].presence)
-      Settings::General.set_top_articles_badge_slug(permitted[:badge_slug])
+      ::Settings::General.set_top_articles_digest_bot_api_key(permitted[:bot_api_key])
+      ::Settings::General.set_top_articles_digest_title_template(permitted[:title_template])
+      ::Settings::General.set_top_articles_digest_tags(permitted[:tags])
+      ::Settings::General.set_top_articles_digest_image_url(permitted[:image_url])
+      ::Settings::General.set_top_articles_digest_organization_id(permitted[:organization_id].presence)
+      ::Settings::General.set_top_articles_digest_intro_markdown(permitted[:intro_markdown])
+      ::Settings::General.set_top_articles_digest_frequency(permitted[:frequency])
+      ::Settings::General.set_top_articles_digest_article_limit(permitted[:article_limit].presence)
+      ::Settings::General.set_top_articles_badge_slug(permitted[:badge_slug])
     end
 
     def top_articles_digest_params
