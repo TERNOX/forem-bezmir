@@ -30,13 +30,19 @@ class ExtendTopSevenArticleSelections < ActiveRecord::Migration[7.0]
   private
 
   def add_frequency_column
-    return if column_exists?(:top_seven_article_selections, :frequency)
-
-    add_column :top_seven_article_selections, :frequency, :string, null: false, default: "weekly"
+    add_column_unless_exists :top_seven_article_selections,
+                             :frequency,
+                             :string,
+                             null: false,
+                             default: "weekly"
   end
 
-  def add_column_unless_exists(table, column, type)
-    add_column(table, column, type) unless column_exists?(table, column)
+  def add_column_unless_exists(table, column, type, **options)
+    return if column_exists?(table, column)
+
+    add_column(table, column, type, **options)
+  rescue ActiveRecord::StatementInvalid => e
+    raise unless e.cause.is_a?(PG::DuplicateColumn)
   end
 
   def ensure_weekly_frequency_populated
