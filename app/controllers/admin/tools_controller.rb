@@ -6,6 +6,21 @@ module Admin
       @top_seven_selections = TopSevenArticleSelection.ordered
       article_ids = @top_seven_selections.flat_map(&:article_ids)
       @top_seven_articles_by_id = Article.where(id: article_ids).includes(:user).index_by(&:id)
+      @top_articles_digest_preview = Articles::TopArticles::DigestPublisher.new.preview
+      @top_articles_digest_settings = current_digest_settings
+    end
+
+    def create
+      if params[:top_articles_digest]
+        update_top_articles_digest!
+        flash[:success] = I18n.t("admin.tools_controller.top_articles_digest_updated")
+      else
+        flash[:danger] = I18n.t("admin.tools_controller.top_articles_digest_missing")
+      end
+    rescue StandardError => e
+      flash[:danger] = e.message
+    ensure
+      redirect_to admin_tools_path
     end
 
     def bust_cache
@@ -61,6 +76,48 @@ module Admin
     end
 
     private
+
+    def current_digest_settings
+      {
+        bot_api_key: Settings::General.top_articles_digest_bot_api_key,
+        title_template: Settings::General.top_articles_digest_title_template,
+        tags: Settings::General.top_articles_digest_tags.join(", "),
+        image_url: Settings::General.top_articles_digest_image_url,
+        organization_id: Settings::General.top_articles_digest_organization_id,
+        intro_markdown: Settings::General.top_articles_digest_intro_markdown,
+        frequency: Settings::General.top_articles_digest_frequency,
+        article_limit: Settings::General.top_articles_digest_article_limit,
+        badge_slug: Settings::General.top_articles_badge_slug,
+      }
+    end
+
+    def update_top_articles_digest!
+      permitted = top_articles_digest_params
+
+      Settings::General.set_top_articles_digest_bot_api_key(permitted[:bot_api_key])
+      Settings::General.set_top_articles_digest_title_template(permitted[:title_template])
+      Settings::General.set_top_articles_digest_tags(permitted[:tags])
+      Settings::General.set_top_articles_digest_image_url(permitted[:image_url])
+      Settings::General.set_top_articles_digest_organization_id(permitted[:organization_id].presence)
+      Settings::General.set_top_articles_digest_intro_markdown(permitted[:intro_markdown])
+      Settings::General.set_top_articles_digest_frequency(permitted[:frequency])
+      Settings::General.set_top_articles_digest_article_limit(permitted[:article_limit].presence)
+      Settings::General.set_top_articles_badge_slug(permitted[:badge_slug])
+    end
+
+    def top_articles_digest_params
+      params.require(:top_articles_digest).permit(
+        :bot_api_key,
+        :title_template,
+        :tags,
+        :image_url,
+        :organization_id,
+        :intro_markdown,
+        :frequency,
+        :article_limit,
+        :badge_slug,
+      )
+    end
 
     def handle_dead_path
       bust_link(params[:dead_link])

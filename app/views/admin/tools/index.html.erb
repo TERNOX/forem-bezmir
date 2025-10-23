@@ -68,6 +68,117 @@
   <% else %>
     <p class="color-base-70"><%= t("views.admin.tools.top_seven.empty_state") %></p>
   <% end %>
+
+  <hr class="my-6" />
+
+  <section>
+    <h3 class="crayons-subtitle-2 mb-2"><%= t("views.admin.tools.top_articles_digest.heading") %></h3>
+    <p class="mb-6"><%= t("views.admin.tools.top_articles_digest.description_html") %></p>
+
+    <%= form_with url: admin_tools_path, method: :post, local: true do %>
+      <div class="grid gap-6">
+        <div class="crayons-field">
+          <%= label_tag "top_articles_digest_bot_api_key", t("views.admin.tools.top_articles_digest.form.bot_api_key"), class: "crayons-field__label" %>
+          <%= text_field_tag "top_articles_digest[bot_api_key]", @top_articles_digest_settings[:bot_api_key], class: "crayons-textfield" %>
+          <p class="crayons-field__description"><%= t("views.admin.tools.top_articles_digest.form.bot_api_key_help") %></p>
+        </div>
+
+        <div class="crayons-field">
+          <%= label_tag "top_articles_digest_title_template", t("views.admin.tools.top_articles_digest.form.title_template"), class: "crayons-field__label" %>
+          <%= text_field_tag "top_articles_digest[title_template]", @top_articles_digest_settings[:title_template], class: "crayons-textfield" %>
+          <p class="crayons-field__description"><%= t("views.admin.tools.top_articles_digest.form.title_template_help_html").html_safe %></p>
+        </div>
+
+        <div class="crayons-field">
+          <%= label_tag "top_articles_digest_tags", t("views.admin.tools.top_articles_digest.form.tags"), class: "crayons-field__label" %>
+          <%= text_field_tag "top_articles_digest[tags]", @top_articles_digest_settings[:tags], class: "crayons-textfield" %>
+          <p class="crayons-field__description"><%= t("views.admin.tools.top_articles_digest.form.tags_help") %></p>
+        </div>
+
+        <div class="crayons-field">
+          <%= label_tag "top_articles_digest_image_url", t("views.admin.tools.top_articles_digest.form.image_url"), class: "crayons-field__label" %>
+          <%= text_field_tag "top_articles_digest[image_url]", @top_articles_digest_settings[:image_url], class: "crayons-textfield" %>
+        </div>
+
+        <div class="crayons-field">
+          <%= label_tag "top_articles_digest_organization_id", t("views.admin.tools.top_articles_digest.form.organization_id"), class: "crayons-field__label" %>
+          <%= number_field_tag "top_articles_digest[organization_id]", @top_articles_digest_settings[:organization_id], class: "crayons-textfield", min: 1 %>
+          <p class="crayons-field__description"><%= t("views.admin.tools.top_articles_digest.form.organization_help") %></p>
+        </div>
+
+        <div class="crayons-field">
+          <%= label_tag "top_articles_digest_intro_markdown", t("views.admin.tools.top_articles_digest.form.intro_markdown"), class: "crayons-field__label" %>
+          <%= text_area_tag "top_articles_digest[intro_markdown]", @top_articles_digest_settings[:intro_markdown], class: "crayons-textfield", rows: 4 %>
+        </div>
+
+        <div class="crayons-field">
+          <%= label_tag "top_articles_digest_frequency", t("views.admin.tools.top_articles_digest.form.frequency"), class: "crayons-field__label" %>
+          <%= select_tag "top_articles_digest[frequency]",
+                        options_for_select(
+                          %w[daily weekly monthly].map { |value| [t("views.admin.tools.top_articles_digest.form.frequency_options.#{value}"), value] },
+                          @top_articles_digest_settings[:frequency],
+                        ),
+                        class: "crayons-select" %>
+        </div>
+
+        <div class="crayons-field">
+          <%= label_tag "top_articles_digest_article_limit", t("views.admin.tools.top_articles_digest.form.article_limit"), class: "crayons-field__label" %>
+          <%= number_field_tag "top_articles_digest[article_limit]", @top_articles_digest_settings[:article_limit], class: "crayons-textfield", min: 1 %>
+        </div>
+
+        <div class="crayons-field">
+          <%= label_tag "top_articles_digest_badge_slug", t("views.admin.tools.top_articles_digest.form.badge_slug"), class: "crayons-field__label" %>
+          <%= text_field_tag "top_articles_digest[badge_slug]", @top_articles_digest_settings[:badge_slug], class: "crayons-textfield" %>
+        </div>
+      </div>
+
+      <div class="flex items-center mt-6">
+        <%= submit_tag t("views.admin.tools.top_articles_digest.form.save"), class: "crayons-btn" %>
+      </div>
+    <% end %>
+
+    <div class="crayons-callout crayons-callout--info mt-6">
+      <h4 class="crayons-subtitle-3 mb-2"><%= t("views.admin.tools.top_articles_digest.placeholders.heading") %></h4>
+      <ul class="pl-6 list-disc">
+        <% t("views.admin.tools.top_articles_digest.placeholders.items").each do |item| %>
+          <li class="mb-1"><%= item.respond_to?(:html_safe) ? item.html_safe : item %></li>
+        <% end %>
+      </ul>
+    </div>
+
+    <section class="mt-6">
+      <h4 class="crayons-subtitle-3 mb-2"><%= t("views.admin.tools.top_articles_digest.preview.heading") %></h4>
+      <% if @top_articles_digest_preview[:available?] && @top_articles_digest_preview[:articles].present? %>
+        <p class="mb-4">
+          <%= t("views.admin.tools.top_articles_digest.preview.summary",
+                range: "#{l(@top_articles_digest_preview[:period_start], format: :long)} – #{l(@top_articles_digest_preview[:period_end], format: :long)}",
+                count: @top_articles_digest_preview[:articles].size) %>
+        </p>
+
+        <ol class="pl-6 list-decimal mb-4">
+          <% @top_articles_digest_preview[:articles].each do |article| %>
+            <li class="mb-1">
+              <%= link_to article.title, article.path, class: "c-link" %>
+            </li>
+          <% end %>
+        </ol>
+
+        <% embed_text = @top_articles_digest_preview[:embed_urls].join("\n\n") %>
+        <% preview_body = if @top_articles_digest_preview[:intro].present?
+                            [@top_articles_digest_preview[:intro].strip, embed_text].compact_blank.join("\n\n")
+                          else
+                            embed_text
+                          end %>
+        <%= text_area_tag "top_articles_digest_preview_body",
+                          preview_body,
+                          class: "crayons-textfield w-100",
+                          rows: 10,
+                          readonly: true %>
+      <% else %>
+        <p class="color-base-70"><%= t("views.admin.tools.top_articles_digest.preview.empty_state") %></p>
+      <% end %>
+    </section>
+  </section>
 </div>
 
 <%= render "admin/shared/image_uploader" %>

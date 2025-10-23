@@ -9,7 +9,7 @@ module Badges
       week_start = (reference_time - 1.week).beginning_of_week(:monday).to_date
 
       selection = TopSevenArticleSelection.ensure_for_week!(week_start) do
-        Articles::TopSeven::WeeklyQuery.call(week_start)
+        Articles::TopSeven::WeeklyQuery.call(week_start, limit: configured_limit)
       end
 
       return if selection.article_ids.blank? || selection.awarded_at.present?
@@ -22,6 +22,11 @@ module Badges
     end
 
     private
+
+    def configured_limit
+      limit = Settings::General.top_articles_digest_article_limit.to_i
+      limit.positive? ? limit : Articles::TopArticles::PeriodQuery::DEFAULT_LIMIT
+    end
 
     def author_usernames_for(selection)
       articles_by_id = Article.where(id: selection.article_ids).includes(:user).index_by(&:id)
