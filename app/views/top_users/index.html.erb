@@ -15,7 +15,7 @@
         </li>
         <% @available_periods.each do |period| %>
           <li>
-            <% label = I18n.l(period, format: :long_month) %>
+            <% label = formatted_period(period) %>
             <%= link_to label, top_users_path(period: period.strftime("%Y-%m")), class: top_users_tab_classes(@selected_period == period), "aria-current": (@selected_period == period ? "page" : nil) %>
           </li>
         <% end %>

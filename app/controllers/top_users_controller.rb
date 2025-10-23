@@ -1,5 +1,6 @@
 class TopUsersController < ApplicationController
   helper TopUsersHelper
+  helper_method :formatted_period
 
   LeaderboardEntry = Struct.new(:user, :score, keyword_init: true)
 
@@ -86,6 +87,20 @@ class TopUsersController < ApplicationController
   end
 
   def formatted_period(period)
-    I18n.l(period, format: :long_month)
+    return if period.blank?
+
+    month_names = I18n.t("date.month_names_standalone", default: [])
+    month_name = month_names.is_a?(Array) ? month_names[period.month] : nil
+
+    if month_name.present?
+      I18n.t(
+        "date.formats.month_year_standalone",
+        default: "%{month} %{year}",
+        month: month_name,
+        year: period.year,
+      )
+    else
+      I18n.l(period, format: :long_month)
+    end
   end
 end

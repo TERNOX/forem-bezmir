@@ -3,6 +3,7 @@ en:
   date:
     formats:
       long_month: "%B %Y"
+      month_year_standalone: "%{month} %{year}"
       short_with_yy: "%b %-d '%y"
   div: div
   span: span
