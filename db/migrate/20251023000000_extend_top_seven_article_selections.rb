@@ -48,11 +48,13 @@ class ExtendTopSevenArticleSelections < ActiveRecord::Migration[7.0]
   def ensure_weekly_frequency_populated
     return unless column_exists?(:top_seven_article_selections, :frequency)
 
-    execute <<~SQL.squish
-      UPDATE top_seven_article_selections
-         SET frequency = 'weekly'
-       WHERE frequency IS NULL
-    SQL
+    safety_assured do
+      execute <<~SQL.squish
+        UPDATE top_seven_article_selections
+           SET frequency = 'weekly'
+         WHERE frequency IS NULL
+      SQL
+    end
 
     change_column_default :top_seven_article_selections, :frequency, "weekly"
     change_column_null :top_seven_article_selections, :frequency, false
@@ -61,13 +63,15 @@ class ExtendTopSevenArticleSelections < ActiveRecord::Migration[7.0]
   def remove_duplicate_periods
     return unless column_exists?(:top_seven_article_selections, :frequency)
 
-    execute <<~SQL.squish
-      DELETE FROM top_seven_article_selections a
-            USING top_seven_article_selections b
-       WHERE a.id > b.id
-         AND a.week_of = b.week_of
-         AND COALESCE(a.frequency, 'weekly') = COALESCE(b.frequency, 'weekly')
-    SQL
+    safety_assured do
+      execute <<~SQL.squish
+        DELETE FROM top_seven_article_selections a
+              USING top_seven_article_selections b
+         WHERE a.id > b.id
+           AND a.week_of = b.week_of
+           AND COALESCE(a.frequency, 'weekly') = COALESCE(b.frequency, 'weekly')
+      SQL
+    end
   end
 
   def add_period_index
