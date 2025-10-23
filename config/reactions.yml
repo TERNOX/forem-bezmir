@@ -1,23 +1,23 @@
 ---
 like:
   position: 1
-  name: Like
+  name: Лайк
   icon: sparkle-heart
 unicorn:
   position: 2
-  name: Unicorn
+  name: Казково
   icon: multi-unicorn
 exploding_head:
   position: 3
-  name: Exploding Head
+  name: Неймовірно
   icon: exploding-head
 raised_hands:
   position: 4
-  name: Raised Hands
+  name: Моя повага
   icon: raised-hands
 fire:
   position: 5
-  name: Fire
+  name: Вогонь
   icon: fire
 readinglist:
   position: 5
