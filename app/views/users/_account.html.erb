@@ -90,27 +90,6 @@
     </div>
   <% end %>
 
-  <div class="grid gap-2">
-    <h3><%= t("views.settings.account.delete.heading") %></h3>
-
-    <% if current_user.email? %>
-      <%= form_tag user_request_destroy_path, method: :post, autocomplete: "off", id: "delete__account", class: "grid gap-2" do %>
-        <p><%= t("views.settings.account.delete.desc1") %></p>
-        <ul class="list-disc pl-6">
-          <li><%= t("views.settings.account.delete.desc1a") %>
-            <%= render partial: "users/account_providers_settings" %>
-          </li>
-
-          <%# TODO: expand the delete messaging later %>
-          <li><%= t("views.settings.account.delete.desc1b") %></li>
-          <li><%= t("views.settings.account.delete.desc1c") %></li>
-        </ul>
-        <div><button class="crayons-btn crayons-btn--danger" id="delete__account__btn" type="submit"><%= t("views.settings.account.delete.submit") %></button></div>
-      <% end %>
-    <% else %>
-      <p><%= t("views.settings.account.delete.desc2_html", provide: link_to(t("views.settings.account.delete.provide"), "/settings/profile")) %></p>
-    <% end %>
-  </div>
 
   <div>
     <p>

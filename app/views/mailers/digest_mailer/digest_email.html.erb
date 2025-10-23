@@ -8,19 +8,20 @@
             <h1 style="margin: 0; font-size: 24px; color: #333;"> 
               <% if ForemInstance.dev_to? %>
                 <% if @user_follows_any_subforems %>
-                  Forem Digest
+                  Куток-Дайджест 2.0
                 <% else %>
-                  <%= community_name %> Digest
+                  Дайджест <%= community_name %>
                 <% end %>
               <% else %>
-                <%= community_name %> Digest
+                Дайджест <%= community_name %>
               <% end %>
             </h1>
           </td>
         </tr>
+
         <tr>
-          <td bgcolor="#F8F8F8" style="padding: 14px; text-align: center; color: #3a3c3d; font-size: 16px;border-radius: 12px; border: 3px solid <%= Settings::UserExperience.primary_brand_color_hex %>; font-weight: bold;">
-            👋 Hey <%= @user.name.split.first %>, let's get you <span style="display:inline-block">caught up!</span>
+          <td bgcolor="#F8F8F8" style="padding: 14px; text-align: center; color: #3a3c3d; font-size: 16px; border-radius: 12px; border: 3px solid <%= Settings::UserExperience.primary_brand_color_hex %>; font-weight: bold;">
+            👋 Привіт, <%= @user.name.split.first %>! <span style="display:inline-block">Давай подивимось, що нового!</span>
           </td>
         </tr>
 
@@ -41,12 +42,13 @@
             </td>
           </tr>
         <% end %>
+
         <!-- Articles List -->
         <% @articles.each_with_index do |article, i| %>
           <tr>
-            <td bgcolor="#FFFFFF" style="padding: <%= i.zero? ? "27" : "17" %>px 0px 0px; text-align: left;">
-              <div style="border:2px solid #0a0a0a;border-radius:12px;padding:12px 12px 3px;">
-                <a href="<%= article_url(article) %>?context=digest" style="font-weight: bold; color:#0a0a0a; font-size: 16px;display:block;"><%= article.title.strip %></a>
+            <td bgcolor="#FFFFFF" style="padding: <%= i.zero? ? "27" : "17" %>px 0 0; text-align: left;">
+              <div style="border:2px solid #0a0a0a; border-radius:12px; padding:12px 12px 3px;">
+                <a href="<%= article_url(article) %>?context=digest" style="font-weight: bold; color:#0a0a0a; font-size: 16px; display:block;"><%= article.title.strip %></a>
                 <p style="margin-top: 5px; font-size: 14px; color: #808080;">
                   <%= truncate(article.description, length: 180) %>
                 </p>
@@ -54,15 +56,7 @@
             </td>
           </tr>
         <% end %>
-        <% if ForemInstance.dev_to? %>
-          <tr>
-            <td bgcolor="#FFFFFF" style="padding: 30px 0 8px;">
-                <p style="margin: 0; font-weight: bold; font-size: 20px;">
-                  Happy coding ❤️
-                </p>
-            </td>
-          </tr>
-        <% end %>
+
         <tr>
           <td bgcolor="#FFFFFF" style="padding: 20px 0;">
             <hr style="border-top: 3px solid #0a0a0a;" />
@@ -80,25 +74,98 @@
               <hr style="border-top: 3px solid #0a0a0a;" />
             </td>
           </tr>
-
         <% end %>
+
         <!-- Footer -->
         <tr>
           <td bgcolor="#FFFFFF" style="padding: 15px 0; font-size: 16px;">
-            <h2>How to make your Digest better</h2>
+            <h2>Як зробити ваш дайджест кращим</h2>
             <% if @user.setting.experience_level.nil? %>
               <p style="margin: 22px 0; font-size: 16px;">
-                Visit <b><a href="<%= app_url(user_settings_path(:customization)) %>" style="color: #0a0a0a; text-decoration: underline;">your settings</a></b> to enter your experience level to get more relevant posts for you.
+                Відвідайте <b><a href="<%= app_url(user_settings_path(:customization)) %>" style="color: #0a0a0a; text-decoration: underline;">налаштування</a></b>, щоб вказати свій рівень досвіду — це допоможе отримувати більш релевантні публікації.
               </p>
             <% end %>
             <p style="margin: 22px 0 10px; font-size: 16px;">
-              Visit the <b><a href="<%= app_url(tags_path) %>" style="color: #0a0a0a; text-decoration: underline;">tags page</a></b> to choose which types of content will be featured.
+              Перейдіть на сторінку <b><a href="<%= app_url(tags_path) %>" style="color: #0a0a0a; text-decoration: underline;">тегів</a></b>, щоб обрати типи контенту, які вас цікавлять.
             </p>
           </td>
         </tr>
 
         <tr>
           <td bgcolor="#FFFFFF" style="padding: 10px 0;">
+
+            <div style="text-align:center; margin-top:40px;">
+              <div>🦄
+                <% unicorn_heads = [
+                  "Сьогоднішня порада від Єдинорога:",
+                  "Єдиноріг каже:",
+                  "Сьогоднішнє пророцтво від Єдинорога:",
+                  "Що каже Єдиноріг:",
+                  "Єдиноріг приніс вам мудрість:",
+                  "Єдиноріг повідомляє:"
+                ] %>
+                <%= unicorn_heads.sample %>
+
+                <br><em>«
+                <% unicorn_lines = [
+                  "Ваша ліва шкарпетка вирушить у самостійну пригоду і повернеться з розповідями про таємне шкарпеткове товариство.",
+                  "Хмаринка, що пропливає повз, перетвориться на вашу улюблену тваринку.",
+                  "Наступного разу, коли ви подивитесь у дзеркало, ви побачите своє відображення у смішному капелюсі.",
+                  "Сьогодні ви кращі, ніж учора.",
+                  "В Японії є острів Аошіма, де мешкає більше котів, ніж людей.",
+                  "У реальному житті ви не можете натиснути клавіші CTRL+Z, тому подумайте двічі, перш ніж діяти.",
+                  "Ніколи не довіряй білці свої жолуді.",
+                  "Ключ до щастя — це тепла ковдра і хороша книга.",
+                  "Завжди будь собою, якщо тільки ти не можеш бути єдинорогом. Тоді завжди будь єдинорогом.",
+                  "Найшвидший спосіб завести друзів — носити з собою запасну парасольку на дощовий день.",
+                  "Найкращий спосіб знайти загублену річ — купити заміну.",
+                  "Ніколи не пізно пограти в хованки зі своїми обов'язками.",
+                  "Коли життя вас розчаровує, пам'ятайте, що ви завжди можете звинуватити в цьому автокорекцію.",
+                  "Коли перед вами стоїть складне рішення, просто запитайте себе: Як би вчинив єдиноріг?",
+                  "Тримай друзів близько, а смаколики — ще ближче.",
+                  "Вам треба поспати.",
+                  "Рекомендує час від часу відриватися від соціальних мереж і піти погуляти.",
+                  "Потрібно завжди ганятися за веселкою і знаходити в ній позитивні сторони.",
+                  "Найкращий спосіб здійснити свої мрії — це діяти.",
+                  "Немає нічого кращого.",
+                  "Пам'ятайте, навіть наймогутнішим чарівникам доводиться починати зі скромної палички і крихти магії.",
+                  "Якщо вусатий сантехнік може врятувати принцесу, то і ти можеш подолати будь-який виклик у своєму житті.",
+                  "Іноді доводиться довіряти своїм інстинктам і трохи ризикувати.",
+                  "Не забувайте добре їсти та спати.",
+                  "У вас хліб закінчується, треба в магазин.",
+                  "Треба задонатити на ЗСУ.",
+                  "Треба задонатити волонтерам."
+                ] %>
+                <%= unicorn_lines.sample %>
+                »</em>
+                <br><br>
+
+                <% footer_lines = [
+                  "Дякуємо за те, що ви є цінним членом спільноти.",
+                  "Підписуйтесь на авторів, яких ви хочете бачити більше!",
+                  "І пам'ятайте. Усе тільки починається.",
+                  "Щасти вам!",
+                  (@user.articles_count.to_i > 0 ?
+                    "Не можемо дочекатися <b>вашого</b> нового допису у спільноті!" :
+                    "Не можемо дочекатися, щоб побачити <b>ваш</b> перший допис у спільноті!"),
+                  "Ви круті!",
+                  "На все добре!",
+                  "Гарного вам дня та будьте здорові!"
+				  "Стонкс!"
+                ] %>
+                <%= footer_lines.sample.html_safe %>
+              </div>
+
+              <br>
+              <hr style="border-top: 3px solid #0a0a0a;" />
+              <div>
+                📖 Читайте новини та найкращі статті у наших соцмережах:<br>
+                <a href="https://t.me/kutokio" target="_blank" rel="noopener nofollow"><b class="color-accent-brand">👉Telegram</b></a>,
+                <a href="https://www.facebook.com/kutokio" target="_blank" rel="noopener nofollow"><b class="color-accent-brand">👉Facebook</b></a> та
+                <a href="https://twitter.com/kutok_io" target="_blank" rel="noopener nofollow"><b class="color-accent-brand">👉Twitter</b></a>.
+              </div>
+            </div>
+
             <hr style="border-top: 3px solid #0a0a0a;" />
           </td>
         </tr>
