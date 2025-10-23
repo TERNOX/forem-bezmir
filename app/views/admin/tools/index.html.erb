@@ -107,6 +107,12 @@
         </div>
 
         <div class="crayons-field">
+          <%= label_tag "top_articles_digest_excluded_organization_ids", t("views.admin.tools.top_articles_digest.form.excluded_organization_ids"), class: "crayons-field__label" %>
+          <%= text_field_tag "top_articles_digest[excluded_organization_ids]", @top_articles_digest_settings[:excluded_organization_ids], class: "crayons-textfield", placeholder: "1,2" %>
+          <p class="crayons-field__description"><%= t("views.admin.tools.top_articles_digest.form.excluded_organization_ids_help") %></p>
+        </div>
+
+        <div class="crayons-field">
           <%= label_tag "top_articles_digest_intro_markdown", t("views.admin.tools.top_articles_digest.form.intro_markdown"), class: "crayons-field__label" %>
           <%= text_area_tag "top_articles_digest[intro_markdown]", @top_articles_digest_settings[:intro_markdown], class: "crayons-textfield", rows: 4 %>
         </div>

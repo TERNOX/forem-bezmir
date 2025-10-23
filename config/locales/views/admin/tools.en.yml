@@ -24,6 +24,8 @@ en:
             image_url: Cover image URL
             organization_id: Organization ID (optional)
             organization_help: "The bot must belong to the organization. Leave blank to publish from the bot's personal profile."
+            excluded_organization_ids: Excluded organization IDs
+            excluded_organization_ids_help: "Comma-separated list of organization IDs to ignore (e.g. 1,2,5,7). Articles from these organizations are omitted from the digest and badge awards."
             intro_markdown: First paragraph of the post
             frequency: How often should the digest be published?
             frequency_options:

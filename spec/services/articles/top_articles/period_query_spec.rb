@@ -5,6 +5,10 @@ RSpec.describe Articles::TopArticles::PeriodQuery, type: :service do
     let(:start_time) { Time.zone.local(2024, 6, 1) }
     let(:end_time) { start_time + 1.week }
 
+    before do
+      allow(Settings::General).to receive(:top_articles_digest_excluded_organization_ids).and_return([])
+    end
+
     it "returns article ids ordered by reaction count" do
       articles = create_list(:article, 3)
 
@@ -28,13 +32,37 @@ RSpec.describe Articles::TopArticles::PeriodQuery, type: :service do
 
     it "excludes reactions on blocked organizations" do
       organization = create(:organization)
-      stub_const("#{described_class}::EXCLUDED_ORGANIZATION_IDS", [organization.id])
+      allow(Settings::General).to receive(:top_articles_digest_excluded_organization_ids).and_return([organization.id])
       article = create(:article, organization: organization)
       create(:reaction, reactable: article, category: "like", created_at: start_time + 1.day)
 
       result = described_class.call(start_time: start_time, end_time: end_time, limit: 5)
 
       expect(result).to be_empty
+    end
+
+    it "includes reactions for articles without an organization" do
+      article = create(:article, organization: nil)
+      create(:reaction, reactable: article, category: "like", created_at: start_time + 1.day)
+
+      result = described_class.call(start_time: start_time, end_time: end_time, limit: 5)
+
+      expect(result).to eq([article.id])
+    end
+
+    it "includes personal articles when exclusions are configured" do
+      excluded_org = create(:organization)
+      allow(Settings::General).to receive(:top_articles_digest_excluded_organization_ids).and_return([excluded_org.id])
+
+      personal_article = create(:article, organization: nil)
+      excluded_article = create(:article, organization: excluded_org)
+
+      create(:reaction, reactable: personal_article, category: "like", created_at: start_time + 1.day)
+      create(:reaction, reactable: excluded_article, category: "like", created_at: start_time + 1.day)
+
+      result = described_class.call(start_time: start_time, end_time: end_time, limit: 5)
+
+      expect(result).to eq([personal_article.id])
     end
 
     it "respects the provided limit" do

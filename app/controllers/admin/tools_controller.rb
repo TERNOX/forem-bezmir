@@ -88,6 +88,7 @@ module Admin
         frequency: ::Settings::General.top_articles_digest_frequency,
         article_limit: ::Settings::General.top_articles_digest_article_limit,
         badge_slug: ::Settings::General.top_articles_badge_slug,
+        excluded_organization_ids: Array(::Settings::General.top_articles_digest_excluded_organization_ids).join(", "),
       }
     end
 
@@ -103,6 +104,9 @@ module Admin
       ::Settings::General.set_top_articles_digest_frequency(permitted[:frequency])
       ::Settings::General.set_top_articles_digest_article_limit(permitted[:article_limit].presence)
       ::Settings::General.set_top_articles_badge_slug(permitted[:badge_slug])
+      ::Settings::General.set_top_articles_digest_excluded_organization_ids(
+        parse_id_list(permitted[:excluded_organization_ids])
+      )
     end
 
     def top_articles_digest_params
@@ -116,7 +120,22 @@ module Admin
         :frequency,
         :article_limit,
         :badge_slug,
+        :excluded_organization_ids,
       )
+    end
+
+    def parse_id_list(raw_value)
+      return [] if raw_value.blank?
+
+      raw_value
+        .split(/[\s,]+/)
+        .filter_map do |segment|
+          next if segment.blank?
+
+          id = segment.to_i
+          id if id.positive?
+        end
+        .uniq
     end
 
     def handle_dead_path

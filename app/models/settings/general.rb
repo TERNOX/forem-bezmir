@@ -153,6 +153,8 @@ module Settings
             validates: {
               numericality: { greater_than: 0, allow_nil: true }
             }
+    setting :top_articles_digest_excluded_organization_ids, type: :array,
+            default: Articles::TopArticles::PeriodQuery::DEFAULT_EXCLUDED_ORGANIZATION_IDS
     setting :top_articles_badge_slug, type: :string, default: Badges::AwardTopSeven::DEFAULT_BADGE_SLUG
     setting :top_articles_digest_last_period_identifier, type: :string
     setting :top_articles_digest_last_article_id, type: :integer
