@@ -12,6 +12,8 @@ class ExtendTopSevenArticleSelections < ActiveRecord::Migration[7.0]
   end
 
   def down
+    remove_frequency_not_null_constraint
+
     remove_index :top_seven_article_selections, name: "index_top_seven_article_selections_on_period" if index_exists?(:top_seven_article_selections, name: "index_top_seven_article_selections_on_period")
 
     unless index_exists?(:top_seven_article_selections, :week_of, name: "index_top_seven_article_selections_on_week_of")
@@ -57,7 +59,15 @@ class ExtendTopSevenArticleSelections < ActiveRecord::Migration[7.0]
     end
 
     change_column_default :top_seven_article_selections, :frequency, "weekly"
-    change_column_null :top_seven_article_selections, :frequency, false
+    add_frequency_not_null_constraint
+
+    return unless frequency_column_allows_null?
+
+    validate_frequency_not_null_constraint
+
+    safety_assured do
+      change_column_null :top_seven_article_selections, :frequency, false
+    end
   end
 
   def remove_duplicate_periods
@@ -84,5 +94,55 @@ class ExtendTopSevenArticleSelections < ActiveRecord::Migration[7.0]
               unique: true,
               name: "index_top_seven_article_selections_on_period",
               algorithm: :concurrently
+  end
+
+  def remove_frequency_not_null_constraint
+    return unless connection.supports_check_constraints?
+    return unless check_constraint_exists?(:top_seven_article_selections, name: frequency_not_null_constraint_name)
+
+    remove_check_constraint :top_seven_article_selections, name: frequency_not_null_constraint_name
+  end
+
+  def add_frequency_not_null_constraint
+    return unless connection.supports_check_constraints?
+    return if check_constraint_exists?(:top_seven_article_selections, name: frequency_not_null_constraint_name)
+
+    add_check_constraint :top_seven_article_selections,
+                         "frequency IS NOT NULL",
+                         name: frequency_not_null_constraint_name,
+                         validate: false
+  end
+
+  def validate_frequency_not_null_constraint
+    return unless connection.supports_check_constraints?
+    return if frequency_not_null_constraint_validated?
+    return unless check_constraint_exists?(:top_seven_article_selections, name: frequency_not_null_constraint_name)
+
+    safety_assured do
+      validate_check_constraint :top_seven_article_selections, name: frequency_not_null_constraint_name
+    end
+  end
+
+  def frequency_not_null_constraint_validated?
+    return false unless connection.supports_check_constraints?
+
+    value = connection.select_value(<<~SQL.squish)
+      SELECT convalidated
+        FROM pg_constraint
+       WHERE conname = #{connection.quote(frequency_not_null_constraint_name)}
+         AND conrelid = #{connection.quote("top_seven_article_selections")}::regclass
+    SQL
+    ActiveRecord::Type::Boolean.new.cast(value)
+  rescue ActiveRecord::StatementInvalid
+    false
+  end
+
+  def frequency_not_null_constraint_name
+    "top_seven_article_selections_frequency_null"
+  end
+
+  def frequency_column_allows_null?
+    column = connection.columns(:top_seven_article_selections).find { |c| c.name == "frequency" }
+    column&.null
   end
 end
