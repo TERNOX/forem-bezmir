@@ -101,6 +101,7 @@ uk:
     formats:
         default: "%d.%m.%Y"
         long_month: "%B %Y"
+        month_year_standalone: "%{month} %{year}"
         full: "%-d %B, %H:%M, %Y - %A"
         full_month: "%B, %Y"
         full_day: "%-d %B, %H:%M, %Y"
