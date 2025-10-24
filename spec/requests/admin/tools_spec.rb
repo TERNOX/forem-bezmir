@@ -54,4 +54,39 @@ RSpec.describe "/admin/advanced/tools" do
       end.to raise_error(Pundit::NotAuthorizedError)
     end
   end
+
+  describe "top articles digest actions" do
+    let(:super_admin) { create(:user, :super_admin) }
+    let(:api_secret) { create(:api_secret) }
+    let!(:badge) { create(:badge, slug: "top-7") }
+    let!(:article) { create(:article, created_at: 3.days.ago) }
+
+    before do
+      Settings::General.set_top_articles_digest_bot_api_key(api_secret.secret)
+      Settings::General.set_top_articles_digest_title_template("Digest")
+      Settings::General.set_top_articles_digest_frequency("weekly")
+      Settings::General.set_top_articles_digest_article_limit(5)
+      Settings::General.set_top_articles_digest_tags("digest")
+
+      create(:reaction, reactable: article, category: "like", created_at: 2.days.ago)
+
+      sign_in super_admin
+    end
+
+    it "publishes a test digest" do
+      expect do
+        post top_articles_digest_test_publish_admin_tools_path, params: { digest_preview_mode: "settings" }
+      end.to change(Article, :count).by(1)
+
+      expect(flash[:success]).to be_present
+    end
+
+    it "awards badges to previewed authors" do
+      expect do
+        post top_articles_digest_test_badges_admin_tools_path, params: { digest_preview_mode: "settings" }
+      end.to change(BadgeAchievement, :count).by(1)
+
+      expect(flash[:success]).to be_present
+    end
+  end
 end

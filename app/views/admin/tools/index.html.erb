@@ -154,6 +154,54 @@
 
     <section class="mt-6">
       <h4 class="crayons-subtitle-3 mb-2"><%= t("views.admin.tools.top_articles_digest.preview.heading") %></h4>
+
+      <%= form_with url: admin_tools_path, method: :get, local: true, class: "grid gap-4 md:grid-cols-2 mb-4" do %>
+        <div class="crayons-field md:col-span-2">
+          <span class="crayons-field__label"><%= t("views.admin.tools.top_articles_digest.preview.mode_label") %></span>
+          <div class="flex flex-col gap-2 md:flex-row">
+            <label class="flex items-center gap-2">
+              <%= radio_button_tag :digest_preview_mode, "settings", @digest_preview_mode != "custom", class: "crayons-radio" %>
+              <span><%= t("views.admin.tools.top_articles_digest.preview.mode_options.settings") %></span>
+            </label>
+            <label class="flex items-center gap-2">
+              <%= radio_button_tag :digest_preview_mode, "custom", @digest_preview_mode == "custom", class: "crayons-radio" %>
+              <span><%= t("views.admin.tools.top_articles_digest.preview.mode_options.custom") %></span>
+            </label>
+          </div>
+          <p class="crayons-field__description"><%= t("views.admin.tools.top_articles_digest.preview.mode_help") %></p>
+        </div>
+
+        <div class="crayons-field">
+          <%= label_tag "digest_preview_start_date", t("views.admin.tools.top_articles_digest.preview.start_date"), class: "crayons-field__label" %>
+          <%= date_field_tag "digest_preview[start_date]", @digest_preview_form_params[:start_date], class: "crayons-textfield" %>
+        </div>
+
+        <div class="crayons-field">
+          <%= label_tag "digest_preview_end_date", t("views.admin.tools.top_articles_digest.preview.end_date"), class: "crayons-field__label" %>
+          <%= date_field_tag "digest_preview[end_date]", @digest_preview_form_params[:end_date], class: "crayons-textfield" %>
+        </div>
+
+        <div class="md:col-span-2">
+          <%= submit_tag t("views.admin.tools.top_articles_digest.preview.update"), class: "crayons-btn" %>
+        </div>
+      <% end %>
+
+      <div class="flex flex-wrap gap-4 mb-4">
+        <%= form_with url: top_articles_digest_test_publish_admin_tools_path, method: :post, local: true do %>
+          <%= hidden_field_tag :digest_preview_mode, @digest_preview_mode %>
+          <%= hidden_field_tag "digest_preview[start_date]", @digest_preview_form_params[:start_date] %>
+          <%= hidden_field_tag "digest_preview[end_date]", @digest_preview_form_params[:end_date] %>
+          <%= submit_tag t("views.admin.tools.top_articles_digest.test_publish.button"), class: "crayons-btn" %>
+        <% end %>
+
+        <%= form_with url: top_articles_digest_test_badges_admin_tools_path, method: :post, local: true do %>
+          <%= hidden_field_tag :digest_preview_mode, @digest_preview_mode %>
+          <%= hidden_field_tag "digest_preview[start_date]", @digest_preview_form_params[:start_date] %>
+          <%= hidden_field_tag "digest_preview[end_date]", @digest_preview_form_params[:end_date] %>
+          <%= submit_tag t("views.admin.tools.top_articles_digest.test_badges.button"), class: "crayons-btn" %>
+        <% end %>
+      </div>
+
       <% if @top_articles_digest_preview[:available?] && @top_articles_digest_preview[:articles].present? %>
         <p class="mb-4">
           <%= t("views.admin.tools.top_articles_digest.preview.summary",
