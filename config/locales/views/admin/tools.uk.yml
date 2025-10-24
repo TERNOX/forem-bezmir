@@ -1,0 +1,68 @@
+uk:
+  views:
+    admin:
+      tools:
+        reputation:
+          heading: Recalculate reputation
+          description_html: "<strong>Resets</strong> all member reputation scores to match the number of likes their posts and comments have received."
+          submit: Recalculate now
+          success: "Recalculated reputation for %{users} members using %{likes} total post and comment likes."
+        top_seven:
+          heading: Weekly Top 7 preview
+          description_html: "Preview the seven most reacted posts for each week. These are the articles that will be considered when awarding the Top 7 badge."
+          empty_state: "No Top 7 selections have been recorded yet."
+        top_articles_digest:
+          heading: Automated Top Articles digest
+          description_html: "Configure the community bot that will publish the digest and the template that should be used for each post."
+          form:
+            bot_api_key: Community Bot API key
+            bot_api_key_help: "Use the API key of the bot account that should publish the digest."
+            title_template: Post title template
+            title_template_help_html: "Use Liquid-style tokens like <code>{{generated_on}}</code>, <code>{{period_start}}</code>, <code>{{period_end}}</code>, <code>{{count}}</code>, and <code>{{frequency}}</code> to insert dynamic values."
+            tags: Tags (comma or newline separated)
+            tags_help: "These tags will be applied to each digest post."
+            image_url: Cover image URL
+            organization_id: Organization ID (optional)
+            organization_help: "The bot must belong to the organization. Leave blank to publish from the bot's personal profile."
+            excluded_organization_ids: Excluded organization IDs
+            excluded_organization_ids_help: "Comma-separated list of organization IDs to ignore (e.g. 1,2,5,7). Articles from these organizations are omitted from the digest and badge awards."
+            intro_markdown: First paragraph of the post
+            frequency: How often should the digest be published?
+            frequency_options:
+              daily: Daily (previous day)
+              weekly: Weekly (previous week)
+              monthly: Monthly (previous month)
+            article_limit: Number of articles to include
+            badge_slug: Badge slug to reward the authors
+            save: Save digest settings
+          placeholders:
+            heading: Available template placeholders
+            items:
+              - "<code>{{generated_on}}</code> – the date the digest is published"
+              - "<code>{{period_start}}</code> – the start date of the period"
+              - "<code>{{period_end}}</code> – the end date of the period"
+              - "<code>{{count}}</code> – the number of posts that will be embedded"
+              - "<code>{{frequency}}</code> – the selected cadence (daily, weekly, monthly)"
+          preview:
+            heading: Next digest preview
+            summary: "%{count} posts selected for %{range}."
+            empty_state: "Configure the digest settings to generate a preview."
+            mode_label: Preview range
+            mode_help: "Choose whether to preview the next scheduled digest or a custom date range."
+            mode_options:
+              settings: Use digest frequency setting
+              custom: Custom date range
+            start_date: Start date (inclusive)
+            end_date: End date (inclusive)
+            update: Update preview
+            missing_range: "Select both a start and end date to generate the preview."
+            invalid_range: "The selected preview range is invalid. Double-check the start and end dates."
+            test_publish:
+              button: Publish test digest
+              success: "Test digest posted successfully. <a href='%{path}'>View article</a>."
+              failure: "The test digest could not be published."
+            test_badges:
+              button: Award badges to previewed authors
+              success: "Awarded badges to %{count} authors."
+              missing_articles: "No articles were available for the selected period."
+              missing_authors: "The previewed articles do not have eligible authors."
