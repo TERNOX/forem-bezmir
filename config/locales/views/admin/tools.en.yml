@@ -47,3 +47,22 @@ en:
             heading: Next digest preview
             summary: "%{count} posts selected for %{range}."
             empty_state: "Configure the digest settings to generate a preview."
+            mode_label: Preview range
+            mode_help: "Choose whether to preview the next scheduled digest or a custom date range."
+            mode_options:
+              settings: Use digest frequency setting
+              custom: Custom date range
+            start_date: Start date (inclusive)
+            end_date: End date (inclusive)
+            update: Update preview
+            missing_range: "Select both a start and end date to generate the preview."
+            invalid_range: "The selected preview range is invalid. Double-check the start and end dates."
+            test_publish:
+              button: Publish test digest
+              success: "Test digest posted successfully. <a href='%{path}'>View article</a>."
+              failure: "The test digest could not be published."
+            test_badges:
+              button: Award badges to previewed authors
+              success: "Awarded badges to %{count} authors."
+              missing_articles: "No articles were available for the selected period."
+              missing_authors: "The previewed articles do not have eligible authors."

@@ -6,8 +6,14 @@ module Admin
       @top_seven_selections = TopSevenArticleSelection.ordered
       article_ids = @top_seven_selections.flat_map(&:article_ids)
       @top_seven_articles_by_id = Article.where(id: article_ids).includes(:user).index_by(&:id)
-      @top_articles_digest_preview = Articles::TopArticles::DigestPublisher.new.preview
+      @digest_preview_mode = digest_preview_mode
+      @digest_preview_form_params = digest_preview_form_params.to_h.symbolize_keys
+      @digest_period_range = digest_period_range
+      @top_articles_digest_preview = build_digest_publisher.preview
       @top_articles_digest_settings = current_digest_settings
+    rescue InvalidDigestPreviewRangeError => e
+      flash.now[:danger] = e.message
+      @top_articles_digest_preview = { available?: false, articles: [], embed_urls: [] }
     end
 
     def create
@@ -75,6 +81,59 @@ module Admin
       redirect_to admin_tools_path
     end
 
+    def publish_top_articles_digest_test
+      publisher = build_digest_publisher
+      errors = publisher.publication_errors
+
+      if errors.present?
+        flash[:danger] = errors.first
+      else
+        article = publisher.call(test: true)
+
+        if article&.persisted?
+          flash[:success] = I18n.t(
+            "views.admin.tools.top_articles_digest.test_publish.success",
+            path: article.path,
+          ).html_safe
+        else
+          message = article&.errors&.full_messages&.to_sentence
+          flash[:danger] = message.presence || I18n.t("views.admin.tools.top_articles_digest.test_publish.failure")
+        end
+      end
+    rescue InvalidDigestPreviewRangeError => e
+      flash[:danger] = e.message
+    rescue StandardError => e
+      flash[:danger] = e.message
+    ensure
+      redirect_to admin_tools_path(digest_preview_redirect_params)
+    end
+
+    def award_top_articles_digest_badges
+      preview = build_digest_publisher.preview
+
+      if preview[:articles].blank?
+        flash[:danger] = I18n.t("views.admin.tools.top_articles_digest.test_badges.missing_articles")
+      else
+        usernames = preview[:articles].filter_map { |article| article.user&.username }.uniq
+
+        if usernames.blank?
+          flash[:danger] = I18n.t("views.admin.tools.top_articles_digest.test_badges.missing_authors")
+        else
+          Badges::AwardTopSeven.call(usernames)
+          flash[:success] = I18n.t(
+            "views.admin.tools.top_articles_digest.test_badges.success",
+            count: usernames.size,
+          )
+        end
+      end
+    rescue InvalidDigestPreviewRangeError => e
+      flash[:danger] = e.message
+    rescue StandardError => e
+      flash[:danger] = e.message
+    ensure
+      redirect_to admin_tools_path(digest_preview_redirect_params)
+    end
+
     private
 
     def current_digest_settings
@@ -108,6 +167,75 @@ module Admin
         parse_id_list(permitted[:excluded_organization_ids])
       )
     end
+
+    def build_digest_publisher
+      Articles::TopArticles::DigestPublisher.new(
+        reference_time: digest_reference_time,
+        period_range: digest_period_range,
+      )
+    end
+
+    def digest_preview_mode
+      value = params[:digest_preview_mode].to_s
+      value == "custom" ? "custom" : "settings"
+    end
+
+    def digest_preview_form_params
+      params.fetch(:digest_preview, {}).permit(:start_date, :end_date)
+    end
+
+    def digest_preview_redirect_params
+      if digest_preview_mode == "custom"
+        {
+          digest_preview_mode: "custom",
+          digest_preview: {
+            start_date: digest_preview_form_params[:start_date],
+            end_date: digest_preview_form_params[:end_date],
+          },
+        }
+      else
+        { digest_preview_mode: "settings" }
+      end
+    end
+
+    def digest_period_range
+      return @digest_period_range if defined?(@digest_period_range)
+
+      if digest_preview_mode == "custom"
+        start_value = digest_preview_form_params[:start_date]
+        end_value = digest_preview_form_params[:end_date]
+
+        if start_value.blank? || end_value.blank?
+          raise InvalidDigestPreviewRangeError, I18n.t("views.admin.tools.top_articles_digest.preview.missing_range")
+        end
+
+        begin
+          start_date = Date.parse(start_value)
+          end_date = Date.parse(end_value)
+        rescue ArgumentError
+          raise InvalidDigestPreviewRangeError, I18n.t("views.admin.tools.top_articles_digest.preview.invalid_range")
+        end
+
+        if end_date < start_date
+          raise InvalidDigestPreviewRangeError, I18n.t("views.admin.tools.top_articles_digest.preview.invalid_range")
+        end
+
+        start_time = Time.zone.local(start_date.year, start_date.month, start_date.day).beginning_of_day
+        end_time = Time.zone.local(end_date.year, end_date.month, end_date.day).next_day.beginning_of_day
+
+        @digest_period_range = start_time...end_time
+      else
+        @digest_period_range = nil
+      end
+    end
+
+    def digest_reference_time
+      if digest_period_range
+        digest_period_range.end - 1.second
+      end
+    end
+
+    class InvalidDigestPreviewRangeError < StandardError; end
 
     def top_articles_digest_params
       params.require(:top_articles_digest).permit(
