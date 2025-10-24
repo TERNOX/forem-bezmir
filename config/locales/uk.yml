@@ -115,7 +115,7 @@ uk:
         members: "%d %b"
         members_with_year: "%d %b, %Y"
         reddit: "%e %b '%y"
-        long: "%e %b %Y"
+        long: "%d.%m.%Y"
         short_with_yy: "%-d %b '%y"
         short_with_year: "%-e %b, %Y"
         stackexchange: "%e %b '%y"
