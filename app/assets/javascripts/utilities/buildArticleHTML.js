@@ -360,15 +360,7 @@ function buildArticleHTML(article, currentUserId = null) {
     }
 
     var readingTimeHTML = '';
-    if (article.class_name === 'Article') {
-      // we have ` ... || null` for the case article.reading_time is undefined
-      readingTimeHTML =
-        '<small class="crayons-story__tertiary fs-xs mr-2">' +
-        ((article.reading_time || null) < 1
-          ? '1 min'
-          : article.reading_time + ' min') +
-        ' read</small>';
-    }
+
 
     var saveButton = '';
     var saveSVG =
