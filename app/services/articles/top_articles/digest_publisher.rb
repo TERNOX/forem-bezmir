@@ -170,9 +170,11 @@ module Articles
       end
 
       def frequency
-        @frequency ||= begin
-          next CUSTOM_FREQUENCY if custom_period?
+        return @frequency if defined?(@frequency)
 
+        @frequency = if custom_period?
+          CUSTOM_FREQUENCY
+        else
           value = Settings::General.top_articles_digest_frequency.to_s.downcase
           value = "weekly" if value.blank?
           SUPPORTED_FREQUENCIES.include?(value) ? value : "weekly"
@@ -240,9 +242,11 @@ module Articles
       end
 
       def period_range
-        @period_range ||= begin
-          next @period_range_override if custom_period?
+        return @period_range if defined?(@period_range)
 
+        @period_range = if custom_period?
+          @period_range_override
+        else
           case frequency
           when "daily"
             start_time = (reference_time - 1.day).beginning_of_day
