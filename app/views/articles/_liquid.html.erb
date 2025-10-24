@@ -7,6 +7,22 @@
       <%= article.video_duration_in_minutes %></span>
   </a>
   <% end %>
+  <% if article.main_image %>
+  		  <div className="crayons-article__cover crayons-article__cover__image__feed">
+      <a
+        href='<%=article.path%>'}
+        className="crayons-article__cover__image__feed crayons-story__cover__image"
+        title='<%=article.title%>'}
+      >
+        <img
+          className="crayons-article__cover__image__feed"
+          src='<%=cloud_cover_url(article.main_image)%>'}
+          width="650"
+          alt='<%= article.title%>'
+          style= "margin:auto;width: 100%; backgroundColor: '<%=article.main_image_background_hex_color%>'",
+        />
+      </a>
+    </div><% end %>
   <% if article.organization %>
   <a href='<%= article.organization.path %>' class='ltag__link__link'>
     <div class='ltag__link__org__pic'>
