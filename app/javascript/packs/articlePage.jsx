@@ -149,3 +149,31 @@ focusOnComments();
 backfillLinkTarget();
 renderBottomContent();
 initializeArticleLightbox();
+
+const backToTopButton = document.getElementById('article-scroll-to-top');
+
+if (backToTopButton && backToTopButton.dataset.initialized !== 'true') {
+  const toggleBackToTopVisibility = () => {
+    const shouldShow = window.scrollY > window.innerHeight / 2;
+
+    if (shouldShow) {
+      if (backToTopButton.hidden) {
+        backToTopButton.hidden = false;
+      }
+      backToTopButton.classList.add('article-scroll-to-top--visible');
+    } else {
+      backToTopButton.classList.remove('article-scroll-to-top--visible');
+      backToTopButton.hidden = true;
+    }
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  toggleBackToTopVisibility();
+  window.addEventListener('scroll', toggleBackToTopVisibility, { passive: true });
+  window.addEventListener('resize', toggleBackToTopVisibility);
+  backToTopButton.addEventListener('click', scrollToTop);
+  backToTopButton.dataset.initialized = 'true';
+}
