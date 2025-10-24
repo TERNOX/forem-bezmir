@@ -501,7 +501,7 @@ function buildArticleHTML(article, currentUserId = null) {
                   ${reactionsDisplay} ${commentsDisplay}
                 </div>\
                 <div class="crayons-story__save">\
-                  ${readingTimeHTML}\
+
                   ${saveButton}
                 </div>\
               </div>\

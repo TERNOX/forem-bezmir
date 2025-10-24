@@ -53,7 +53,7 @@ class Article < ApplicationRecord
   # all BIDI control marks (a part of them are expected to be removed during #normalize_title, but still)
   BIDI_CONTROL_CHARACTERS = /[\u061C\u200E\u200F\u202a-\u202e\u2066-\u2069]/
 
-  MAX_TAG_LIST_SIZE = 4
+  MAX_TAG_LIST_SIZE = 6
 
   # Filter out anything that isn't a word, space, punctuation mark,
   # recognized emoji, and other auxiliary marks.
