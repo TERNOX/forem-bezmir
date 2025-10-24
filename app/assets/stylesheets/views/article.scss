@@ -188,16 +188,19 @@
   }
 
   @media (min-width: $breakpoint-m) {
-    position: sticky;
+
     right: auto;
     bottom: var(--su-6);
     margin-top: auto;
     justify-self: center;
     align-self: end;
-    background: transparent;
+
     color: inherit;
     border-color: currentColor;
     box-shadow: none;
+	position: absolute;
+    background: #0000004a;
+    margin-bottom: 17px;
   }
 }
 
