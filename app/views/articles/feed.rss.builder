@@ -5,7 +5,8 @@
 xml.instruct! :xml, version: "1.0"
 xml.rss(:version => "2.0",
         "xmlns:atom" => "http://www.w3.org/2005/Atom",
-        "xmlns:dc" => "http://purl.org/dc/elements/1.1/") do
+        "xmlns:dc" => "http://purl.org/dc/elements/1.1/",
+        "xmlns:media" => "http://search.yahoo.com/mrss/") do
   xml.channel do
     if user
       xml.title "#{community_name}: #{user.name}"
@@ -46,6 +47,12 @@ xml.rss(:version => "2.0",
         xml.guid app_url(article.path)
         xml.description sanitize(article.plain_html,
                                  tags: allowed_tags, attributes: allowed_attributes, scrubber: scrubber)
+        image_url = article_social_image_url(article)
+        if image_url.present?
+          image_url = app_url(image_url) unless image_url.start_with?("http://", "https://")
+          xml.tag!("media:content", url: image_url, medium: "image")
+          xml.tag!("media:thumbnail", url: image_url)
+        end
         article.tag_list.each do |tag_name|
           xml.category tag_name
         end
