@@ -4,25 +4,47 @@ module Articles
   module TopArticles
     class DigestPublisher
       SUPPORTED_FREQUENCIES = %w[daily weekly monthly].freeze
+      CUSTOM_FREQUENCY = "custom".freeze
 
-      def initialize(reference_time: nil)
+      def initialize(reference_time: nil, period_range: nil, limit: nil)
         @reference_time = parse_reference_time(reference_time)
+        @period_range_override = normalize_period_range(period_range)
+        @limit_override = parse_limit(limit)
       end
 
-      def call
+      def call(test: false)
         return unless ready_for_publication?
-        return unless publication_due?
-
         return if preview_articles.blank?
+        return if !test && !publication_due?
 
         article = Articles::Creator.call(bot_user, article_params)
 
-        if article.persisted?
+        if article.persisted? && !test
           Settings::General.set_top_articles_digest_last_period_identifier(current_identifier)
           Settings::General.set_top_articles_digest_last_article_id(article.id)
         end
 
         article
+      end
+
+      def publication_errors
+        [].tap do |errors|
+          if Settings::General.top_articles_digest_bot_api_key.blank?
+            errors << I18n.t("services.articles.top_articles.digest_publisher.errors.missing_api_key")
+          elsif api_secret.blank?
+            errors << I18n.t("services.articles.top_articles.digest_publisher.errors.invalid_api_key")
+          elsif bot_user.blank?
+            errors << I18n.t("services.articles.top_articles.digest_publisher.errors.missing_bot_user")
+          end
+
+          if title_template.blank?
+            errors << I18n.t("services.articles.top_articles.digest_publisher.errors.missing_title_template")
+          end
+
+          if preview_articles.blank?
+            errors << I18n.t("services.articles.top_articles.digest_publisher.errors.no_articles")
+          end
+        end
       end
 
       def preview
@@ -69,7 +91,7 @@ module Articles
 
       def publication_due?
         last_identifier = Settings::General.top_articles_digest_last_period_identifier
-        last_identifier != current_identifier
+        custom_period? || last_identifier != current_identifier
       end
 
       def preview_articles
@@ -140,6 +162,8 @@ module Articles
 
       def limit
         @limit ||= begin
+          return @limit_override if @limit_override && @limit_override.to_i.positive?
+
           configured = Settings::General.top_articles_digest_article_limit.to_i
           configured.positive? ? configured : Articles::TopArticles::PeriodQuery::DEFAULT_LIMIT
         end
@@ -147,6 +171,8 @@ module Articles
 
       def frequency
         @frequency ||= begin
+          next CUSTOM_FREQUENCY if custom_period?
+
           value = Settings::General.top_articles_digest_frequency.to_s.downcase
           value = "weekly" if value.blank?
           SUPPORTED_FREQUENCIES.include?(value) ? value : "weekly"
@@ -182,25 +208,11 @@ module Articles
       end
 
       def period_start
-        @period_start ||= case frequency
-                          when "daily"
-                            (reference_time - 1.day).beginning_of_day
-                          when "monthly"
-                            (reference_time - 1.month).beginning_of_month.beginning_of_day
-                          else
-                            (reference_time - 1.week).beginning_of_week(:monday).beginning_of_day
-                          end
+        @period_start ||= period_range.begin
       end
 
       def period_end
-        @period_end ||= case frequency
-                        when "daily"
-                          period_start + 1.day
-                        when "monthly"
-                          period_start + 1.month
-                        else
-                          period_start + 1.week
-                        end
+        @period_end ||= period_range.end
       end
 
       def current_identifier
@@ -211,6 +223,8 @@ module Articles
           when "monthly"
             date = period_start.to_date
             "monthly:#{format('%<year>d-%<month>02d', year: date.year, month: date.month)}"
+          when CUSTOM_FREQUENCY
+            "custom:#{period_start.to_date.iso8601}-#{display_period_end.iso8601}"
           else
             "weekly:#{period_start.to_date.iso8601}"
           end
@@ -223,6 +237,55 @@ module Articles
 
       def display_period_end
         (period_end - 1.second).to_date
+      end
+
+      def period_range
+        @period_range ||= begin
+          next @period_range_override if custom_period?
+
+          case frequency
+          when "daily"
+            start_time = (reference_time - 1.day).beginning_of_day
+            start_time...(start_time + 1.day)
+          when "monthly"
+            start_time = (reference_time - 1.month).beginning_of_month.beginning_of_day
+            start_time...(start_time + 1.month)
+          else
+            start_time = (reference_time - 1.week).beginning_of_week(:monday).beginning_of_day
+            start_time...(start_time + 1.week)
+          end
+        end
+      end
+
+      def custom_period?
+        @period_range_override.present?
+      end
+
+      def normalize_period_range(range)
+        return if range.blank?
+
+        if range.is_a?(Range)
+          start_time = parse_reference_time(range.begin)
+          end_time = parse_reference_time(range.end)
+          return if start_time.blank? || end_time.blank? || end_time <= start_time
+
+          start_time...end_time
+        elsif range.respond_to?(:[]) && range[:start_time] && range[:end_time]
+          start_time = parse_reference_time(range[:start_time])
+          end_time = parse_reference_time(range[:end_time])
+          return if start_time.blank? || end_time.blank? || end_time <= start_time
+
+          start_time...end_time
+        end
+      rescue ArgumentError
+        nil
+      end
+
+      def parse_limit(limit)
+        return unless limit
+
+        value = limit.to_i
+        value.positive? ? value : nil
       end
     end
   end
