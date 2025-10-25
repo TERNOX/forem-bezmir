@@ -27,7 +27,7 @@ module UnifiedEmbed
     end
 
     def find_handler_for(link:)
-      possible_domains = Subforem.cached_domains + [Settings::General.app_domain]
+      possible_domains = InternalLinkDomains.allowlist
       link_path = Addressable::URI.parse(link).path
       if link.match?(%r{https?://(#{possible_domains.map { |domain| Regexp.escape(domain) }.join("|")})/(?<username>[^/]+)/(?<slug>[^/]+)}) && Article.find_by(path: link_path)
         return { klass: LinkTag, skip_validation: false }
