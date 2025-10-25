@@ -49,7 +49,7 @@ const StandardImageUpload = ({
           data-max-file-size-mb="25"
         />
         <span data-testid="tooltip" className="crayons-tooltip__content" style={{minWidth:'190px'}}>
-         {coverImageCrop === 'crop' ? `Use a ratio of 1000:${coverImageHeight} ` : 'Minimum 1000px wide '}
+         {coverImageCrop === 'crop' ? `Бажано мати зображення 16:9 ` : 'Мінімум 1000px ширина '}
          for best results. 
         </span>
       </label>
