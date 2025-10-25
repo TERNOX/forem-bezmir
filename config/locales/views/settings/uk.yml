@@ -96,7 +96,7 @@ uk:
         to_delete: 'Щоб видалити акаунт:'
         twitter: налаштування Twitter
         type: Введіть ім’я користувача
-        username: ім’я користувача
+        username: юзернейм
         word: видалити мій акаунт
       email: Підтвердження електронної пошти.
       errors:
@@ -268,5 +268,5 @@ uk:
         Account: Акаунт
         Billing: Оплата
         Organization: Проєкт
-        Extensions: Розширення
+        Extensions: Додатково
       save_profile: Зберегти профіль

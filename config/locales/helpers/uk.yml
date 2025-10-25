@@ -11,18 +11,18 @@ uk:
         title: Заголовок
       organization:
         name: Назва
-        slug: Ім’я користувача
+        slug: URL-назва
         profile_image: Зображення профілю
         twitter_username: Ім’я користувача у Twitter
         github_username: Ім’я користувача у GitHub
         url: URL вебсайту
-        tag_line: Короткий слоган
+        tag_line: Дуже короткий опис (буде видно справа від кожного допису проєкту)
         summary: Короткий опис
         location: Місцезнаходження
         email: Пошта підтримки
         company_size: Розмір проєкту
         story: Наша історія
-        tech_stack: Наш стек
+        tech_stack: Що ми робимо
         cta_body_markdown: Основний текст
         cta_button_text: Текст посилання
         cta_button_url: URL посилання
@@ -39,7 +39,7 @@ uk:
         slug: Слаг
         soundcloud_url: SoundCloud URL
         title: Заголовок
-        twitter_username: Ім’я користувача у Twitter
+        twitter_username: Юзернейм у Twitter
         website_url: URL вебсайту
       response_template:
         title: Заголовок
@@ -47,7 +47,7 @@ uk:
       user:
         name: Ім’я
         email: Електронна пошта
-        username: Ім’я користувача
+        username: Юзернейм
         profile_image: Зображення профілю
       users_notification_setting:
         email_newsletter: Надсилати мені щотижневу розсилку
