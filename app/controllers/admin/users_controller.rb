@@ -128,6 +128,48 @@ module Admin
       redirect_to admin_user_path(@user)
     end
 
+    def update_avatar
+      @user = User.find(params[:id])
+      avatar_url = avatar_params[:remote_profile_image_url]
+
+      note_reason = "Update Avatar"
+      note_content = nil
+
+      if avatar_url.present?
+        sanitized_url = Images::SafeRemoteProfileImageUrl.call(avatar_url)
+        @user.remote_profile_image_url = sanitized_url
+        note_content = "Updated avatar to #{sanitized_url}."
+      else
+        @user.remove_profile_image! if @user.profile_image?
+        @user.profile_image = nil
+        note_content = "Removed user's avatar."
+      end
+
+      if @user.save
+        Note.create(
+          author_id: current_user.id,
+          noteable_id: @user.id,
+          noteable_type: "User",
+          reason: note_reason,
+          content: note_content,
+        )
+
+        flash[:success] = if avatar_url.present?
+                            I18n.t("views.admin.users.update_avatar.success")
+                          else
+                            I18n.t("views.admin.users.update_avatar.removed")
+                          end
+      else
+        flash[:error] = I18n.t("views.admin.users.update_avatar.error")
+      end
+
+      redirect_to admin_user_path(@user)
+    rescue CarrierWave::DownloadError, CarrierWave::ProcessingError => e
+      Rails.logger.error("Failed to update avatar for user ##{@user.id}: #{e.message}")
+      flash[:error] = I18n.t("views.admin.users.update_avatar.error")
+      redirect_to admin_user_path(@user)
+    end
+
     def max_score
       @user = User.find(params[:id])
       max_score_value = user_params[:max_score]
@@ -522,6 +564,10 @@ module Admin
 
     def user_params
       params.require(:user).permit(USER_ALLOWED_PARAMS)
+    end
+
+    def avatar_params
+      params.require(:user).permit(:remote_profile_image_url)
     end
 
     def send_email_params

@@ -169,6 +169,17 @@ uk:
           submit: Update email
           success: Email updated successfully.
           error: Failed to update email.
+        update_avatar:
+          heading: Update User Avatar
+          current: Current avatar URL
+          none: No avatar on file
+          new_url: New avatar URL
+          placeholder: https://example.com/avatar.png
+          helper: Leave blank to remove the current avatar. External URLs will be fetched and stored.
+          submit: Update avatar
+          success: Avatar updated successfully.
+          removed: Avatar removed successfully.
+          error: Failed to update avatar.
         export:
           heading: Export %{user}'s data
           desc1_html: Choose between sending the exported data to either your Admin contact email, %{contact}, or to %{user}'s %{user_email} directly.
@@ -357,6 +368,7 @@ uk:
           options:
             icon: Options
             update_email: Update User Email
+            update_avatar: Update user avatar
             export: Export data
             merge: Merge users
             unpublish: Unpublished all posts
