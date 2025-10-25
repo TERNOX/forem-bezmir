@@ -71,7 +71,7 @@ export class ProfileForm extends Component {
       this.props.next()
     } catch (error) {
       Honeybadger.notify(error)
-      let errorMessage = 'Unable to continue, please try again.'
+      let errorMessage = 'Неможливо продовжити, спробуйте ще раз.'
 
       if (error.status === 422) {
         const errorData = await error.json()
@@ -201,16 +201,14 @@ export class ProfileForm extends Component {
           <div className="onboarding-content about">
             <header className="onboarding-content-header">
               <h1 id="title" className="title">
-                Build your profile
+                Заповніть свій профіль
               </h1>
               <h2
                 id="subtitle"
                 data-testid="onboarding-profile-subtitle"
                 className="subtitle"
               >
-                Tell us a little bit about yourself — this is how others
-                will see you on {communityConfig.communityName}. You’ll
-                always be able to edit this later in your Settings.
+Розкажіть трохи про себе — саме так вас бачитимуть інші на сайті {communityConfig.communityName}. Ви завжди зможете редагувати цю інформацію пізніше в налаштуваннях.
               </h2>
             </header>
 
@@ -229,11 +227,11 @@ export class ProfileForm extends Component {
               <TextInput
                 field={{
                   attribute_name: 'name',
-                  label: 'Name',
+                  label: 'Ім`я',
                   default_value: name,
                   required: true,
                   maxLength: 50,
-                  placeholder_text: 'Your full name',
+                  placeholder_text: 'Можна українською',
                   description: '',
                   input_type: 'text',
                 }}
@@ -246,11 +244,11 @@ export class ProfileForm extends Component {
               <TextInput
                 field={{
                   attribute_name: 'username',
-                  label: 'Username',
+                  label: 'Юзернейм',
                   default_value: username,
                   required: true,
                   maxLength: 20,
-                  placeholder_text: 'johndoe',
+                  placeholder_text: 'my_nickname',
                   description: '',
                   input_type: 'text',
                 }}
@@ -263,9 +261,9 @@ export class ProfileForm extends Component {
               <TextArea
                 field={{
                   attribute_name: 'summary',
-                  label: 'Bio',
+                  label: 'Біо',
                   placeholder_text:
-                    'Tell us a little about yourself',
+                    'Розкажіть трохи про себе',
                   required: false,
                   maxLength: SUMMARY_MAXLENGTH,
                   description: '',

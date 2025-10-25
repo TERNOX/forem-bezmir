@@ -41,13 +41,13 @@ uk:
             aria_label: Ім’я
             label: Ім’я
           username:
-            aria_label: Ім’я користувача
-            desc: Ім’я користувача може містити лише літери, цифри та підкреслення. Максимальна довжина — 30 символів.
-            label: Ім’я користувача
+            aria_label: Юзернейм
+            desc: Юзернейм може містити лише латинські літери, цифри та підкреслення. Максимальна довжина — 30 символів.
+            label: Юзернейм
           email:
             aria_label: Електронна пошта
             label: Електронна пошта
-            placeholder: john@example.com
+            placeholder: taras@gmail.com
           password:
             aria_label: Пароль
             desc: Мінімум 8 символів

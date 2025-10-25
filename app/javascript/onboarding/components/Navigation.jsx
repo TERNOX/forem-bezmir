@@ -36,13 +36,13 @@ export class Navigation extends Component {
   buttonText() {
     const { canSkip, currentSlideIndex, slidesCount } = this.props;
     if (slidesCount - 1 === currentSlideIndex) {
-      return 'Finish';
+      return 'Завершити';
     }
     if (canSkip) {
-      return 'Skip for now';
+      return 'Пропустити';
     }
 
-    return 'Continue';
+    return 'Продовжити';
   }
 
   render() {

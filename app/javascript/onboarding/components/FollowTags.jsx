@@ -12,13 +12,12 @@ export class FollowTags extends Component {
     this.handleClick = this.handleClick.bind(this);
     this.handleComplete = this.handleComplete.bind(this);
 
-    const emailState =
-      document.body.dataset.default_email_optin_allowed === 'true';
+
     this.state = {
       allTags: [],
       selectedTags: [],
       article: null,
-      email_digest_periodic: emailState,
+      email_digest_periodic: true,
     };
   }
 
@@ -183,10 +182,10 @@ export class FollowTags extends Component {
           <div className="onboarding-content onboarding-content__tags toggle-bottom ">
             <header className="onboarding-content-header">
               <h1 id="title" className="title">
-                What are you interested in?
+                Що вас цікавить?
               </h1>
               <h2 id="subtitle" className="subtitle">
-                Follow tags to customize your feed
+                Підпишіться на теґи, щоб налаштувати свою стрічку
               </h2>
               {this.renderFollowCount()}
             </header>
@@ -218,8 +217,8 @@ export class FollowTags extends Component {
                         </div>
                         <div className="onboarding-tags__item__inner__content-count">
                           {tag.taggings_count === 1
-                            ? '1 post'
-                            : `${tag.taggings_count} posts`}
+                            ? '1 допис'
+                            : `${tag.taggings_count} дописів`}
                         </div>
                       </div>
                       <input
@@ -266,11 +265,10 @@ export class FollowTags extends Component {
               </form>
               <div class="flex flex-col items-start">
                 <p class="crayons-subtitle-3 fw-medium">
-                  Get a Periodic Digest of Top Posts
+                  Отримуйте періодичний дайджест найпопулярніших публікацій
                 </p>
                 <p class="fs-s fw-normal lh-base color-secondary">
-                  We'll email you with a curated selection of top posts based on
-                  the tags you follow.
+Ми надсилатимемо вам електронною поштою добірку найкращих публікацій на основі тегів, за якими ви стежите.
                 </p>
               </div>
             </div>

@@ -162,12 +162,12 @@ export class FollowUsers extends Component {
 
     if (selectedFollows.length !== follows.length) {
       if (follows.length === 1) {
-        followText = `Select ${follows.length}`;
+        followText = `Вибрати ${follows.length}`;
       } else {
-        followText = `Select all ${follows.length}`;
+        followText = `Вибрати усі ${follows.length}`;
       }
     } else {
-      followText = 'Deselect all';
+      followText = 'Скасувати вибір усіх';
     }
 
     return (
@@ -200,10 +200,10 @@ export class FollowUsers extends Component {
           <div className="onboarding-content toggle-bottom">
             <header className="onboarding-content-header">
               <h1 id="title" className="title">
-                Suggested follows
+                Рекомендовані підписки
               </h1>
               <h2 id="subtitle" className="subtitle">
-                Kickstart your community
+                Підпишіться на цікавих людей
               </h2>
               <div className="onboarding-selection-status">
                 {this.renderFollowCount()}
@@ -257,7 +257,7 @@ export class FollowUsers extends Component {
                         onClick={() => this.handleClick(follow)}
                         data-testid="onboarding-user-following-status"
                       />
-                      {selected ? 'Following' : 'Follow'}
+                      {selected ? 'Підписані' : 'Підписатися'}
                     </label>
                   </div>
                 );
