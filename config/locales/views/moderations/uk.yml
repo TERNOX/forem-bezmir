@@ -75,8 +75,8 @@ uk:
           subtitle: Дії модератора щодо %{user}
           aria_label: Відкрити адмінські дії
           icon: Корона
-        flag_user: Позначити %{username}
-        unflag_user: Зняти позначку з %{username}
+        flag_user: Шедоубан %{username}
+        unflag_user: Зняти шедоубан з %{username}
         how: Як це працює?
         hidden:
           subtitle: Приховані коментарі
