@@ -5,7 +5,7 @@ export const TodaysPodcasts = ({ children }) => (
   <div className="crayons-story">
     <div className="crayons-story__body">
       <h3 className="crayons-story__headline">
-        <a href="/pod">Today&apos;s Podcasts</a>
+        <a href="/pod">Свіжі подкасти</a>
       </h3>
       {children}
     </div>
