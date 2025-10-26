@@ -7,9 +7,26 @@ class YoutubeParser
   end
 
   def call
-    return nil if url.blank? || !youtube_url?
+    return if url.blank?
 
-    youtube_embed_url
+    id = video_id
+    return unless id
+
+    youtube_embed_url(id)
+  end
+
+  def video_id
+    return @video_id if defined?(@video_id)
+
+    youtube_url?
+    @video_id
+  end
+
+  def thumbnail_url
+    id = video_id
+    return unless id
+
+    "https://img.youtube.com/vi/#{id}/hqdefault.jpg"
   end
 
   private
@@ -17,18 +34,20 @@ class YoutubeParser
   attr_reader :url
 
   def youtube_url?
+    return @youtube_url if defined?(@youtube_url)
+
     uri = parse_uri
-    return false unless uri&.host
+    return @youtube_url = false unless uri&.host
 
     host = uri.host.downcase.sub(/\Awww\./, "")
-    return false unless host.match?(YOUTUBE_HOST_REGEX)
+    return @youtube_url = false unless host.match?(YOUTUBE_HOST_REGEX)
 
-    extract_video_id.present?
+    @video_id = extract_video_id
+    @youtube_url = @video_id.present?
   end
 
-  def youtube_embed_url
-    video_id = extract_video_id
-    "https://www.youtube.com/embed/#{video_id}"
+  def youtube_embed_url(id)
+    "https://www.youtube.com/embed/#{id}"
   end
 
   def extract_video_id

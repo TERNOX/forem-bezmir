@@ -1331,6 +1331,74 @@ RSpec.describe Article do
     end
   end
 
+  describe "#assign_youtube_thumbnail_as_cover_image" do
+    let(:thumbnail_url) { "https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg" }
+
+    context "when markdown includes a YouTube URL" do
+      let(:article) do
+        build(:article,
+              user: user,
+              with_main_image: false,
+              body_markdown: "Check this out https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+      end
+
+      it "sets the main image to the video thumbnail" do
+        article.valid?
+
+        expect(article.main_image).to eq(thumbnail_url)
+        expect(article.video_thumbnail_url).to eq(thumbnail_url)
+      end
+    end
+
+    context "when markdown uses the youtube liquid tag" do
+      let(:article) do
+        build(:article,
+              user: user,
+              with_main_image: false,
+              body_markdown: "Some content\n\n{% youtube dQw4w9WgXcQ %}")
+      end
+
+      it "derives the thumbnail from the tag" do
+        article.valid?
+
+        expect(article.main_image).to eq(thumbnail_url)
+      end
+    end
+
+    context "when video_source_url is a YouTube link" do
+      let(:article) do
+        build(:article,
+              user: user,
+              with_main_image: false,
+              body_markdown: "YouTube source",
+              video_source_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+      end
+
+      it "prefers the YouTube source URL" do
+        article.valid?
+
+        expect(article.main_image).to eq(thumbnail_url)
+      end
+    end
+
+    context "when a cover image already exists" do
+      let(:existing_image) { "https://example.com/existing.png" }
+      let(:article) do
+        build(:article,
+              user: user,
+              with_main_image: false,
+              main_image: existing_image,
+              body_markdown: "https://youtu.be/dQw4w9WgXcQ")
+      end
+
+      it "does not override the existing cover image" do
+        article.valid?
+
+        expect(article.main_image).to eq(existing_image)
+      end
+    end
+  end
+
   describe "#main_image_from_frontmatter" do
     let(:article) { create(:article, user: user, main_image_from_frontmatter: false) }
 
