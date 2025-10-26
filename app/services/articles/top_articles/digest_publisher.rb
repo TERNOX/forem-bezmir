@@ -112,16 +112,18 @@ module Articles
         template = title_template.to_s
         return template if template.blank?
 
-        replacements = {
-          "period_start" => I18n.l(period_start.to_date, format: :long),
-          "period_end" => I18n.l(display_period_end, format: :long),
-          "count" => preview_articles.count,
-          "frequency" => frequency,
-          "generated_on" => I18n.l(reference_time.to_date, format: :long),
-        }
+        I18n.with_locale(digest_locale) do
+          replacements = {
+            "period_start" => I18n.l(period_start.to_date, format: :long),
+            "period_end" => I18n.l(display_period_end, format: :long),
+            "count" => preview_articles.count,
+            "frequency" => frequency,
+            "generated_on" => I18n.l(reference_time.to_date, format: :long),
+          }
 
-        replacements.reduce(template) do |result, (key, value)|
-          result.gsub("{{#{key}}}", value.to_s)
+          replacements.reduce(template) do |result, (key, value)|
+            result.gsub("{{#{key}}}", value.to_s)
+          end
         end
       end
 
@@ -239,6 +241,10 @@ module Articles
 
       def display_period_end
         (period_end - 1.second).to_date
+      end
+
+      def digest_locale
+        Settings::General.default_content_language.presence&.to_sym || I18n.default_locale
       end
 
       def period_range
