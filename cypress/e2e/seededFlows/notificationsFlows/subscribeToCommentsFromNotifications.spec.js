@@ -23,7 +23,7 @@ describe('Subscribe to Comments from notifications', () => {
     );
     cy.wait('@subscribePost');
 
-    cy.findByRole('button', { name: 'Subscribed to comments' }).as(
+    cy.findByRole('button', { name: 'Ви підписані на коментарі' }).as(
       'subscribedButton',
     );
     cy.get('@subscribedButton').contains('Subscribed to comments');
@@ -43,7 +43,7 @@ describe('Subscribe to Comments from notifications', () => {
     // Wait for all the GET requests with path containing /api/customer/ to complete
     cy.wait('@unsubscribePost');
 
-    cy.findByRole('button', { name: 'Subscribe to comments' }).as(
+    cy.findByRole('button', { name: 'Підписатися на коментарі' }).as(
       'noLongerSubscribedButton',
     );
     cy.get('@noLongerSubscribedButton').should(
