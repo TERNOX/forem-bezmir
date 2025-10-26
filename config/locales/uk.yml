@@ -170,7 +170,7 @@ uk:
       x_days:
         one: "%{count} день тому"
         few: "%{count} дні тому"
-        many: "%{count} днів тому"
+        many: "%{count} дней тому"
         other: "%{count} днів тому"
       x_months:
         one: "%{count} місяць тому"

@@ -11,7 +11,7 @@ describe('Subscribe to Comments from notifications', () => {
   it('Subscribes and unsubscribes to comments from notification', () => {
     cy.findByRole('heading', { name: 'Notifications' });
 
-    cy.findByRole('button', { name: 'Subscribe to comments' }).as(
+    cy.findByRole('button', { name: 'Підписатися на коментарі' }).as(
       'subscribeButton',
     );
     cy.get('@subscribeButton').should('have.attr', 'aria-pressed', 'false');
@@ -26,7 +26,7 @@ describe('Subscribe to Comments from notifications', () => {
     cy.findByRole('button', { name: 'Ви підписані на коментарі' }).as(
       'subscribedButton',
     );
-    cy.get('@subscribedButton').contains('Subscribed to comments');
+    cy.get('@subscribedButton').contains('Підписатися на коментарі');
     cy.get('@subscribedButton').should('have.attr', 'aria-pressed', 'true');
     cy.get('@subscribedButton').should(
       'have.attr',

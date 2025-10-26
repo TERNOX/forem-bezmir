@@ -20,7 +20,7 @@ export function updateSubscribeButtonText(
   }
 
   const pressed = subscriptionIsActive;
-  const verb = subscriptionIsActive ? 'Subscribed' : 'Subscribe';
+  const verb = subscriptionIsActive ? 'Підписані' : 'Підписатися';
 
   // comment_id should only be present if there's a subscription, so a button
   // that initially renders as 'Subscribed-to-thread' can be a toggle until refreshed
@@ -33,15 +33,15 @@ export function updateSubscribeButtonText(
 
   switch (subscription_config) {
     case 'top_level_comments':
-      label = `${verb} to top-level comments`;
+      label = `${verb} на найкращі коментарі`;
       mobileLabel = `Top-level ${noun}`;
       break;
     case 'only_author_comments':
-      label = `${verb} to author comments`;
+      label = `${verb} на коментарі автора`;
       mobileLabel = `Author ${noun}`;
       break;
     default:
-      label = `${verb} to ${noun}`;
+      label = `${verb} на  ${noun}`;
       mobileLabel = `${noun}`.charAt(0).toUpperCase() + noun.slice(1);
   }
 

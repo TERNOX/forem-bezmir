@@ -6,7 +6,7 @@ uk:
       description: "50 користувачів із найвищою репутацією на сайті."
       month_description: "50 користувачів, що заробили найбільше репутації на сайті за %{month}."
       reputation_label: "Репутація"
-      reputation_label_month: "Репутація за %{month}"
+      reputation_label_month: "За %{month}"
       tabs:
         aria: "Періоди рейтингу"
         all_time: "За весь час"
