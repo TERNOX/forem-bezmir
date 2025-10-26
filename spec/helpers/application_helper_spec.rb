@@ -349,6 +349,12 @@ RSpec.describe ApplicationHelper do
     it "returns the pluralized community_member_label" do
       expect(community_members_label).to eq("hobbyists")
     end
+
+    it "does not pluralize non-ASCII labels" do
+      allow(Settings::Community).to receive(:member_label).and_return("людей")
+
+      expect(community_members_label).to eq("людей")
+    end
   end
 
   describe "#cloudinary", cloudinary: true do
