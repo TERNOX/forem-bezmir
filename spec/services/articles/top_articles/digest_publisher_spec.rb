@@ -107,6 +107,27 @@ RSpec.describe Articles::TopArticles::DigestPublisher, type: :service do
         expect(Settings::General.top_articles_digest_last_article_id).to eq(123)
       end
     end
+
+    it "localizes the title using the default content language" do
+      travel_to(reference_time) do
+        create_top_article_with_reactions(reaction_count: 5)
+
+        Settings::General.set_top_articles_digest_title_template("Digest for {{generated_on}}")
+        Settings::General.set_default_content_language("uk")
+
+        I18n.with_locale(:en) do
+          described_class.new(reference_time: reference_time).call
+        end
+
+        digest_article = Article.order(:created_at).last
+
+        expected_title = I18n.with_locale(:uk) do
+          "Digest for #{I18n.l(reference_time.to_date, format: :long)}"
+        end
+
+        expect(digest_article.title).to eq(expected_title)
+      end
+    end
   end
 
   describe "#publication_errors" do
