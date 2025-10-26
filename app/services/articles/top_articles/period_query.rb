@@ -40,6 +40,7 @@ module Articles
           .where(category: positive_public_categories)
           .where(created_at: start_time...end_time)
           .where(articles: { published: true })
+          .where(articles: { published_at: start_time...end_time })
           .where(Arel.sql("#{article_score_expression} >= 0"))
 
         if (predicate = organization_filter_predicate)
