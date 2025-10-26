@@ -29,7 +29,7 @@ RSpec.describe BillboardEventRollup, type: :service do
     end.not_to raise_error
 
     expect(BillboardEvent.connection).to have_received(:execute)
-      .with("SET LOCAL statement_timeout = '#{BillboardEventRollup::STATEMENT_TIMEOUT}s'").twice
+      .with("SET LOCAL statement_timeout = '#{BillboardEventRollup::STATEMENT_TIMEOUT_MS}ms'").twice
     expect(BillboardEvent.connection).to have_received(:execute).with("RESET statement_timeout").thrice
   end
 
