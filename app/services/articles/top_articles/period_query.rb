@@ -21,8 +21,8 @@ module Articles
         return [] unless limit.positive?
 
         reaction_scope
-          .group("reactions.reactable_id")
-          .order(Arel.sql("COUNT(*) DESC, reactions.reactable_id ASC"))
+          .group("reactions.reactable_id, #{article_score_expression}")
+          .order(Arel.sql("#{article_score_expression} DESC, COUNT(*) DESC, reactions.reactable_id ASC"))
           .limit(limit)
           .pluck("reactions.reactable_id")
       end
@@ -40,6 +40,7 @@ module Articles
           .where(category: positive_public_categories)
           .where(created_at: start_time...end_time)
           .where(articles: { published: true })
+          .where(Arel.sql("#{article_score_expression} >= 0"))
 
         if (predicate = organization_filter_predicate)
           scope = scope.where(predicate)
@@ -58,6 +59,10 @@ module Articles
 
         article_table = Article.arel_table
         article_table[:organization_id].eq(nil).or(article_table[:organization_id].not_in(ids))
+      end
+
+      def article_score_expression
+        "COALESCE(articles.score, 0)"
       end
 
       def excluded_organization_ids

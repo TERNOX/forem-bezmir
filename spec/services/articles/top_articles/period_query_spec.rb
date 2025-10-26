@@ -9,7 +9,23 @@ RSpec.describe Articles::TopArticles::PeriodQuery, type: :service do
       allow(Settings::General).to receive(:top_articles_digest_excluded_organization_ids).and_return([])
     end
 
-    it "returns article ids ordered by reaction count" do
+    it "prioritizes articles with higher score before reaction count" do
+      articles = create_list(:article, 3)
+
+      create_list(:reaction, 5, reactable: articles[0], category: "like", created_at: start_time + 2.days)
+      create_list(:reaction, 5, reactable: articles[1], category: "like", created_at: start_time + 1.day)
+      create_list(:reaction, 5, reactable: articles[2], category: "like", created_at: start_time + 3.days)
+
+      articles[1].update!(score: 30)
+      articles[0].update!(score: 20)
+      articles[2].update!(score: 10)
+
+      result = described_class.call(start_time: start_time, end_time: end_time, limit: 3)
+
+      expect(result).to eq([articles[1].id, articles[0].id, articles[2].id])
+    end
+
+    it "falls back to reaction count ordering when scores match" do
       articles = create_list(:article, 3)
 
       create_list(:reaction, 5, reactable: articles[0], category: "like", created_at: start_time + 2.days)
@@ -76,6 +92,18 @@ RSpec.describe Articles::TopArticles::PeriodQuery, type: :service do
 
       expect(result.length).to eq(2)
       expect(result).to eq([articles[3].id, articles[2].id])
+    end
+
+    it "excludes articles with a negative score" do
+      positive_article = create(:article, score: 5)
+      negative_article = create(:article, score: -1)
+
+      create(:reaction, reactable: positive_article, category: "like", created_at: start_time + 1.day)
+      create(:reaction, reactable: negative_article, category: "like", created_at: start_time + 1.day)
+
+      result = described_class.call(start_time: start_time, end_time: end_time, limit: 5)
+
+      expect(result).to eq([positive_article.id])
     end
   end
 end
