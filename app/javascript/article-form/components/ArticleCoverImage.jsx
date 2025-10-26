@@ -49,8 +49,7 @@ const StandardImageUpload = ({
           data-max-file-size-mb="25"
         />
         <span data-testid="tooltip" className="crayons-tooltip__content" style={{minWidth:'190px'}}>
-         {coverImageCrop === 'crop' ? `Бажано мати зображення 16:9 ` : 'Мінімум 1000px ширина '}
-         for best results. 
+         {coverImageCrop === 'crop' ? `Бажано мати зображення 16:9 ` : 'Бажано щоб у картинки була ширина більше 1000px '}
         </span>
       </label>
     </Fragment>
