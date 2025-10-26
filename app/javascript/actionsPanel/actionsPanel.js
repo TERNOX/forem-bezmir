@@ -99,21 +99,21 @@ export function addReactionButtonListeners() {
         let message;
         /* eslint-disable no-restricted-globals */
         if (outcome.result === 'create' && outcome.category === 'thumbsup') {
-          message = 'This post will be more visible.';
+          message = 'Цей допис будуть бачити частіше.';
         } else if (
           outcome.result === 'create' &&
           outcome.category === 'thumbsdown'
         ) {
-          message = 'This post will be less visible.';
+          message = 'Цей допис будуть бачити менше.';
         } else if (
           outcome.result === 'create' &&
           outcome.category === 'vomit'
         ) {
-          message = "You've flagged this post as abusive or spam.";
+          message = "Ви позначили цей допис як спам або шкідливий.";
         } else if (outcome.result === 'destroy') {
-          message = 'Your quality rating was removed.';
+          message = 'Вашу оцінку було видалено.';
         } else if (outcome.error) {
-          message = `Error: ${outcome.error}`;
+          message = `Помилка: ${outcome.error}`;
           rollbackReactionButtonsState();
         }
         top.addSnackbarItem({
