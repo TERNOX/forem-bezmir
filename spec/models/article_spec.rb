@@ -2771,12 +2771,12 @@ RSpec.describe Article do
     let(:prior_domain) { "https://old.cdn.com" }
     let(:new_domain) { "https://new.cdn.com" }
 
-    before do
-      allow(ApplicationConfig).to receive(:[]).with("PRIOR_CLOUDFLARE_IMAGES_DOMAIN").and_return(prior_domain)
-      allow(ApplicationConfig).to receive(:[]).with("CLOUDFLARE_IMAGES_DOMAIN").and_return(new_domain)
-    end
-
     context "when the prior domain and new domain are both present" do
+      before do
+        allow(ApplicationConfig).to receive(:[]).with("PRIOR_CLOUDFLARE_IMAGES_DOMAIN").and_return(prior_domain)
+        allow(ApplicationConfig).to receive(:[]).with("CLOUDFLARE_IMAGES_DOMAIN").and_return(new_domain)
+      end
+
       it "replaces instances of the prior domain with the new domain" do
         article.processed_html = "Here is an image <img src='#{prior_domain}/image1.jpg'> and another <img src='#{prior_domain}/image2.jpg'>."
         expect(article.processed_html_final).to eq("Here is an image <img src='#{new_domain}/image1.jpg'> and another <img src='#{new_domain}/image2.jpg'>.")
@@ -2797,6 +2797,31 @@ RSpec.describe Article do
       it "returns the original processed_html unchanged" do
         article.processed_html = "Content with the old domain #{prior_domain}."
         expect(article.processed_html_final).to eq("Content with the old domain #{prior_domain}.")
+      end
+    end
+
+    context "when the article uses a YouTube cover embed" do
+      before do
+        allow(ApplicationConfig).to receive(:[]).with("PRIOR_CLOUDFLARE_IMAGES_DOMAIN").and_return(nil)
+        allow(ApplicationConfig).to receive(:[]).with("CLOUDFLARE_IMAGES_DOMAIN").and_return(nil)
+        article.video = "https://www.youtube.com/embed/dQw4w9WgXcQ"
+        article.body_markdown = "https://youtu.be/dQw4w9WgXcQ"
+      end
+
+      it "removes the first matching iframe from the processed_html" do
+        article.processed_html = "<p>Intro</p><p><iframe src=\"https://www.youtube.com/embed/dQw4w9WgXcQ\" allowfullscreen></iframe></p><p>Outro</p>"
+
+        expect(article.processed_html_final).to eq("<p>Intro</p><p>Outro</p>")
+      end
+
+      it "handles embed URLs that include additional query parameters" do
+        article.video = "https://www.youtube.com/embed/dQw4w9WgXcQ?start=60"
+        article.processed_html = "<div class=\"embed\"><iframe src=\"https://www.youtube.com/embed/dQw4w9WgXcQ?start=60\" allowfullscreen></iframe></div><p>Content</p>"
+
+        result = article.processed_html_final
+
+        expect(result).not_to include("youtube.com/embed/dQw4w9WgXcQ")
+        expect(result).to include("<p>Content</p>")
       end
     end
   end

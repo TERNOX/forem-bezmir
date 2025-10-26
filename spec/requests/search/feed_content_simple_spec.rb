@@ -32,6 +32,10 @@ RSpec.describe "Search::FeedContent (Simple)" do
       it "includes processed_html in the ATTRIBUTES list" do
         expect(Homepage::ArticlesQuery::ATTRIBUTES).to include(:processed_html)
       end
+
+      it "includes video in the ATTRIBUTES list" do
+        expect(Homepage::ArticlesQuery::ATTRIBUTES).to include(:video)
+      end
     end
 
     context "when testing the methods exist on Article model" do

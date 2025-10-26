@@ -577,15 +577,17 @@ class Article < ApplicationRecord
   end
 
   def processed_html_final
-    # This is a final non-database-driven step to adjust processed html
-    # It is sort of a hack to avoid having to reprocess all articles
-    # It is currently only for this one cloudflare domain change
-    # It is duplicated across article, bullboard and comment where it is most needed
-    # In the future this could be made more customizable. For now it's just this one thing.
-    return processed_html if ApplicationConfig["PRIOR_CLOUDFLARE_IMAGES_DOMAIN"].blank? || ApplicationConfig["CLOUDFLARE_IMAGES_DOMAIN"].blank?
+    return processed_html if processed_html.blank?
 
-    processed_html.gsub(ApplicationConfig["PRIOR_CLOUDFLARE_IMAGES_DOMAIN"],
-                        ApplicationConfig["CLOUDFLARE_IMAGES_DOMAIN"])
+    html = processed_html.dup
+    html = remove_youtube_cover_embed(html)
+
+    prior_domain = ApplicationConfig["PRIOR_CLOUDFLARE_IMAGES_DOMAIN"]
+    new_domain = ApplicationConfig["CLOUDFLARE_IMAGES_DOMAIN"]
+
+    return html if prior_domain.blank? || new_domain.blank?
+
+    html.gsub(prior_domain, new_domain)
   end
 
   def scheduled?
@@ -1555,6 +1557,38 @@ class Article < ApplicationRecord
     elsif (url_match = body_markdown.match(YOUTUBE_URL_ID_REGEX))
       url_match[1]
     end
+  end
+
+  def remove_youtube_cover_embed(html)
+    return html unless video.present? && video.include?("youtube.com/embed/")
+
+    embed_candidates = [video.to_s, video.to_s.split("?").first].compact.uniq
+    if (video_id = youtube_video_id_from_body_markdown)
+      embed_candidates << "https://www.youtube.com/embed/#{video_id}"
+    end
+
+    embed_candidates.each do |candidate|
+      stripped_html = strip_first_youtube_iframe(html, candidate)
+      return stripped_html if stripped_html != html
+    end
+
+    html
+  end
+
+  def strip_first_youtube_iframe(html, src_prefix)
+    src_match = "src=[\"']#{Regexp.escape(src_prefix)}[^\"']*[\"']"
+    patterns = [
+      Regexp.new("<figure[^>]*>\\s*<iframe[^>]*#{src_match}[^>]*></iframe>\\s*</figure>\\s*", Regexp::IGNORECASE | Regexp::MULTILINE),
+      Regexp.new("<div[^>]*>\\s*<iframe[^>]*#{src_match}[^>]*></iframe>\\s*</div>\\s*", Regexp::IGNORECASE | Regexp::MULTILINE),
+      Regexp.new("<p[^>]*>\\s*<iframe[^>]*#{src_match}[^>]*></iframe>\\s*</p>\\s*", Regexp::IGNORECASE | Regexp::MULTILINE),
+      Regexp.new("<iframe[^>]*#{src_match}[^>]*></iframe>\\s*", Regexp::IGNORECASE | Regexp::MULTILINE)
+    ]
+
+    patterns.each do |pattern|
+      return html.sub(pattern, "") if html.match?(pattern)
+    end
+
+    html
   end
 
   def should_add_urls_from_title?

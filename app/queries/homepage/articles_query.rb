@@ -20,6 +20,7 @@ module Homepage
       type_of
       user_id
       video_duration_in_seconds
+      video
       video_thumbnail_url
     ].freeze
     DEFAULT_PER_PAGE = 60
