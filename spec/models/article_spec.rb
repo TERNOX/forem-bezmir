@@ -1399,6 +1399,76 @@ RSpec.describe Article do
     end
   end
 
+  describe "#assign_youtube_embed_from_content" do
+    let(:embed_url) { "https://www.youtube.com/embed/dQw4w9WgXcQ" }
+    let(:thumbnail_url) { "https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg" }
+
+    context "when the body contains a YouTube URL" do
+      let(:article) do
+        build(:article,
+              user: user,
+              with_main_image: false,
+              body_markdown: "Some intro https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+      end
+
+      it "sets the video field to the embed URL" do
+        article.valid?
+
+        expect(article.video).to eq(embed_url)
+        expect(article.video_thumbnail_url).to eq(thumbnail_url)
+        expect(article.social_image).to eq(thumbnail_url)
+      end
+    end
+
+    context "when the body contains a YouTube liquid tag" do
+      let(:article) do
+        build(:article,
+              user: user,
+              with_main_image: false,
+              body_markdown: "Content\n\n{% youtube dQw4w9WgXcQ %}")
+      end
+
+      it "derives the embed URL from the tag" do
+        article.valid?
+
+        expect(article.video).to eq(embed_url)
+      end
+    end
+
+    context "when the article already has a cover image" do
+      let(:existing_image) { "https://example.com/cover.png" }
+      let(:article) do
+        build(:article,
+              user: user,
+              main_image: existing_image,
+              body_markdown: "https://youtu.be/dQw4w9WgXcQ")
+      end
+
+      it "does not override the video field" do
+        article.valid?
+
+        expect(article.video).not_to eq(embed_url)
+      end
+    end
+
+    context "when the article already has a video" do
+      let(:existing_video) { "https://player.example.com/video" }
+      let(:article) do
+        build(:article,
+              user: user,
+              video: existing_video,
+              with_main_image: false,
+              body_markdown: "https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+      end
+
+      it "keeps the existing video" do
+        article.valid?
+
+        expect(article.video).to eq(existing_video)
+      end
+    end
+  end
+
   describe "#main_image_from_frontmatter" do
     let(:article) { create(:article, user: user, main_image_from_frontmatter: false) }
 

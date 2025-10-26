@@ -288,6 +288,7 @@ class Article < ApplicationRecord
   before_validation :remove_prohibited_unicode_characters
   before_validation :remove_invalid_published_at
   before_validation :get_youtube_embed_url
+  before_validation :assign_youtube_embed_from_content
   before_validation :assign_youtube_thumbnail_as_cover_image
   before_validation :set_default_subforem_id
   before_save :set_cached_entities
@@ -1011,6 +1012,22 @@ class Article < ApplicationRecord
     end
   end
 
+  def assign_youtube_embed_from_content
+    return if video.present?
+    return if main_image.present?
+
+    embed_url = youtube_embed_from_content
+    return unless embed_url
+
+    self.video = embed_url
+
+    thumbnail = youtube_thumbnail_from_content
+    return unless thumbnail
+
+    self.video_thumbnail_url ||= thumbnail
+    self.social_image ||= thumbnail
+  end
+
   def assign_youtube_thumbnail_as_cover_image
     return if main_image.present?
 
@@ -1516,6 +1533,18 @@ class Article < ApplicationRecord
     return unless video_id
 
     "https://img.youtube.com/vi/#{video_id}/hqdefault.jpg"
+  end
+
+  def youtube_embed_from_content
+    if video_source_url.present?
+      embed_url = YoutubeParser.new(video_source_url).call
+      return embed_url if embed_url.present?
+    end
+
+    video_id = youtube_video_id_from_body_markdown
+    return unless video_id
+
+    YoutubeParser.new("https://youtu.be/#{video_id}").call
   end
 
   def youtube_video_id_from_body_markdown
