@@ -60,6 +60,14 @@ RSpec.describe "/admin/customization/config" do
           }
           expect(Settings::General.video_encoder_key).to eq("123abc")
         end
+
+        it "updates enable_video_upload" do
+          expect do
+            post admin_settings_general_settings_path, params: {
+              settings_general: { enable_video_upload: true }
+            }
+          end.to change(Settings::General, :enable_video_upload).from(false).to(true)
+        end
       end
 
       describe "Authentication" do

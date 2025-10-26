@@ -23,6 +23,7 @@ export const Options = ({
     allSeries = [],
     canonicalUrl = '',
     series = '',
+    videoSourceUrl = '',
   },
   schedulingEnabled,
   onSaveDraft,
@@ -172,6 +173,23 @@ export const Options = ({
         </div>
         {publishedAtField}
         <div className="crayons-field mb-6">
+          <label htmlFor="videoSourceUrl" className="crayons-field__label">
+            YouTube video URL
+          </label>
+          <p className="crayons-field__description">
+            Paste a full https://www.youtube.com/watch?v= link to embed the video player at the top of your post.
+          </p>
+          <input
+            type="text"
+            value={videoSourceUrl}
+            className="crayons-textfield"
+            placeholder="https://www.youtube.com/watch?v=..."
+            name="videoSourceUrl"
+            onInput={onConfigChange}
+            id="videoSourceUrl"
+          />
+        </div>
+        <div className="crayons-field mb-6">
           <label htmlFor="series" className="crayons-field__label">
             Серія
           </label>
@@ -215,6 +233,7 @@ Options.propTypes = {
     allSeries: PropTypes.array.isRequired,
     canonicalUrl: PropTypes.string.isRequired,
     series: PropTypes.string.isRequired,
+    videoSourceUrl: PropTypes.string.isRequired,
   }).isRequired,
   schedulingEnabled: PropTypes.bool.isRequired,
   onSaveDraft: PropTypes.func.isRequired,
