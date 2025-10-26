@@ -83,9 +83,11 @@ function updateCountSummary(summaryElement, visibleCount, labels) {
 function initializeProjectsPage() {
   const grid = document.querySelector('[data-projects-grid]');
 
-  if (!grid) {
+  if (!grid || grid.dataset.projectsInitialized === 'true') {
     return;
   }
+
+  grid.dataset.projectsInitialized = 'true';
 
   const searchInput = document.querySelector('[data-projects-search]');
   const sortSelect = document.querySelector('[data-projects-sort]');
@@ -171,4 +173,12 @@ function initializeProjectsPage() {
   applyFilters();
 }
 
-document.addEventListener('DOMContentLoaded', initializeProjectsPage);
+const initializeEvents = ['DOMContentLoaded', 'turbo:load'];
+
+initializeEvents.forEach((eventName) => {
+  document.addEventListener(eventName, initializeProjectsPage);
+});
+
+if (document.readyState !== 'loading') {
+  initializeProjectsPage();
+}
