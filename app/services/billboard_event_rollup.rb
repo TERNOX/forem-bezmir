@@ -1,7 +1,7 @@
 class BillboardEventRollup
   ATTRIBUTES_PRESERVED = %i[user_id display_ad_id category context_type created_at].freeze
   ATTRIBUTES_DESTROYED = %i[id counts_for updated_at article_id geolocation].freeze
-  STATEMENT_TIMEOUT = ENV.fetch("STATEMENT_TIMEOUT_BULK_DELETE", 10_000).to_i.seconds / 1_000.to_f
+  STATEMENT_TIMEOUT_MS = ENV.fetch("STATEMENT_TIMEOUT_BULK_DELETE", 10_000).to_i
 
   class EventAggregator
     Compact = Struct.new(:events, :user_id, :display_ad_id, :category, :context_type) do
@@ -65,7 +65,7 @@ class BillboardEventRollup
   def rollup(date, batch_size: 1000)
     created = []
     # Set statement_timeout for the initial query and then reset it
-    relation.connection.execute("SET statement_timeout = '#{STATEMENT_TIMEOUT}s'")
+    relation.connection.execute("SET statement_timeout = '#{STATEMENT_TIMEOUT_MS}ms'")
     display_ad_ids = relation.where(created_at: date.all_day).distinct.pluck(:display_ad_id)
     relation.connection.execute("RESET statement_timeout")
   
@@ -74,7 +74,7 @@ class BillboardEventRollup
   
       # Each billboard is processed in its own transaction
       relation.transaction(requires_new: true) do
-        relation.connection.execute("SET LOCAL statement_timeout = '#{STATEMENT_TIMEOUT}s'")
+        relation.connection.execute("SET LOCAL statement_timeout = '#{STATEMENT_TIMEOUT_MS}ms'")
   
         relation.where(display_ad_id: display_ad_id, created_at: date.all_day).in_batches(of: batch_size) do |batch|
           batch.each do |event|
@@ -99,7 +99,7 @@ class BillboardEventRollup
     result = nil
 
     relation.transaction do
-      relation.connection.execute("SET LOCAL statement_timeout = '#{STATEMENT_TIMEOUT}s'")
+      relation.connection.execute("SET LOCAL statement_timeout = '#{STATEMENT_TIMEOUT_MS}ms'")
 
       result = relation.create!(compacted.to_h)
 
