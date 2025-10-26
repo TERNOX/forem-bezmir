@@ -3,448 +3,319 @@ en:
   helpers:
     label:
       listing:
-        body_markdown: Body Markdown
-        expires_at: Custom Expire Date
-        location: Location
-        organization_id: Post under an organization
-        tag_list: Tags
-        title: Title
+        body_markdown: Текст (Markdown)
+        expires_at: Користувацька дата завершення
+        location: Місцезнаходження
+        organization_id: Опублікувати від імені проєкту
+        tag_list: Теги
+        title: Заголовок
       organization:
-        name: Name
-        slug: Username
-        profile_image: Profile image
-        twitter_username: Twitter username
-        github_username: GitHub username
-        url: Website url
-        tag_line: Tag line
-        summary: Summary
-        location: Location
-        email: Support email
-        company_size: Organization size
-        story: Our story
-        tech_stack: Our stack
-        cta_body_markdown: Body text
-        cta_button_text: Link text
-        cta_button_url: Link url
-        proof: Proof
+        name: Назва
+        slug: URL-назва
+        profile_image: Зображення профілю
+        twitter_username: Ім’я користувача у Twitter
+        github_username: Ім’я користувача у GitHub
+        url: URL вебсайту
+        tag_line: Дуже короткий опис (буде видно справа від кожного допису проєкту)
+        summary: Короткий опис
+        location: Місцезнаходження
+        email: Пошта підтримки
+        company_size: Розмір проєкту
+        story: Наша історія
+        tech_stack: Що ми робимо
+        cta_body_markdown: Основний текст
+        cta_button_text: Текст посилання
+        cta_button_url: URL посилання
+        proof: Підтвердження
       podcast:
-        android_url: Android url
-        description: Description
-        feed_url: Feed url
-        image: Image
-        itunes_url: Itunes url
-        main_color_hex: Main color hex
-        overcast_url: Overcast url
-        pattern_image: Pattern image
-        slug: Slug
-        soundcloud_url: Soundcloud url
-        title: Title
-        twitter_username: Twitter username
-        website_url: Website url
+        android_url: Android URL
+        description: Опис
+        feed_url: URL стрічки
+        image: Зображення
+        itunes_url: iTunes URL
+        main_color_hex: Основний колір (hex)
+        overcast_url: Overcast URL
+        pattern_image: Фоновий візерунок
+        slug: Слаг
+        soundcloud_url: SoundCloud URL
+        title: Заголовок
+        twitter_username: Юзернейм у Twitter
+        website_url: URL вебсайту
       response_template:
-        title: Title
-        content: Comment body (Markdown)
+        title: Заголовок
+        content: Текст коментаря (Markdown)
       user:
-        name: Name
-        email: Email
-        username: Username
-        profile_image: Profile image
+        name: Ім’я
+        email: Електронна пошта
+        username: Юзернейм
+        profile_image: Зображення профілю
       users_notification_setting:
-        email_newsletter: Send me weekly newsletter emails
-        email_digest_periodic: Send me a periodic digest of top posts from my tags
-        email_tag_mod_newsletter: Send me tag moderator newsletter emails
-        email_community_mod_newsletter: Send me community moderator newsletter emails
-        email_comment_notifications: Send me an email when someone replies to me in
-          a comment thread
-        email_follower_notifications: Send me an email when someone new follows me
-        email_mention_notifications: Send me an email when someone mentions me
-        email_badge_notifications: Send me an email when I receive a badge
-        email_unread_notifications: Send me occasional reminders that I have unread
-          notifications on %{community}
-        mobile_mention_notifications: Send me a push notification when someone mentions
-          me
-        mobile_comment_notifications: Send me a push notification when someone replies
-          to me in a comment thread
-        welcome_notifications: Send me occasional tips on how to enhance my %{community}
-          experience
-        email_community_broadcast: Send me community broadcast emails
-        mobile_new_follower_notifications: Send me push notifications when someone
-          new follows me
-        mobile_unread_notifications: Send me push notifications when I have unread
-          notifications on %{community}
-        mod_team_notifications: Send me moderator team notifications
-        reaction_notifications: Send notifications when someone reacts to my content,
-          such as comments or posts
-        mod_roundrobin_notifications: Send me notifications about new member activity
+        email_newsletter: Надсилати мені щотижневу розсилку
+        email_digest_periodic: Надсилати мені періодичний дайджест топпостів за моїми тегами
+        email_tag_mod_newsletter: Надсилати мені листи модератора тегів
+        email_community_mod_newsletter: Надсилати мені листи модератора спільноти
+        email_comment_notifications: Надсилати мені лист, коли хтось відповідає мені в гілці коментарів
+        email_follower_notifications: Надсилати мені лист, коли хтось новий підписується на мене
+        email_mention_notifications: Надсилати мені лист, коли хтось згадує мене
+        email_badge_notifications: Надсилати мені лист, коли я отримую значок
+        email_unread_notifications: Іноді нагадувати мені про непрочитані сповіщення у %{community}
+        mobile_mention_notifications: Надсилати push-сповіщення, коли хтось згадує мене
+        mobile_comment_notifications: Надсилати push-сповіщення, коли хтось відповідає мені в гілці коментарів
+        welcome_notifications: Іноді надсилати поради щодо покращення досвіду у %{community}
+        email_community_broadcast: Надсилати мені листи широкомовної розсилки спільноти
+        mobile_new_follower_notifications: Надсилати push-сповіщення, коли з’являється новий підписник
+        mobile_unread_notifications: Надсилати push-сповіщення про непрочитані сповіщення у %{community}
+        mod_team_notifications: Надсилати сповіщення команди модераторів
+        reaction_notifications: Надсилати сповіщення, коли хтось реагує на мій контент, зокрема коментарі чи пости
+        mod_roundrobin_notifications: Надсилати сповіщення про активність нових учасників
       users_setting:
-        feed_url: RSS Feed URL
-        email_community_broadcast: Send me community broadcast emails
-        mobile_new_follower_notifications: Send me push notifications when someone new follows me
-        mobile_unread_notifications: Send me push notifications when I have unread notifications on %{community}
-        mod_team_notifications: Send me moderator team notifications
-        reaction_notifications: Send notifications when someone reacts to my content, such as comments or posts
+        feed_url: URL RSS-стрічки
+        email_community_broadcast: Надсилати мені листи широкомовної розсилки спільноти
+        mobile_new_follower_notifications: Надсилати push-сповіщення, коли з’являється новий підписник
+        mobile_unread_notifications: Надсилати push-сповіщення про непрочитані сповіщення у %{community}
+        mod_team_notifications: Надсилати сповіщення команди модераторів
+        reaction_notifications: Надсилати сповіщення, коли хтось реагує на мій контент, зокрема коментарі чи пости
       placeholder:
         user:
-          name: John Doe
-          email: john.doe@example.com
-          username: johndoe
-          feed_url: https://yoursite.com/feed
+          name: Тарас Нечупара
+          email: taras.nechupara@example.com
+          username: tarasn
+          feed_url: https://yoursite.zp.ua/feed
         organization:
-          name: Acme Inc.
-          slug: acmeinc
-          url: https://yoursite.com
-          location: Halifax, Nova Scotia
-          email: mail@example.com
+          name: Найкращий проєкт на світі
+          slug: bestproject
+          url: https://yoursite.zp.ua/
+          location: Запоріжжя
+          email: neko99@example.com
           company_size: "..."
           story: "..."
           tech_stack: "..."
           cta_body_markdown: "..."
-          cta_button_text: Visit Acme Site
-          cta_button_url: https://example.com
+          cta_button_text: Відвідати сайт
+          cta_button_url: https://yoursite.zp.ua/feed
           proof: "..."
         response_template:
           title: "..."
       page_entries_info:
         more_pages:
-          display_entries: Showing %{entry_name} %{from}-%{to} of %{count} in total
+          display_entries: Показано %{entry_name} %{from}–%{to} із %{count} загалом
       listing_helper:
         option:
-          one: "%{count} option"
-          other: "%{count} options"
+          one: "%{count} опція"
+          other: "%{count} опції"
       video:
-        title: Title
-        description: Description
-        video_url: Video URL
-        video_source_url_key: Video source URL key
-        video_thumbnail_url: Video thumbnail URL
-        video_closed_caption_track_url: Video closed caption track URL
-        video_source_url: Video source URL
-        video_code: Video code
-        video_source: Video source
-        video_embed: Video embed
-        video_embed_html: Video embed HTML
-        video_embed_html_5: Video embed HTML5
-        video_embed_html_5_with_caption: Video embed HTML5 with caption
-        video_embed_html_5_with_caption_and_autoplay: Video embed HTML5 with caption
-          and autoplay
-        video_embed_html_5_with_autoplay: Video embed HTML5 with autoplay
-        video_embed_html_5_with_caption_and_autoplay_and_loop: Video embed HTML5 with
-          caption, autoplay and loop
-        video_embed_html_5_with_autoplay_and_loop: Video embed HTML5 with autoplay
-          and loop
-        video_embed_html_5_with_caption_and_loop: Video embed HTML5 with caption and
-          loop
-        video_embed_html_5_with_loop: Video embed HTML5 with loop
-        video_embed_html_5_with_caption_and_autoplay_and_loop_and_muted: Video embed
-          HTML5 with caption, autoplay, loop and muted
-        video_embed_html_5_with_autoplay_and_loop_and_muted: Video embed HTML5 with
-          autoplay, loop and muted
-        video_embed_html_5_with_caption_and_loop_and_muted: Video embed HTML5 with
-          caption, loop and muted
-        video_embed_html_5_with_loop_and_muted: Video embed HTML5 with loop and muted
-        video_embed_html_5_with_caption_and_autoplay_and_muted: Video embed HTML5
-          with caption, autoplay and muted
-        video_embed_html_5_with_autoplay_and_muted: Video embed HTML5 with autoplay
-          and muted
-        video_embed_html_5_with_caption_and_muted: Video embed HTML5 with caption
-          and muted
-        video_embed_html_5_with_muted: Video embed HTML5 with muted
-        video_embed_html_5_with_caption_and_autoplay_and_loop_and_muted_and_controls: Video
-          embed HTML5 with caption, autoplay, loop, muted and controls
-        video_embed_html_5_with_autoplay_and_loop_and_muted_and_controls: Video embed
-          HTML5 with autoplay, loop, muted and controls
-        video_embed_html_5_with_caption_and_loop_and_muted_and_controls: Video embed
-          HTML5 with caption, loop, muted and controls
-        video_embed_html_5_with_loop_and_muted_and_controls: Video embed HTML5 with
-          loop, muted and controls
-        video_embed_html_5_with_caption_and_autoplay_and_muted_and_controls: Video
-          embed HTML5 with caption, autoplay, muted and controls
-        video_embed_html_5_with_autoplay_and_muted_and_controls: Video embed HTML5
-          with autoplay, muted and controls
-        video_embed_html_5_with_caption_and_muted_and_controls: Video embed HTML5
-          with caption, muted and controls
-        video_embed_html_5_with_muted_and_controls: Video embed HTML5 with muted and
-          controls
-        video_embed_html_5_with_caption_and_autoplay_and_controls: Video embed HTML5
-          with caption, autoplay and controls
-        video_embed_html_5_with_autoplay_and_controls: Video embed HTML5 with autoplay
-          and controls
-        video_embed_html_5_with_caption_and_controls: Video embed HTML5 with caption
-          and controls
-        video_embed_html_5_with_controls: Video embed HTML5 with controls
-        video_embed_html_5_with_caption_and_autoplay_and_loop_and_controls: Video
-          embed HTML5 with caption, autoplay, loop and controls
-        video_embed_html_5_with_autoplay_and_loop_and_controls: Video embed HTML5
-          with autoplay, loop and controls
-        video_embed_html_5_with_caption_and_loop_and_controls: Video embed HTML5 with
-          caption, loop and controls
-        video_embed_html_5_with_loop_and_controls: Video embed HTML5 with loop and
-          controls
-        video_embed_html_5_with_caption_and_autoplay_and_loop_and_muted_and_controls_and_playsinline: Video
-          embed HTML5 with caption, autoplay, loop, muted, controls and playsinline
-        video_embed_html_5_with_autoplay_and_loop_and_muted_and_controls_and_playsinline: Video
-          embed HTML5 with autoplay, loop, muted, controls and playsinline
-        video_embed_html_5_with_caption_and_loop_and_muted_and_controls_and_playsinline: Video
-          embed HTML5 with caption, loop, muted, controls and playsinline
-        video_embed_html_5_with_loop_and_muted_and_controls_and_playsinline: Video
-          embed HTML5 with loop, muted, controls and playsinline
-        video_embed_html_5_with_caption_and_autoplay_and_muted_and_controls_and_playsinline: Video
-          embed HTML5 with caption, autoplay, muted, controls and playsinline
-        video_embed_html_5_with_autoplay_and_muted_and_controls_and_playsinline: Video
-          embed HTML5 with autoplay, muted, controls and playsinline
-        video_embed_html_5_with_caption_and_muted_and_controls_and_playsinline: Video
-          embed HTML5 with caption, muted, controls and playsinline
-        video_embed_html_5_with_muted_and_controls_and_playsinline: Video embed HTML5
-          with muted, controls and playsinline
-        video_embed_html_5_with_caption_and_autoplay_and_controls_and_playsinline: Video
-          embed HTML5 with caption, autoplay, controls and playsinline
-        video_embed_html_5_with_autoplay_and_controls_and_playsinline: Video embed
-          HTML5 with autoplay, controls and playsinline
-        video_embed_html_5_with_caption_and_controls_and_playsinline: Video embed
-          HTML5 with caption, controls and playsinline
-        video_embed_html_5_with_controls_and_playsinline: Video embed HTML5 with controls
-          and playsinline
-        video_embed_html_5_with_caption_and_autoplay_and_loop_and_controls_and_playsinline: Video
-          embed HTML5 with caption, autoplay, loop, controls and playsinline
-        video_embed_html_5_with_autoplay_and_loop_and_controls_and_playsinline: Video
-          embed HTML5 with autoplay, loop, controls and playsinline
-        video_embed_html_5_with_caption_and_loop_and_controls_and_playsinline: Video
-          embed HTML5 with caption, loop, controls and playsinline
-        video_embed_html_5_with_loop_and_controls_and_playsinline: Video embed HTML5
-          with loop, controls and playsinline
-        video_embed_html_5_with_caption_and_autoplay_and_loop_and_muted_and_playsinline: Video
-          embed HTML5 with caption, autoplay, loop, muted and playsinline
-        video_embed_html_5_with_autoplay_and_loop_and_muted_and_playsinline: Video
-          embed HTML5 with autoplay, loop, muted and playsinline
-        video_embed_html_5_with_caption_and_loop_and_muted_and_playsinline: Video
-          embed HTML5 with caption, loop, muted and playsinline
-        video_embed_html_5_with_loop_and_muted_and_playsinline: Video embed HTML5
-          with loop, muted and playsinline
-        video_embed_html_5_with_caption_and_autoplay_and_muted_and_playsinline: Video
-          embed HTML5 with caption, autoplay, muted and playsinline
-        video_embed_html_5_with_autoplay_and_muted_and_playsinline: Video embed HTML5
-          with autoplay, muted and playsinline
-        video_embed_html_5_with_caption_and_muted_and_playsinline: Video embed HTML5
-          with caption, muted and playsinline
-        video_embed_html_5_with_muted_and_playsinline: Video embed HTML5 with muted
-          and playsinline
-        video_embed_html_5_with_caption_and_autoplay_and_playsinline: Video embed
-          HTML5 with caption, autoplay and playsinline
-        video_embed_html_5_with_autoplay_and_playsinline: Video embed HTML5 with autoplay
-          and playsinline
-        video_embed_html_5_with_caption_and_playsinline: Video embed HTML5 with caption
-          and playsinline
-        video_embed_html_5_with_playsinline: Video embed HTML5 with playsinline
-        video_embed_html_5_with_caption_and_autoplay_and_loop_and_playsinline: Video
-          embed HTML5 with caption, autoplay, loop and playsinline
-        video_embed_html_5_with_autoplay_and_loop_and_playsinline: Video embed HTML5
-          with autoplay, loop and playsinline
-        video_embed_html_5_with_caption_and_loop_and_playsinline: Video embed HTML5
-          with caption, loop and playsinline
-        video_embed_html_5_with_loop_and_playsinline: Video embed HTML5 with loop
-          and playsinline
-        video_embed_html_5_with_caption_and_autoplay_and_loop_and_muted_and_controls_and_playsinline_and_poster: Video
-          embed HTML5 with caption, autoplay, loop, muted, controls, playsinline and
-          poster
-        video_embed_html_5_with_autoplay_and_loop_and_muted_and_controls_and_playsinline_and_poster: Video
-          embed HTML5 with autoplay, loop, muted, controls, playsinline and poster
-        video_embed_html_5_with_caption_and_loop_and_muted_and_controls_and_playsinline_and_poster: Video
-          embed HTML5 with caption, loop, muted, controls, playsinline and poster
-        video_embed_html_5_with_loop_and_muted_and_controls_and_playsinline_and_poster: Video
-          embed HTML5 with loop, muted, controls, playsinline and poster
-        video_embed_html_5_with_caption_and_autoplay_and_muted_and_controls_and_playsinline_and_poster: Video
-          embed HTML5 with caption, autoplay, muted, controls, playsinline and poster
-        video_embed_html_5_with_autoplay_and_muted_and_controls_and_playsinline_and_poster: Video
-          embed HTML5 with autoplay, muted, controls, playsinline and poster
-        video_embed_html_5_with_caption_and_muted_and_controls_and_playsinline_and_poster: Video
-          embed HTML5 with caption, muted, controls, playsinline and poster
-        video_embed_html_5_with_muted_and_controls_and_playsinline_and_poster: Video
-          embed HTML5 with muted, controls, playsinline and poster
-        video_embed_html_5_with_caption_and_autoplay_and_controls_and_playsinline_and_poster: Video
-          embed HTML5 with caption, autoplay, controls, playsinline and poster
-        video_embed_html_5_with_autoplay_and_controls_and_playsinline_and_poster: Video
-          embed HTML5 with autoplay, controls, playsinline and poster
-        video_embed_html_5_with_caption_and_controls_and_playsinline_and_poster: Video
-          embed HTML5 with caption, controls, playsinline and poster
-        video_embed_html_5_with_controls_and_playsinline_and_poster: Video embed HTML5
-          with controls, playsinline and poster
-        video_embed_html_5_with_caption_and_autoplay_and_loop_and_controls_and_playsinline_and_poster: Video
-          embed HTML5 with caption, autoplay, loop, controls, playsinline and poster
-        video_embed_html_5_with_autoplay_and_loop_and_controls_and_playsinline_and_poster: Video
-          embed HTML5 with autoplay, loop, controls, playsinline and poster
-        video_embed_html_5_with_caption_and_loop_and_controls_and_playsinline_and_poster: Video
-          embed HTML5 with caption, loop, controls, playsinline and poster
-        video_embed_html_5_with_loop_and_controls_and_playsinline_and_poster: Video
-          embed HTML5 with loop, controls, playsinline and poster
-        video_embed_html_5_with_caption_and_autoplay_and_loop_and_muted_and_playsinline_and_poster: Video
-          embed HTML5 with caption, autoplay, loop, muted, playsinline and poster
-        video_embed_html_5_with_autoplay_and_loop_and_muted_and_playsinline_and_poster: Video
-          embed HTML5 with autoplay, loop, muted, playsinline and poster
-        video_embed_html_5_with_caption_and_loop_and_muted_and_playsinline_and_poster: Video
-          embed HTML5 with caption, loop, muted, playsinline and poster
-        video_embed_html_5_with_loop_and_muted_and_playsinline_and_poster: Video embed
-          HTML5 with loop, muted, playsinline and poster
-        video_embed_html_5_with_caption_and_autoplay_and_muted_and_playsinline_and_poster: Video
-          embed HTML5 with caption, autoplay, muted, playsinline and poster
-        video_embed_html_5_with_autoplay_and_muted_and_playsinline_and_poster: Video
-          embed HTML5 with autoplay, muted, playsinline and poster
-        video_embed_html_5_with_caption_and_muted_and_playsinline_and_poster: Video
-          embed HTML5 with caption, muted, playsinline and poster
-        video_embed_html_5_with_muted_and_playsinline_and_poster: Video embed HTML5
-          with muted, playsinline and poster
-        video_embed_html_5_with_caption_and_autoplay_and_playsinline_and_poster: Video
-          embed HTML5 with caption, autoplay, playsinline and poster
-        video_embed_html_5_with_autoplay_and_playsinline_and_poster: Video embed HTML5
-          with autoplay, playsinline and poster
-        video_embed_html_5_with_caption_and_playsinline_and_poster: Video embed HTML5
-          with caption, playsinline and poster
-        video_embed_html_5_with_playsinline_and_poster: Video embed HTML5 with playsinline
-          and poster
-        video_embed_html_5_with_caption_and_autoplay_and_loop_and_playsinline_and_poster: Video
-          embed HTML5 with caption, autoplay, loop, playsinline and poster
-        video_embed_html_5_with_autoplay_and_loop_and_playsinline_and_poster: Video
-          embed HTML5 with autoplay, loop, playsinline and poster
-        video_embed_html_5_with_caption_and_loop_and_playsinline_and_poster: Video
-          embed HTML5 with caption, loop, playsinline and poster
-        video_embed_html_5_with_loop_and_playsinline_and_poster: Video embed HTML5
-          with loop, playsinline and poster
+        title: Заголовок
+        description: Опис
+        video_url: URL відео
+        video_source_url_key: Ключ URL джерела відео
+        video_thumbnail_url: URL мініатюри відео
+        video_closed_caption_track_url: URL доріжки субтитрів
+        video_source_url: URL джерела відео
+        video_code: Код відео
+        video_source: Джерело відео
+        video_embed: Вбудоване відео
+        video_embed_html: Вбудоване відео (HTML)
+        video_embed_html_5: Вбудоване відео (HTML5)
+        video_embed_html_5_with_caption: Вбудоване відео HTML5 із субтитрами
+        video_embed_html_5_with_caption_and_autoplay: Вбудоване відео HTML5 із субтитрами та автозапуском
+        video_embed_html_5_with_autoplay: Вбудоване відео HTML5 з автозапуском
+        video_embed_html_5_with_caption_and_autoplay_and_loop: Вбудоване відео HTML5 із субтитрами, автозапуском і зацикленням
+        video_embed_html_5_with_autoplay_and_loop: Вбудоване відео HTML5 з автозапуском і зацикленням
+        video_embed_html_5_with_caption_and_loop: Вбудоване відео HTML5 із субтитрами та зацикленням
+        video_embed_html_5_with_loop: Вбудоване відео HTML5 із зацикленням
+        video_embed_html_5_with_caption_and_autoplay_and_loop_and_muted: Вбудоване відео HTML5 із субтитрами, автозапуском, зацикленням і без звуку
+        video_embed_html_5_with_autoplay_and_loop_and_muted: Вбудоване відео HTML5 з автозапуском, зацикленням і без звуку
+        video_embed_html_5_with_caption_and_loop_and_muted: Вбудоване відео HTML5 із субтитрами, зацикленням і без звуку
+        video_embed_html_5_with_loop_and_muted: Вбудоване відео HTML5 із зацикленням і без звуку
+        video_embed_html_5_with_caption_and_autoplay_and_muted: Вбудоване відео HTML5 із субтитрами, автозапуском і без звуку
+        video_embed_html_5_with_autoplay_and_muted: Вбудоване відео HTML5 з автозапуском і без звуку
+        video_embed_html_5_with_caption_and_muted: Вбудоване відео HTML5 із субтитрами і без звуку
+        video_embed_html_5_with_muted: Вбудоване відео HTML5 без звуку
+        video_embed_html_5_with_caption_and_autoplay_and_loop_and_muted_and_controls: Вбудоване відео HTML5 із субтитрами, автозапуском, зацикленням, без звуку та з елементами керування
+        video_embed_html_5_with_autoplay_and_loop_and_muted_and_controls: Вбудоване відео HTML5 з автозапуском, зацикленням, без звуку та з елементами керування
+        video_embed_html_5_with_caption_and_loop_and_muted_and_controls: Вбудоване відео HTML5 із субтитрами, зацикленням, без звуку та з елементами керування
+        video_embed_html_5_with_loop_and_muted_and_controls: Вбудоване відео HTML5 із зацикленням, без звуку та з елементами керування
+        video_embed_html_5_with_caption_and_autoplay_and_muted_and_controls: Вбудоване відео HTML5 із субтитрами, автозапуском, без звуку та з елементами керування
+        video_embed_html_5_with_autoplay_and_muted_and_controls: Вбудоване відео HTML5 з автозапуском, без звуку та з елементами керування
+        video_embed_html_5_with_caption_and_muted_and_controls: Вбудоване відео HTML5 із субтитрами, без звуку та з елементами керування
+        video_embed_html_5_with_muted_and_controls: Вбудоване відео HTML5 без звуку та з елементами керування
+        video_embed_html_5_with_caption_and_autoplay_and_controls: Вбудоване відео HTML5 із субтитрами, автозапуском та елементами керування
+        video_embed_html_5_with_autoplay_and_controls: Вбудоване відео HTML5 з автозапуском та елементами керування
+        video_embed_html_5_with_caption_and_controls: Вбудоване відео HTML5 із субтитрами та елементами керування
+        video_embed_html_5_with_controls: Вбудоване відео HTML5 з елементами керування
+        video_embed_html_5_with_caption_and_autoplay_and_loop_and_controls: Вбудоване відео HTML5 із субтитрами, автозапуском, зацикленням та елементами керування
+        video_embed_html_5_with_autoplay_and_loop_and_controls: Вбудоване відео HTML5 з автозапуском, зацикленням та елементами керування
+        video_embed_html_5_with_caption_and_loop_and_controls: Вбудоване відео HTML5 із субтитрами, зацикленням та елементами керування
+        video_embed_html_5_with_loop_and_controls: Вбудоване відео HTML5 із зацикленням та елементами керування
+        video_embed_html_5_with_caption_and_autoplay_and_loop_and_muted_and_controls_and_playsinline: Вбудоване відео HTML5 із субтитрами, автозапуском, зацикленням, без звуку, з елементами керування та playsinline
+        video_embed_html_5_with_autoplay_and_loop_and_muted_and_controls_and_playsinline: Вбудоване відео HTML5 з автозапуском, зацикленням, без звуку, з елементами керування та playsinline
+        video_embed_html_5_with_caption_and_loop_and_muted_and_controls_and_playsinline: Вбудоване відео HTML5 із субтитрами, зацикленням, без звуку, з елементами керування та playsinline
+        video_embed_html_5_with_loop_and_muted_and_controls_and_playsinline: Вбудоване відео HTML5 із зацикленням, без звуку, з елементами керування та playsinline
+        video_embed_html_5_with_caption_and_autoplay_and_muted_and_playsinline: Вбудоване відео HTML5 із субтитрами, автозапуском, без звуку та playsinline
+        video_embed_html_5_with_autoplay_and_muted_and_playsinline: Вбудоване відео HTML5 з автозапуском, без звуку та playsinline
+        video_embed_html_5_with_caption_and_muted_and_playsinline: Вбудоване відео HTML5 із субтитрами, без звуку та playsinline
+        video_embed_html_5_with_muted_and_playsinline: Вбудоване відео HTML5 без звуку та з playsinline
+        video_embed_html_5_with_caption_and_autoplay_and_playsinline: Вбудоване відео HTML5 із субтитрами, автозапуском і playsinline
+        video_embed_html_5_with_autoplay_and_playsinline: Вбудоване відео HTML5 з автозапуском і playsinline
+        video_embed_html_5_with_caption_and_playsinline: Вбудоване відео HTML5 із субтитрами і playsinline
+        video_embed_html_5_with_playsinline: Вбудоване відео HTML5 з playsinline
+        video_embed_html_5_with_caption_and_autoplay_and_loop_and_playsinline: Вбудоване відео HTML5 із субтитрами, автозапуском, зацикленням і playsinline
+        video_embed_html_5_with_autoplay_and_loop_and_playsinline: Вбудоване відео HTML5 з автозапуском, зацикленням і playsinline
+        video_embed_html_5_with_caption_and_loop_and_playsinline: Вбудоване відео HTML5 із субтитрами, зацикленням і playsinline
+        video_embed_html_5_with_loop_and_playsinline: Вбудоване відео HTML5 із зацикленням і playsinline
+        video_embed_html_5_with_caption_and_autoplay_and_loop_and_muted_and_controls_and_playsinline_and_poster: Вбудоване відео HTML5 із субтитрами, автозапуском, зацикленням, без звуку, з елементами керування, playsinline та з постером
+        video_embed_html_5_with_autoplay_and_loop_and_muted_and_controls_and_playsinline_and_poster: Вбудоване відео HTML5 з автозапуском, зацикленням, без звуку, з елементами керування, playsinline та з постером
+        video_embed_html_5_with_caption_and_loop_and_muted_and_controls_and_playsinline_and_poster: Вбудоване відео HTML5 із субтитрами, зацикленням, без звуку, з елементами керування, playsinline та з постером
+        video_embed_html_5_with_loop_and_muted_and_controls_and_playsinline_and_poster: Вбудоване відео HTML5 із зацикленням, без звуку, з елементами керування, playsinline та з постером
+        video_embed_html_5_with_caption_and_autoplay_and_muted_and_controls_and_playsinline_and_poster: Вбудоване відео HTML5 із субтитрами, автозапуском, без звуку, з елементами керування, playsinline та з постером
+        video_embed_html_5_with_autoplay_and_muted_and_controls_and_playsinline_and_poster: Вбудоване відео HTML5 з автозапуском, без звуку, з елементами керування, playsinline та з постером
+        video_embed_html_5_with_caption_and_muted_and_controls_and_playsinline_and_poster: Вбудоване відео HTML5 із субтитрами, без звуку, з елементами керування, playsinline та з постером
+        video_embed_html_5_with_muted_and_controls_and_playsinline_and_poster: Вбудоване відео HTML5 без звуку, з елементами керування, playsinline та з постером
+        video_embed_html_5_with_caption_and_autoplay_and_controls_and_playsinline_and_poster: Вбудоване відео HTML5 із субтитрами, автозапуском, з елементами керування, playsinline та з постером
+        video_embed_html_5_with_autoplay_and_controls_and_playsinline_and_poster: Вбудоване відео HTML5 з автозапуском, з елементами керування, playsinline та з постером
+        video_embed_html_5_with_caption_and_controls_and_playsinline_and_poster: Вбудоване відео HTML5 із субтитрами, з елементами керування, playsinline та з постером
+        video_embed_html_5_with_controls_and_playsinline_and_poster: Вбудоване відео HTML5 з елементами керування, playsinline та з постером
+        video_embed_html_5_with_caption_and_autoplay_and_loop_and_controls_and_playsinline_and_poster: Вбудоване відео HTML5 із субтитрами, автозапуском, зацикленням, з елементами керування, playsinline та з постером
+        video_embed_html_5_with_autoplay_and_loop_and_controls_and_playsinline_and_poster: Вбудоване відео HTML5 з автозапуском, зацикленням, з елементами керування, playsinline та з постером
+        video_embed_html_5_with_caption_and_loop_and_controls_and_playsinline_and_poster: Вбудоване відео HTML5 із субтитрами, зацикленням, з елементами керування, playsinline та з постером
+        video_embed_html_5_with_loop_and_controls_and_playsinline_and_poster: Вбудоване відео HTML5 із зацикленням, з елементами керування, playsinline та з постером
       admin:
         user_helper:
-          today: Today
-          yesterday: Yesterday
-          org_join: Joined organization
+          today: Сьогодні
+          yesterday: Учора
+          org_join: Приєднався до проєкту
           org_overflow:
-            one: "%{count} other"
-            other: "%{count} others"
+            one: "%{count} інший"
+            other: "%{count} інших"
       application_helper:
         subtitle:
-          week: week
-          month: month
-          year: year
-          infinity: infinity
-          latest: latest
-        title_text: Title
+          week: тиждень
+          month: місяць
+          year: рік
+          infinity: весь час
+          latest: останні
+        title_text: Заголовок
         follow:
           text:
-            default: Follow
-            Organization: Follow
-            Tag: Follow
-            User: Follow
+            default: Стежити
+            Organization: Стежити
+            Tag: Стежити
+            User: Стежити
           aria_label:
-            default: 'Follow %{type}: %{name}'
-            Organization: 'Follow organization: %{name}'
-            Tag: 'Follow tag: %{name}'
-            User: 'Follow user: %{name}'
-        app_logo: App logo
-        required: required
+            default: 'Стежити за %{type}: %{name}'
+            Organization: 'Стежити за проєктом: %{name}'
+            Tag: 'Стежити за тегом: %{name}'
+            User: 'Стежити за користувачем: %{name}'
+        app_logo: Логотип застосунку
+        required: обов’язково
       articles_helper:
-        recently_created: Recently created
-        recently_published: Recently published
-        most_views: Most views
-        most_reactions: Most reactions
-        most_comments: Most comments
-        logo: Logo
+        recently_created: Нещодавно створені
+        recently_published: Нещодавно опубліковані
+        most_views: Найбільше переглядів
+        most_reactions: Найбільше реакцій
+        most_comments: Найбільше коментарів
+        logo: Логотип
       authentication_helper:
-        email_password: Email or password
-        any_of_those: any of those
-        that: that
-        reminder: Reminder
-        invite_only: Invite only
+        email_password: Електронна пошта або пароль
+        any_of_those: будь-що з наведеного
+        that: те
+        reminder: Нагадування
+        invite_only: Лише за запрошенням
       comments_helper:
         ama: AMA
-        ask_me_anything: Ask me anything
-        author: Author
+        ask_me_anything: Питайте що завгодно
+        author: Автор
         nbsp_likes_html:
-          one: "&nbsp;%{count} like"
-          other: "&nbsp;%{count} likes"
+          one: "&nbsp;%{count} вподобання"
+          other: "&nbsp;%{count} вподобань"
       feedback_messages_helper:
         offender:
-          body: Message body for offender
-          subject: Message subject for offender
+          body: Тіло повідомлення для порушника
+          subject: Тема повідомлення для порушника
         reporter:
-          body: Message body for reporter
-          subject: Message subject for reporter
+          body: Тіло повідомлення для репортера
+          subject: Тема повідомлення для репортера
         affected:
-          body: Message body for affected
-          subject: Message subject for affected
+          body: Тіло повідомлення для постраждалого
+          subject: Тема повідомлення для постраждалого
       organization_helper:
-        option: Option
+        option: Опція
       rate_limit_checker_helper:
         day:
-          one: "%{count} day"
-          other: "%{count} days"
-        general: General
+          one: "%{count} день"
+          other: "%{count} днів"
+        general: Загальне
         published:
-          title: Published title
-          description: Published description
+          title: Обмежити кількість створених постів
+          description: Скільки постів можна створити протягом будь-яких 30 секунд?
         antispam:
-          title: Antispam title
+          title: Обмежити кількість постів від нового учасника
         thing:
-          posts: posts
-          comments: comments
+          posts: пости
+          comments: коментарі
         update:
-          title: Update title
-          description: Update description
+          title: Обмежити кількість оновлень поста
+          description: Скільки оновлень можна зробити протягом будь-яких 30 секунд?
         upload:
-          title: Upload title
-          description: Upload description
+          title: Обмежити кількість завантажених зображень
+          description: Скільки зображень можна завантажити протягом будь-яких 30 секунд?
         user:
-          title: User title
-          description: User description
+          title: Обмежити кількість змін у власному акаунті
+          description: Скільки змін можна зробити в обліковому записі протягом будь-яких 30 секунд?
         follow:
-          title: Follow title
-          description: Follow description
+          title: Обмежити кількість підписок за день
+          description: На скількох людей можна підписатися за день?
         reaction:
-          title: Reaction title
-          description: Reaction description
+          title: Обмежити кількість реакцій на пост або коментар
+          description: Скільки разів можна відреагувати на пост або коментар протягом будь-яких 30 секунд?
         feedback:
-          title: Feedback title
-          description: Feedback description
+          title: Обмежити кількість скарг на зловживання
+          description: Скільки скарг можна надіслати протягом будь-яких 5 хвилин?
         comment:
-          title: Comment title
-          description: Comment description
+          title: Обмежити кількість створених коментарів
+          description: Скільки коментарів можна створити протягом будь-яких 30 секунд?
         comment_antispam:
-          title: Comment antispam title
+          title: Обмежити кількість коментарів від нового учасника
         mention:
-          title: Mention title
-          description: Mention description
+          title: Обмежити кількість @-згадок у пості або коментарі
+          description: Скільки разів можна @-згадати інших користувачів у пості або коментарі?
         organization:
-          title: Organization title
-          description: Organization description
+          title: Обмежити кількість створених проєктів
+          description: Скільки проєктів можна створити протягом будь-яких 5 хвилин?
         subscription:
-          title: Subscription title
-          description: Subscription description
+          title: Обмежити кількість підписок на поштову розсилку (тег liquid)
+          description: Скільки підписок на розсилку можна зробити протягом будь-яких 30 секунд?
         recipient:
-          title: Recipient title
-          description: Recipient description
+          title: Обмежити кількість листів, які ми надсилаємо
+          description: Скільки листів ми можемо надіслати людині протягом будь-яких 2 хвилин?
         confirmation:
-          title: Confirmation title
-          description: Confirmation description
+          title: Обмежити кількість листів-підтверджень
+          description: Скільки разів ми можемо надіслати лист-підтвердження людині протягом 2 хвилин?
         listing:
-          title: Listing title
-          description: Listing description
+          title: Обмежити кількість створених оголошень
+          description: Скільки оголошень можна створити протягом будь-якої 1 хвилини?
       settings_helper:
-        novice: Novice
-        beginner: Beginner
-        mid_level: Mid level
-        advanced: Advanced
-        expert: Expert
+        novice: Новачок
+        beginner: Початківець
+        mid_level: Середній рівень
+        advanced: Просунутий
+        expert: Експерт
       social_link_helper:
-        n_a: N/A
+        n_a: Н/Д
     social_link_helper:
-      n_a: N/A
+      n_a: Н/Д
     placeholder:
       organization:
         name: Acme Inc.
         slug: acmeinc
         url: https://yoursite.com
-        location: Halifax, Nova Scotia
+        location: Галіфакс, Нова Шотландія
         email: mail@example.com
         company_size: "..."
         story: "..."
         tech_stack: "..."
         cta_body_markdown: "..."
-        cta_button_text: Visit Acme Site
+        cta_button_text: Відвідати сайт Acme
         cta_button_url: https://example.com
         proof: "..."
       response_template:
@@ -455,160 +326,149 @@ en:
         username: johndoe
         feed_url: https://yoursite.com/feed
     application_helper:
-      app_logo: App logo
+      app_logo: Логотип застосунку
       follow:
         aria_label:
-          Organization: 'Follow organization: %{name}'
-          Tag: 'Follow tag: %{name}'
-          User: 'Follow user: %{name}'
-          default: 'Follow %{type}: %{name}'
+          Organization: 'Стежити за проєктом: %{name}'
+          Tag: 'Стежити за тегом: %{name}'
+          User: 'Стежити за користувачем: %{name}'
+          default: 'Стежити за %{type}: %{name}'
         text:
-          Organization: Follow
-          Tag: Follow
-          User: Follow
-          default: Follow
-      required: Required
+          Organization: Стежити
+          Tag: Стежити
+          User: Стежити
+          default: Стежити
+      required: Обов’язково
       subtitle:
-        week: Top posts this week
-        month: Top posts this month
-        year: Top posts this year
-        infinity: All posts
-        latest: Latest posts
-      title_text: "%{title} - %{timeframe}"
+        week: Топпости цього тижня
+        month: Топпости цього місяця
+        year: Топпости цього року
+        infinity: Усі пости
+        latest: Останні пости
+      title_text: "%{title} — %{timeframe}"
     articles_helper:
-      logo: "%{service_name} logo"
-      most_comments: Most Comments
-      most_reactions: Most Reactions
-      most_views: Most Views
-      recently_created: Recently Created
-      recently_published: Recently Published
+      logo: Логотип %{service_name}
+      most_comments: Найбільше коментарів
+      most_reactions: Найбільше реакцій
+      most_views: Найбільше переглядів
+      recently_created: Нещодавно створені
+      recently_published: Нещодавно опубліковані
     authentication_helper:
-      any_of_those: any of those
-      email_password: Email & Password
-      reminder: You used %{method} to authenticate your account originally, so you
-        can use %{dem} — or send yourself a <a href="%{link}" style="color:black">magic
-        link</a>.
-      that: that
-      invite_only: You cannot do this until you disable Invite Only Mode
+      any_of_those: будь-що з наведеного
+      email_password: Електронна пошта та пароль
+      reminder: Ви раніше використовували %{method} для автентифікації, тож можете скористатися %{dem} — або надіслати собі <a href="%{link}" style="color:black">магічне посилання</a>.
+      that: те
+      invite_only: Ви не можете це зробити, доки не вимкнете режим «Лише за запрошенням»
     comments_helper:
       ama: ama
-      ask_me_anything: Ask Me Anything
-      author: Author
+      ask_me_anything: Питайте що завгодно
+      author: Автор
       nbsp_likes_html:
-        one: "&nbsp;like"
-        other: "&nbsp;likes"
+        one: "&nbsp;вподобання"
+        other: "&nbsp;вподобань"
     feedback_messages_helper:
       offender:
         body: |
-          Hello,
+          Вітаємо,
 
-          It has been brought to our attention that you have violated the %{community} Code of Conduct and/or Terms of Use.
+          Нам повідомили, що Ви порушили Кодекс поведінки %{community} та/або Умови користування.
 
-          If this behavior continues, we may need to suspend your %{community} account.
+          Якщо така поведінка триватиме, ми можемо призупинити Ваш обліковий запис %{community}.
 
-          If you think that there's been a mistake, please reply to this email and we will take another look.
+          Якщо Ви вважаєте, що сталася помилка, відповідайте на цей лист — ми переглянемо ситуацію ще раз.
 
-          %{community} Team
-        subject: "%{community} Code of Conduct Violation"
+          Команда %{community}
+        subject: "Порушення Кодексу поведінки %{community}"
       reporter:
         body: |
-          Hi there,
-          Thank you for flagging content that may be in violation of the %{community} Code of Conduct and/or our Terms of Use. We are looking into your report and will take appropriate
-          action.
-          We appreciate your help as we work to foster a positive and inclusive environment for all!
-          %{community} Team
-        subject: "%{community} Report"
+          Вітаємо,
+          Дякуємо за позначення контенту, що може порушувати Кодекс поведінки %{community} та/або наші Умови користування. Ми розглядаємо Ваш звіт і вживемо відповідних
+          заходів.
+          Дякуємо за допомогу в підтримці позитивного та інклюзивного середовища для всіх!
+          Команда %{community}
+        subject: "Звіт %{community}"
       affected:
         body: |
-          Hi there,
+          Вітаємо,
 
-          We noticed some comments (made by others) on your post that violate the %{community} Code of Conduct and/or our Terms of Use. We have zero tolerance for such behavior and are
-          taking appropriate action.
+          Ми помітили деякі коментарі (зроблені іншими) під Вашим постом, що порушують Кодекс поведінки %{community} та/або наші Умови користування. Ми не толеруємо таку поведінку та
+          вживаємо відповідних заходів.
 
-          Thanks for being awesome, and please don't hesitate to email us with any questions! We welcome all feedback and ideas as we continue working to foster an open and inclusive community.
+          Дякуємо, що Ви з нами. Якщо маєте питання — пишіть нам. Ми відкриті до зворотного зв’язку та ідей, працюючи над відкритою та інклюзивною спільнотою.
 
-          %{community} Team
-        subject: Courtesy Notice from %{community}
+          Команда %{community}
+        subject: Попереджувальне повідомлення від %{community}
     listing_helper:
       option:
-        one: "%{cl_name} (%{count} Credit)"
-        other: "%{cl_name} (%{count} Credits)"
+        one: "%{cl_name} (%{count} бал)"
+        other: "%{cl_name} (%{count} балів)"
     organization_helper:
       option: "%{org_name} (%{unspent})"
     rate_limit_checker_helper:
       day:
-        one: day
-        other: days
-      general: How many %{thing} can a new member (%{timeframe} or less) create within
-        any 5 minute period?
+        one: день
+        other: дні
+      general: Скільки %{thing} може створити новий учасник (%{timeframe} або менше) протягом будь-якого 5-хвилинного періоду?
       published:
-        title: Limit number of posts created
-        description: How many posts can someone create within any 30 second period?
+        title: Обмежити кількість створених постів
+        description: Скільки постів можна створити протягом будь-яких 30 секунд?
       antispam:
-        title: Limit number of posts created by a new member
+        title: Обмежити кількість постів, створених новим учасником
       update:
-        title: Limit number of updates to a post
-        description: How many updates can someone make within any 30 second period?
-          Update API docs when changed.
+        title: Обмежити кількість оновлень поста
+        description: Скільки оновлень можна зробити протягом будь-яких 30 секунд? Оновіть документацію API у разі змін.
       upload:
-        title: Limit number of images uploaded
-        description: How many images can someone upload within any 30 second period?
+        title: Обмежити кількість завантажених зображень
+        description: Скільки зображень можна завантажити протягом будь-яких 30 секунд?
       user:
-        title: Limit number of changes someone can make to their account
-        description: How many changes can someone make to their user account within
-          any 30 second period?
+        title: Обмежити кількість змін у власному обліковому записі
+        description: Скільки змін можна зробити у своєму акаунті протягом будь-яких 30 секунд?
       follow:
-        title: Limit number of followers someone can follow daily
-        description: How many people can someone follow in a day?
+        title: Обмежити кількість підписок за день
+        description: На скількох людей можна підписатися за день?
       reaction:
-        title: Limit number of reactions to a post or comment
-        description: How many times can someone react to a post or comment within
-          any 30 second period?
+        title: Обмежити кількість реакцій на пост або коментар
+        description: Скільки разів можна відреагувати на пост або коментар протягом будь-яких 30 секунд?
       feedback:
-        title: Limit number of times someone can report abuse
-        description: How many times can someone report abuse within any 5 minute period?
+        title: Обмежити кількість скарг на зловживання
+        description: Скільки разів можна поскаржитися протягом будь-яких 5 хвилин?
       comment:
-        title: Limit number of comments created
-        description: How many comments can someone create within any 30 second period?
+        title: Обмежити кількість створених коментарів
+        description: Скільки коментарів можна створити протягом будь-яких 30 секунд?
       comment_antispam:
-        title: Limit number of comments created by a new member
+        title: Обмежити кількість коментарів від нового учасника
       mention:
-        title: Limit number of @-mentions in a post or comment
-        description: How many times can someone @-mention other users in a post or
-          comment?
+        title: Обмежити кількість @-згадок у пості або коментарі
+        description: Скільки разів можна @-згадати інших користувачів у пості або коментарі?
       listing:
-        title: Limit number of listings created
-        description: How many listings can someone create within any 1 minute period?
+        title: Обмежити кількість створених оголошень
+        description: Скільки оголошень можна створити протягом будь-якої 1 хвилини?
       organization:
-        title: Limit number of organizations created
-        description: How many organizations can someone create within any 5 minute
-          period?
+        title: Обмежити кількість створених проєктів
+        description: Скільки проєктів можна створити протягом будь-яких 5 хвилин?
       subscription:
-        title: Limit number of times someone can subscribe to mailing list liquid
-          tag
-        description: How many times can someone subscribe to a mailing list within
-          any 30 second period?
+        title: Обмежити кількість підписок на тег розсилки (liquid)
+        description: Скільки разів можна підписатися на розсилку протягом будь-яких 30 секунд?
       recipient:
-        title: Limit number of general emails we send
-        description: How many emails can we send to someone within any 2 minute period?
+        title: Обмежити кількість загальних листів, які ми надсилаємо
+        description: Скільки листів ми можемо надіслати людині протягом будь-яких 2 хвилин?
       confirmation:
-        title: Limit number of confirmation emails we send
-        description: How many times can we send a confirmation email to someone within
-          a 2 minute period?
+        title: Обмежити кількість листів-підтверджень
+        description: Скільки разів ми можемо надіслати лист-підтвердження протягом 2 хвилин?
       thing:
-        posts: posts
-        comments: comments
+        posts: пости
+        comments: коментарі
     settings_helper:
-      advanced: Advanced
-      beginner: Beginner
-      expert: Expert
-      mid_level: Mid-level
-      novice: Novice
+      advanced: Просунутий
+      beginner: Початківець
+      expert: Експерт
+      mid_level: Середній рівень
+      novice: Новачок
     admin:
       user_helper:
-        today: Today, %{date}
-        yesterday: Yesterday, %{date}
+        today: Сьогодні, %{date}
+        yesterday: Учора, %{date}
         org_join: ", "
         org_overflow:
-          one: "%{orgs} & %{count} other"
-          other: "%{orgs} & %{count} others"
+          one: "%{orgs} і ще %{count} інший"
+          other: "%{orgs} і ще %{count} інших"
