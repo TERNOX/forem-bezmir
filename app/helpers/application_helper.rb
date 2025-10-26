@@ -334,7 +334,10 @@ module ApplicationHelper
   end
 
   def community_members_label
-    Settings::Community.member_label.pluralize
+    label = Settings::Community.member_label
+    return label unless label.respond_to?(:ascii_only?) && label.ascii_only?
+
+    label.pluralize
   end
 
   def meta_keywords_default
