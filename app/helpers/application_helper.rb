@@ -358,6 +358,10 @@ module ApplicationHelper
     tag.meta name: "keywords", content: content
   end
 
+  def youtube_embed_url?(url)
+    YoutubeUrl.embed_url?(url)
+  end
+
   def meta_keywords_tag(tag_name)
     return if Settings::General.meta_keywords[:tag].blank?
 

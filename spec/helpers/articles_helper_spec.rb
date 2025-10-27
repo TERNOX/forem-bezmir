@@ -69,4 +69,28 @@ describe ArticlesHelper do
       expect(helper.utc_iso_timestamp(nil)).to be_nil
     end
   end
+
+  describe "#has_vid?" do
+    let(:comments_blob) { "" }
+
+    it "detects youtube-nocookie embeds" do
+      article = instance_double(Article, processed_html: %(<iframe src="https://www.youtube-nocookie.com/embed/abc123"></iframe>),
+                                          comments_blob: comments_blob)
+
+      expect(helper.has_vid?(article)).to be true
+    end
+
+    it "detects legacy youtube embeds" do
+      article = instance_double(Article, processed_html: %(<iframe src="https://www.youtube.com/embed/abc123"></iframe>),
+                                          comments_blob: comments_blob)
+
+      expect(helper.has_vid?(article)).to be true
+    end
+
+    it "returns false when no supported video is present" do
+      article = instance_double(Article, processed_html: "<p>No video</p>", comments_blob: "")
+
+      expect(helper.has_vid?(article)).to be_falsey
+    end
+  end
 end

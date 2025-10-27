@@ -10,42 +10,42 @@ RSpec.describe YoutubeTag, type: :liquid_tag do
 
     it "accepts a short URL" do
       result = generate_tag("https://youtu.be/#{valid_id}")
-      expect(result).to include("https://www.youtube.com/embed/#{valid_id}")
+      expect(result).to include("https://www.youtube-nocookie.com/embed/#{valid_id}")
     end
 
     it "accepts a short URL with 'si' parameter" do
       result = generate_tag("https://youtu.be/#{valid_id}?si=FPFWKE9g0PhQjAUE")
-      expect(result).to include("https://www.youtube.com/embed/#{valid_id}")
+      expect(result).to include("https://www.youtube-nocookie.com/embed/#{valid_id}")
     end
 
     it "accepts a short URL with 't' parameter" do
       result = generate_tag("https://youtu.be/#{valid_id}?t=231")
-      expect(result).to include("https://www.youtube.com/embed/#{valid_id}?start=231")
+      expect(result).to include("https://www.youtube-nocookie.com/embed/#{valid_id}?start=231")
     end
 
     it "accepts a short URL with both 'si' and 't' parameters" do
       result = generate_tag("https://youtu.be/#{valid_id}?si=FPFWKE9g0PhQjAUE&t=231")
-      expect(result).to include("https://www.youtube.com/embed/#{valid_id}?start=231")
+      expect(result).to include("https://www.youtube-nocookie.com/embed/#{valid_id}?start=231")
     end
 
     it "accepts a full URL with 'v' parameter" do
       result = generate_tag("https://www.youtube.com/watch?v=#{valid_id}")
-      expect(result).to include("https://www.youtube.com/embed/#{valid_id}")
+      expect(result).to include("https://www.youtube-nocookie.com/embed/#{valid_id}")
     end
 
     it "accepts a full URL with 'v' and 't' parameters" do
       result = generate_tag("https://www.youtube.com/watch?v=#{valid_id}&t=231s")
-      expect(result).to include("https://www.youtube.com/embed/#{valid_id}?start=231")
+      expect(result).to include("https://www.youtube-nocookie.com/embed/#{valid_id}?start=231")
     end
 
     it "accepts a full URL with 'si' and 'v' parameters in different order" do
       result = generate_tag("https://www.youtube.com/watch?si=FPFWKE9g0PhQjAUE&v=#{valid_id}")
-      expect(result).to include("https://www.youtube.com/embed/#{valid_id}")
+      expect(result).to include("https://www.youtube-nocookie.com/embed/#{valid_id}")
     end
 
     it "accepts an ID only" do
       result = Liquid::Template.parse("{% youtube #{valid_id} %}").render
-      expect(result).to include("https://www.youtube.com/embed/#{valid_id}")
+      expect(result).to include("https://www.youtube-nocookie.com/embed/#{valid_id}")
     end
 
     it "raises an error for invalid IDs" do

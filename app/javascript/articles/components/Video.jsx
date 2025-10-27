@@ -4,7 +4,12 @@ import { articlePropTypes } from '../../common-prop-types';
 const isYouTubeEmbed = (url) => {
   try {
     const parsed = new URL(url);
-    const allowedHosts = ["youtube.com", "www.youtube.com"];
+    const allowedHosts = [
+      "youtube.com",
+      "www.youtube.com",
+      "youtube-nocookie.com",
+      "www.youtube-nocookie.com",
+    ];
     return allowedHosts.includes(parsed.host) && parsed.pathname.startsWith("/embed/");
   } catch {
     return false;

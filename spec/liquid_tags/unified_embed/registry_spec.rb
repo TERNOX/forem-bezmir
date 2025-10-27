@@ -110,7 +110,7 @@ RSpec.describe UnifiedEmbed::Registry do
     ]
 
     valid_youtube_url_formats = [
-      "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ",
       "https://www.youtube.com/watch?v=rc5AyncB_Xw&t=18s",
       "https://youtu.be/rc5AyncB_Xw",
     ]

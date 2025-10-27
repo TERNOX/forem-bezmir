@@ -253,7 +253,12 @@ function fetchNextFollowersPage(el) {
 }
 
 function buildVideoArticleHTML(videoArticle) {
-  const allowedHostnames = ["youtube.com", "www.youtube.com"];
+  const allowedHostnames = [
+    "youtube.com",
+    "www.youtube.com",
+    "youtube-nocookie.com",
+    "www.youtube-nocookie.com",
+  ];
   let videoUrl;
   try {
     videoUrl = new URL(videoArticle.video);

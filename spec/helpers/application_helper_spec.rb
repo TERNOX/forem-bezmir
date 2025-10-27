@@ -406,4 +406,18 @@ RSpec.describe ApplicationHelper do
       expect(content).to include(%(<p class="something js-policy-article-create">My Content</p>))
     end
   end
+
+  describe "#youtube_embed_url?" do
+    it "returns true for youtube-nocookie embeds" do
+      expect(helper.youtube_embed_url?("https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ")).to be true
+    end
+
+    it "returns true for legacy youtube embeds" do
+      expect(helper.youtube_embed_url?("https://www.youtube.com/embed/dQw4w9WgXcQ")).to be true
+    end
+
+    it "returns false for non-youtube urls" do
+      expect(helper.youtube_embed_url?("https://player.vimeo.com/video/123")).to be false
+    end
+  end
 end
