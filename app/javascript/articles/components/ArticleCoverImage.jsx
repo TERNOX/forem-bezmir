@@ -20,6 +20,8 @@ export const ArticleCoverImage = ({ article }) => {
           width="1280"
           height={article.main_image_height}
           alt={article.title}
+          loading="lazy"
+          decoding="async"
         />
       </a>
     </div>
