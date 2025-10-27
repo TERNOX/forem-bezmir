@@ -5,7 +5,9 @@ module Badges
     sidekiq_options queue: :medium_priority, retry: 10
 
     def perform(run_time = nil)
-      reference_time = run_time ? Time.zone.parse(run_time) : Time.zone.now
+      reference_time = parse_reference_time(run_time)
+      return unless should_award_now?(reference_time)
+
       week_start = (reference_time - 1.week).beginning_of_week(:monday).to_date
 
       selection = TopSevenArticleSelection.ensure_for_week!(week_start) do
@@ -22,6 +24,24 @@ module Badges
     end
 
     private
+
+    def parse_reference_time(run_time)
+      case run_time
+      when nil
+        Time.zone.now
+      when Time
+        run_time.in_time_zone
+      else
+        Time.zone.parse(run_time.to_s)
+      end
+    rescue ArgumentError
+      Time.zone.now
+    end
+
+    def should_award_now?(reference_time)
+      reference_time.monday? &&
+        TimeOfDaySetting.matches?(reference_time, Settings::General.top_articles_digest_badge_time)
+    end
 
     def configured_limit
       limit = Settings::General.top_articles_digest_article_limit.to_i
