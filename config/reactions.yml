@@ -19,6 +19,10 @@ fire:
   position: 5
   name: Вогонь
   icon: fire
+hehe:
+  position: 6
+  name: Хе-хе
+  icon: hehe
 readinglist:
   position: 5
   icon: save
