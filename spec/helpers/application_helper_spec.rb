@@ -407,6 +407,16 @@ RSpec.describe ApplicationHelper do
     end
   end
 
+  describe "#sanitize_rendered_markdown" do
+    it "converts youtube embeds to the nocookie domain" do
+      html = '<iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?t=45"></iframe>'
+
+      sanitized = helper.sanitize_rendered_markdown(html)
+
+      expect(sanitized).to include("https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?start=45")
+    end
+  end
+
   describe "#youtube_embed_url?" do
     it "returns true for youtube-nocookie embeds" do
       expect(helper.youtube_embed_url?("https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ")).to be true

@@ -1,3 +1,5 @@
+require "nokogiri"
+
 module YoutubeUrl
   EMBED_DOMAIN = "youtube-nocookie.com".freeze
   EMBED_HOST = "www.#{EMBED_DOMAIN}".freeze
@@ -39,6 +41,29 @@ module YoutubeUrl
       idx = segments.index("embed") || segments.index("v")
       segments[idx + 1] if idx
     end
+  end
+
+  def normalize_embed_src(url)
+    return url if url.blank?
+    return url unless youtube_url?(url)
+
+    video_id = extract_video_id(url)
+    return url if video_id.blank?
+
+    embed_url(video_id, start_time: extract_start_time(url)) || url
+  end
+
+  def normalize_embed_html(html)
+    return html if html.blank?
+
+    fragment = Nokogiri::HTML::DocumentFragment.parse(html)
+    fragment.css("iframe[src]").each do |iframe|
+      normalized_src = normalize_embed_src(iframe["src"])
+      iframe["src"] = normalized_src if normalized_src
+    end
+    fragment.to_html
+  rescue StandardError
+    html
   end
 
   def extract_start_time(url)
