@@ -128,6 +128,12 @@
         </div>
 
         <div class="crayons-field">
+          <%= label_tag "top_articles_digest_publish_time", t("views.admin.tools.top_articles_digest.form.publish_time"), class: "crayons-field__label" %>
+          <%= time_field_tag "top_articles_digest[publish_time]", @top_articles_digest_settings[:publish_time], class: "crayons-textfield" %>
+          <p class="crayons-field__description"><%= t("views.admin.tools.top_articles_digest.form.publish_time_help") %></p>
+        </div>
+
+        <div class="crayons-field">
           <%= label_tag "top_articles_digest_article_limit", t("views.admin.tools.top_articles_digest.form.article_limit"), class: "crayons-field__label" %>
           <%= number_field_tag "top_articles_digest[article_limit]", @top_articles_digest_settings[:article_limit], class: "crayons-textfield", min: 1 %>
         </div>
@@ -135,6 +141,12 @@
         <div class="crayons-field">
           <%= label_tag "top_articles_digest_badge_slug", t("views.admin.tools.top_articles_digest.form.badge_slug"), class: "crayons-field__label" %>
           <%= text_field_tag "top_articles_digest[badge_slug]", @top_articles_digest_settings[:badge_slug], class: "crayons-textfield" %>
+        </div>
+
+        <div class="crayons-field">
+          <%= label_tag "top_articles_digest_badge_time", t("views.admin.tools.top_articles_digest.form.badge_time"), class: "crayons-field__label" %>
+          <%= time_field_tag "top_articles_digest[badge_time]", @top_articles_digest_settings[:badge_time], class: "crayons-textfield" %>
+          <p class="crayons-field__description"><%= t("views.admin.tools.top_articles_digest.form.badge_time_help") %></p>
         </div>
       </div>
 

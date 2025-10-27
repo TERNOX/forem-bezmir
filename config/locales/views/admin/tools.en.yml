@@ -32,8 +32,12 @@ en:
               daily: Daily (previous day)
               weekly: Weekly (previous week)
               monthly: Monthly (previous month)
+            publish_time: Publication time (UTC)
+            publish_time_help: "Choose the hour and minute when the digest article should be published."
             article_limit: Number of articles to include
             badge_slug: Badge slug to reward the authors
+            badge_time: Badge award time (UTC)
+            badge_time_help: "Choose the hour and minute when the Top 7 badges should be awarded."
             save: Save digest settings
           placeholders:
             heading: Available template placeholders

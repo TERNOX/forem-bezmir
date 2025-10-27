@@ -83,4 +83,32 @@ RSpec.describe Badges::AwardWeeklyTopSevenWorker do
       expect(Badges::AwardTopSeven).not_to have_received(:call)
     end
   end
+
+  it "skips awarding when the current time does not match the configured hour" do
+    travel_to(current_time.change(hour: 9)) do
+      Settings::General.set_top_articles_digest_badge_time("10:00")
+      article = create(:article)
+      create(:reaction, reactable: article, category: "like", created_at: reaction_time)
+
+      allow(Badges::AwardTopSeven).to receive(:call)
+
+      expect do
+        worker.perform
+      end.not_to change(TopSevenArticleSelection, :count)
+
+      expect(Badges::AwardTopSeven).not_to have_received(:call)
+    end
+  end
+
+  it "skips awarding when the current day is not Monday" do
+    travel_to(current_time + 1.day) do
+      allow(Badges::AwardTopSeven).to receive(:call)
+
+      expect do
+        worker.perform
+      end.not_to change(TopSevenArticleSelection, :count)
+
+      expect(Badges::AwardTopSeven).not_to have_received(:call)
+    end
+  end
 end
