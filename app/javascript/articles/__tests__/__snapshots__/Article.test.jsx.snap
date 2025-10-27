@@ -78,6 +78,8 @@ Object {
               <img
                 alt="Unbranded Home Loan Account"
                 class="crayons-article__cover__image__feed"
+                decoding="async"
+                loading="lazy"
                 src="/images/10.png"
                 width="1000"
               />
@@ -354,6 +356,8 @@ Object {
             <img
               alt="Unbranded Home Loan Account"
               class="crayons-article__cover__image__feed"
+              decoding="async"
+              loading="lazy"
               src="/images/10.png"
               width="1000"
             />
