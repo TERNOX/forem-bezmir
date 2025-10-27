@@ -19,30 +19,22 @@ const loadIframe = (iframe) => {
   iframe.dataset.youtubeLoaded = 'true';
 };
 
-const unloadIframe = (iframe) => {
-  if (!iframe.dataset.youtubeLoaded) {
-    return;
-  }
-
-  iframe.removeAttribute('src');
-  iframe.dataset.youtubeLoaded = '';
-};
-
 const initializeObserver = () => {
   if (intersectionObserver || !('IntersectionObserver' in window)) {
     return intersectionObserver;
   }
 
   intersectionObserver = new IntersectionObserver(
-    (entries) => {
+    (entries, observer) => {
       entries.forEach((entry) => {
         const iframe = entry.target;
 
-        if (entry.isIntersecting) {
-          loadIframe(iframe);
-        } else {
-          unloadIframe(iframe);
+        if (!entry.isIntersecting) {
+          return;
         }
+
+        loadIframe(iframe);
+        observer.unobserve(iframe);
       });
     },
     {
