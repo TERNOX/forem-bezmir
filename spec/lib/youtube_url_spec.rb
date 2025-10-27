@@ -52,6 +52,12 @@ RSpec.describe YoutubeUrl do
 
       expect(result).to include("https://www.youtube-nocookie.com/embed/abc123")
       expect(result).to match(/https:\/\/www\.youtube-nocookie\.com\/embed\/xyz789\?[^\"]*start=60/)
+      fragment = Nokogiri::HTML.fragment(result)
+      fragment.css("iframe").each do |iframe|
+        expect(iframe["allow"]).to include("web-share")
+        expect(iframe["referrerpolicy"]).to eq("strict-origin-when-cross-origin")
+        expect(iframe["title"]).to eq("YouTube video player")
+      end
     end
 
     it "leaves non youtube iframes intact" do

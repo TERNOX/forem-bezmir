@@ -7,6 +7,11 @@ module YoutubeUrl
   EMBED_HOSTS = [EMBED_DOMAIN, "youtube.com"].freeze
   VIDEO_HOSTS = (EMBED_HOSTS + ["youtu.be"]).freeze
   DEFAULT_PORTS = { "http" => 80, "https" => 443 }.freeze
+  ALLOW_PERMISSIONS = %w[
+    accelerometer autoplay clipboard-write encrypted-media gyroscope picture-in-picture web-share
+  ].freeze
+  REFERRER_POLICY = "strict-origin-when-cross-origin".freeze
+  DEFAULT_TITLE = "YouTube video player".freeze
   RESERVED_QUERY_KEYS = %w[start t time_continue origin widget_referrer].freeze
   TIME_MARKER_TO_SECONDS = { "h" => 3600, "m" => 60, "s" => 1 }.freeze
 
@@ -68,6 +73,7 @@ module YoutubeUrl
     fragment.css("iframe[src]").each do |iframe|
       normalized_src = normalize_embed_src(iframe["src"])
       iframe["src"] = normalized_src if normalized_src
+      enforce_iframe_requirements(iframe)
     end
     fragment.to_html
   rescue StandardError
@@ -165,6 +171,19 @@ module YoutubeUrl
     match[1] if match
   end
 
+  def enforce_iframe_requirements(iframe)
+    iframe["allow"] = merged_allow_permissions(iframe["allow"])
+    iframe["allowfullscreen"] = "true"
+    iframe["referrerpolicy"] = REFERRER_POLICY
+    iframe["title"] = iframe["title"].presence || DEFAULT_TITLE
+  end
+
+  def merged_allow_permissions(existing_allow)
+    existing_permissions = existing_allow.to_s.split(";").map { |permission| permission.strip.presence }.compact
+    (existing_permissions + ALLOW_PERMISSIONS).uniq.join("; ")
+  end
+
   private_class_method :convert_time_parameter, :normalized_host, :build_uri, :extract_from_fragment,
-                      :extract_preserved_params, :default_embed_params, :base_origin
+                      :extract_preserved_params, :default_embed_params, :base_origin,
+                      :enforce_iframe_requirements, :merged_allow_permissions
 end

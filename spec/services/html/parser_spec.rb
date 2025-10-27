@@ -463,6 +463,9 @@ RSpec.describe Html::Parser, type: :service do
       result = described_class.new(html).normalize_youtube_embed_domains.html
 
       expect(result).to include("https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ")
+      iframe = Nokogiri::HTML.fragment(result).at_css("iframe")
+      expect(iframe["allow"]).to include("web-share")
+      expect(iframe["referrerpolicy"]).to eq("strict-origin-when-cross-origin")
     end
 
     it "preserves non youtube embeds" do

@@ -418,6 +418,9 @@ RSpec.describe ApplicationHelper do
       params = URI.parse(src).query.to_s.split("&")
       expect(params).to include("start=45")
       expect(params).to include(a_string_starting_with("origin="))
+      iframe = Nokogiri::HTML.fragment(sanitized).at_css("iframe")
+      expect(iframe["allow"]).to include("web-share")
+      expect(iframe["referrerpolicy"]).to eq("strict-origin-when-cross-origin")
     end
   end
 
