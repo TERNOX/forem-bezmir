@@ -524,7 +524,7 @@
 
   // Copying from Dropdown for now
   padding: var(--su-3);
-  min-width: 250px;
+  min-width: 366px;
   margin-top: var(--su-1);
   z-index: var(--z-dropdown);
   background: var(--card-bg);
@@ -556,7 +556,7 @@
 .reaction-drawer__container {
   display: flex;
   flex-direction: row;
-  gap: var(--su-3);
+  gap: var(--su-2);
 }
 
 .multiple_reactions_engagement {
