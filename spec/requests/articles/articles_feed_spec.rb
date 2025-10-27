@@ -8,5 +8,6 @@ RSpec.describe "ArticlesFeed" do
 
     expect(response.body).to include(article.title)
     expect(response.body).to include("<pubDate>#{article.published_at.to_fs(:rfc822)}</pubDate>")
+    expect(response.body).to include(ApplicationController.helpers.article_short_url(article))
   end
 end

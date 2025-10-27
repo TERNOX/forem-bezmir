@@ -379,6 +379,10 @@ module ApplicationHelper
     URL.article(article)
   end
 
+  def article_short_url(article)
+    app_url(short_article_path(article))
+  end
+
   def comment_url(comment)
     URL.comment(comment)
   end

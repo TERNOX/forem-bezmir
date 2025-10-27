@@ -19,7 +19,7 @@ class StoriesController < ApplicationController
   SIGNED_OUT_RECORD_COUNT = 60
   REDIRECT_VIEW_PARAMS = %w[moderate admin].freeze
 
-  before_action :authenticate_user!, except: %i[index show]
+  before_action :authenticate_user!, except: %i[index show short_link]
   before_action :set_cache_control_headers, only: %i[index show]
   before_action :set_user_limit, only: %i[index show]
   before_action :redirect_to_lowercase_username, only: %i[index]
@@ -48,6 +48,14 @@ class StoriesController < ApplicationController
     else
       not_found
     end
+  end
+
+  def short_link
+    article = Article.published.find_by(id: params[:id])
+
+    return not_found unless article
+
+    redirect_permanently_to(short_link_destination_for(article))
   end
 
   private
@@ -106,6 +114,12 @@ class StoriesController < ApplicationController
     end
 
     not_found
+  end
+
+  def short_link_destination_for(article)
+    destination = article.path.presence || "/#{article.username}/#{article.slug}"
+
+    Addressable::URI.parse(destination).to_s
   end
 
   def handle_user_or_organization_or_podcast_or_page_index
