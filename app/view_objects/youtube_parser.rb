@@ -28,7 +28,7 @@ class YoutubeParser
 
   def youtube_embed_url
     video_id = extract_video_id
-    "https://www.youtube.com/embed/#{video_id}"
+    "https://www.youtube-nocookie.com/embed/#{video_id}"
   end
 
   def extract_video_id
