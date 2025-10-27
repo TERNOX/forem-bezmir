@@ -4,7 +4,12 @@ import { articlePropTypes } from '../../common-prop-types';
 const isYouTubeEmbed = (url) => {
   try {
     const parsed = new URL(url);
-    const allowedHosts = ["youtube.com", "www.youtube.com"];
+    const allowedHosts = [
+      "youtube.com",
+      "www.youtube.com",
+      "youtube-nocookie.com",
+      "www.youtube-nocookie.com",
+    ];
     return allowedHosts.includes(parsed.host) && parsed.pathname.startsWith("/embed/");
   } catch {
     return false;
@@ -33,7 +38,8 @@ export const Video = ({ article }) => {
             width: "100%",
             height: "100%",
           }}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerPolicy="strict-origin-when-cross-origin"
           allowFullScreen
           title={article.title}
         />

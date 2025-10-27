@@ -253,7 +253,12 @@ function fetchNextFollowersPage(el) {
 }
 
 function buildVideoArticleHTML(videoArticle) {
-  const allowedHostnames = ["youtube.com", "www.youtube.com"];
+  const allowedHostnames = [
+    "youtube.com",
+    "www.youtube.com",
+    "youtube-nocookie.com",
+    "www.youtube-nocookie.com",
+  ];
   let videoUrl;
   try {
     videoUrl = new URL(videoArticle.video);
@@ -266,7 +271,8 @@ function buildVideoArticleHTML(videoArticle) {
         <iframe
           src="${videoArticle.video}"
           style="border:0; position:absolute; top:0; left:0; width:100%; height:100%;"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin"
           allowfullscreen
           title="${videoArticle.title}"
         ></iframe>

@@ -190,7 +190,8 @@ module ApplicationHelper
   end
 
   def sanitize_rendered_markdown(processed_html)
-    ActionController::Base.helpers.sanitize processed_html,
+    normalized_html = YoutubeUrl.normalize_embed_html(processed_html)
+    ActionController::Base.helpers.sanitize normalized_html,
                                             scrubber: RenderedMarkdownScrubber.new
   end
 
@@ -356,6 +357,10 @@ module ApplicationHelper
               end
 
     tag.meta name: "keywords", content: content
+  end
+
+  def youtube_embed_url?(url)
+    YoutubeUrl.embed_url?(url)
   end
 
   def meta_keywords_tag(tag_name)

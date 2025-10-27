@@ -998,10 +998,11 @@ class Article < ApplicationRecord
   end
 
   def get_youtube_embed_url
-    return unless video_source_url.present? && video_source_url.include?("youtube.com")
+    source_url = video_source_url.presence || video
+    return unless YoutubeUrl.youtube_url?(source_url)
 
     begin
-      self.video = YoutubeParser.new(video_source_url).call
+      self.video = YoutubeParser.new(source_url).call
       p "Parsed YouTube video URL: #{video}" if Rails.env.development?
     rescue StandardError => e
       Rails.logger.error("Error parsing YouTube video URL: #{e.message}")
@@ -1159,7 +1160,7 @@ class Article < ApplicationRecord
   end
 
   def fetch_video_duration
-    return if video_source_url&.include?("youtube.com")
+    return if YoutubeUrl.youtube_url?(video_source_url)
 
     if video.present? && video_duration_in_seconds.zero?
       url = video_source_url.gsub(".m3u8", "1351620000001-200015_hls_v4.m3u8")
