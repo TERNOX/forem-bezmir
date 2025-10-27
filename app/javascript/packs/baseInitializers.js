@@ -1,5 +1,4 @@
 import { initializeSteamIframeColorScheme } from '../liquidTags/steamIframe';
-import { initializeYoutubeIframeLazyLoad } from '../liquidTags/youtubeIframe';
 import { initializeCommentDate } from './initializers/initializeCommentDate';
 import { initializeCommentPreview } from './initializers/initializeCommentPreview';
 import { initializeTimeFixer } from './initializers/initializeTimeFixer';
@@ -20,7 +19,6 @@ initializeTimeFixer();
 initializeDateHelpers();
 initializeGifVideos(document);
 initializeSteamIframeColorScheme();
-initializeYoutubeIframeLazyLoad();
 
 InstantClick.on('change', () => {
   initializeCommentDate();
@@ -29,7 +27,6 @@ InstantClick.on('change', () => {
   initializeNotifications();
   initializeGifVideos(document);
   initializeSteamIframeColorScheme();
-  initializeYoutubeIframeLazyLoad();
 });
 
 window.showUserAlertModal = showUserAlertModal;
