@@ -413,7 +413,11 @@ RSpec.describe ApplicationHelper do
 
       sanitized = helper.sanitize_rendered_markdown(html)
 
-      expect(sanitized).to include("https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?start=45")
+      src = Nokogiri::HTML.fragment(sanitized).at_css("iframe")&.[]("src")
+      expect(src).to start_with("https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ")
+      params = URI.parse(src).query.to_s.split("&")
+      expect(params).to include("start=45")
+      expect(params).to include(a_string_starting_with("origin="))
     end
   end
 

@@ -6,15 +6,22 @@ module YoutubeUrl
   EMBED_URL_PREFIX = "https://#{EMBED_HOST}/embed/".freeze
   EMBED_HOSTS = [EMBED_DOMAIN, "youtube.com"].freeze
   VIDEO_HOSTS = (EMBED_HOSTS + ["youtu.be"]).freeze
+  DEFAULT_PORTS = { "http" => 80, "https" => 443 }.freeze
+  RESERVED_QUERY_KEYS = %w[start t time_continue origin widget_referrer].freeze
   TIME_MARKER_TO_SECONDS = { "h" => 3600, "m" => 60, "s" => 1 }.freeze
 
   module_function
 
-  def embed_url(video_id, start_time: nil)
+  def embed_url(video_id, start_time: nil, params: {})
     return if video_id.blank?
 
-    query = start_time.present? ? "?start=#{start_time}" : ""
-    "#{EMBED_URL_PREFIX}#{video_id}#{query}"
+    embed_params = (params || {}).dup
+    embed_params.compact!
+    embed_params.merge!(default_embed_params)
+    embed_params["start"] = start_time if start_time.present?
+
+    query_string = embed_params.compact.blank? ? "" : "?#{URI.encode_www_form(embed_params)}"
+    "#{EMBED_URL_PREFIX}#{video_id}#{query_string}"
   end
 
   def embed_url?(url)
@@ -50,7 +57,8 @@ module YoutubeUrl
     video_id = extract_video_id(url)
     return url if video_id.blank?
 
-    embed_url(video_id, start_time: extract_start_time(url)) || url
+    preserved_params = extract_preserved_params(url)
+    embed_url(video_id, start_time: extract_start_time(url), params: preserved_params) || url
   end
 
   def normalize_embed_html(html)
@@ -115,6 +123,41 @@ module YoutubeUrl
     nil
   end
 
+  def extract_preserved_params(url)
+    uri = build_uri(url)
+    return {} unless uri
+
+    params = Rack::Utils.parse_query(uri.query.to_s)
+    params.except!(*RESERVED_QUERY_KEYS)
+    params
+  end
+
+  def default_embed_params
+    origin = base_origin
+    return {} unless origin
+
+    { "origin" => origin, "widget_referrer" => origin }
+  end
+
+  def base_origin
+    @base_origin ||= begin
+      base_url = URL.url(nil)
+      parsed = URI.parse(base_url)
+      scheme = parsed.scheme.presence || "https"
+      host = parsed.host.presence || base_url
+      port = parsed.port
+      default_port = DEFAULT_PORTS[scheme]
+      port_segment = if port && port != default_port
+                       ":#{port}"
+                     else
+                       ""
+                     end
+      "#{scheme}://#{host}#{port_segment}"
+    rescue StandardError
+      nil
+    end
+  end
+
   def extract_from_fragment(fragment)
     return if fragment.blank?
 
@@ -122,5 +165,6 @@ module YoutubeUrl
     match[1] if match
   end
 
-  private_class_method :convert_time_parameter, :normalized_host, :build_uri, :extract_from_fragment
+  private_class_method :convert_time_parameter, :normalized_host, :build_uri, :extract_from_fragment,
+                      :extract_preserved_params, :default_embed_params, :base_origin
 end
