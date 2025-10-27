@@ -406,35 +406,4 @@ RSpec.describe ApplicationHelper do
       expect(content).to include(%(<p class="something js-policy-article-create">My Content</p>))
     end
   end
-
-  describe "#sanitize_rendered_markdown" do
-    it "converts youtube embeds to the nocookie domain" do
-      html = '<iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?t=45"></iframe>'
-
-      sanitized = helper.sanitize_rendered_markdown(html)
-
-      src = Nokogiri::HTML.fragment(sanitized).at_css("iframe")&.[]("src")
-      expect(src).to start_with("https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ")
-      params = URI.parse(src).query.to_s.split("&")
-      expect(params).to include("start=45")
-      expect(params).to include(a_string_starting_with("origin="))
-      iframe = Nokogiri::HTML.fragment(sanitized).at_css("iframe")
-      expect(iframe["allow"]).to include("web-share")
-      expect(iframe["referrerpolicy"]).to eq("strict-origin-when-cross-origin")
-    end
-  end
-
-  describe "#youtube_embed_url?" do
-    it "returns true for youtube-nocookie embeds" do
-      expect(helper.youtube_embed_url?("https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ")).to be true
-    end
-
-    it "returns true for legacy youtube embeds" do
-      expect(helper.youtube_embed_url?("https://www.youtube.com/embed/dQw4w9WgXcQ")).to be true
-    end
-
-    it "returns false for non-youtube urls" do
-      expect(helper.youtube_embed_url?("https://player.vimeo.com/video/123")).to be false
-    end
-  end
 end

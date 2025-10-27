@@ -455,25 +455,4 @@ RSpec.describe Html::Parser, type: :service do
     end
     # rubocop:enable Rails/DynamicFindBy
   end
-
-  describe "#normalize_youtube_embed_domains" do
-    it "rewrites youtube embed iframes to use youtube-nocookie" do
-      html = '<iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ"></iframe>'
-
-      result = described_class.new(html).normalize_youtube_embed_domains.html
-
-      expect(result).to include("https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ")
-      iframe = Nokogiri::HTML.fragment(result).at_css("iframe")
-      expect(iframe["allow"]).to include("web-share")
-      expect(iframe["referrerpolicy"]).to eq("strict-origin-when-cross-origin")
-    end
-
-    it "preserves non youtube embeds" do
-      html = '<iframe src="https://player.vimeo.com/video/123"></iframe>'
-
-      result = described_class.new(html).normalize_youtube_embed_domains.html
-
-      expect(result).to eq(html)
-    end
-  end
 end

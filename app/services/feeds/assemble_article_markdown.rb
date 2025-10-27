@@ -130,17 +130,12 @@ module Feeds
 
     def parse_and_translate_youtube_iframe!(html_doc)
       html_doc.css("iframe").each do |iframe|
-        src = iframe.attributes["src"]&.value.to_s
-        next unless YoutubeUrl.embed_url?(src)
-
-        video_id = YoutubeUrl.extract_video_id(src)
-        next if video_id.blank?
-
-        start_time = YoutubeUrl.extract_start_time(src)
+        next unless iframe.attributes["src"].value.include?("youtube.com")
 
         iframe.name = "p"
+        youtube_id = iframe.attributes["src"].value.scan(/embed%2F(.{4,11})/).flatten.first
         iframe.keys.each { |attr| iframe.remove_attribute(attr) } # rubocop:disable Style/HashEachMethods
-        iframe.inner_html = "{% youtube #{start_time.present? ? "#{video_id}?start=#{start_time}" : video_id} %}"
+        iframe.inner_html = "{% youtube #{youtube_id} %}"
       end
     end
 

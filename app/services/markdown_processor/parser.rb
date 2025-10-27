@@ -166,7 +166,6 @@ module MarkdownProcessor
         .prefix_all_images(**prefix_images_options)
         .wrap_all_images_in_links
         .enforce_gif_like_videos
-        .normalize_youtube_embed_domains
         .add_control_class_to_codeblock
         .add_control_panel_to_codeblock
         .add_fullscreen_button_to_panel

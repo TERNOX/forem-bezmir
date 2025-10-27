@@ -278,11 +278,6 @@ module Html
       self
     end
 
-    def normalize_youtube_embed_domains
-      @html = YoutubeUrl.normalize_embed_html(@html)
-      self
-    end
-
     private
 
     def img_of_size(source, width = 1500, quality: 81)
