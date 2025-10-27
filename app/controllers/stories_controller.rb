@@ -53,11 +53,9 @@ class StoriesController < ApplicationController
   def short_link
     article = Article.published.find_by(id: params[:id])
 
-    if article&.path.present?
-      redirect_permanently_to(Addressable::URI.parse(article.path).path)
-    else
-      not_found
-    end
+    return not_found unless article
+
+    redirect_permanently_to(short_link_destination_for(article))
   end
 
   private
@@ -116,6 +114,12 @@ class StoriesController < ApplicationController
     end
 
     not_found
+  end
+
+  def short_link_destination_for(article)
+    destination = article.path.presence || "/#{article.username}/#{article.slug}"
+
+    Addressable::URI.parse(destination).to_s
   end
 
   def handle_user_or_organization_or_podcast_or_page_index

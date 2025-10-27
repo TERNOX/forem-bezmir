@@ -30,7 +30,7 @@
           <button
             id="copy-post-url-button"
             class="flex justify-between crayons-link crayons-link--block w-100 bg-transparent border-0"
-            data-postUrl="<%= article_url(@article) %>">
+            data-postUrl="<%= article_short_url(@article) %>">
             <span class="fw-bold"><%= t("views.actions.copy.button") %></span>
             <%= crayons_icon_tag(:copy, class: "mx-2 shrink-0", id: "article-copy-icon", aria_hidden: true, title: t("views.actions.copy.button")) %>
           </button>
@@ -44,33 +44,33 @@
             rel="noopener"
             href='https://twitter.com/intent/tweet?text=<%= u t("views.actions.share.twitter.query",
                                                                 article: @article.title.strip,
-                                                                author: @article.user.twitter_username ? "@#{@article.user.twitter_username}" : @article.user.name) %><%= u " #{Settings::General.twitter_hashtag}" %><%= u " #{article_url(@article)}" %>'>
+                                                                author: @article.user.twitter_username ? "@#{@article.user.twitter_username}" : @article.user.name) %><%= u " #{Settings::General.twitter_hashtag}" %><%= u " #{article_short_url(@article)}" %>'>
             <%= t("views.actions.share.twitter.text") %>
           </a>
           <a
             target="_blank"
             class="crayons-link crayons-link--block"
             rel="noopener"
-            href="https://www.linkedin.com/shareArticle?mini=true&url=<%= u article_url(@article) %>&title=<%= u @article.title %>&summary=<%= u @article.description %>&source=<%= u community_name %>">
+            href="https://www.linkedin.com/shareArticle?mini=true&url=<%= u article_short_url(@article) %>&title=<%= u @article.title %>&summary=<%= u @article.description %>&source=<%= u community_name %>">
             <%= t("views.actions.share.linkedin.text") %>
           </a>
           <a
             target="_blank"
             class="crayons-link crayons-link--block"
             rel="noopener"
-            href="https://www.facebook.com/sharer.php?u=<%= u article_url(@article) %>">
+            href="https://www.facebook.com/sharer.php?u=<%= u article_short_url(@article) %>">
             <%= t("views.actions.share.facebook.text") %>
           </a>
           <a
             target="_blank"
             class="crayons-link crayons-link--block"
             rel="noopener"
-            href="https://toot.kytta.dev/?text=<%= u article_url(@article) %>">
+            href="https://toot.kytta.dev/?text=<%= u article_short_url(@article) %>">
             <%= t("views.actions.share.mastodon.text") %>
           </a>
         </div>
 
-        <web-share-wrapper shareurl="<%= article_url(@article) %>" sharetitle="<%= @article.title %>" sharetext="<%= @article.description %>" template="web-share-button">
+        <web-share-wrapper shareurl="<%= article_short_url(@article) %>" sharetitle="<%= @article.title %>" sharetext="<%= @article.description %>" template="web-share-button">
         </web-share-wrapper>
         <template id="web-share-button">
           <a href="#" class="dropdown-link-row crayons-link crayons-link--block"><%= t("views.actions.share.link") %></a>

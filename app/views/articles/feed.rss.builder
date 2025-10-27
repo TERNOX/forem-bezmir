@@ -43,9 +43,9 @@ xml.rss(:version => "2.0",
         xml.title article.title
         xml.tag!("dc:creator", user.instance_of?(User) ? user.name : article.user.name)
         xml.pubDate article.published_at.to_fs(:rfc822) if article.published_at
-        short_link = short_article_path(article.id)
-        xml.link app_url(short_link)
-        xml.guid app_url(short_link)
+        short_link = article_short_url(article)
+        xml.link short_link
+        xml.guid short_link
         xml.description sanitize(article.plain_html,
                                  tags: allowed_tags, attributes: allowed_attributes, scrubber: scrubber)
         image_url = article_social_image_url(article)

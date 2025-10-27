@@ -8,7 +8,7 @@
   <input value="1" autocomplete="off" type="hidden" name="article[published]" id="article_published">
   <% if @article && @article.published == true && @user && !Rails.env.test? %>
     <%= render "articles/liquid", article: @article, title: @article.title %>
-    <input value="<%= article_url(@article) %>" autocomplete="off" type="hidden" name="article[body_url]" id="article_body_url">
+    <input value="<%= article_short_url(@article) %>" autocomplete="off" type="hidden" name="article[body_url]" id="article_body_url">
   <% else %>
     <input value="" autocomplete="off" type="hidden" name="article[body_markdown]" id="article_body_markdown">
   <% end %>
