@@ -162,7 +162,7 @@
               <%= crayons_icon_tag("small-comment", title: t("views.comments.summary.title")) %>
               <%= t("views.comments.summary.count_html",
                     count: story.comments_count,
-                    start: tag("span", { class: %w[hidden s:inline] }, true),
+                    start: tag("span", { class: %w[hidden s:inline], style: "padding-left: 4px;" }, true),
                     end: "</span>".html_safe) %>
             </a>
           <% else %>
