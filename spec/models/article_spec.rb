@@ -1331,6 +1331,144 @@ RSpec.describe Article do
     end
   end
 
+  describe "#assign_youtube_thumbnail_as_cover_image" do
+    let(:thumbnail_url) { "https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg" }
+
+    context "when markdown includes a YouTube URL" do
+      let(:article) do
+        build(:article,
+              user: user,
+              with_main_image: false,
+              body_markdown: "Check this out https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+      end
+
+      it "sets the main image to the video thumbnail" do
+        article.valid?
+
+        expect(article.main_image).to eq(thumbnail_url)
+        expect(article.video_thumbnail_url).to eq(thumbnail_url)
+      end
+    end
+
+    context "when markdown uses the youtube liquid tag" do
+      let(:article) do
+        build(:article,
+              user: user,
+              with_main_image: false,
+              body_markdown: "Some content\n\n{% youtube dQw4w9WgXcQ %}")
+      end
+
+      it "derives the thumbnail from the tag" do
+        article.valid?
+
+        expect(article.main_image).to eq(thumbnail_url)
+      end
+    end
+
+    context "when video_source_url is a YouTube link" do
+      let(:article) do
+        build(:article,
+              user: user,
+              with_main_image: false,
+              body_markdown: "YouTube source",
+              video_source_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+      end
+
+      it "prefers the YouTube source URL" do
+        article.valid?
+
+        expect(article.main_image).to eq(thumbnail_url)
+      end
+    end
+
+    context "when a cover image already exists" do
+      let(:existing_image) { "https://example.com/existing.png" }
+      let(:article) do
+        build(:article,
+              user: user,
+              with_main_image: false,
+              main_image: existing_image,
+              body_markdown: "https://youtu.be/dQw4w9WgXcQ")
+      end
+
+      it "does not override the existing cover image" do
+        article.valid?
+
+        expect(article.main_image).to eq(existing_image)
+      end
+    end
+  end
+
+  describe "#assign_youtube_embed_from_content" do
+    let(:embed_url) { "https://www.youtube.com/embed/dQw4w9WgXcQ" }
+    let(:thumbnail_url) { "https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg" }
+
+    context "when the body contains a YouTube URL" do
+      let(:article) do
+        build(:article,
+              user: user,
+              with_main_image: false,
+              body_markdown: "Some intro https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+      end
+
+      it "sets the video field to the embed URL" do
+        article.valid?
+
+        expect(article.video).to eq(embed_url)
+        expect(article.video_thumbnail_url).to eq(thumbnail_url)
+        expect(article.social_image).to eq(thumbnail_url)
+      end
+    end
+
+    context "when the body contains a YouTube liquid tag" do
+      let(:article) do
+        build(:article,
+              user: user,
+              with_main_image: false,
+              body_markdown: "Content\n\n{% youtube dQw4w9WgXcQ %}")
+      end
+
+      it "derives the embed URL from the tag" do
+        article.valid?
+
+        expect(article.video).to eq(embed_url)
+      end
+    end
+
+    context "when the article already has a cover image" do
+      let(:existing_image) { "https://example.com/cover.png" }
+      let(:article) do
+        build(:article,
+              user: user,
+              main_image: existing_image,
+              body_markdown: "https://youtu.be/dQw4w9WgXcQ")
+      end
+
+      it "does not override the video field" do
+        article.valid?
+
+        expect(article.video).not_to eq(embed_url)
+      end
+    end
+
+    context "when the article already has a video" do
+      let(:existing_video) { "https://player.example.com/video" }
+      let(:article) do
+        build(:article,
+              user: user,
+              video: existing_video,
+              with_main_image: false,
+              body_markdown: "https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+      end
+
+      it "keeps the existing video" do
+        article.valid?
+
+        expect(article.video).to eq(existing_video)
+      end
+    end
+  end
+
   describe "#main_image_from_frontmatter" do
     let(:article) { create(:article, user: user, main_image_from_frontmatter: false) }
 
@@ -2633,12 +2771,12 @@ RSpec.describe Article do
     let(:prior_domain) { "https://old.cdn.com" }
     let(:new_domain) { "https://new.cdn.com" }
 
-    before do
-      allow(ApplicationConfig).to receive(:[]).with("PRIOR_CLOUDFLARE_IMAGES_DOMAIN").and_return(prior_domain)
-      allow(ApplicationConfig).to receive(:[]).with("CLOUDFLARE_IMAGES_DOMAIN").and_return(new_domain)
-    end
-
     context "when the prior domain and new domain are both present" do
+      before do
+        allow(ApplicationConfig).to receive(:[]).with("PRIOR_CLOUDFLARE_IMAGES_DOMAIN").and_return(prior_domain)
+        allow(ApplicationConfig).to receive(:[]).with("CLOUDFLARE_IMAGES_DOMAIN").and_return(new_domain)
+      end
+
       it "replaces instances of the prior domain with the new domain" do
         article.processed_html = "Here is an image <img src='#{prior_domain}/image1.jpg'> and another <img src='#{prior_domain}/image2.jpg'>."
         expect(article.processed_html_final).to eq("Here is an image <img src='#{new_domain}/image1.jpg'> and another <img src='#{new_domain}/image2.jpg'>.")
@@ -2659,6 +2797,31 @@ RSpec.describe Article do
       it "returns the original processed_html unchanged" do
         article.processed_html = "Content with the old domain #{prior_domain}."
         expect(article.processed_html_final).to eq("Content with the old domain #{prior_domain}.")
+      end
+    end
+
+    context "when the article uses a YouTube cover embed" do
+      before do
+        allow(ApplicationConfig).to receive(:[]).with("PRIOR_CLOUDFLARE_IMAGES_DOMAIN").and_return(nil)
+        allow(ApplicationConfig).to receive(:[]).with("CLOUDFLARE_IMAGES_DOMAIN").and_return(nil)
+        article.video = "https://www.youtube.com/embed/dQw4w9WgXcQ"
+        article.body_markdown = "https://youtu.be/dQw4w9WgXcQ"
+      end
+
+      it "removes the first matching iframe from the processed_html" do
+        article.processed_html = "<p>Intro</p><p><iframe src=\"https://www.youtube.com/embed/dQw4w9WgXcQ\" allowfullscreen></iframe></p><p>Outro</p>"
+
+        expect(article.processed_html_final).to eq("<p>Intro</p><p>Outro</p>")
+      end
+
+      it "handles embed URLs that include additional query parameters" do
+        article.video = "https://www.youtube.com/embed/dQw4w9WgXcQ?start=60"
+        article.processed_html = "<div class=\"embed\"><iframe src=\"https://www.youtube.com/embed/dQw4w9WgXcQ?start=60\" allowfullscreen></iframe></div><p>Content</p>"
+
+        result = article.processed_html_final
+
+        expect(result).not_to include("youtube.com/embed/dQw4w9WgXcQ")
+        expect(result).to include("<p>Content</p>")
       end
     end
   end

@@ -54,6 +54,8 @@ class Article < ApplicationRecord
   BIDI_CONTROL_CHARACTERS = /[\u061C\u200E\u200F\u202a-\u202e\u2066-\u2069]/
 
   MAX_TAG_LIST_SIZE = 6
+  YOUTUBE_URL_ID_REGEX = %r{(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([A-Za-z0-9_-]{11})}i
+  YOUTUBE_LIQUID_TAG_REGEX = /\{%\s*youtube\s+([A-Za-z0-9_-]{11})/i
 
   # Filter out anything that isn't a word, space, punctuation mark,
   # recognized emoji, and other auxiliary marks.
@@ -286,6 +288,8 @@ class Article < ApplicationRecord
   before_validation :remove_prohibited_unicode_characters
   before_validation :remove_invalid_published_at
   before_validation :get_youtube_embed_url
+  before_validation :assign_youtube_embed_from_content
+  before_validation :assign_youtube_thumbnail_as_cover_image
   before_validation :set_default_subforem_id
   before_save :set_cached_entities
   before_save :set_all_dates
@@ -573,15 +577,17 @@ class Article < ApplicationRecord
   end
 
   def processed_html_final
-    # This is a final non-database-driven step to adjust processed html
-    # It is sort of a hack to avoid having to reprocess all articles
-    # It is currently only for this one cloudflare domain change
-    # It is duplicated across article, bullboard and comment where it is most needed
-    # In the future this could be made more customizable. For now it's just this one thing.
-    return processed_html if ApplicationConfig["PRIOR_CLOUDFLARE_IMAGES_DOMAIN"].blank? || ApplicationConfig["CLOUDFLARE_IMAGES_DOMAIN"].blank?
+    return processed_html if processed_html.blank?
 
-    processed_html.gsub(ApplicationConfig["PRIOR_CLOUDFLARE_IMAGES_DOMAIN"],
-                        ApplicationConfig["CLOUDFLARE_IMAGES_DOMAIN"])
+    html = processed_html.dup
+    html = remove_youtube_cover_embed(html)
+
+    prior_domain = ApplicationConfig["PRIOR_CLOUDFLARE_IMAGES_DOMAIN"]
+    new_domain = ApplicationConfig["CLOUDFLARE_IMAGES_DOMAIN"]
+
+    return html if prior_domain.blank? || new_domain.blank?
+
+    html.gsub(prior_domain, new_domain)
   end
 
   def scheduled?
@@ -1006,6 +1012,33 @@ class Article < ApplicationRecord
     rescue StandardError => e
       Rails.logger.error("Error parsing YouTube video URL: #{e.message}")
     end
+  end
+
+  def assign_youtube_embed_from_content
+    return if video.present?
+    return if main_image.present?
+
+    embed_url = youtube_embed_from_content
+    return unless embed_url
+
+    self.video = embed_url
+
+    thumbnail = youtube_thumbnail_from_content
+    return unless thumbnail
+
+    self.video_thumbnail_url ||= thumbnail
+    self.social_image ||= thumbnail
+  end
+
+  def assign_youtube_thumbnail_as_cover_image
+    return if main_image.present?
+
+    thumbnail = youtube_thumbnail_from_content
+    return unless thumbnail
+
+    self.main_image = thumbnail
+    self.video_thumbnail_url ||= thumbnail
+    self.social_image ||= thumbnail
   end
 
   def set_markdown_from_body_url
@@ -1490,6 +1523,73 @@ class Article < ApplicationRecord
   end
 
   private
+
+  def youtube_thumbnail_from_content
+    if video_source_url.present?
+      parser = YoutubeParser.new(video_source_url)
+      thumbnail = parser.thumbnail_url
+      return thumbnail if thumbnail.present?
+    end
+
+    video_id = youtube_video_id_from_body_markdown
+    return unless video_id
+
+    "https://img.youtube.com/vi/#{video_id}/hqdefault.jpg"
+  end
+
+  def youtube_embed_from_content
+    if video_source_url.present?
+      embed_url = YoutubeParser.new(video_source_url).call
+      return embed_url if embed_url.present?
+    end
+
+    video_id = youtube_video_id_from_body_markdown
+    return unless video_id
+
+    YoutubeParser.new("https://youtu.be/#{video_id}").call
+  end
+
+  def youtube_video_id_from_body_markdown
+    return unless body_markdown.present?
+
+    if (liquid_match = body_markdown.match(YOUTUBE_LIQUID_TAG_REGEX))
+      liquid_match[1]
+    elsif (url_match = body_markdown.match(YOUTUBE_URL_ID_REGEX))
+      url_match[1]
+    end
+  end
+
+  def remove_youtube_cover_embed(html)
+    return html unless video.present? && video.include?("youtube.com/embed/")
+
+    embed_candidates = [video.to_s, video.to_s.split("?").first].compact.uniq
+    if (video_id = youtube_video_id_from_body_markdown)
+      embed_candidates << "https://www.youtube.com/embed/#{video_id}"
+    end
+
+    embed_candidates.each do |candidate|
+      stripped_html = strip_first_youtube_iframe(html, candidate)
+      return stripped_html if stripped_html != html
+    end
+
+    html
+  end
+
+  def strip_first_youtube_iframe(html, src_prefix)
+    src_match = "src=[\"']#{Regexp.escape(src_prefix)}[^\"']*[\"']"
+    patterns = [
+      Regexp.new("<figure[^>]*>\\s*<iframe[^>]*#{src_match}[^>]*></iframe>\\s*</figure>\\s*", Regexp::IGNORECASE | Regexp::MULTILINE),
+      Regexp.new("<div[^>]*>\\s*<iframe[^>]*#{src_match}[^>]*></iframe>\\s*</div>\\s*", Regexp::IGNORECASE | Regexp::MULTILINE),
+      Regexp.new("<p[^>]*>\\s*<iframe[^>]*#{src_match}[^>]*></iframe>\\s*</p>\\s*", Regexp::IGNORECASE | Regexp::MULTILINE),
+      Regexp.new("<iframe[^>]*#{src_match}[^>]*></iframe>\\s*", Regexp::IGNORECASE | Regexp::MULTILINE)
+    ]
+
+    patterns.each do |pattern|
+      return html.sub(pattern, "") if html.match?(pattern)
+    end
+
+    html
+  end
 
   def should_add_urls_from_title?
     # Only add URLs from title for quickie posts (status type) that have a title with URLs
