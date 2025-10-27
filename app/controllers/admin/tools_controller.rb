@@ -146,6 +146,8 @@ module Admin
         intro_markdown: ::Settings::General.top_articles_digest_intro_markdown,
         frequency: ::Settings::General.top_articles_digest_frequency,
         article_limit: ::Settings::General.top_articles_digest_article_limit,
+        publish_time: ::Settings::General.top_articles_digest_publish_time,
+        badge_time: ::Settings::General.top_articles_digest_badge_time,
         badge_slug: ::Settings::General.top_articles_badge_slug,
         excluded_organization_ids: Array(::Settings::General.top_articles_digest_excluded_organization_ids).join(", "),
       }
@@ -162,6 +164,8 @@ module Admin
       ::Settings::General.set_top_articles_digest_intro_markdown(permitted[:intro_markdown])
       ::Settings::General.set_top_articles_digest_frequency(permitted[:frequency])
       ::Settings::General.set_top_articles_digest_article_limit(permitted[:article_limit].presence)
+      ::Settings::General.set_top_articles_digest_publish_time(normalized_time(permitted[:publish_time]))
+      ::Settings::General.set_top_articles_digest_badge_time(normalized_time(permitted[:badge_time]))
       ::Settings::General.set_top_articles_badge_slug(permitted[:badge_slug])
       ::Settings::General.set_top_articles_digest_excluded_organization_ids(
         parse_id_list(permitted[:excluded_organization_ids])
@@ -247,6 +251,8 @@ module Admin
         :intro_markdown,
         :frequency,
         :article_limit,
+        :publish_time,
+        :badge_time,
         :badge_slug,
         :excluded_organization_ids,
       )
@@ -264,6 +270,10 @@ module Admin
           id if id.positive?
         end
         .uniq
+    end
+
+    def normalized_time(value)
+      TimeOfDaySetting.normalize(value) || "00:00"
     end
 
     def handle_dead_path
