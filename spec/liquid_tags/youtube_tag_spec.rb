@@ -48,6 +48,13 @@ RSpec.describe YoutubeTag, type: :liquid_tag do
       expect(result).to include("https://www.youtube.com/embed/#{valid_id}")
     end
 
+    it "adds the recommended iframe attributes" do
+      result = Liquid::Template.parse("{% youtube #{valid_id} %}").render
+      expect(result).to include('title="YouTube video player"')
+      expect(result).to include('referrerpolicy="strict-origin-when-cross-origin"')
+      expect(result).to include('allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"')
+    end
+
     it "raises an error for invalid IDs" do
       expect do
         generate_tag("invalid-id")
