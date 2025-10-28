@@ -55,6 +55,24 @@ RSpec.describe "/admin/advanced/tools" do
     end
   end
 
+  describe "POST /admin/advanced/tools/resave_published_articles" do
+    let(:super_admin) { create(:user, :super_admin) }
+
+    before do
+      sign_in super_admin
+    end
+
+    it "enqueues a job to resave published articles" do
+      allow(Articles::ResavePublishedWorker).to receive(:perform_async)
+
+      post resave_published_articles_admin_tools_path
+
+      expect(response).to redirect_to(admin_tools_path)
+      expect(Articles::ResavePublishedWorker).to have_received(:perform_async)
+      expect(flash[:success]).to eq(I18n.t("admin.tools_controller.resave_published_articles.enqueued"))
+    end
+  end
+
   describe "top articles digest actions" do
     let(:super_admin) { create(:user, :super_admin) }
     let(:api_secret) { create(:api_secret) }

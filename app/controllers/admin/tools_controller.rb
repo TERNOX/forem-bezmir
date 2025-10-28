@@ -81,6 +81,15 @@ module Admin
       redirect_to admin_tools_path
     end
 
+    def resave_published_articles
+      Articles::ResavePublishedWorker.perform_async
+      flash[:success] = I18n.t("admin.tools_controller.resave_published_articles.enqueued")
+    rescue StandardError => e
+      flash[:danger] = e.message
+    ensure
+      redirect_to admin_tools_path
+    end
+
     def publish_top_articles_digest_test
       publisher = build_digest_publisher
       errors = publisher.publication_errors

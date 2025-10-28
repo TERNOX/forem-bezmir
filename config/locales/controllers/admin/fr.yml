@@ -173,6 +173,8 @@ fr:
       link_busted: "%{link} a été cassé avec succès"
       top_articles_digest_updated: "Paramètres du récapitulatif des meilleurs articles mis à jour"
       top_articles_digest_missing: "Impossible de mettre à jour le récapitulatif : configuration manquante"
+      resave_published_articles:
+        enqueued: "Tous les articles publiés seront réenregistrés en arrière-plan. Les contenus embarqués seront reconstruits sous peu."
     users_controller:
       exported: Données exportées vers le %{receiver}. Le travail sera terminé dans un instant.
       email_fail: L'envoi de l'e-mail a échoué !

@@ -39,6 +39,14 @@
 </div>
 
 <div class="crayons-card p-6 mb-6">
+  <h2 class="crayons-subtitle-1 mb-4"><%= t("views.admin.tools.resave_published.heading") %></h2>
+  <p class="mb-6"><%= t("views.admin.tools.resave_published.description_html") %></p>
+  <%= form_with url: resave_published_articles_admin_tools_path, method: :post, local: true do %>
+    <%= submit_tag t("views.admin.tools.resave_published.submit"), class: "crayons-btn" %>
+  <% end %>
+</div>
+
+<div class="crayons-card p-6 mb-6">
   <h2 class="crayons-subtitle-1 mb-4"><%= t("views.admin.tools.top_seven.heading") %></h2>
   <p class="mb-6"><%= t("views.admin.tools.top_seven.description_html") %></p>
 
