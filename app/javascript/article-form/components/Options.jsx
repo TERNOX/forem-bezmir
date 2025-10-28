@@ -46,7 +46,7 @@ export const Options = ({
     });
     existingSeries = (
       <div className="crayons-field__description">
-        Existing series:
+        Існуючі серії:
         <select
           value=""
           name="series"
@@ -113,7 +113,7 @@ export const Options = ({
         <input
           aria-label="Schedule publication time"
           type="time"
-          value="Kyiv"
+          value={publishedAtTime}
           className="crayons-textfield"
           name="publishedAtTime"
           onChange={onConfigChange}
@@ -129,8 +129,8 @@ export const Options = ({
           placeholder="..."
         />
         <div className="crayons-field__description">
-          Post will be scheduled using your local time (<strong>{timezone}</strong>).
-          It is currently <strong>{localTime}</strong> on <strong>{localDate}</strong> in your timezone.
+          Допис буде заплановано і опубліковано у заданий час.
+          Зараз <strong>{localTime}</strong> <strong>{localDate}</strong>.
         </div>
       </div>
     );
@@ -141,7 +141,7 @@ export const Options = ({
       <Button
         id="post-options-btn"
         icon={CogIcon}
-        title="Post options"
+        title="Параметри допису"
         aria-label="Post options"
         disabled={previewLoading}
       />
