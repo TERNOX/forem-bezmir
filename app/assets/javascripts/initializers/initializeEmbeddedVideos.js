@@ -63,6 +63,77 @@ function loadHighestQualityThumbnail(container) {
   tryQuality(0);
 }
 
+function attachTrigger(placeholder, trigger) {
+  trigger.addEventListener('click', () => {
+    if (placeholder.dataset.youtubeLoaded === 'true') {
+      return;
+    }
+
+    const iframe = createYouTubeIframe(placeholder);
+
+    if (!iframe) {
+      return;
+    }
+
+    placeholder.dataset.youtubeLoaded = 'true';
+    placeholder.classList.add('embedded-video--loaded');
+    trigger.replaceWith(iframe);
+  });
+}
+
+function resetEmbeddedVideo(placeholder) {
+  if (placeholder.dataset.youtubeLoaded !== 'true') {
+    return;
+  }
+
+  const iframe = placeholder.querySelector('iframe');
+
+  if (iframe) {
+    iframe.remove();
+  }
+
+  placeholder.classList.remove('embedded-video--loaded');
+  delete placeholder.dataset.youtubeLoaded;
+
+  const triggerTemplate = placeholder._youtubeTriggerTemplate;
+
+  if (triggerTemplate) {
+    const newTrigger = triggerTemplate.cloneNode(true);
+    placeholder.appendChild(newTrigger);
+    loadHighestQualityThumbnail(placeholder);
+    attachTrigger(placeholder, newTrigger);
+    placeholder.dataset.youtubeInitialized = 'true';
+  }
+}
+
+function resetAllEmbeddedVideos() {
+  const placeholders = document.querySelectorAll('.embedded-video[data-youtube-id]');
+
+  placeholders.forEach((placeholder) => {
+    resetEmbeddedVideo(placeholder);
+  });
+}
+
+let lifecycleListenersInitialized = false;
+
+function initializeLifecycleListeners() {
+  if (lifecycleListenersInitialized) {
+    return;
+  }
+
+  window.addEventListener('pagehide', () => {
+    resetAllEmbeddedVideos();
+  });
+
+  window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+      resetAllEmbeddedVideos();
+    }
+  });
+
+  lifecycleListenersInitialized = true;
+}
+
 function createYouTubeIframe(container) {
   const embedSrc = buildYouTubeEmbedUrl(container);
 
@@ -137,26 +208,18 @@ function initializeEmbeddedVideos(rootNode) {
       return;
     }
 
+    if (!placeholder._youtubeTriggerTemplate) {
+      placeholder._youtubeTriggerTemplate = trigger.cloneNode(true);
+    }
+
     placeholder.dataset.youtubeInitialized = 'true';
 
     loadHighestQualityThumbnail(placeholder);
 
-    trigger.addEventListener('click', () => {
-      if (placeholder.dataset.youtubeLoaded === 'true') {
-        return;
-      }
-
-      const iframe = createYouTubeIframe(placeholder);
-
-      if (!iframe) {
-        return;
-      }
-
-      placeholder.dataset.youtubeLoaded = 'true';
-      placeholder.classList.add('embedded-video--loaded');
-      trigger.replaceWith(iframe);
-    });
+    attachTrigger(placeholder, trigger);
   });
+
+  initializeLifecycleListeners();
 }
 
 window.initializeEmbeddedVideos = initializeEmbeddedVideos;
