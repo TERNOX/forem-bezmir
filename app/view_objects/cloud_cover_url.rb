@@ -10,7 +10,7 @@ class CloudCoverUrl
     return if url.blank?
     return url if Rails.env.development?
 
-    width = 1400
+    width = 1238
     height = Settings::UserExperience.cover_image_height(subforem_id: @subforem_id)
     crop = Settings::UserExperience.cover_image_fit(subforem_id: @subforem_id)
 
