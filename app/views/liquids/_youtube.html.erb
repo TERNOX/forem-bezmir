@@ -7,11 +7,13 @@
   data-youtube-width="<%= width %>"
   data-youtube-height="<%= height %>"
   data-youtube-title="<%= player_title %>"
+  data-youtube-thumbnail-id="<%= thumbnail_id %>"
 >
   <button type="button" class="embedded-video__trigger" aria-label="<%= play_label %>">
     <img
       class="embedded-video__thumbnail"
-      src="https://img.youtube.com/vi/<%= thumbnail_id %>/sddefault.jpg"
+      src="https://img.youtube.com/vi/<%= thumbnail_id %>/mqdefault.jpg"
+      data-youtube-thumbnail-quality="mqdefault"
       alt="<%= t("views.youtube.thumbnail_alt", default: "Preview image for the video") %>"
       loading="lazy"
       decoding="async"

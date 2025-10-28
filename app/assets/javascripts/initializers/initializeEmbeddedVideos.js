@@ -1,3 +1,68 @@
+const THUMBNAIL_QUALITIES = [
+  'maxresdefault',
+  'sddefault',
+  'hqdefault',
+  'mqdefault',
+  'default',
+];
+
+const LOW_RES_WIDTH = 120;
+const LOW_RES_HEIGHT = 90;
+
+function loadHighestQualityThumbnail(container) {
+  const thumbnail = container.querySelector('.embedded-video__thumbnail');
+  const videoId = container.dataset.youtubeThumbnailId;
+
+  if (!thumbnail || !videoId) {
+    return;
+  }
+
+  let resolved = false;
+
+  const tryQuality = (index) => {
+    if (resolved || index >= THUMBNAIL_QUALITIES.length) {
+      return;
+    }
+
+    const quality = THUMBNAIL_QUALITIES[index];
+    const probe = new Image();
+
+    probe.decoding = 'async';
+    probe.loading = 'eager';
+
+    probe.addEventListener('error', () => {
+      tryQuality(index + 1);
+    });
+
+    probe.addEventListener('load', () => {
+      if (resolved) {
+        return;
+      }
+
+      if (
+        quality !== 'default' &&
+        probe.naturalWidth <= LOW_RES_WIDTH &&
+        probe.naturalHeight <= LOW_RES_HEIGHT
+      ) {
+        tryQuality(index + 1);
+        return;
+      }
+
+      thumbnail.src = probe.src;
+      thumbnail.dataset.youtubeThumbnailQuality = quality;
+      resolved = true;
+    });
+
+    probe.src = `https://img.youtube.com/vi/${videoId}/${quality}.jpg`;
+  };
+
+  if (thumbnail.complete && thumbnail.naturalWidth === 0) {
+    thumbnail.removeAttribute('src');
+  }
+
+  tryQuality(0);
+}
+
 function createYouTubeIframe(container) {
   const videoId = container.dataset.youtubeId;
 
@@ -46,6 +111,8 @@ function initializeEmbeddedVideos(rootNode) {
     }
 
     placeholder.dataset.youtubeInitialized = 'true';
+
+    loadHighestQualityThumbnail(placeholder);
 
     trigger.addEventListener('click', () => {
       if (placeholder.dataset.youtubeLoaded === 'true') {
