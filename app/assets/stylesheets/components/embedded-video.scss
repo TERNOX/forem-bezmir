@@ -1,0 +1,100 @@
+.embedded-video {
+  position: relative;
+  display: block;
+  margin: 0 0 var(--su-7);
+  background-color: rgb(var(--black));
+  overflow: hidden;
+  border-radius: var(--radius);
+
+  &::before {
+    content: '';
+    display: block;
+    padding-top: 56.25%;
+  }
+
+  &__trigger,
+  &__thumbnail,
+  iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  &__trigger {
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    background: transparent;
+    display: block;
+    color: inherit;
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      transition: opacity var(--transition-props), transform var(--transition-props);
+      pointer-events: none;
+    }
+
+    &::before {
+      inset: auto;
+      top: 50%;
+      left: 50%;
+      width: 72px;
+      height: 52px;
+      background: url(asset-path('youtube.svg')) no-repeat 50% 50% / contain;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+      opacity: 1;
+    }
+
+    &::after {
+      background: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0) 25%,
+        rgba(0, 0, 0, 0.45) 100%
+      );
+      z-index: 1;
+      opacity: 1;
+    }
+
+    &:hover::before,
+    &:focus-visible::before,
+    .js-focus-visible &.focus-visible:focus::before {
+      transform: translate(-50%, -50%) scale(1.05);
+    }
+
+    &:hover::after,
+    &:focus-visible::after,
+    .js-focus-visible &.focus-visible:focus::after {
+      opacity: 0.65;
+    }
+
+    &:focus-visible,
+    .js-focus-visible &.focus-visible:focus {
+      outline: none;
+      box-shadow: var(--focus-ring);
+      border-radius: var(--radius);
+    }
+  }
+
+  &__thumbnail {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  iframe {
+    border: 0;
+  }
+
+  &--loaded {
+    .embedded-video__trigger::before,
+    .embedded-video__trigger::after {
+      opacity: 0;
+    }
+  }
+}

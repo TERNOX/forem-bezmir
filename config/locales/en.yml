@@ -38,6 +38,11 @@ en:
     article_form_loading_preview: Loading preview
     article_form_preview_loaded: Preview loaded
     comments_preview: Preview
+  views:
+    youtube:
+      play_video: "Play YouTube video"
+      video_title: "YouTube video player"
+      thumbnail_alt: "Preview image for the video"
     comments_continue_editing: Continue editing
     survey_enter_response: Enter your response here...
     survey_thank_you_response: Thank you for your response.
