@@ -164,6 +164,7 @@ namespace :admin do
         get "feed_playground"
         post "feed_playground"
         post "recalculate_reputation"
+        post "resave_published_articles"
         post "top_articles_digest/test_publish", to: "tools#publish_top_articles_digest_test", as: :top_articles_digest_test_publish
         post "top_articles_digest/test_badges", to: "tools#award_top_articles_digest_badges", as: :top_articles_digest_test_badges
       end

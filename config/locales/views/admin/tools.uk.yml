@@ -7,6 +7,10 @@ uk:
           description_html: "<strong>Resets</strong> all member reputation scores to match the number of likes their posts and comments have received."
           submit: Recalculate now
           success: "Recalculated reputation for %{users} members using %{likes} total post and comment likes."
+        resave_published:
+          heading: Перебудувати вбудовування у опублікованих матеріалах
+          description_html: "Запускає фонове завдання, яке <strong>повторно збереже всі наразі опубліковані матеріали</strong>, щоб перебудувати вбудовані медіа. Чернетки та заплановані публікації буде пропущено."
+          submit: Перезберегти опубліковані матеріали
         top_seven:
           heading: Weekly Top 7 preview
           description_html: "Preview the seven most reacted posts for each week. These are the articles that will be considered when awarding the Top 7 badge."

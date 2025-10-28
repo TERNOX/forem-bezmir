@@ -7,6 +7,10 @@ en:
           description_html: "<strong>Resets</strong> all member reputation scores to match the number of likes their posts and comments have received."
           submit: Recalculate now
           success: "Recalculated reputation for %{users} members using %{likes} total post and comment likes."
+        resave_published:
+          heading: Rebuild embeds in published articles
+          description_html: "Enqueue a background job to <strong>resave every currently published article</strong> so that embedded media is rebuilt. Drafts and scheduled posts are skipped."
+          submit: Resave published articles
         top_seven:
           heading: Weekly Top 7 preview
           description_html: "Preview the seven most reacted posts for each week. These are the articles that will be considered when awarding the Top 7 badge."
