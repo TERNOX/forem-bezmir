@@ -83,5 +83,7 @@ Rails.application.config.action_dispatch.default_headers = {
   "X-Content-Type-Options" => "nosniff",
   "X-Download-Options" => "noopen",
   "X-Permitted-Cross-Domain-Policies" => "none",
-  "Referrer-Policy" => "strict-origin-when-cross-origin"
+  "Referrer-Policy" => "strict-origin-when-cross-origin",
+  "Permissions-Policy" => "autoplay=(self \"https://www.youtube.com\")",
+  "Content-Security-Policy" => "frame-src https://www.youtube.com https: data:; img-src https://i.ytimg.com https://img.youtube.com data: https:;"
 }

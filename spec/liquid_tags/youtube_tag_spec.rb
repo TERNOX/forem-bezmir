@@ -19,13 +19,14 @@ RSpec.describe YoutubeTag, type: :liquid_tag do
     it "accepts a short URL" do
       result = generate_tag("https://youtu.be/#{valid_id}")
       src = iframe_src(result)
-      expect(src).to start_with("https://www.youtube-nocookie.com/embed/#{valid_id}")
+      expect(src).to start_with("https://www.youtube.com/embed/#{valid_id}")
+      expect(query_params_for(src)).to include("autoplay=1", "rel=0", "modestbranding=1", "playsinline=1")
     end
 
     it "accepts a short URL with 'si' parameter" do
       result = generate_tag("https://youtu.be/#{valid_id}?si=FPFWKE9g0PhQjAUE")
       src = iframe_src(result)
-      expect(src).to start_with("https://www.youtube-nocookie.com/embed/#{valid_id}")
+      expect(src).to start_with("https://www.youtube.com/embed/#{valid_id}")
       expect(query_params_for(src)).to include(a_string_starting_with("origin="))
     end
 
@@ -44,7 +45,7 @@ RSpec.describe YoutubeTag, type: :liquid_tag do
     it "accepts a full URL with 'v' parameter" do
       result = generate_tag("https://www.youtube.com/watch?v=#{valid_id}")
       src = iframe_src(result)
-      expect(src).to start_with("https://www.youtube-nocookie.com/embed/#{valid_id}")
+      expect(src).to start_with("https://www.youtube.com/embed/#{valid_id}")
     end
 
     it "accepts a full URL with 'v' and 't' parameters" do
@@ -56,13 +57,13 @@ RSpec.describe YoutubeTag, type: :liquid_tag do
     it "accepts a full URL with 'si' and 'v' parameters in different order" do
       result = generate_tag("https://www.youtube.com/watch?si=FPFWKE9g0PhQjAUE&v=#{valid_id}")
       src = iframe_src(result)
-      expect(src).to start_with("https://www.youtube-nocookie.com/embed/#{valid_id}")
+      expect(src).to start_with("https://www.youtube.com/embed/#{valid_id}")
     end
 
     it "accepts an ID only" do
       result = Liquid::Template.parse("{% youtube #{valid_id} %}").render
       src = iframe_src(result)
-      expect(src).to start_with("https://www.youtube-nocookie.com/embed/#{valid_id}")
+      expect(src).to start_with("https://www.youtube.com/embed/#{valid_id}")
     end
 
     it "raises an error for invalid IDs" do

@@ -50,8 +50,12 @@ module Middlewares
         # Set Content-Security-Policy header to allow embedding in iframes for all subforems
         headers.delete("X-Frame-Options")
         allowed_domains = Subforem.cached_all_domains + [Settings::General.app_domain]
-        csp_value = "frame-ancestors " + allowed_domains.map { |d| "https://#{d}" }.join(" ")
-        headers["Content-Security-Policy"] = csp_value
+        frame_ancestors_value = "frame-ancestors " + allowed_domains.map { |d| "https://#{d}" }.join(" ")
+        existing_csp = headers["Content-Security-Policy"].to_s
+        directives = existing_csp.split(";").map(&:strip).reject(&:blank?)
+        directives.reject! { |directive| directive.start_with?("frame-ancestors") }
+        directives << frame_ancestors_value
+        headers["Content-Security-Policy"] = directives.join("; ")
 
       rescue PublicSuffix::DomainInvalid
         Rails.logger.error("Invalid domain: #{request.host}")

@@ -1,10 +1,11 @@
 require "nokogiri"
 
 module YoutubeUrl
-  EMBED_DOMAIN = "youtube-nocookie.com".freeze
+  EMBED_DOMAIN = "youtube.com".freeze
+  LEGACY_EMBED_DOMAIN = "youtube-nocookie.com".freeze
   EMBED_HOST = "www.#{EMBED_DOMAIN}".freeze
   EMBED_URL_PREFIX = "https://#{EMBED_HOST}/embed/".freeze
-  EMBED_HOSTS = [EMBED_DOMAIN, "youtube.com"].freeze
+  EMBED_HOSTS = [EMBED_DOMAIN, LEGACY_EMBED_DOMAIN].freeze
   VIDEO_HOSTS = (EMBED_HOSTS + ["youtu.be"]).freeze
   DEFAULT_PORTS = { "http" => 80, "https" => 443 }.freeze
   ALLOW_PERMISSIONS = %w[
@@ -12,6 +13,12 @@ module YoutubeUrl
   ].freeze
   REFERRER_POLICY = "strict-origin-when-cross-origin".freeze
   DEFAULT_TITLE = "YouTube video player".freeze
+  DEFAULT_EMBED_PARAMS = {
+    "autoplay" => "1",
+    "rel" => "0",
+    "modestbranding" => "1",
+    "playsinline" => "1"
+  }.freeze
   RESERVED_QUERY_KEYS = %w[start t time_continue origin widget_referrer].freeze
   TIME_MARKER_TO_SECONDS = { "h" => 3600, "m" => 60, "s" => 1 }.freeze
 
@@ -21,6 +28,9 @@ module YoutubeUrl
     return if video_id.blank?
 
     embed_params = (params || {}).dup
+    DEFAULT_EMBED_PARAMS.each do |key, value|
+      embed_params[key] = value
+    end
     embed_params.compact!
     embed_params.merge!(default_embed_params)
     embed_params["start"] = start_time if start_time.present?
@@ -45,7 +55,7 @@ module YoutubeUrl
     case host
     when "youtu.be"
       uri.path.split("/").last
-    when "youtube.com", EMBED_DOMAIN
+    when "youtube.com", EMBED_DOMAIN, LEGACY_EMBED_DOMAIN
       params = Rack::Utils.parse_query(uri.query.to_s)
       return params["v"] if params["v"].present?
 

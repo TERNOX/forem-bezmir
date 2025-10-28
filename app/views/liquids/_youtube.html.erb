@@ -1,4 +1,5 @@
 <% thumbnail_id = id.split("?").first %>
+<% embed_src = YoutubeUrl.normalize_embed_src("https://www.youtube.com/embed/#{id}") %>
 <% play_label = t("views.youtube.play_video", default: "Запустити Youtube відео") %>
 <% player_title = t("views.youtube.video_title", default: "YouTube відео програвач") %>
 <div
@@ -8,6 +9,7 @@
   data-youtube-height="<%= height %>"
   data-youtube-title="<%= player_title %>"
   data-youtube-thumbnail-id="<%= thumbnail_id %>"
+  data-youtube-src="<%= embed_src %>"
 >
   <button type="button" class="embedded-video__trigger" aria-label="<%= play_label %>" style="width: 100%;">
     <img
@@ -26,11 +28,11 @@
   <iframe
     width="100%"
 
-    src="https://www.youtube-nocookie.com/embed/<%= id %>"
+    src="<%= embed_src %>"
     title="<%= player_title %>"
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
     referrerpolicy="strict-origin-when-cross-origin"
-	style="margin:0;aspect-ratio: 16 / 9; "
+        style="margin:0;aspect-ratio: 16 / 9; "
     allowfullscreen
     loading="lazy">
   </iframe>

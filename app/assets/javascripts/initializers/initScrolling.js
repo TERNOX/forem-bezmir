@@ -252,24 +252,51 @@ function fetchNextFollowersPage(el) {
   );
 }
 
+function normalizeYouTubeEmbedUrl(url) {
+  try {
+    const parsed = new URL(url);
+    if (!parsed.pathname || !parsed.pathname.startsWith('/embed/')) {
+      return url;
+    }
+
+    const segments = parsed.pathname.split('/');
+    const videoId = segments[2];
+    if (!videoId) {
+      return url;
+    }
+
+    parsed.protocol = 'https:';
+    parsed.hostname = 'www.youtube.com';
+    parsed.pathname = `/embed/${videoId}`;
+
+    parsed.searchParams.set('autoplay', '1');
+    parsed.searchParams.set('rel', '0');
+    parsed.searchParams.set('modestbranding', '1');
+    parsed.searchParams.set('playsinline', '1');
+
+    const query = parsed.searchParams.toString();
+    return `${parsed.origin}${parsed.pathname}${query ? `?${query}` : ''}`;
+  } catch (e) {
+    return url;
+  }
+}
+
 function buildVideoArticleHTML(videoArticle) {
-  const allowedHostnames = [
-    "youtube.com",
-    "www.youtube.com",
-    "youtube-nocookie.com",
-    "www.youtube-nocookie.com",
-  ];
   let videoUrl;
   try {
     videoUrl = new URL(videoArticle.video);
   } catch (e) {
     videoUrl = null;
   }
-  if (videoUrl && allowedHostnames.includes(videoUrl.hostname)) {
-    return `<a href="${videoArticle.path}" id="video-article-${videoArticle.id}" class="crayons-card media-card">
+
+  if (videoUrl) {
+    const hostname = videoUrl.hostname.replace(/^www\./, '');
+    if (["youtube.com", "youtube-nocookie.com"].includes(hostname)) {
+      const normalizedSrc = normalizeYouTubeEmbedUrl(videoArticle.video);
+      return `<a href="${videoArticle.path}" id="video-article-${videoArticle.id}" class="crayons-card media-card">
       <div class="crayons-article__cover" style="width:100%; aspect-ratio:16/9; position:relative;">
         <iframe
-          src="${videoArticle.video}"
+          src="${normalizedSrc}"
           style="border:0; position:absolute; top:0; left:0; width:100%; height:100%;"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           referrerpolicy="strict-origin-when-cross-origin"
@@ -284,8 +311,10 @@ function buildVideoArticleHTML(videoArticle) {
         </small>
       </div>
     </a>`;
-  } else {
-    return `<a href="${videoArticle.path}" id="video-article-${videoArticle.id}" class="crayons-card media-card">
+    }
+  }
+
+  return `<a href="${videoArticle.path}" id="video-article-${videoArticle.id}" class="crayons-card media-card">
       <div class="media-card__artwork">
         <img src="${videoArticle.video_thumbnail_url}" class="w-100 object-cover block aspect-16-9 h-auto" alt="${videoArticle.title}" loading="lazy">
         <span class="media-card__artwork__badge">${videoArticle.video_duration_in_minutes}</span>
@@ -297,7 +326,6 @@ function buildVideoArticleHTML(videoArticle) {
         </small>
       </div>
     </a>`;
-  }
 }
 
 function insertVideos(videoArticles) {
