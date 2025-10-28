@@ -1,6 +1,6 @@
 <% thumbnail_id = id.split("?").first %>
-<% play_label = t("views.youtube.play_video", default: "Play YouTube video") %>
-<% player_title = t("views.youtube.video_title", default: "YouTube video player") %>
+<% play_label = t("views.youtube.play_video", default: "Запустити Youtube відео") %>
+<% player_title = t("views.youtube.video_title", default: "YouTube відео програвач") %>
 <div
   class="embedded-video"
   data-youtube-id="<%= id %>"
@@ -9,16 +9,23 @@
   data-youtube-title="<%= player_title %>"
   data-youtube-thumbnail-id="<%= thumbnail_id %>"
 >
-  <button type="button" class="embedded-video__trigger" aria-label="<%= play_label %>">
+  <button type="button" class="embedded-video__trigger" aria-label="<%= play_label %>" style="width: 100%;">
     <img
       class="embedded-video__thumbnail"
       src="https://img.youtube.com/vi/<%= thumbnail_id %>/mqdefault.jpg"
       data-youtube-thumbnail-quality="mqdefault"
-      alt="<%= t("views.youtube.thumbnail_alt", default: "Preview image for the video") %>"
+      alt="<%= t("views.youtube.thumbnail_alt", default: "Обкладинка відео") %>"
       loading="lazy"
       decoding="async"
+	  style="margin: 0px;"
     />
   </button>
+<div class="embedded-video__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 68 48" width="68" height="48">
+        <path fill="#f00" d="M66.52 7.02a8 8 0 00-5.65-5.67C55.56.67 34 0.67 34 0.67s-21.56 0-26.87.68a8 8 0 00-5.65 5.67A83 83 0 000 24a83 83 0 001.48 16.98 8 8 0 005.65 5.67c5.31.68 26.87.68 26.87.68s21.56 0 26.87-.68a8 8 0 005.65-5.67A83 83 0 0068 24a83 83 0 00-1.48-16.98z"/>
+        <path fill="#fff" d="M27 34V14l18 10z"/>
+      </svg>
+    </div>
 </div>
 <noscript>
   <iframe

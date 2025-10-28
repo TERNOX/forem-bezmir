@@ -287,7 +287,7 @@ function buildVideoArticleHTML(videoArticle) {
   } else {
     return `<a href="${videoArticle.path}" id="video-article-${videoArticle.id}" class="crayons-card media-card">
       <div class="media-card__artwork">
-        <img src="${videoArticle.video_thumbnail_url}" class="w-100 object-cover block aspect-16-9 h-auto" width="320" height="180" alt="${videoArticle.title}" loading="lazy">
+        <img src="${videoArticle.video_thumbnail_url}" class="w-100 object-cover block aspect-16-9 h-auto" alt="${videoArticle.title}" loading="lazy">
         <span class="media-card__artwork__badge">${videoArticle.video_duration_in_minutes}</span>
       </div>
       <div class="media-card__content">

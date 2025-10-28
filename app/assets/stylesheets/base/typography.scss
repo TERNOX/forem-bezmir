@@ -411,3 +411,34 @@ body {
     display: none !important;
   }
 }
+
+.embedded-video__trigger {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.embedded-video__trigger::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 68px;       /* розмір іконки */
+  height: 48px;
+  transform: translate(-50%, -50%);
+  background-image: url('/assets/youtube-play.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.9;
+  transition: opacity 0.2s ease;
+  pointer-events: none; /* щоб не блокувала клік */
+}
+
+.embedded-video__trigger:hover::before {
+  opacity: 1;
+}
