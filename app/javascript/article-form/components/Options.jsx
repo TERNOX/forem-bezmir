@@ -113,7 +113,7 @@ export const Options = ({
         <input
           aria-label="Schedule publication time"
           type="time"
-          value="Kyiv"
+          value={publishedAtTime}
           className="crayons-textfield"
           name="publishedAtTime"
           onChange={onConfigChange}
