@@ -4,15 +4,41 @@ import { articlePropTypes } from '../../common-prop-types';
 const isYouTubeEmbed = (url) => {
   try {
     const parsed = new URL(url);
-    const allowedHosts = [
-      "youtube.com",
-      "www.youtube.com",
-      "youtube-nocookie.com",
-      "www.youtube-nocookie.com",
-    ];
-    return allowedHosts.includes(parsed.host) && parsed.pathname.startsWith("/embed/");
+    const host = parsed.hostname.replace(/^www\./, "");
+    return (
+      ["youtube.com", "youtube-nocookie.com"].includes(host) &&
+      parsed.pathname.startsWith("/embed/")
+    );
   } catch {
     return false;
+  }
+};
+
+const normalizeYouTubeEmbedUrl = (url) => {
+  try {
+    const parsed = new URL(url);
+    if (!parsed.pathname.startsWith("/embed/")) {
+      return url;
+    }
+
+    const [, , videoId] = parsed.pathname.split("/");
+    if (!videoId) {
+      return url;
+    }
+
+    parsed.protocol = "https:";
+    parsed.hostname = "www.youtube.com";
+    parsed.pathname = `/embed/${videoId}`;
+
+    parsed.searchParams.set("autoplay", "1");
+    parsed.searchParams.set("rel", "0");
+    parsed.searchParams.set("modestbranding", "1");
+    parsed.searchParams.set("playsinline", "1");
+
+    const queryString = parsed.searchParams.toString();
+    return `${parsed.origin}${parsed.pathname}${queryString ? `?${queryString}` : ""}`;
+  } catch {
+    return url;
   }
 };
 
@@ -29,7 +55,7 @@ export const Video = ({ article }) => {
         }}
       >
         <iframe
-          src={article.video}
+          src={normalizeYouTubeEmbedUrl(article.video)}
           style={{
             border: 0,
             position: "absolute",
