@@ -98,7 +98,7 @@ export class CommentSubscription extends Component {
               }
             }}
           >
-            {subscribed ? 'Unsubscribe' : 'Subscribe'}
+            {subscribed ? 'Відписатися' : 'Підписатися'}
           </Button>
           {subscribed ? (
             <Button
