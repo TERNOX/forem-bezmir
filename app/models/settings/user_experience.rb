@@ -56,5 +56,34 @@ module Settings
     # Head and footer content
     setting :head_content, type: :string, default: ""
     setting :bottom_of_body_content, type: :string, default: ""
+
+    class << self
+      alias_method :set_default_locale_without_i18n_sync, :set_default_locale
+
+      def set_default_locale(value, subforem_id: nil)
+        result = set_default_locale_without_i18n_sync(value, subforem_id: subforem_id)
+        apply_default_locale!
+        result
+      end
+
+      def apply_default_locale!
+        locale = default_locale(subforem_id: nil).presence || get_default(:default_locale)
+        normalized_locale = normalize_locale(locale)
+        return unless normalized_locale
+
+        I18n.default_locale = normalized_locale
+      end
+
+      private
+
+      def normalize_locale(locale)
+        return if locale.blank?
+
+        candidate = locale.to_sym
+        return candidate if I18n.available_locales.include?(candidate)
+
+        nil
+      end
+    end
   end
 end
