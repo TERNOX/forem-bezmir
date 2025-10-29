@@ -67,14 +67,24 @@ module Settings
       end
 
       def apply_default_locale!
-        locale = default_locale(subforem_id: nil).presence || get_default(:default_locale)
-        normalized_locale = normalize_locale(locale)
+        normalized_locale = fetch_normalized_default_locale
         return unless normalized_locale
 
         I18n.default_locale = normalized_locale
       end
 
       private
+
+      def fetch_normalized_default_locale
+        locale = default_locale(subforem_id: nil).presence || get_default(:default_locale)
+        normalize_locale(locale)
+      rescue ActiveRecord::ConnectionNotEstablished, ActiveRecord::NoDatabaseError, ActiveRecord::StatementInvalid => error
+        Rails.logger&.debug { "Skipping locale sync: #{error.class}: #{error.message}" }
+        nil
+      rescue PG::Error => error
+        Rails.logger&.debug { "Skipping locale sync: #{error.class}: #{error.message}" }
+        nil
+      end
 
       def normalize_locale(locale)
         return if locale.blank?

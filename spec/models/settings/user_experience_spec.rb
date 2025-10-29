@@ -74,6 +74,14 @@ RSpec.describe Settings::UserExperience do
       end.not_to change(I18n, :default_locale)
     end
 
+    it "silently skips syncing when the database is unavailable" do
+      allow(described_class).to receive(:default_locale).and_raise(ActiveRecord::ConnectionNotEstablished.new("test"))
+
+      expect do
+        described_class.apply_default_locale!
+      end.not_to change(I18n, :default_locale)
+    end
+
     it "syncs locale changes when updating the setting" do
       expect(described_class).to receive(:set_default_locale_without_i18n_sync).with("pt", subforem_id: nil).and_return("pt")
       allow(described_class).to receive(:default_locale).and_return("pt")
