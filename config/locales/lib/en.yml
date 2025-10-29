@@ -167,6 +167,12 @@ en:
           sidebar:
             description: Determines which tags are shown on the homepage right-hand sidebar
             placeholder: List of valid, comma-separated tags e.g. help,discuss,explainlikeimfive,meta
+          news_sitemap_tags:
+            description: Tags (comma separated) that qualify an article for inclusion in the Google News sitemap.
+            placeholder: news,updates
+          news_sitemap_organization_ids:
+            description: Organization IDs (comma separated) whose articles can appear in the Google News sitemap.
+            placeholder: 2,5
           stripe_api:
             description: 'Secret Stripe key for receiving payments. See: https://stripe.com/docs/keys'
           stripe_key:
