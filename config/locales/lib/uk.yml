@@ -1,0 +1,12 @@
+---
+uk:
+  lib:
+    constants:
+      settings:
+        general:
+          news_sitemap_tags:
+            description: "Укажіть теги (через кому), які роблять статтю частиною News sitemap."
+            placeholder: "новини,огляди"
+          news_sitemap_organization_ids:
+            description: "Укажіть ID організацій (через кому), чиї дописи можуть потрапити до News sitemap."
+            placeholder: "2,5"

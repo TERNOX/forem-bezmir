@@ -119,6 +119,10 @@ module Settings
     setting :display_sidebar_active_discussions, type: :boolean, default: true
     setting :sidebar_tags, type: :array, default: %w[]
 
+    # News sitemap
+    setting :news_sitemap_tags, type: :array, default: %w[новини]
+    setting :news_sitemap_organization_ids, type: :array, default: [2]
+
     # Broadcast
     setting :welcome_notifications_live_at, type: :date
 

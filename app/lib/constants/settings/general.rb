@@ -121,6 +121,14 @@ module Constants
             description: I18n.t("lib.constants.settings.general.sidebar.description"),
             placeholder: I18n.t("lib.constants.settings.general.sidebar.placeholder")
           },
+          news_sitemap_tags: {
+            description: I18n.t("lib.constants.settings.general.news_sitemap_tags.description"),
+            placeholder: I18n.t("lib.constants.settings.general.news_sitemap_tags.placeholder")
+          },
+          news_sitemap_organization_ids: {
+            description: I18n.t("lib.constants.settings.general.news_sitemap_organization_ids.description"),
+            placeholder: I18n.t("lib.constants.settings.general.news_sitemap_organization_ids.placeholder")
+          },
           stripe_api_key: {
             description: I18n.t("lib.constants.settings.general.stripe_api.description"),
             placeholder: "sk_live_...."

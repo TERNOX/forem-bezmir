@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
+  <% @articles.each do |article| %>
+    <url>
+      <loc><%= ERB::Util.h(URL.article(article)) %></loc>
+      <news:news>
+        <news:publication>
+          <news:name><%= ERB::Util.h(@publication_name) %></news:name>
+          <news:language><%= ERB::Util.h(@publication_language) %></news:language>
+        </news:publication>
+        <% if article.published_at.present? %>
+          <news:publication_date><%= article.published_at.iso8601 %></news:publication_date>
+        <% end %>
+        <news:title><%= ERB::Util.h(article.title) %></news:title>
+        <% keywords = article.cached_tag_list.to_s.split(',').map(&:strip).reject(&:blank?) %>
+        <% if keywords.any? %>
+          <news:keywords><%= ERB::Util.h(keywords.join(', ')) %></news:keywords>
+        <% end %>
+      </news:news>
+    </url>
+  <% end %>
+</urlset>
