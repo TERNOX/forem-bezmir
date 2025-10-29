@@ -50,8 +50,8 @@ uk:
         username: Юзернейм
         profile_image: Зображення профілю
       users_notification_setting:
-        email_newsletter: Надсилати мені щотижневу розсилку
-        email_digest_periodic: Надсилати мені періодичний дайджест топпостів за моїми тегами
+        email_newsletter: Надсилати мені важливі новини сайту (не часто)
+        email_digest_periodic: Надсилати мені періодичний персоналізований дайджест найпопулярніших дописів
         email_tag_mod_newsletter: Надсилати мені листи модератора тегів
         email_community_mod_newsletter: Надсилати мені листи модератора спільноти
         email_comment_notifications: Надсилати мені лист, коли хтось відповідає мені в гілці коментарів

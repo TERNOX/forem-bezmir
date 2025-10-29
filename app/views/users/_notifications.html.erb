@@ -7,11 +7,11 @@
     </header>
 <div class="crayons-field crayons-field--checkbox">
   <%= f.check_box :email_newsletter, class: "crayons-checkbox" %>
-  <%= f.label :email_newsletter, "Надсилати мені щотижневу розсилку", class: "crayons-field__label" %>
+  <%= f.label :email_newsletter, "Надсилати мені важливі новини сайту (не часто)", class: "crayons-field__label" %>
 </div>
 <div class="crayons-field crayons-field--checkbox">
   <%= f.check_box :email_digest_periodic, class: "crayons-checkbox" %>
-  <%= f.label :email_digest_periodic, "Надсилати мені періодичну підбірку найкращих публікацій із моїх тегів", class: "crayons-field__label" %>
+  <%= f.label :email_digest_periodic, "Надсилати мені періодичну персоналізовану добірку найпопулярніших дописів", class: "crayons-field__label" %>
 </div>
 <% if current_user.tag_moderator? %>
   <div class="crayons-field crayons-field--checkbox">

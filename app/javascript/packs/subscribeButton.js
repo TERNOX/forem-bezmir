@@ -11,7 +11,7 @@ export function updateSubscribeButtonText(
     window_size = window.innerWidth;
   }
 
-  let noun = 'comments';
+  let noun = 'коментарі';
   const { subscription_id, subscription_config, comment_id } = button.dataset;
 
   let subscriptionIsActive = subscription_id != '';
