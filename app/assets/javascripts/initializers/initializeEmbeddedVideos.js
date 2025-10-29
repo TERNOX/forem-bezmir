@@ -150,9 +150,7 @@ function createYouTubeIframe(container) {
   if (width) {
     iframe.width = width;
   }
-  if (height) {
-    iframe.height = height;
-  }
+  iframe.style.aspectRatio = '16 / 9'; // новий стиль
   iframe.setAttribute('title', title);
   iframe.setAttribute('allowfullscreen', '');
   iframe.setAttribute(
