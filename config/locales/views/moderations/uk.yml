@@ -123,7 +123,7 @@ uk:
         thumb_up: Якісно
         toggle: Розгорнути/згорнути секцію
         feature: Рекомендувати
-        unfeature: Відкріпити допис
+        unfeature: Зняти рекомендацію
         unpublish: Зняти з публікації
         unpublish_all:
           title: Зняти з публікації всі дописи
