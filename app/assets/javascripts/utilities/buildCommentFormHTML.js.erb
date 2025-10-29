@@ -5,7 +5,7 @@ function buildCommentFormHTML(commentableId, commentableType, parentId) {
   if (user && !user.codeOfConduct && user.commentCount < 1){
     codeOfConductHTML =   '<div class="code-of-conduct sub-comment-code-of-conduct" style="display:block" id="toggle-code-of-conduct-checkbox">\
                             <input class="checkbox" type="checkbox" name="checked_code_of_conduct" required />\
-                            <label for="checked_code_of_conduct">I\'ve read the <a href="/code-of-conduct">code of conduct</a></label>\
+                            <label for="checked_code_of_conduct">Я прочитав(ла) <a href="/code-of-conduct">кодекс поведінки</a></label>\
                           </div>'
   }
   var randomIdNumber = Math.floor(Math.random() * 1991);
@@ -18,23 +18,23 @@ function buildCommentFormHTML(commentableId, commentableType, parentId) {
       <input value="${parentId}" type="hidden" name="comment[parent_id]" id="comment_parent_id" />
       <div class="comment-form__inner">
         <div class="comment-form__field">
-          <textarea id="textarea-for-${parentId}" class="crayons-textfield crayons-textfield--ghost comment-textarea" name="comment[body_markdown]" data-tracking-name="comment_form_textfield" placeholder="Reply..." aria-label="Reply to a comment..." required="required" onkeydown="handleKeyDown(event)" onfocus="handleFocus(event)" oninput="handleChange(event)" onkeyup="handleKeyUp(event)"></textarea>
+          <textarea id="textarea-for-${parentId}" class="crayons-textfield crayons-textfield--ghost comment-textarea" name="comment[body_markdown]" data-tracking-name="comment_form_textfield" placeholder="Відповідь..." aria-label="Відповідь на коментар..." required="required" onkeydown="handleKeyDown(event)" onfocus="handleFocus(event)" oninput="handleChange(event)" onkeyup="handleKeyUp(event)"></textarea>
         </div>
         <div class="response-templates-container crayons-card crayons-card--secondary p-4 mb-4 fs-base comment-form__templates hidden">
           <header>
-            <button type="button" class="personal-template-button active" data-target-type="personal" data-form-id="new_comment">Personal</button>
-            <button type="button" class="moderator-template-button hidden" data-target-type="moderator" data-form-id="new_comment">Trusted User</button>
+            <button type="button" class="personal-template-button active" data-target-type="personal" data-form-id="new_comment">Особисті</button>
+            <button type="button" class="moderator-template-button hidden" data-target-type="moderator" data-form-id="new_comment">Довірений користувач</button>
           </header>
           <div class="personal-responses-container"></div>
           <div class="moderator-responses-container hidden"></div>
-          <a target="_blank" rel="noopener nofollow" href="/settings/response-templates">Create template</a>
-          <p>Templates let you quickly answer FAQs or store snippets for re-use.</p>
+          <a target="_blank" rel="noopener nofollow" href="/settings/response-templates">Створити шаблон</a>
+          <p>Шаблони дозволяють швидко відповідати на часті запитання або зберігати уривки для повторного використання.</p>
         </div>
         <div class="comment-form__preview text-styles text-styles--secondary"></div>
         <div class="comment-form__buttons mb-4 whitespace-nowrap">
-          <button type="submit" class="crayons-btn comment-action-button mr-2 js-btn-enable" name="submit" data-tracking-name="comment_reply_submit_button" disabled>Submit</button>
-          <button type="button" class="preview-toggle crayons-btn crayons-btn--secondary comment-action-button comment-action-preview mr-2 js-btn-enable" data-tracking-name="comment_reply_preview_button" onclick="handleCommentPreview(event)" disabled>Preview</button>
-          <button type="button" class="crayons-btn crayons-btn--ghost" data-tracking-name="comment_reply_dismiss_button" onclick="handleFormClose(event)">Dismiss</button>
+          <button type="submit" class="crayons-btn comment-action-button mr-2 js-btn-enable" name="submit" data-tracking-name="comment_reply_submit_button" disabled>Надіслати</button>
+          <button type="button" class="preview-toggle crayons-btn crayons-btn--secondary comment-action-button comment-action-preview mr-2 js-btn-enable" data-tracking-name="comment_reply_preview_button" onclick="handleCommentPreview(event)" disabled>Попередній перегляд</button>
+          <button type="button" class="crayons-btn crayons-btn--ghost" data-tracking-name="comment_reply_dismiss_button" onclick="handleFormClose(event)">Скасувати</button>
         </div>
       </div>
     </form>`;
