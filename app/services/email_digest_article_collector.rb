@@ -149,8 +149,14 @@ class EmailDigestArticleCollector
       @skip_subforem_filtering = true
     else
       # User doesn't follow any subforems and has no custom onboarding - use default subforem
-      @subforem_ids = default_subforem_id ? [default_subforem_id] : []
-      @skip_subforem_filtering = false
+      if default_subforem_id
+        @subforem_ids = [default_subforem_id]
+        @skip_subforem_filtering = false
+      else
+        # Without a default subforem we can't filter, otherwise queries return nothing
+        @subforem_ids = []
+        @skip_subforem_filtering = true
+      end
     end
   end
 

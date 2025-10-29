@@ -344,5 +344,29 @@ RSpec.describe EmailDigestArticleCollector, type: :service do
         expect(collector.should_receive_email?).to be false
       end
     end
+
+    context "when no default subforem is configured" do
+      before do
+        RequestStore.store[:default_subforem_id] = nil
+        allow(Subforem).to receive(:cached_default_id).and_return(nil)
+      end
+
+      it "does not filter articles by subforem" do
+        other_user = create(:user)
+        subforem_one = create(:subforem, domain: "one.test")
+        subforem_two = create(:subforem, domain: "two.test")
+
+        create_list(:article, 4, public_reactions_count: 40, score: 40, subforem: subforem_one,
+                                 tag_list: "career", user: other_user, featured: true)
+        create_list(:article, 4, public_reactions_count: 40, score: 40, subforem: subforem_two,
+                                 tag_list: "ruby", user: other_user, featured: true)
+
+        articles = described_class.new(user).articles_to_send
+
+        expect(articles.length).to eq(7)
+        subforem_ids = articles.map(&:subforem_id).uniq
+        expect(subforem_ids).to include(subforem_one.id, subforem_two.id)
+      end
+    end
   end
 end
