@@ -169,6 +169,8 @@ pt:
           tags:
             description: Default tags for the community
             placeholder: Default tags for the community
+          enable_video_upload:
+            description: Toggle to allow members to upload videos on your Forem
           hashtag:
             description: Default hashtag for the community
             placeholder: Default hashtag for the community
