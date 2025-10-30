@@ -329,3 +329,14 @@ pt:
         host: Host
         custom_element: Elemento personalizado
         unknown: Desconhecido
+      settings:
+        emails:
+          next_digest_html: "O próximo digest periódico está previsto para <strong>%{time}</strong> (a cada %{frequency} dias)."
+          last_digest_html: "O último digest foi enviado %{time}."
+          no_previous_digest_html: "Nenhum digest anterior foi encontrado. A tarefa é executada a cada %{frequency} dias quando há conteúdo disponível."
+          test_digest:
+            title: Enviar digest de teste
+            description: Coloque o digest padrão na fila para um usuário específico e antecipe a experiência.
+            email_label: Email do destinatário
+            placeholder: voce@example.com
+            submit: Enviar digest de teste

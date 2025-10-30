@@ -459,3 +459,14 @@ fr:
         options:
           delete: Delete organization
           icon: Options
+      settings:
+        emails:
+          next_digest_html: "Le prochain digest périodique est prévu autour du <strong>%{time}</strong> (tous les %{frequency} jours)."
+          last_digest_html: "Dernier digest envoyé %{time}."
+          no_previous_digest_html: "Aucun digest précédent trouvé. La tâche s'exécute tous les %{frequency} jours lorsque du contenu est disponible."
+          test_digest:
+            title: Envoyer un digest de test
+            description: Mettez en file d'attente le digest standard pour un utilisateur donné afin de prévisualiser son expérience.
+            email_label: Email du destinataire
+            placeholder: vous@example.com
+            submit: Envoyer le digest de test

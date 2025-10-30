@@ -150,6 +150,12 @@ fr:
       value: '%{first8}******'
     settings_controller:
       confirmation: Mon nom d'utilisateur est @%{username} et cette action est 100% sûre et appropriée.
+    settings:
+      email_digests_controller:
+        delivery_failed: Impossible d'envoyer le digest. Veuillez réessayer.
+        email_required: Veuillez saisir une adresse email.
+        test_sent: Un digest a été programmé pour l'adresse %{email}.
+        user_missing: Aucun utilisateur trouvé avec l'adresse %{email}.
     spaces_controller:
       update_success: L'espace a été mis à jour.
     subforems_controller:

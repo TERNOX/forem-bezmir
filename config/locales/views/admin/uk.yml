@@ -484,3 +484,14 @@ uk:
         options:
           delete: Delete organization
           icon: Options
+      settings:
+        emails:
+          next_digest_html: "Наступний періодичний дайджест очікується близько <strong>%{time}</strong> (кожні %{frequency} днів)."
+          last_digest_html: "Останній дайджест було надіслано %{time}."
+          no_previous_digest_html: "Попередніх дайджестів не знайдено. Завдання виконується кожні %{frequency} днів, коли доступний контент."
+          test_digest:
+            title: Надіслати тестовий дайджест
+            description: Додайте стандартний дайджест у чергу для конкретного користувача, щоб попередньо переглянути його досвід.
+            email_label: Email отримувача
+            placeholder: you@example.com
+            submit: Надіслати тестовий дайджест

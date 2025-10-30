@@ -111,6 +111,12 @@ pt:
       deleted: 'O modelo de resposta "%{title}" foi excluído.'
     settings_controller:
       confirmation: Meu nome de usuário é @%{username} e esta ação é 100% segura e apropriada.
+    settings:
+      email_digests_controller:
+        delivery_failed: Não foi possível enviar o digest. Tente novamente.
+        email_required: Informe um endereço de email.
+        test_sent: Um digest foi programado para ser enviado para %{email}.
+        user_missing: Não encontramos um usuário com o email %{email}.
     spaces_controller:
       update_success: Espaços foram atualizados com sucesso.
     subforems_controller:

@@ -150,6 +150,12 @@ en:
       value: '%{first8}******'
     settings_controller:
       confirmation: My username is @%{username} and this action is 100% safe and appropriate.
+    settings:
+      email_digests_controller:
+        delivery_failed: We couldn't send the digest. Please try again.
+        email_required: Please enter an email address.
+        test_sent: A digest has been queued for delivery to %{email}.
+        user_missing: We couldn't find a user with the email %{email}.
     spaces_controller:
       update_success: Space has been updated.
     subforems_controller:

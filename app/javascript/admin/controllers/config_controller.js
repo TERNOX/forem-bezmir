@@ -114,6 +114,35 @@ export default class ConfigController extends Controller {
     }
   }
 
+  async sendDigestTest(event) {
+    event.preventDefault();
+
+    try {
+      const form = event.target;
+      const body = new FormData(form);
+      const response = await fetch(form.action, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'X-CSRF-Token': document.querySelector("meta[name='csrf-token']")?.content,
+        },
+        body,
+        credentials: 'same-origin',
+      });
+
+      const outcome = await response.json();
+
+      if (response.ok) {
+        form.reset();
+        displaySnackbar(outcome.message);
+      } else {
+        displaySnackbar(outcome.error ?? 'An error occurred. Please try again.');
+      }
+    } catch (_err) {
+      displaySnackbar('An error occurred. Please try again.');
+    }
+  }
+
   /**
    * Updates the site logo in the header with the same URL as the preview logo.
    */

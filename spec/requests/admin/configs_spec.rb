@@ -749,6 +749,49 @@ RSpec.describe "/admin/customization/config" do
           end
         end
       end
+
+      describe "Email digests" do
+        let!(:digest_user) { create(:user, email: "tester@example.com") }
+
+        before do
+          allow(ForemInstance).to receive(:dev_to?).and_return(false)
+        end
+
+        it "queues a digest for the provided user" do
+          allow(Emails::SendUserDigestWorker).to receive(:perform_async)
+
+          post admin_settings_email_digests_path, params: { test_digest: { email: digest_user.email } }
+
+          expect(response).to have_http_status(:ok)
+          expect(Emails::SendUserDigestWorker).to have_received(:perform_async).with(digest_user.id)
+        end
+
+        it "delivers immediately when running on dev.to" do
+          worker = instance_double(Emails::SendUserDigestWorker)
+          allow(worker).to receive(:perform).and_return(true)
+          allow(ForemInstance).to receive(:dev_to?).and_return(true)
+          allow(Emails::SendUserDigestWorker).to receive(:new).and_return(worker)
+
+          post admin_settings_email_digests_path, params: { test_digest: { email: digest_user.email } }
+
+          expect(response).to have_http_status(:ok)
+          expect(worker).to have_received(:perform).with(digest_user.id)
+        end
+
+        it "returns an error when the email is blank" do
+          post admin_settings_email_digests_path, params: { test_digest: { email: "" } }
+
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response.parsed_body["error"]).to eq(I18n.t("admin.settings.email_digests_controller.email_required"))
+        end
+
+        it "returns an error when the user cannot be found" do
+          post admin_settings_email_digests_path, params: { test_digest: { email: "missing@example.com" } }
+
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response.parsed_body["error"]).to eq(I18n.t("admin.settings.email_digests_controller.user_missing", email: "missing@example.com"))
+        end
+      end
     end
   end
   # rubocop:enable RSpec/NestedGroups

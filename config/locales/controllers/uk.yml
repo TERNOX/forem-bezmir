@@ -118,6 +118,13 @@ uk:
     updated_config: Ваші налаштування оновлено. Оновіть сторінку, щоб побачити зміни.
     updated_profile: Ваш профіль успішно оновлено.
     token_expired: Термін дії токена минув. Будь ласка, запросіть новий. Токени дійсні лише 12 годин після початку процесу видалення облікового запису.
+  admin:
+    settings:
+      email_digests_controller:
+        delivery_failed: Не вдалося надіслати дайджест. Спробуйте ще раз.
+        email_required: Вкажіть адресу електронної пошти.
+        test_sent: Дайджест поставлено в чергу для надсилання на %{email}.
+        user_missing: Користувача з адресою %{email} не знайдено.
     notifications_settings_updated: Налаштування сповіщень оновлено.
   video_states_controller:
     related_article_not_found: Пов’язану статтю не знайдено
