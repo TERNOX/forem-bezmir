@@ -317,7 +317,7 @@ class ArticlesController < ApplicationController
                        %i[
                          title body_markdown main_image published description video_thumbnail_url
                          tag_list canonical_url series collection_id archived published_at timezone
-                         published_at_date published_at_time type_of body_url subforem_id
+                         published_at_date published_at_time type_of body_url subforem_id video_source_url
                        ]
                      end
 

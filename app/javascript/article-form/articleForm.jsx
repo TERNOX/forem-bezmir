@@ -152,6 +152,7 @@ export class ArticleForm extends Component {
       helpPosition: null,
       isModalOpen: false,
       markdownLintErrors: [],
+      videoSourceUrl: this.article.video_source_url || '',
       ...previousContentState,
     };
   }
@@ -383,6 +384,7 @@ export class ArticleForm extends Component {
       helpFor: null,
       helpPosition: 0,
       isModalOpen: false,
+      videoSourceUrl: this.article.video_source_url || '',
     });
   };
 

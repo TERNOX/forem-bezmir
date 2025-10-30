@@ -176,6 +176,8 @@ pt:
             placeholder: Default hashtag for the community
           video:
             description: Video settings
+          enable_video_upload:
+            description: Toggle to allow admins and eligible users to upload videos directly to Forem
           payment:
             description: Payment settings
         rate_limit:
