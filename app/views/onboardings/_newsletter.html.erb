@@ -6,7 +6,7 @@
       <fieldset>
         <div class="flex email_newsletter mt-5 pt-4 ">
           <div class="flex h-5 ml-3">
-            <input type="checkbox" id="email_newsletter" name="email_newsletter" class="w-4 h-4 mt-1 crayons-checkbox" <%= "checked".html_safe if default_email_optin_allowed? %>>
+            <input type="checkbox" id="email_newsletter" name="email_newsletter" class="w-4 h-4 mt-1 crayons-checkbox" checked="checked">
           </div>
           <div class="ml-3">
             <label for="email_newsletter" class="font-medium text-gray-900 dark:text-gray-300">
@@ -26,7 +26,7 @@
       <fieldset>
         <div class="flex email_newsletter mt-5 pt-3 ">
           <div class="flex h-5 ml-3">
-            <input type="checkbox" id="email_newsletter" name="email_newsletter" class="w-4 h-4 mt-2 crayons-checkbox" <%= "checked".html_safe if default_email_optin_allowed? %>>
+            <input type="checkbox" id="email_newsletter" name="email_newsletter" class="w-4 h-4 mt-2 crayons-checkbox" checked="checked">
           </div>
           <div class="ml-2">
             <label for="email_newsletter" class="font-medium text-gray-900 dark:text-gray-300">
@@ -52,10 +52,10 @@
       <legend>Налаштування електронної пошти</legend>
       <ul>
         <li class="checkbox-item">
-          <label for="email_newsletter"><input type="checkbox" id="email_newsletter" name="email_newsletter" <%= "checked".html_safe if default_email_optin_allowed? %>>Я хочу отримувати важливі новини сайту на електронну пошту.</label>
+          <label for="email_newsletter"><input type="checkbox" id="email_newsletter" name="email_newsletter" checked="checked">Я хочу отримувати важливі новини сайту на електронну пошту.</label>
         </li>
         <li class="checkbox-item">
-          <label for="email_digest_periodic"><input type="checkbox" id="email_digest_periodic" name="email_digest_periodic" <%= "checked".html_safe if default_email_optin_allowed? %>>Я хочу отримувати періодичний дайджест найкращих публікацій за моїми тегами.</label>
+          <label for="email_digest_periodic"><input type="checkbox" id="email_digest_periodic" name="email_digest_periodic" checked="checked">Я хочу отримувати періодичний дайджест найкращих публікацій за моїми тегами.</label>
         </li>
       </ul>
     </fieldset>

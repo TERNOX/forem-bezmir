@@ -167,22 +167,22 @@ describe('FollowTags', () => {
     const { container } = renderFollowTags();
     const checkbox = container.querySelector('#email_digest_periodic');
 
-    expect(checkbox.checked).toBeFalsy();
-
-    fireEvent.click(container.querySelector('.onboarding-email-digest'));
-
     expect(checkbox.checked).toBeTruthy();
 
     fireEvent.click(container.querySelector('.onboarding-email-digest'));
 
     expect(checkbox.checked).toBeFalsy();
+
+    fireEvent.click(container.querySelector('.onboarding-email-digest'));
+
+    expect(checkbox.checked).toBeTruthy();
   });
 
   it('should toggle the checkbox when Enter or Space key is pressed', async () => {
     const { container } = renderFollowTags();
     const checkbox = container.querySelector('#email_digest_periodic');
 
-    expect(checkbox.checked).toBeFalsy();
+    expect(checkbox.checked).toBeTruthy();
 
     fireEvent.keyDown(container.querySelector('.onboarding-email-digest'), {
       key: 'Enter',
@@ -191,7 +191,7 @@ describe('FollowTags', () => {
       charCode: 13,
     });
 
-    expect(checkbox.checked).toBeTruthy();
+    expect(checkbox.checked).toBeFalsy();
 
     fireEvent.keyDown(container.querySelector('.onboarding-email-digest'), {
       key: ' ',
@@ -200,7 +200,7 @@ describe('FollowTags', () => {
       charCode: 32,
     });
 
-    expect(checkbox.checked).toBeFalsy();
+    expect(checkbox.checked).toBeTruthy();
   });
 
   it('should prevent checkbox click event from propagating', async () => {
@@ -219,9 +219,7 @@ describe('FollowTags', () => {
   });
 
   it('should call /onboarding/notifications API when email_digest_periodic is true', async () => {
-    const { getByText, container } = renderFollowTags();
-
-    fireEvent.click(container.querySelector('.onboarding-email-digest'));
+    const { getByText } = renderFollowTags();
 
     const skipButton = getByText(/Skip for now/i);
     fireEvent.click(skipButton);
@@ -244,15 +242,15 @@ describe('FollowTags', () => {
       expect(checkbox.checked).toBeTruthy();
     });
 
-    it('should initialize email_digest_periodic to false when data-default-email-optin-allowed is false', async () => {
+    it('should keep email_digest_periodic checked when data-default-email-optin-allowed is false', async () => {
       // Simulate setting data-default-email-optin-allowed to false
       document.body.dataset.default_email_optin_allowed = 'false';
 
       const { container } = renderFollowTags();
       const checkbox = container.querySelector('#email_digest_periodic');
 
-      // Assert that the checkbox is not checked, indicating email_digest_periodic state is false
-      expect(checkbox.checked).toBeFalsy();
+      // Assert that the checkbox stays checked despite the dataset value
+      expect(checkbox.checked).toBeTruthy();
     });
   });
 });
