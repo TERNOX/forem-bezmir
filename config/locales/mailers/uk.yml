@@ -3,6 +3,11 @@ uk:
   mailers:
     digest_mailer:
       from: Дайджест
+      additional_posts_label:
+        one: "%{count} інший допис, який може Вам сподобатися"
+        few: "%{count} інші дописи, які можуть Вам сподобатися"
+        many: "%{count} інших дописів, які можуть Вам сподобатися"
+        other: "%{count} інших дописів, які можуть Вам сподобатися"
       more_top_posts: ще популярні дописи у %{community}
       more_top_posts_based: ще популярні дописи у %{community}, підібрані за Вашими інтересами
       more_top_posts_from: ще цікаві публікації від спільноти

@@ -49,9 +49,13 @@
             <td bgcolor="#FFFFFF" style="padding: <%= i.zero? ? "27" : "17" %>px 0 0; text-align: left;">
               <div style="border:2px solid #0a0a0a; border-radius:12px; padding:12px 12px 3px;">
                 <a href="<%= article_url(article) %>?context=digest" style="font-weight: bold; color:#0a0a0a; font-size: 16px; display:block;"><%= article.title.strip %></a>
-                <p style="margin-top: 5px; font-size: 14px; color: #808080;">
-                  <%= truncate(article.description, length: 180) %>
-                </p>
+                <% preview_source = article.first_paragraph_text.presence || article.description.to_s %>
+                <% if preview_source.present? %>
+                  <% preview_text = truncate(preview_source, length: 420, separator: /(?<=[.!?])\s/) %>
+                  <p style="margin-top: 5px; font-size: 14px; color: #808080;">
+                    <%= preview_text %>
+                  </p>
+                <% end %>
               </div>
             </td>
           </tr>
@@ -80,11 +84,6 @@
         <tr>
           <td bgcolor="#FFFFFF" style="padding: 15px 0; font-size: 16px;">
             <h2>Як зробити ваш дайджест кращим</h2>
-            <% if @user.setting.experience_level.nil? %>
-              <p style="margin: 22px 0; font-size: 16px;">
-                Відвідайте <b><a href="<%= app_url(user_settings_path(:customization)) %>" style="color: #0a0a0a; text-decoration: underline;">налаштування</a></b>, щоб вказати свій рівень досвіду — це допоможе отримувати більш релевантні публікації.
-              </p>
-            <% end %>
             <p style="margin: 22px 0 10px; font-size: 16px;">
               Перейдіть на сторінку <b><a href="<%= app_url(tags_path) %>" style="color: #0a0a0a; text-decoration: underline;">тегів</a></b>, щоб обрати типи контенту, які вас цікавлять.
             </p>

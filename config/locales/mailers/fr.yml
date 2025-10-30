@@ -3,6 +3,9 @@ fr:
   mailers:
     digest_mailer:
       from: Digest
+      additional_posts_label:
+        one: "%{count} autre article susceptible de vous plaire"
+        other: "%{count} autres articles susceptibles de vous plaire"
       more_top_posts: plus de meilleurs articles de %{community}
       more_top_posts_based: plus de meilleurs articles de %{community} basé sur vos intérêts
       more_top_posts_from: d'autres lectures de la communauté
