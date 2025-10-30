@@ -25,6 +25,10 @@ en:
       new_mention: "%{name} щойно згадав(ла) Вас у своєму %{type}"
       org_deleted: "%{community} — підтвердження видалення проєкту"
       new_reply: "%{name} відповів(ла) на Ваш %{type}"
+      parent_types:
+        comment: коментар
+        episode: епізод
+        post: допис
       feedback: Дякуємо за Ваш звіт у %{community}
       export: Експорт Вашого контенту готовий
       unread_notifications:
