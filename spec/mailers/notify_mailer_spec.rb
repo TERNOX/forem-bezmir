@@ -15,7 +15,8 @@ RSpec.describe NotifyMailer do
     include_examples "#renders_proper_email_headers"
 
     it "renders proper subject" do
-      expected_subject = "#{comment.user.name} replied to your #{comment.parent_type}"
+      localized_type = I18n.t("mailers.notify_mailer.parent_types.#{comment.parent_type}", default: comment.parent_type)
+      expected_subject = I18n.t("mailers.notify_mailer.new_reply", name: comment.user.name, type: localized_type)
       expect(email.subject).to eq(expected_subject)
     end
 

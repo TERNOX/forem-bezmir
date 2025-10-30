@@ -18,13 +18,14 @@ class NotifyMailer < ApplicationMailer
     return if RateLimitChecker.new.limit_by_email_recipient_address(@user.email)
 
     @unsubscribe = generate_unsubscribe_token(@user.id, :email_comment_notifications)
+    @localized_parent_type = localized_parent_type(@comment.parent_type)
 
     # Don't send the email if there's no visible contents
     # Placed here to allow the preview to continue to work
     return if @truncated_comment.blank?
 
     mail(to: @user.email,
-         subject: I18n.t("mailers.notify_mailer.new_reply", name: @comment.user.name, type: @comment.parent_type))
+         subject: I18n.t("mailers.notify_mailer.new_reply", name: @comment.user.name, type: @localized_parent_type))
   rescue StandardError => e
     Honeybadger.notify(e)
   end
@@ -172,5 +173,11 @@ class NotifyMailer < ApplicationMailer
       new_follower_email: I18n.t("mailers.notify_mailer.new_follower",
                                  community: Settings::Community.community_name).freeze
     }.freeze
+  end
+
+  private
+
+  def localized_parent_type(parent_type)
+    I18n.t("mailers.notify_mailer.parent_types.#{parent_type}", default: parent_type)
   end
 end
