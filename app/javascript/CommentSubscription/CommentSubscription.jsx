@@ -180,8 +180,7 @@ export class CommentSubscription extends Component {
                 >
                   Post author comments
                   <p className="crayons-field__description">
-                    You’ll receive notifications only if post author sends a new
-                    comment.
+                    Ви отримаєте сповіщення тільки якщо автор допису залишить новий коментар.
                   </p>
                 </label>
               </FormField>
