@@ -27,6 +27,7 @@ export default class ConfigController extends Controller {
     'enabledIndicator',
     'inviteOnlyMode',
     'requireCaptchaForEmailPasswordRegistration',
+    'digestTestStatus',
   ];
 
   connect() {
@@ -111,6 +112,41 @@ export default class ConfigController extends Controller {
       if (!errored && event.target.elements.settings_general_logo) {
         this.updateLogo();
       }
+    }
+  }
+
+  async sendDigestTest(event) {
+    event.preventDefault();
+
+    try {
+      const form = event.target;
+      const body = new FormData(form);
+      const response = await fetch(form.action, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'X-CSRF-Token': document.querySelector("meta[name='csrf-token']")?.content,
+        },
+        body,
+        credentials: 'same-origin',
+      });
+
+      const outcome = await response.json();
+
+      if (response.ok) {
+        form.reset();
+        displaySnackbar(outcome.message);
+        if (outcome.status_html && this.hasDigestTestStatusTarget) {
+          this.digestTestStatusTarget.innerHTML = outcome.status_html;
+        }
+      } else {
+        displaySnackbar(outcome.error ?? 'An error occurred. Please try again.');
+        if (outcome.status_html && this.hasDigestTestStatusTarget) {
+          this.digestTestStatusTarget.innerHTML = outcome.status_html;
+        }
+      }
+    } catch (_err) {
+      displaySnackbar('An error occurred. Please try again.');
     }
   }
 

@@ -1,0 +1,55 @@
+<% if attempt.present? %>
+  <div class="crayons-card crayons-card--secondary p-4 space-y-2" aria-live="polite">
+    <p class="crayons-subtitle-3 m-0">
+      <%= t("views.admin.settings.emails.test_digest.status.heading") %>
+    </p>
+    <p class="m-0"><strong><%= t("views.admin.settings.emails.test_digest.status.labels.status") %>:</strong> <%= t("views.admin.settings.emails.test_digest.status.statuses.#{attempt.status}") %></p>
+    <% if attempt.display_email.present? %>
+      <p class="m-0"><strong><%= t("views.admin.settings.emails.test_digest.status.labels.email") %>:</strong> <%= attempt.display_email %></p>
+    <% end %>
+    <% if attempt.display_timestamp.present? %>
+      <p class="m-0"><strong><%= t("views.admin.settings.emails.test_digest.status.labels.updated_at") %>:</strong> <%= l(attempt.display_timestamp, format: :long) %></p>
+    <% end %>
+    <% if attempt.status_note.present? %>
+      <p class="m-0"><strong><%= t("views.admin.settings.emails.test_digest.status.labels.note") %>:</strong> <%= attempt.status_note %></p>
+    <% end %>
+    <% if attempt.error_message.present? %>
+      <p class="m-0 color-base-70"><strong><%= t("views.admin.settings.emails.test_digest.status.labels.details") %>:</strong> <%= attempt.error_message %></p>
+    <% end %>
+    <% if attempt.honeybadger_id.present? %>
+      <p class="m-0">
+        <strong><%= t("views.admin.settings.emails.test_digest.status.labels.honeybadger") %>:</strong>
+        <span class="monospace"><%= attempt.honeybadger_id %></span>
+      </p>
+    <% end %>
+    <% if attempt.job_id.present? %>
+      <p class="m-0 color-base-60"><strong><%= t("views.admin.settings.emails.test_digest.status.labels.job") %>:</strong> <%= attempt.job_id %></p>
+    <% end %>
+    <div>
+      <details class="mt-2">
+        <summary class="crayons-link crayons-link--secondary"><%= t("views.admin.settings.emails.test_digest.status.logs.toggle") %></summary>
+        <% if attempt.logs.any? %>
+          <ul class="m-0 mt-2 p-0 text-s" style="list-style: none;">
+            <% attempt.logs.chronological.each do |log| %>
+              <li class="py-1 border-b color-base-70">
+                <div>
+                  <span class="uppercase tracking-wide"><%= t("views.admin.settings.emails.test_digest.status.logs.levels.#{log.level}") %></span>
+                  ·
+                  <time datetime="<%= log.created_at.iso8601 %>"><%= l(log.created_at, format: :long) %></time>
+                </div>
+                <div class="color-base-80"><%= log.message %></div>
+                <% if log.context.present? %>
+                  <pre class="m-0 mt-1 p-2 bg-base-10 radius-m overflow-auto text-2xs"><%= JSON.pretty_generate(log.context) %></pre>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="m-0 mt-2 color-base-70"><%= t("views.admin.settings.emails.test_digest.status.logs.empty") %></p>
+        <% end %>
+      </details>
+    </div>
+  </div>
+<% else %>
+  <p class="color-base-60 m-0"><%= t("views.admin.settings.emails.test_digest.status.empty") %></p>
+<% end %>

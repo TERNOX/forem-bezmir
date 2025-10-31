@@ -134,6 +134,65 @@ RSpec.describe Emails::SendUserDigestWorker, type: :worker do
           expect(BillboardEvent.where(billboard_id: other_bb.id).count).to eq(0)
         end
       end
+
+      context "with a tracked test attempt" do
+        let(:attempt) { ::EmailDigestTestAttempt.create!(user: user) }
+
+        it "marks the attempt as sent when delivery succeeds" do
+          create_list(:article, 3, user_id: author.id, public_reactions_count: 20, score: 20, tag_list: [tag.name])
+
+          worker.perform(user.id, test_attempt_id: attempt.id)
+
+          expect(attempt.reload.status).to eq("sent")
+          expect(attempt.error_message).to be_nil
+        end
+
+        it "marks the attempt as skipped when the user is unsubscribed" do
+          user.notification_setting.update(email_digest_periodic: false)
+
+          worker.perform(user.id, test_attempt_id: attempt.id)
+
+          expect(attempt.reload.status).to eq("skipped")
+          expect(attempt.error_message).to eq(
+            I18n.t("admin.settings.email_digests_controller.skipped_unsubscribed"),
+          )
+        end
+
+        it "delivers using fallback content when there are no primary articles" do
+          create_list(:article, 2,
+                      user_id: author.id,
+                      published_at: Time.current,
+                      score: 30,
+                      public_reactions_count: 10)
+
+          worker.perform(user.id, test_attempt_id: attempt.id)
+
+          attempt.reload
+
+          expect(attempt.status).to eq("sent")
+          expect(attempt.status_note).to eq(
+            I18n.t("admin.settings.email_digests_controller.notes.used_fallback", count: 2),
+          )
+          expect(attempt.logs.pluck(:message)).to include(
+            I18n.t("admin.settings.email_digests_controller.logs.used_fallback", count: 2),
+          )
+        end
+
+        it "records failures and honeybadger notice ids" do
+          create_list(:article, 3, user_id: author.id, public_reactions_count: 20, score: 20, tag_list: [tag.name])
+          allow(Honeybadger).to receive(:context)
+          allow(Honeybadger).to receive(:notify).and_return("hb123")
+          allow(message_delivery).to receive(:deliver_now).and_raise(StandardError, "boom")
+
+          worker.perform(user.id, test_attempt_id: attempt.id)
+
+          expect(Honeybadger).to have_received(:context)
+          expect(Honeybadger).to have_received(:notify)
+          expect(attempt.reload.status).to eq("failed")
+          expect(attempt.error_message).to eq("boom")
+          expect(attempt.honeybadger_id).to eq("hb123")
+        end
+      end
     end
   end
 end

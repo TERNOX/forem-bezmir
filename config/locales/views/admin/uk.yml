@@ -489,3 +489,37 @@ uk:
         options:
           delete: Delete organization
           icon: Options
+      settings:
+        emails:
+          next_digest_html: "Наступний періодичний дайджест очікується близько <strong>%{time}</strong> (кожні %{frequency} днів)."
+          last_digest_html: "Останній дайджест було надіслано %{time}."
+          no_previous_digest_html: "Попередніх дайджестів не знайдено. Завдання виконується кожні %{frequency} днів, коли доступний контент."
+          test_digest:
+            title: Надіслати тестовий дайджест
+            description: Додайте стандартний дайджест у чергу для конкретного користувача, щоб попередньо переглянути його досвід.
+            email_label: Email отримувача
+            placeholder: you@example.com
+            submit: Надіслати тестовий дайджест
+            status:
+              heading: Статус останнього тестового дайджесту
+              empty: Запитів на тестовий дайджест ще не було.
+              labels:
+                status: Статус
+                email: Отримувач
+                updated_at: Оновлено
+                note: Примітка до статусу
+                details: Примітки
+                honeybadger: Ідентифікатор Honeybadger
+                job: Ідентифікатор завдання Sidekiq
+              logs:
+                toggle: Переглянути журнал відправлення
+                empty: Записів у журналі ще немає.
+                levels:
+                  info: ІНФО
+                  warn: УВАГА
+                  error: ПОМИЛКА
+              statuses:
+                queued: Додано в чергу на відправлення
+                sent: Успішно надіслано
+                skipped: Пропущено
+                failed: Помилка

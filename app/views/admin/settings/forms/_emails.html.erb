@@ -25,8 +25,55 @@
                              value: Settings::General.periodic_email_digest,
                              placeholder: Constants::Settings::General.details[:periodic_email_digest][:placeholder] %>
         </div>
+
+        <div class="color-base-60 text-s space-y-2">
+          <% frequency = @digest_frequency_days.presence || Settings::General.periodic_email_digest.to_i %>
+          <% if @next_digest_scheduled_at.present? %>
+            <p class="m-0">
+              <%= t("views.admin.settings.emails.next_digest_html",
+                    time: l(@next_digest_scheduled_at, format: :long),
+                    frequency: frequency) %>
+            </p>
+          <% end %>
+
+          <% if @last_digest_sent_at.present? %>
+            <p class="m-0">
+              <%= t("views.admin.settings.emails.last_digest_html",
+                    time: l(@last_digest_sent_at, format: :long)) %>
+            </p>
+          <% else %>
+            <p class="m-0">
+              <%= t("views.admin.settings.emails.no_previous_digest_html",
+                    frequency: frequency) %>
+            </p>
+          <% end %>
+        </div>
       </fieldset>
       <%= render "update_setting_button", f: f %>
     </div>
   </details>
+<% end %>
+
+<%= form_with url: admin_settings_email_digests_path,
+              scope: :test_digest,
+              method: :post,
+              local: true,
+              html: { class: "crayons-card p-6 grid gap-4" },
+              data: { action: "submit->config#sendDigestTest" } do |test_form| %>
+  <h3 class="crayons-subtitle-2"><%= t("views.admin.settings.emails.test_digest.title") %></h3>
+  <p class="color-base-60 m-0"><%= t("views.admin.settings.emails.test_digest.description") %></p>
+  <div class="crayons-field m-0">
+    <%= test_form.label :email, t("views.admin.settings.emails.test_digest.email_label"), class: "crayons-field__label" %>
+    <%= test_form.email_field :email,
+                              class: "crayons-textfield",
+                              placeholder: t("views.admin.settings.emails.test_digest.placeholder"),
+                              required: true,
+                              autocomplete: "email" %>
+  </div>
+  <div>
+    <%= test_form.submit t("views.admin.settings.emails.test_digest.submit"), class: "crayons-btn crayons-btn--primary" %>
+  </div>
+  <div id="digest-test-status" data-config-target="digestTestStatus">
+    <%= render "admin/settings/forms/test_digest_status", attempt: @last_test_digest_attempt %>
+  </div>
 <% end %>

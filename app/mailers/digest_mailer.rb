@@ -33,9 +33,32 @@ class DigestMailer < ApplicationMailer
   private
 
   def generate_title
-    # Winner of digest_title_03_11
+    return fallback_digest_title if @articles.blank? || @articles.first.blank?
+
+    additional_count = [@articles.size - 1, 0].max
+
+    return fallback_digest_title if additional_count.zero?
+
+    "#{display_title(@articles.first)} + #{additional_posts_label(additional_count)} #{random_emoji}"
+  end
+
+  def adjusted_title(article)
+    title = article.title.strip
+    "\"#{title}\"" unless title.start_with? '"'
+  end
+
+  def display_title(article)
+    adjusted_title(article) || article.title
+  end
+
+  def additional_posts_label(count)
+    I18n.t("mailers.digest_mailer.additional_posts_label", count: count)
+  end
+
+  def fallback_digest_title
+    return "" if @articles.blank? || @articles.first.blank?
+
     if ForemInstance.dev_to?
-      # Check if user follows any subforems
       if user_follows_any_subforems?
         "#{@articles.first.title} | Forem Digest"
       else
@@ -44,11 +67,6 @@ class DigestMailer < ApplicationMailer
     else
       @articles.first.title
     end
-  end
-
-  def adjusted_title(article)
-    title = article.title.strip
-    "\"#{title}\"" unless title.start_with? '"'
   end
 
   def random_emoji

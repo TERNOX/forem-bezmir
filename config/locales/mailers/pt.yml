@@ -3,6 +3,9 @@ pt:
   mailers:
     digest_mailer:
       from: Resumo
+      additional_posts_label:
+        one: "%{count} outro post que você pode gostar"
+        other: "%{count} outros posts que você pode gostar"
       more_top_posts: mais posts em alta do %{community}
       more_top_posts_based: mais posts em alta do %{community} baseados nos seus interesses
       more_top_posts_from: mais leituras em alta da comunidade

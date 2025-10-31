@@ -33,6 +33,7 @@ namespace :admin do
     resources :authentications, only: [:create]
     resources :campaigns, only: [:create]
     resources :communities, only: [:create]
+    resources :email_digests, only: [:create]
     resources :general_settings, only: [:create]
     resources :mandatory_settings, only: [:create]
     resources :rate_limits, only: [:create]

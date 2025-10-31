@@ -150,6 +150,36 @@ fr:
       value: '%{first8}******'
     settings_controller:
       confirmation: Mon nom d'utilisateur est @%{username} et cette action est 100% sûre et appropriée.
+    settings:
+      email_digests_controller:
+        delivery_failed: Impossible d'envoyer le digest. Veuillez réessayer.
+        email_required: Veuillez saisir une adresse email.
+        enqueue_failed: Impossible de mettre le digest en file d'attente. Veuillez réessayer.
+        skipped_no_articles: Aucun contenu de digest n'était disponible pour cet utilisateur.
+        skipped_unsubscribed: Cet utilisateur n'est pas inscrit aux digests périodiques.
+        notes:
+          used_fallback: Envoi avec un ensemble de secours de %{count} articles récents.
+          no_articles_even_fallback: Tentative de construction d'un digest de secours, mais aucun article récent n'était admissible.
+        logs:
+          attempt_created: Tentative de digest de test créée.
+          worker_started: Le worker a commencé à traiter cette tentative.
+          collecting: Collecte du contenu de digest admissible.
+          no_primary_articles: Le collecteur principal n'a renvoyé aucun article.
+          used_fallback: Utilisation des %{count} derniers articles éligibles.
+          primary_articles: '%{count} articles préparés par le collecteur principal.'
+          delivery_succeeded: Courriel du digest envoyé avec succès.
+          delivery_failed: Échec de l'envoi du courriel du digest.
+          enqueued: Tâche de digest mise en file d'attente.
+          performed_inline: Digest envoyé immédiatement.
+          enqueue_failed: Échec lors de la mise en file du digest.
+          controller_failed: Échec au niveau du contrôleur lors de la mise en file du digest.
+        status_messages:
+          queued: Un digest a été mis en file d'attente pour %{email}.
+          sent: Un digest a été envoyé à %{email}.
+          skipped: Le digest a été ignoré pour %{email}. Consultez les notes ci-dessous.
+          failed: L'envoi du digest a échoué pour %{email}. Consultez les notes ci-dessous.
+        test_sent: Un digest a été programmé pour l'adresse %{email}.
+        user_missing: Aucun utilisateur trouvé avec l'adresse %{email}.
     spaces_controller:
       update_success: L'espace a été mis à jour.
     subforems_controller:

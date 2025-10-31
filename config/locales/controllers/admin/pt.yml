@@ -111,6 +111,36 @@ pt:
       deleted: 'O modelo de resposta "%{title}" foi excluído.'
     settings_controller:
       confirmation: Meu nome de usuário é @%{username} e esta ação é 100% segura e apropriada.
+    settings:
+      email_digests_controller:
+        delivery_failed: Não foi possível enviar o digest. Tente novamente.
+        email_required: Informe um endereço de email.
+        enqueue_failed: Não foi possível colocar o digest na fila. Tente novamente.
+        skipped_no_articles: Não havia conteúdo de digest disponível para este usuário.
+        skipped_unsubscribed: Este usuário não está inscrito nos digests periódicos.
+        notes:
+          used_fallback: Enviado com um conjunto de reserva de %{count} artigos recentes.
+          no_articles_even_fallback: Tentamos montar um digest de reserva, mas nenhum artigo recente era elegível.
+        logs:
+          attempt_created: Tentativa de digest de teste criada.
+          worker_started: O worker começou a processar esta tentativa.
+          collecting: Coletando conteúdo elegível para o digest.
+          no_primary_articles: O coletor principal não retornou artigos.
+          used_fallback: Usando os %{count} artigos elegíveis mais recentes.
+          primary_articles: '%{count} artigos preparados pelo coletor principal.'
+          delivery_succeeded: E-mail do digest enviado com sucesso.
+          delivery_failed: Falha ao enviar o e-mail do digest.
+          enqueued: Trabalho do digest colocado na fila com sucesso.
+          performed_inline: Digest enviado imediatamente.
+          enqueue_failed: Falha ao colocar o digest na fila.
+          controller_failed: Falha no controlador ao enfileirar o digest.
+        status_messages:
+          queued: Um digest foi colocado na fila para %{email}.
+          sent: Um digest foi entregue para %{email}.
+          skipped: O digest foi ignorado para %{email}. Verifique as notas abaixo.
+          failed: O envio do digest falhou para %{email}. Verifique as notas abaixo.
+        test_sent: Um digest foi programado para ser enviado para %{email}.
+        user_missing: Não encontramos um usuário com o email %{email}.
     spaces_controller:
       update_success: Espaços foram atualizados com sucesso.
     subforems_controller:
