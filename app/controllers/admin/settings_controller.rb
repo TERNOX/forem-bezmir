@@ -20,7 +20,10 @@ module Admin
         @last_digest_sent_at,
         @digest_frequency_days,
       )
-      @last_test_digest_attempt = ::EmailDigestTestAttempt.includes(:user).recent_first.first
+      @last_test_digest_attempt = ::EmailDigestTestAttempt
+        .includes(:user, :logs)
+        .recent_first
+        .first
     end
 
     private

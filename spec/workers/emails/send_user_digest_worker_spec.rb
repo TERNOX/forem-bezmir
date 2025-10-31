@@ -158,12 +158,23 @@ RSpec.describe Emails::SendUserDigestWorker, type: :worker do
           )
         end
 
-        it "marks the attempt as skipped when there are no articles" do
+        it "delivers using fallback content when there are no primary articles" do
+          create_list(:article, 2,
+                      user_id: author.id,
+                      published_at: Time.current,
+                      score: 30,
+                      public_reactions_count: 10)
+
           worker.perform(user.id, test_attempt_id: attempt.id)
 
-          expect(attempt.reload.status).to eq("skipped")
-          expect(attempt.error_message).to eq(
-            I18n.t("admin.settings.email_digests_controller.skipped_no_articles"),
+          attempt.reload
+
+          expect(attempt.status).to eq("sent")
+          expect(attempt.status_note).to eq(
+            I18n.t("admin.settings.email_digests_controller.notes.used_fallback", count: 2),
+          )
+          expect(attempt.logs.pluck(:message)).to include(
+            I18n.t("admin.settings.email_digests_controller.logs.used_fallback", count: 2),
           )
         end
 

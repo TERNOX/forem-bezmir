@@ -23,26 +23,32 @@ module Admin
         end
 
         attempt = ::EmailDigestTestAttempt.create!(user: user)
+        attempt.log_event(:info, I18n.t("admin.settings.email_digests_controller.logs.attempt_created"))
 
         begin
           if ForemInstance.dev_to?
             Emails::SendUserDigestWorker
               .new
               .perform(user.id, test_attempt_id: attempt.id)
+            attempt.log_event(:info, I18n.t("admin.settings.email_digests_controller.logs.performed_inline"))
           else
             job_id = Emails::SendUserDigestWorker.perform_async(user.id, test_attempt_id: attempt.id)
 
             if job_id.blank?
               attempt.mark_failed!(I18n.t("admin.settings.email_digests_controller.enqueue_failed"))
+              attempt.log_event(:error, I18n.t("admin.settings.email_digests_controller.logs.enqueue_failed"))
               render json: error_response_for(attempt), status: :internal_server_error
               return
             end
 
             attempt.update!(job_id: job_id)
+            attempt.log_event(:info, I18n.t("admin.settings.email_digests_controller.logs.enqueued"), job_id: job_id)
           end
         rescue StandardError => e
           notice_id = Honeybadger.notify(e)
           attempt.mark_failed!(e, notice_id)
+          attempt.log_event(:error, I18n.t("admin.settings.email_digests_controller.logs.controller_failed"),
+                            error: e.message, honeybadger_id: notice_id)
           render json: error_response_for(attempt), status: :internal_server_error
           return
         end

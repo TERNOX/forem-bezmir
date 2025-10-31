@@ -477,9 +477,17 @@ fr:
                 status: Statut
                 email: Destinataire
                 updated_at: Dernière mise à jour
+                note: Note de statut
                 details: Notes
                 honeybadger: ID de notification Honeybadger
                 job: ID du job Sidekiq
+              logs:
+                toggle: Voir le journal d'envoi
+                empty: Aucun journal enregistré pour l'instant.
+                levels:
+                  info: INFO
+                  warn: AVERT.
+                  error: ERREUR
               statuses:
                 queued: En file d'attente pour l'envoi
                 sent: Envoyé avec succès

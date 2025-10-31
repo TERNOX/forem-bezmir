@@ -157,6 +157,22 @@ en:
         enqueue_failed: We couldn't queue the digest for delivery. Please try again.
         skipped_no_articles: No digest content was available for this user.
         skipped_unsubscribed: This user is not subscribed to periodic digests.
+        notes:
+          used_fallback: Sent with a curated fallback set of %{count} recent articles.
+          no_articles_even_fallback: Tried to build a fallback digest but no recent articles were eligible.
+        logs:
+          attempt_created: Test digest attempt created.
+          worker_started: Worker started processing this attempt.
+          collecting: Collecting eligible digest content.
+          no_primary_articles: Primary collector returned no articles.
+          used_fallback: Falling back to the latest %{count} recent eligible articles.
+          primary_articles: Prepared %{count} articles from the primary collector.
+          delivery_succeeded: Digest email delivered successfully.
+          delivery_failed: Digest email failed to send.
+          enqueued: Digest job enqueued successfully.
+          performed_inline: Digest delivered synchronously.
+          enqueue_failed: Failed to enqueue the digest job.
+          controller_failed: Controller-level failure while queuing the digest.
         status_messages:
           queued: A digest has been queued for delivery to %{email}.
           sent: A digest was delivered to %{email}.

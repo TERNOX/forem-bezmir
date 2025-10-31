@@ -502,9 +502,17 @@ uk:
                 status: Статус
                 email: Отримувач
                 updated_at: Оновлено
+                note: Примітка до статусу
                 details: Примітки
                 honeybadger: Ідентифікатор Honeybadger
                 job: Ідентифікатор завдання Sidekiq
+              logs:
+                toggle: Переглянути журнал відправлення
+                empty: Записів у журналі ще немає.
+                levels:
+                  info: ІНФО
+                  warn: УВАГА
+                  error: ПОМИЛКА
               statuses:
                 queued: Додано в чергу на відправлення
                 sent: Успішно надіслано

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_10_31_120000) do
+ActiveRecord::Schema[7.0].define(version: 2025_10_31_121500) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "ltree"
@@ -580,11 +580,24 @@ ActiveRecord::Schema[7.0].define(version: 2025_10_31_120000) do
     t.string "job_id"
     t.text "error_message"
     t.string "honeybadger_id"
+    t.text "status_note"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.index ["created_at"], name: "index_email_digest_test_attempts_on_created_at"
     t.index ["status"], name: "index_email_digest_test_attempts_on_status"
     t.index ["user_id"], name: "index_email_digest_test_attempts_on_user_id"
+  end
+
+  create_table "email_digest_test_attempt_logs", force: :cascade do |t|
+    t.bigint "email_digest_test_attempt_id", null: false
+    t.string "level", default: "info", null: false
+    t.text "message", null: false
+    t.jsonb "context", default: {}, null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
+    t.index ["created_at"], name: "index_email_digest_test_attempt_logs_on_created_at"
+    t.index ["email_digest_test_attempt_id"], name: "index_digest_attempt_logs_on_attempt_id"
+    t.index ["level"], name: "index_email_digest_test_attempt_logs_on_level"
   end
 
   create_table "email_authorizations", force: :cascade do |t|
@@ -1761,6 +1774,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_10_31_120000) do
   add_foreign_key "display_ads", "organizations", on_delete: :cascade
   add_foreign_key "email_authorizations", "users", on_delete: :cascade
   add_foreign_key "email_digest_test_attempts", "users"
+  add_foreign_key "email_digest_test_attempt_logs", "email_digest_test_attempts"
   add_foreign_key "emails", "audience_segments"
   add_foreign_key "emails", "user_queries"
   add_foreign_key "feed_events", "articles", on_delete: :cascade

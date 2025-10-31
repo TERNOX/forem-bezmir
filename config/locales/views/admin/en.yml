@@ -502,9 +502,17 @@ en:
                 status: Status
                 email: Recipient
                 updated_at: Last updated
+                note: Status note
                 details: Notes
                 honeybadger: Honeybadger notice ID
                 job: Sidekiq job ID
+              logs:
+                toggle: View delivery log
+                empty: No log entries recorded yet.
+                levels:
+                  info: INFO
+                  warn: WARN
+                  error: ERROR
               statuses:
                 queued: Queued for delivery
                 sent: Sent successfully

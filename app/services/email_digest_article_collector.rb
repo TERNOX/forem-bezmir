@@ -116,6 +116,18 @@ class EmailDigestArticleCollector
     # rubocop:enable Metrics/BlockLength
   end
 
+  def fallback_articles(limit: RESULTS_COUNT)
+    Article.select(:title, :description, :path, :cached_user, :cached_tag_list, :subforem_id)
+      .published
+      .full_posts
+      .where(email_digest_eligible: true)
+      .where.not(published_at: nil)
+      .where("published_at > ?", 14.days.ago)
+      .not_authored_by(@user.id)
+      .order(published_at: :desc)
+      .limit(limit)
+  end
+
   def should_receive_email?
     return true unless last_email_sent
     return false if last_email_sent > 18.hours.ago

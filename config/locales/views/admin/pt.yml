@@ -347,9 +347,17 @@ pt:
                 status: Status
                 email: Destinatário
                 updated_at: Última atualização
+                note: Observação de status
                 details: Observações
                 honeybadger: ID do aviso no Honeybadger
                 job: ID do job Sidekiq
+              logs:
+                toggle: Ver registro de envio
+                empty: Nenhum registro disponível ainda.
+                levels:
+                  info: INFO
+                  warn: AVISO
+                  error: ERRO
               statuses:
                 queued: Na fila para envio
                 sent: Enviado com sucesso
