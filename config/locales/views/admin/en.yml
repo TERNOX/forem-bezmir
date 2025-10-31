@@ -495,3 +495,18 @@ en:
             email_label: Recipient email
             placeholder: you@example.com
             submit: Send test digest
+            status:
+              heading: Latest test digest status
+              empty: No test digests have been requested yet.
+              labels:
+                status: Status
+                email: Recipient
+                updated_at: Last updated
+                details: Notes
+                honeybadger: Honeybadger notice ID
+                job: Sidekiq job ID
+              statuses:
+                queued: Queued for delivery
+                sent: Sent successfully
+                skipped: Skipped
+                failed: Failed

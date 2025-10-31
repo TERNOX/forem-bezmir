@@ -22,28 +22,34 @@ module Admin
           return
         end
 
+        attempt = ::EmailDigestTestAttempt.create!(user: user)
+
         begin
           if ForemInstance.dev_to?
-            Emails::SendUserDigestWorker.new.perform(user.id)
+            Emails::SendUserDigestWorker
+              .new
+              .perform(user.id, test_attempt_id: attempt.id)
           else
-            Emails::SendUserDigestWorker.perform_async(user.id)
+            job_id = Emails::SendUserDigestWorker.perform_async(user.id, test_attempt_id: attempt.id)
+
+            if job_id.blank?
+              attempt.mark_failed!(I18n.t("admin.settings.email_digests_controller.enqueue_failed"))
+              render json: error_response_for(attempt), status: :internal_server_error
+              return
+            end
+
+            attempt.update!(job_id: job_id)
           end
         rescue StandardError => e
-          Honeybadger.notify(e)
-          render json: {
-            error: I18n.t("admin.settings.email_digests_controller.delivery_failed"),
-          }, status: :internal_server_error
+          notice_id = Honeybadger.notify(e)
+          attempt.mark_failed!(e, notice_id)
+          render json: error_response_for(attempt), status: :internal_server_error
           return
         end
 
         Audit::Logger.log(:internal, current_user, params.dup)
 
-        render json: {
-          message: I18n.t(
-            "admin.settings.email_digests_controller.test_sent",
-            email: user.email,
-          )
-        }, status: :ok
+        render json: success_response_for(attempt.reload), status: :ok
       end
 
       private
@@ -54,6 +60,31 @@ module Admin
 
       def test_digest_params
         params.require(:test_digest).permit(:email)
+      end
+
+      def success_response_for(attempt)
+        {
+          message: I18n.t(
+            "admin.settings.email_digests_controller.status_messages.#{attempt.status}",
+            email: attempt.display_email,
+          ),
+          status_html: render_status_html(attempt)
+        }
+      end
+
+      def error_response_for(attempt)
+        {
+          error: I18n.t("admin.settings.email_digests_controller.delivery_failed"),
+          status_html: render_status_html(attempt)
+        }
+      end
+
+      def render_status_html(attempt)
+        render_to_string(
+          partial: "admin/settings/forms/test_digest_status",
+          formats: [:html],
+          locals: { attempt: attempt }
+        )
       end
     end
   end

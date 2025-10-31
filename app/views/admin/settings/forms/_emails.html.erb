@@ -73,4 +73,7 @@
   <div>
     <%= test_form.submit t("views.admin.settings.emails.test_digest.submit"), class: "crayons-btn crayons-btn--primary" %>
   </div>
+  <div id="digest-test-status" data-config-target="digestTestStatus">
+    <%= render "admin/settings/forms/test_digest_status", attempt: @last_test_digest_attempt %>
+  </div>
 <% end %>

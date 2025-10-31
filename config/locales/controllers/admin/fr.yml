@@ -154,6 +154,14 @@ fr:
       email_digests_controller:
         delivery_failed: Impossible d'envoyer le digest. Veuillez réessayer.
         email_required: Veuillez saisir une adresse email.
+        enqueue_failed: Impossible de mettre le digest en file d'attente. Veuillez réessayer.
+        skipped_no_articles: Aucun contenu de digest n'était disponible pour cet utilisateur.
+        skipped_unsubscribed: Cet utilisateur n'est pas inscrit aux digests périodiques.
+        status_messages:
+          queued: Un digest a été mis en file d'attente pour %{email}.
+          sent: Un digest a été envoyé à %{email}.
+          skipped: Le digest a été ignoré pour %{email}. Consultez les notes ci-dessous.
+          failed: L'envoi du digest a échoué pour %{email}. Consultez les notes ci-dessous.
         test_sent: Un digest a été programmé pour l'adresse %{email}.
         user_missing: Aucun utilisateur trouvé avec l'adresse %{email}.
     spaces_controller:

@@ -757,25 +757,60 @@ RSpec.describe "/admin/customization/config" do
           allow(ForemInstance).to receive(:dev_to?).and_return(false)
         end
 
-        it "queues a digest for the provided user" do
-          allow(Emails::SendUserDigestWorker).to receive(:perform_async)
+        it "queues a digest for the provided user and records the attempt" do
+          allow(Emails::SendUserDigestWorker).to receive(:perform_async).and_return("abc123")
 
-          post admin_settings_email_digests_path, params: { test_digest: { email: digest_user.email } }
+          expect do
+            post admin_settings_email_digests_path, params: { test_digest: { email: digest_user.email } }
+          end.to change(EmailDigestTestAttempt, :count).by(1)
+
+          attempt = EmailDigestTestAttempt.last
 
           expect(response).to have_http_status(:ok)
-          expect(Emails::SendUserDigestWorker).to have_received(:perform_async).with(digest_user.id)
+          expect(response.parsed_body["status_html"]).to include(digest_user.email)
+          expect(attempt.user).to eq(digest_user)
+          expect(attempt.job_id).to eq("abc123")
+          expect(attempt.status).to eq("queued")
+          expect(Emails::SendUserDigestWorker).to have_received(:perform_async)
+            .with(digest_user.id, hash_including(test_attempt_id: attempt.id))
         end
 
         it "delivers immediately when running on dev.to" do
           worker = instance_double(Emails::SendUserDigestWorker)
-          allow(worker).to receive(:perform).and_return(true)
+          allow(worker).to receive(:perform) do |_user_id, options|
+            EmailDigestTestAttempt.find(options[:test_attempt_id]).mark_sent!
+          end
           allow(ForemInstance).to receive(:dev_to?).and_return(true)
           allow(Emails::SendUserDigestWorker).to receive(:new).and_return(worker)
 
-          post admin_settings_email_digests_path, params: { test_digest: { email: digest_user.email } }
+          expect do
+            post admin_settings_email_digests_path, params: { test_digest: { email: digest_user.email } }
+          end.to change(EmailDigestTestAttempt, :count).by(1)
+
+          attempt = EmailDigestTestAttempt.last
 
           expect(response).to have_http_status(:ok)
-          expect(worker).to have_received(:perform).with(digest_user.id)
+          expect(worker).to have_received(:perform)
+            .with(digest_user.id, hash_including(:test_attempt_id))
+          expect(attempt.status).to eq("sent")
+          expect(response.parsed_body["message"]).to eq(
+            I18n.t("admin.settings.email_digests_controller.status_messages.sent", email: digest_user.email),
+          )
+        end
+
+        it "captures enqueue failures" do
+          allow(Emails::SendUserDigestWorker).to receive(:perform_async).and_return(nil)
+
+          expect do
+            post admin_settings_email_digests_path, params: { test_digest: { email: digest_user.email } }
+          end.to change(EmailDigestTestAttempt, :count).by(1)
+
+          attempt = EmailDigestTestAttempt.last
+
+          expect(response).to have_http_status(:internal_server_error)
+          expect(response.parsed_body["error"]).to eq(I18n.t("admin.settings.email_digests_controller.delivery_failed"))
+          expect(attempt.status).to eq("failed")
+          expect(attempt.error_message).to eq(I18n.t("admin.settings.email_digests_controller.enqueue_failed"))
         end
 
         it "returns an error when the email is blank" do
@@ -790,6 +825,7 @@ RSpec.describe "/admin/customization/config" do
 
           expect(response).to have_http_status(:unprocessable_entity)
           expect(response.parsed_body["error"]).to eq(I18n.t("admin.settings.email_digests_controller.user_missing", email: "missing@example.com"))
+          expect(EmailDigestTestAttempt.count).to eq(0)
         end
       end
     end

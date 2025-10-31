@@ -470,3 +470,18 @@ fr:
             email_label: Email du destinataire
             placeholder: vous@example.com
             submit: Envoyer le digest de test
+            status:
+              heading: Statut le plus récent du digest de test
+              empty: Aucun digest de test n'a encore été demandé.
+              labels:
+                status: Statut
+                email: Destinataire
+                updated_at: Dernière mise à jour
+                details: Notes
+                honeybadger: ID de notification Honeybadger
+                job: ID du job Sidekiq
+              statuses:
+                queued: En file d'attente pour l'envoi
+                sent: Envoyé avec succès
+                skipped: Ignoré
+                failed: Échec

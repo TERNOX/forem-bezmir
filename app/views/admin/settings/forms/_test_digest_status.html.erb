@@ -1,0 +1,28 @@
+<% if attempt.present? %>
+  <div class="crayons-card crayons-card--secondary p-4 space-y-2" aria-live="polite">
+    <p class="crayons-subtitle-3 m-0">
+      <%= t("views.admin.settings.emails.test_digest.status.heading") %>
+    </p>
+    <p class="m-0"><strong><%= t("views.admin.settings.emails.test_digest.status.labels.status") %>:</strong> <%= t("views.admin.settings.emails.test_digest.status.statuses.#{attempt.status}") %></p>
+    <% if attempt.display_email.present? %>
+      <p class="m-0"><strong><%= t("views.admin.settings.emails.test_digest.status.labels.email") %>:</strong> <%= attempt.display_email %></p>
+    <% end %>
+    <% if attempt.display_timestamp.present? %>
+      <p class="m-0"><strong><%= t("views.admin.settings.emails.test_digest.status.labels.updated_at") %>:</strong> <%= l(attempt.display_timestamp, format: :long) %></p>
+    <% end %>
+    <% if attempt.error_message.present? %>
+      <p class="m-0 color-base-70"><strong><%= t("views.admin.settings.emails.test_digest.status.labels.details") %>:</strong> <%= attempt.error_message %></p>
+    <% end %>
+    <% if attempt.honeybadger_id.present? %>
+      <p class="m-0">
+        <strong><%= t("views.admin.settings.emails.test_digest.status.labels.honeybadger") %>:</strong>
+        <span class="monospace"><%= attempt.honeybadger_id %></span>
+      </p>
+    <% end %>
+    <% if attempt.job_id.present? %>
+      <p class="m-0 color-base-60"><strong><%= t("views.admin.settings.emails.test_digest.status.labels.job") %>:</strong> <%= attempt.job_id %></p>
+    <% end %>
+  </div>
+<% else %>
+  <p class="color-base-60 m-0"><%= t("views.admin.settings.emails.test_digest.status.empty") %></p>
+<% end %>

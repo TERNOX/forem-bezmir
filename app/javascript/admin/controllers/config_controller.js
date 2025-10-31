@@ -27,6 +27,7 @@ export default class ConfigController extends Controller {
     'enabledIndicator',
     'inviteOnlyMode',
     'requireCaptchaForEmailPasswordRegistration',
+    'digestTestStatus',
   ];
 
   connect() {
@@ -135,8 +136,14 @@ export default class ConfigController extends Controller {
       if (response.ok) {
         form.reset();
         displaySnackbar(outcome.message);
+        if (outcome.status_html && this.hasDigestTestStatusTarget) {
+          this.digestTestStatusTarget.innerHTML = outcome.status_html;
+        }
       } else {
         displaySnackbar(outcome.error ?? 'An error occurred. Please try again.');
+        if (outcome.status_html && this.hasDigestTestStatusTarget) {
+          this.digestTestStatusTarget.innerHTML = outcome.status_html;
+        }
       }
     } catch (_err) {
       displaySnackbar('An error occurred. Please try again.');

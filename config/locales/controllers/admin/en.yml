@@ -154,6 +154,14 @@ en:
       email_digests_controller:
         delivery_failed: We couldn't send the digest. Please try again.
         email_required: Please enter an email address.
+        enqueue_failed: We couldn't queue the digest for delivery. Please try again.
+        skipped_no_articles: No digest content was available for this user.
+        skipped_unsubscribed: This user is not subscribed to periodic digests.
+        status_messages:
+          queued: A digest has been queued for delivery to %{email}.
+          sent: A digest was delivered to %{email}.
+          skipped: The digest was skipped for %{email}. Review the notes below.
+          failed: The digest failed for %{email}. Review the notes below.
         test_sent: A digest has been queued for delivery to %{email}.
         user_missing: We couldn't find a user with the email %{email}.
     spaces_controller:

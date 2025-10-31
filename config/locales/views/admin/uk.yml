@@ -495,3 +495,18 @@ uk:
             email_label: Email отримувача
             placeholder: you@example.com
             submit: Надіслати тестовий дайджест
+            status:
+              heading: Статус останнього тестового дайджесту
+              empty: Запитів на тестовий дайджест ще не було.
+              labels:
+                status: Статус
+                email: Отримувач
+                updated_at: Оновлено
+                details: Примітки
+                honeybadger: Ідентифікатор Honeybadger
+                job: Ідентифікатор завдання Sidekiq
+              statuses:
+                queued: Додано в чергу на відправлення
+                sent: Успішно надіслано
+                skipped: Пропущено
+                failed: Помилка

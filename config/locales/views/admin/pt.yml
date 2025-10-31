@@ -340,3 +340,18 @@ pt:
             email_label: Email do destinatário
             placeholder: voce@example.com
             submit: Enviar digest de teste
+            status:
+              heading: Status mais recente do digest de teste
+              empty: Ainda não foi solicitado nenhum digest de teste.
+              labels:
+                status: Status
+                email: Destinatário
+                updated_at: Última atualização
+                details: Observações
+                honeybadger: ID do aviso no Honeybadger
+                job: ID do job Sidekiq
+              statuses:
+                queued: Na fila para envio
+                sent: Enviado com sucesso
+                skipped: Ignorado
+                failed: Falhou
