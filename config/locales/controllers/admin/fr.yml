@@ -166,7 +166,7 @@ fr:
           collecting: Collecte du contenu de digest admissible.
           no_primary_articles: Le collecteur principal n'a renvoyé aucun article.
           used_fallback: Utilisation des %{count} derniers articles éligibles.
-          primary_articles: %{count} articles préparés par le collecteur principal.
+          primary_articles: '%{count} articles préparés par le collecteur principal.'
           delivery_succeeded: Courriel du digest envoyé avec succès.
           delivery_failed: Échec de l'envoi du courriel du digest.
           enqueued: Tâche de digest mise en file d'attente.

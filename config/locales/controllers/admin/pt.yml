@@ -127,7 +127,7 @@ pt:
           collecting: Coletando conteúdo elegível para o digest.
           no_primary_articles: O coletor principal não retornou artigos.
           used_fallback: Usando os %{count} artigos elegíveis mais recentes.
-          primary_articles: %{count} artigos preparados pelo coletor principal.
+          primary_articles: '%{count} artigos preparados pelo coletor principal.'
           delivery_succeeded: E-mail do digest enviado com sucesso.
           delivery_failed: Falha ao enviar o e-mail do digest.
           enqueued: Trabalho do digest colocado na fila com sucesso.
