@@ -14,7 +14,7 @@ module Admin
       @logo_max_file_size = LogoUploader::MAX_FILE_SIZE
       @confirmation_text =
         I18n.t("admin.settings_controller.confirmation", username: current_user.username)
-      @digest_frequency_days = Settings::General.periodic_email_digest.to_i
+      @digest_frequency_days = ::Settings::General.periodic_email_digest.to_i
       @last_digest_sent_at = fetch_last_digest_timestamp
       @next_digest_scheduled_at = compute_next_digest_timestamp(
         @last_digest_sent_at,
