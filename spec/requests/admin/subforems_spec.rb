@@ -175,4 +175,18 @@ RSpec.describe "Admin::Subforems", type: :request do
       expect(response.body).to include(I18n.t("admin.subforems_controller.updated"))
     end
   end
+
+  describe "DELETE /admin/subforems/:id" do
+    let!(:subforem) { create(:subforem) }
+
+    it "deletes the subforem and redirects to the index" do
+      expect do
+        delete admin_subforem_path(subforem)
+      end.to change(Subforem, :count).by(-1)
+
+      expect(response).to redirect_to(admin_subforems_path)
+      follow_redirect!
+      expect(response.body).to include(I18n.t("admin.subforems_controller.deleted"))
+    end
+  end
 end

@@ -17,7 +17,8 @@ RSpec.describe Tag do
       it { is_expected.to validate_length_of(:name).is_at_most(30) }
       it { is_expected.to validate_presence_of(:category) }
 
-      it { is_expected.not_to allow_value("#Hello", "c++", "AWS-Lambda").for(:name) }
+      it { is_expected.not_to allow_value("#Hello", "c++").for(:name) }
+      it { is_expected.to allow_value("aws-lambda", "ukrainian-visual-novel-jam").for(:name) }
 
       # rubocop:disable RSpec/NamedSubject
       it do
@@ -54,6 +55,9 @@ RSpec.describe Tag do
     describe "name" do
       it "passes validations if name is alphanumeric" do
         tag.name = "foobar123"
+        expect(tag).to be_valid
+
+        tag.name = "ukrainian-visual-novel-jam"
         expect(tag).to be_valid
       end
 

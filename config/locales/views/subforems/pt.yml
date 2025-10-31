@@ -40,6 +40,9 @@ pt:
           discoverable:
             label: Descobrível no Diretório
             description: Permitir que esta comunidade apareça no diretório de subforems.
+          default_subforem:
+            label: Definir como comunidade padrão
+            description: Torne esta a comunidade principal carregada quando nenhum outro subforem for especificado.
           community_description:
             label: Descrição da Comunidade
             placeholder: Descreva sua comunidade...
@@ -70,7 +73,7 @@ pt:
           sidebar_tags:
             label: Tags da Barra Lateral
             placeholder: "help,discuss,explainlikeimfive,meta"
-            description: Lista de tags separadas por vírgula para exibir na barra lateral da página inicial (minúsculas, sem espaços).
+            description: Lista de tags separadas por vírgula para exibir na barra lateral da página inicial. Letras de qualquer alfabeto, números e hifens são aceitos; espaços são ignorados.
           primary_color:
             label: Cor Primária da Marca
             placeholder: "#3b49df"

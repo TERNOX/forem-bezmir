@@ -200,4 +200,30 @@ RSpec.describe SubforemPolicy do
       end
     end
   end
+
+  describe "#destroy?" do
+    context "when user is a super admin" do
+      let(:user) { create(:user, :super_admin) }
+
+      it "returns true" do
+        expect(policy.destroy?).to be true
+      end
+    end
+
+    context "when user is a subforem moderator for the subforem" do
+      before do
+        user.add_role(:subforem_moderator, subforem)
+      end
+
+      it "returns false" do
+        expect(policy.destroy?).to be false
+      end
+    end
+
+    context "when user is not authorized" do
+      it "returns false" do
+        expect(policy.destroy?).to be false
+      end
+    end
+  end
 end

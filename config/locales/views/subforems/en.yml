@@ -40,6 +40,9 @@ en:
           discoverable:
             label: Discoverable in Directory
             description: Allow this community to appear in the subforems directory.
+          default_subforem:
+            label: Set as default community
+            description: Make this the primary community that loads when no other subforem is specified.
           community_description:
             label: Community Description
             placeholder: Describe your community...
@@ -70,7 +73,7 @@ en:
           sidebar_tags:
             label: Sidebar Tags
             placeholder: "help,discuss,explainlikeimfive,meta"
-            description: Comma-separated list of tags to display in the homepage sidebar (lowercase, no spaces).
+            description: Comma-separated list of tags to display in the homepage sidebar. Letters from any alphabet, numbers, and hyphens are supported; spaces are ignored.
           primary_color:
             label: Primary Brand Color
             placeholder: "#3b49df"

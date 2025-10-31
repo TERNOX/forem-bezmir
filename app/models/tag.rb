@@ -215,10 +215,8 @@ class Tag < ActsAsTaggableOn::Tag
 
   def validate_name
     errors.add(:name, I18n.t("errors.messages.too_long", count: 30)) if name.length > 30
-    # [:alnum:] is not used here because it supports diacritical characters.
-    # If we decide to allow diacritics in the future, we should replace the
-    # following regex with [:alnum:].
-    errors.add(:name, I18n.t("errors.messages.contains_prohibited_characters")) unless name.match?(/\A[[:alnum:]]+\z/i)
+    # Allow any unicode letter or number plus hyphens so that localized tags are accepted.
+    errors.add(:name, I18n.t("errors.messages.contains_prohibited_characters")) unless name.match?(/\A[\p{Alnum}-]+\z/u)
   end
 
   # @note In the future we envision always favoring pretty name over the given name.

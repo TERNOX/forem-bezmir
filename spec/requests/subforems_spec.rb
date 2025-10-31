@@ -299,6 +299,15 @@ RSpec.describe "Subforems", type: :request do
         expect(response).to redirect_to(manage_subforem_path)
         expect(Settings::General.sidebar_tags(subforem_id: subforem.id)).to eq(%w[ruby rails javascript])
       end
+
+      it "accepts sidebar tags with hyphens and non Latin characters" do
+        patch subforem_path(subforem), params: {
+          sidebar_tags: "україна,ukrainian-visual-novel-jam"
+        }
+
+        expect(response).to redirect_to(manage_subforem_path)
+        expect(Settings::General.sidebar_tags(subforem_id: subforem.id)).to eq(%w[україна ukrainian-visual-novel-jam])
+      end
     end
 
     context "when user is not moderator for the subforem" do

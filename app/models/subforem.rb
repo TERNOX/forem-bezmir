@@ -11,12 +11,16 @@ class Subforem < ApplicationRecord
 
   # Only one total subforem can be the root
   validates :root, uniqueness: { message: "Only one subforem can be the root" }, if: :root
+  # Only one subforem can be set as the default
+  validates :default_subforem, uniqueness: { message: "Only one subforem can be the default" }, if: :default_subforem
 
   # Virtual attributes for form
   attr_accessor :name, :brain_dump, :logo_url, :bg_image_url, :default_locale
 
   before_validation :downcase_domain
   after_save :bust_caches
+  after_destroy :bust_caches
+  after_commit :ensure_single_default_subforem, if: -> { saved_change_to_default_subforem? && default_subforem? }
 
   def self.create_from_scratch!(domain:, brain_dump:, name:, logo_url:, bg_image_url: nil, default_locale: "en")
     subforem = Subforem.create!(domain: domain)
@@ -42,7 +46,7 @@ class Subforem < ApplicationRecord
 
   def self.cached_default_id
     MemoryFirstCache.fetch("subforem_default_id", redis_expires_in: 12.hours, return_type: :integer) do
-      Subforem.first&.id
+      Subforem.find_by(default_subforem: true)&.id || Subforem.order(:id).first&.id
     end
   end
 
@@ -72,7 +76,7 @@ class Subforem < ApplicationRecord
 
   def self.cached_default_domain
     MemoryFirstCache.fetch("subforem_default_domain", redis_expires_in: 12.hours, return_type: :string) do
-      Subforem.first&.domain
+      Subforem.find_by(default_subforem: true)&.domain || Subforem.order(:id).first&.domain
     end
   end
 
@@ -164,5 +168,9 @@ class Subforem < ApplicationRecord
 
   def downcase_domain
     self.domain = domain.downcase if domain
+  end
+
+  def ensure_single_default_subforem
+    Subforem.where.not(id: id).where(default_subforem: true).update_all(default_subforem: false)
   end
 end

@@ -276,7 +276,7 @@ uk:
       bad_uri: некоректне посилання
       blank: не може бути порожнім
       confirmation: не збігається з %{attribute}
-      contains_prohibited_characters: містить заборонені або недопустимі символи
+      contains_prohibited_characters: містить символи, відмінні від літер, цифр або дефісів
       empty: не може бути порожнім
       equal_to: має дорівнювати %{count}
       even: має бути парним
