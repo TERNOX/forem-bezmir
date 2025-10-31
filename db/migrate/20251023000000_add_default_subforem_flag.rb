@@ -1,4 +1,4 @@
-class AddDefaultSubforemFlag < ActiveRecord::Migration[7.1]
+class AddDefaultSubforemFlag < ActiveRecord::Migration[7.0]
   def up
     add_column :subforems, :default_subforem, :boolean, default: false, null: false
 
