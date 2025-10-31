@@ -28,6 +28,10 @@ fr:
       new_mention: "%{name} vient de vous mentionner sur %{type}"
       org_deleted: "%{community} - Confirmation de la suppression de l'organisation"
       new_reply: "%{name} a répondu à votre %{type}"
+      parent_types:
+        comment: commentaire
+        episode: épisode
+        post: publication
       feedback: Merci pour votre rapport sur %{community}
       export: L'exportation de votre contenu est prête
       unread_notifications:

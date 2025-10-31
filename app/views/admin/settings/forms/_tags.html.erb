@@ -11,8 +11,7 @@
           <%= f.text_field :sidebar_tags,
                            class: "crayons-textfield",
                            value: Settings::General.sidebar_tags.join(","),
-                           placeholder: Constants::Settings::General.details[:sidebar_tags][:placeholder],
-                           pattern: "[a-z0-9,]+" %>
+                           placeholder: Constants::Settings::General.details[:sidebar_tags][:placeholder] %>
         </div>
       </fieldset>
       <%= render "update_setting_button", f: f %>

@@ -30,6 +30,42 @@ RSpec.describe Subforem do
       expect(subforem.score).to be > 0
       expect(subforem.hotness_score).to be > 0
     end
+
+    it "enforces a single default subforem" do
+      other_subforem = create(:subforem)
+
+      subforem.update!(default_subforem: true)
+      other_subforem.update!(default_subforem: true)
+
+      expect(subforem.reload.default_subforem).to be(false)
+      expect(other_subforem.reload.default_subforem).to be(true)
+    end
+  end
+
+  describe "default subforem caching" do
+    before do
+      MemoryFirstCache.delete("subforem_default_id")
+      MemoryFirstCache.delete("subforem_default_domain")
+    end
+
+    it "returns cached ids for the marked default" do
+      default_subforem = create(:subforem, default_subforem: true)
+      create(:subforem)
+
+      expect(Subforem.cached_default_id).to eq(default_subforem.id)
+      expect(Subforem.cached_default_domain).to eq(default_subforem.domain)
+    end
+
+    it "falls back to the first subforem when none are marked" do
+      Subforem.delete_all
+      MemoryFirstCache.delete("subforem_default_id")
+      MemoryFirstCache.delete("subforem_default_domain")
+
+      fallback_subforem = create(:subforem)
+
+      expect(Subforem.cached_default_id).to eq(fallback_subforem.id)
+      expect(Subforem.cached_default_domain).to eq(fallback_subforem.domain)
+    end
   end
 
   describe "misc subforem functionality" do

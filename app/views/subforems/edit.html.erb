@@ -48,6 +48,12 @@
                 <%= form.check_box :discoverable, class: "crayons-checkbox" %>
                 <p class="crayons-field__description"><%= t("views.subforems.edit.form.discoverable.description") %></p>
               </div>
+
+              <div class="crayons-field">
+                <%= form.label :default_subforem, t("views.subforems.edit.form.default_subforem.label"), class: "crayons-field__label" %>
+                <%= form.check_box :default_subforem, class: "crayons-checkbox" %>
+                <p class="crayons-field__description"><%= t("views.subforems.edit.form.default_subforem.description") %></p>
+              </div>
             </div>
           </div>
         <% end %>
@@ -127,8 +133,7 @@
               <%= text_field_tag :sidebar_tags,
                 Settings::General.sidebar_tags(subforem_id: @subforem.id).join(","),
                 class: "crayons-textfield",
-                placeholder: t("views.subforems.edit.form.sidebar_tags.placeholder"),
-                pattern: "[a-z0-9,]+" %>
+                placeholder: t("views.subforems.edit.form.sidebar_tags.placeholder") %>
               <p class="crayons-field__description"><%= t("views.subforems.edit.form.sidebar_tags.description") %></p>
             </div>
           </div>

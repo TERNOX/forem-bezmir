@@ -43,6 +43,11 @@ uk:
           valid:
             title: Flag marked as valid by admin
             value: Valid
+      subforems:
+        delete_heading: Видалити субфорум
+        delete_warning: Видалення субфоруму прибере пов'язаний домен і від'єднає пов'язаний контент. Цю дію неможливо скасувати.
+        delete_button: Видалити субфорум
+        delete_confirm: "Ви впевнені, що хочете видалити %{domain}? Цю дію неможливо скасувати."
       users:
         heading: Members
         aria_paginate: Paginate users

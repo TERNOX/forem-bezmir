@@ -187,6 +187,7 @@ fr:
       created_with_ai: Le sous-forum a été créé ! Les détails sont en cours de génération en arrière-plan.
       updated: Le sous-forum a été mis à jour !
       deleted: Le sous-forum a été supprimé !
+      delete_failed: Le sous-forum n'a pas pu être supprimé.
     tags:
       moderators_controller:
         not_found: "Le nom d'utilisateur %{username} n'a pas été trouvé"

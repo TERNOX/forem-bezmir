@@ -43,6 +43,11 @@ fr:
           valid:
             title: Flag marked as valid by admin
             value: Valid
+      subforems:
+        delete_heading: Supprimer le sous-forum
+        delete_warning: Supprimer un sous-forum supprimera son domaine dédié et détachera le contenu associé. Cette action est irréversible.
+        delete_button: Supprimer le sous-forum
+        delete_confirm: "Voulez-vous vraiment supprimer %{domain} ? Cette action est irréversible."
       users:
         heading: Members
         aria_paginate: Paginate users

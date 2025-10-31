@@ -19,7 +19,7 @@ uk:
       forem: "Ви на хвилі! 🎉  Маєте обліковий запис Forem? Розгляньте можливість <a href='/settings'>підключити його</a>."
       github: "Ви на хвилі! 🎉  Маєте обліковий запис GitHub? <a href='/settings'>Підключіть його</a>, щоб можна було прикріплювати свої репозиторії до профілю."
       google: "Ви на хвилі! 🎉  Маєте обліковий запис Google? <a href='/settings'>Підключіть його</a>."
-      twitter: "Ви на хвилі! 🎉  Маєте обліковий запис Twitter? <a href='/settings'>Підключіть його</a>, щоб ми могли відзначати Вас, коли ділимось Вашими публікаціями через наш <a href='https://twitter.com/thePracticalDev'>@KutokCommunity</a>."
+      twitter: "Ви на хвилі! 🎉  Маєте обліковий запис Twitter? <a href='/settings'>Підключіть його</a>, щоб ми могли відзначати Вас, коли ділимось Вашими публікаціями через наш <a href='https://x.com/kutok_io'>@kutok_io</a>."
   errors:
     authentication:
       errors:

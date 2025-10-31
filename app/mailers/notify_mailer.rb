@@ -18,13 +18,14 @@ class NotifyMailer < ApplicationMailer
     return if RateLimitChecker.new.limit_by_email_recipient_address(@user.email)
 
     @unsubscribe = generate_unsubscribe_token(@user.id, :email_comment_notifications)
+    @localized_parent_type = localized_parent_type(@comment.parent_type)
 
     # Don't send the email if there's no visible contents
     # Placed here to allow the preview to continue to work
     return if @truncated_comment.blank?
 
     mail(to: @user.email,
-         subject: I18n.t("mailers.notify_mailer.new_reply", name: @comment.user.name, type: @comment.parent_type))
+         subject: I18n.t("mailers.notify_mailer.new_reply", name: @comment.user.name, type: @localized_parent_type))
   rescue StandardError => e
     Honeybadger.notify(e)
   end
@@ -63,7 +64,7 @@ class NotifyMailer < ApplicationMailer
     @unread_notifications_count = @user.notifications.unread.count
     @unsubscribe = generate_unsubscribe_token(@user.id, :email_unread_notifications)
     subject = I18n.t("mailers.notify_mailer.unread_notifications", count: @unread_notifications_count,
-                                                                   community: Settings::Community.community_name)
+                                                                   community: Settings::Community.community_name(subforem_id: @subforem_id))
     mail(to: @user.email, subject: subject)
   end
 
@@ -85,7 +86,7 @@ class NotifyMailer < ApplicationMailer
   def feedback_response_email
     mail(to: params[:email_to],
          subject: I18n.t("mailers.notify_mailer.feedback",
-                         community: Settings::Community.community_name))
+                         community: Settings::Community.community_name(subforem_id: @subforem_id)))
   end
 
   def feedback_message_resolution_email
@@ -105,7 +106,7 @@ class NotifyMailer < ApplicationMailer
   def account_deleted_email
     @name = params[:name]
 
-    subject = I18n.t("mailers.notify_mailer.account_deleted", community: Settings::Community.community_name)
+    subject = I18n.t("mailers.notify_mailer.account_deleted", community: Settings::Community.community_name(subforem_id: @subforem_id))
     mail(to: params[:email], subject: subject)
   end
 
@@ -113,7 +114,7 @@ class NotifyMailer < ApplicationMailer
     @name = params[:name]
     @org_name = params[:org_name]
 
-    subject = I18n.t("mailers.notify_mailer.org_deleted", community: Settings::Community.community_name)
+    subject = I18n.t("mailers.notify_mailer.org_deleted", community: Settings::Community.community_name(subforem_id: @subforem_id))
     mail(to: params[:email], subject: subject)
   end
 
@@ -122,7 +123,7 @@ class NotifyMailer < ApplicationMailer
     @name = user.name
     @token = params[:token]
 
-    subject = I18n.t("mailers.notify_mailer.deletion_requested", community: Settings::Community.community_name)
+    subject = I18n.t("mailers.notify_mailer.deletion_requested", community: Settings::Community.community_name(subforem_id: @subforem_id))
     mail(to: user.email, subject: subject)
   end
 
@@ -155,7 +156,7 @@ class NotifyMailer < ApplicationMailer
     @user = params[:user]
 
     subject = I18n.t("mailers.notify_mailer.trusted",
-                     community: Settings::Community.community_name)
+                     community: Settings::Community.community_name(subforem_id: @subforem_id))
     mail(to: @user.email, subject: subject)
   end
 
@@ -163,14 +164,20 @@ class NotifyMailer < ApplicationMailer
     @user = params[:user]
 
     subject = I18n.t("mailers.notify_mailer.base_subscriber",
-                     community: Settings::Community.community_name)
+                     community: Settings::Community.community_name(subforem_id: @subforem_id))
     mail(to: @user.email, subject: subject)
   end
 
   def subjects
     {
       new_follower_email: I18n.t("mailers.notify_mailer.new_follower",
-                                 community: Settings::Community.community_name).freeze
+                                 community: Settings::Community.community_name(subforem_id: @subforem_id)).freeze
     }.freeze
+  end
+
+  private
+
+  def localized_parent_type(parent_type)
+    I18n.t("mailers.notify_mailer.parent_types.#{parent_type}", default: parent_type)
   end
 end

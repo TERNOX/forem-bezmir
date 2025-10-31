@@ -171,7 +171,7 @@ Rails.application.routes.draw do
       end
     end
     resources :videos, only: %i[index create new]
-    resources :subforems, only: %i[index new edit update] do
+    resources :subforems, only: %i[index show new create edit update destroy] do
       member do
         post :add_tag
         delete :remove_tag
@@ -324,6 +324,7 @@ Rails.application.routes.draw do
     get "/💸", to: redirect("t/hiring")
     get "/survey", to: redirect("https://dev.to/ben/final-thoughts-on-the-state-of-the-web-survey-44nn")
     get "/search", to: "stories/articles_search#index"
+    get "/community", to: "community#index", as: :community
     get "/:slug/members", to: "organizations#members", as: :organization_members
     post "articles/preview", to: "articles#preview"
     post "comments/preview", to: "comments#preview"

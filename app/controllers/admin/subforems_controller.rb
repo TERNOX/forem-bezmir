@@ -3,7 +3,7 @@ module Admin
     layout "admin"
 
     SUBFOREM_ALLOWED_PARAMS = %i[
-      domain discoverable root name brain_dump logo_url bg_image_url default_locale
+      domain discoverable root name brain_dump logo_url bg_image_url default_locale default_subforem
     ].freeze
 
     MODERATOR_ALLOWED_PARAMS = %i[
@@ -14,8 +14,8 @@ module Admin
       community_description tagline member_label
     ].freeze
 
-    before_action :set_subforem, only: %i[show edit update]
-    before_action :authorize_subforem, only: %i[show edit update]
+    before_action :set_subforem, only: %i[show edit update destroy]
+    before_action :authorize_subforem, only: %i[show edit update destroy]
 
     def index
       @subforems = Subforem.order(created_at: :desc)
@@ -85,6 +85,17 @@ module Admin
       end
     end
 
+    def destroy
+      if @subforem.destroy
+        flash[:success] = I18n.t("admin.subforems_controller.deleted")
+        redirect_to admin_subforems_path
+      else
+        flash[:error] = @subforem.errors_as_sentence.presence ||
+          I18n.t("admin.subforems_controller.delete_failed", default: "Subforem could not be deleted.")
+        redirect_to admin_subforem_path(@subforem)
+      end
+    end
+
     private
 
     def set_subforem
@@ -114,14 +125,14 @@ module Admin
       return unless params[:community_description].present? || params[:tagline].present? || params[:member_label].present?
 
       if params[:community_description].present?
-        Settings::Community.set_community_description(params[:community_description],
-                                                      subforem_id: @subforem.id)
+        ::Settings::Community.set_community_description(params[:community_description],
+                                                        subforem_id: @subforem.id)
       end
-      Settings::Community.set_tagline(params[:tagline], subforem_id: @subforem.id) if params[:tagline].present?
+      ::Settings::Community.set_tagline(params[:tagline], subforem_id: @subforem.id) if params[:tagline].present?
       return unless params[:member_label].present?
 
-      Settings::Community.set_member_label(params[:member_label],
-                                           subforem_id: @subforem.id)
+      ::Settings::Community.set_member_label(params[:member_label],
+                                             subforem_id: @subforem.id)
     end
   end
 end

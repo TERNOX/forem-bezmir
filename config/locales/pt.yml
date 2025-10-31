@@ -202,7 +202,7 @@ pt:
       bad_uri: é uma URL inválida
       blank: não pode ficar em branco
       confirmation: não corresponde a %{attribute}
-      contains_prohibited_characters: contém caracteres não alfanuméricos ou caracteres unicode proibidos
+      contains_prohibited_characters: contém caracteres diferentes de letras, números ou hifens
       empty: não pode ficar vazio
       equal_to: deve ser igual a %{count}
       even: deve ser par

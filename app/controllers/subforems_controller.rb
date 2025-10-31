@@ -291,7 +291,7 @@ class SubforemsController < ApplicationController
   end
 
   def admin_params
-    params.require(:subforem).permit(:domain, :discoverable, :root, :name)
+    params.require(:subforem).permit(:domain, :discoverable, :root, :name, :default_subforem)
   end
 
   def super_moderator_params

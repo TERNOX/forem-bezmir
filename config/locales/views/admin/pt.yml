@@ -363,3 +363,8 @@ pt:
                 sent: Enviado com sucesso
                 skipped: Ignorado
                 failed: Falhou
+      subforems:
+        delete_heading: Excluir subforem
+        delete_warning: Excluir um subforem removerá seu domínio dedicado e desvinculará o conteúdo associado. Esta ação não pode ser desfeita.
+        delete_button: Excluir subforem
+        delete_confirm: "Tem certeza de que deseja excluir %{domain}? Esta ação não pode ser desfeita."

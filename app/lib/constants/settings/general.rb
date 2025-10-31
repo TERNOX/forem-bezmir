@@ -145,6 +145,9 @@ module Constants
             description: I18n.t("lib.constants.settings.general.hashtag.description"),
             placeholder: I18n.t("lib.constants.settings.general.hashtag.placeholder")
           },
+          enable_video_upload: {
+            description: I18n.t("lib.constants.settings.general.enable_video_upload.description")
+          },
           video_encoder_key: {
             description: I18n.t("lib.constants.settings.general.video.description"),
             placeholder: ""
