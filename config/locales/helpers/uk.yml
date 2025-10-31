@@ -36,7 +36,7 @@ uk:
         main_color_hex: Основний колір (hex)
         overcast_url: Overcast URL
         pattern_image: Фоновий візерунок
-        slug: Слаг
+        slug: URL-назва
         soundcloud_url: SoundCloud URL
         title: Заголовок
         twitter_username: Юзернейм у Twitter
