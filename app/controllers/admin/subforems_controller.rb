@@ -125,14 +125,14 @@ module Admin
       return unless params[:community_description].present? || params[:tagline].present? || params[:member_label].present?
 
       if params[:community_description].present?
-        Settings::Community.set_community_description(params[:community_description],
-                                                      subforem_id: @subforem.id)
+        ::Settings::Community.set_community_description(params[:community_description],
+                                                        subforem_id: @subforem.id)
       end
-      Settings::Community.set_tagline(params[:tagline], subforem_id: @subforem.id) if params[:tagline].present?
+      ::Settings::Community.set_tagline(params[:tagline], subforem_id: @subforem.id) if params[:tagline].present?
       return unless params[:member_label].present?
 
-      Settings::Community.set_member_label(params[:member_label],
-                                           subforem_id: @subforem.id)
+      ::Settings::Community.set_member_label(params[:member_label],
+                                             subforem_id: @subforem.id)
     end
   end
 end
