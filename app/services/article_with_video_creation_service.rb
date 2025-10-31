@@ -1,6 +1,4 @@
 class ArticleWithVideoCreationService
-  VIDEO_SERVICE_URL = "https://dw71fyauz7yz9.cloudfront.net".freeze
-
   def initialize(article_params, current_user)
     @article_params = article_params
     @current_user = current_user
@@ -17,12 +15,10 @@ class ArticleWithVideoCreationService
         article.video = @article_params[:video]
         article.video_state = "PROGRESSING"
 
-        video_code = article.video.split("dev-to-input-v0/")[1]
+        video_code = Video::UploadConfiguration.video_code_for(article.video)
         article.video_code = video_code
-        article.video_source_url = "#{VIDEO_SERVICE_URL}/#{video_code}/#{video_code}.m3u8"
-
-        thumb_name = "thumbs-#{video_code}-00001"
-        article.video_thumbnail_url = "#{VIDEO_SERVICE_URL}/#{video_code}/#{thumb_name}.png"
+        article.video_source_url = Video::UploadConfiguration.stream_url_for(video_code)
+        article.video_thumbnail_url = Video::UploadConfiguration.thumbnail_url_for(video_code)
       end
     end
   end

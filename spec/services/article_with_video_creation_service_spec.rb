@@ -1,10 +1,11 @@
 require "rails_helper"
 
 RSpec.describe ArticleWithVideoCreationService, type: :service do
-  let(:link) { "https://s3.amazonaws.com/dev-to-input-v0/video-upload__2d7dc29e39a40c7059572bca75bb646b" }
+  let(:link) { "https://s3.amazonaws.com/example-video-input/video-upload__2d7dc29e39a40c7059572bca75bb646b" }
+  let(:cdn_base_url) { "https://videos.example.com" }
 
   before do
-    stub_request(:get, /cloudfront.net/).to_return(status: 200, body: "", headers: {})
+    allow(Settings::General).to receive(:video_cdn_base_url).and_return(cdn_base_url)
   end
 
   describe "#create!" do
@@ -17,6 +18,13 @@ RSpec.describe ArticleWithVideoCreationService, type: :service do
       article = described_class.new(test, user).create!
       expect(article.body_markdown.inspect).to include("description: \\ntags: \\n")
       expect(article.video_state).to eq("PROGRESSING")
+      expect(article.video_code).to eq("video-upload__2d7dc29e39a40c7059572bca75bb646b")
+      expect(article.video_source_url).to eq(
+        "#{cdn_base_url}/video-upload__2d7dc29e39a40c7059572bca75bb646b/video-upload__2d7dc29e39a40c7059572bca75bb646b.m3u8",
+      )
+      expect(article.video_thumbnail_url).to eq(
+        "#{cdn_base_url}/video-upload__2d7dc29e39a40c7059572bca75bb646b/thumbs-video-upload__2d7dc29e39a40c7059572bca75bb646b-00001.png",
+      )
     end
   end
 end

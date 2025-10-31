@@ -22,6 +22,24 @@ module Settings
     # API Tokens
     setting :health_check_token, type: :string
     setting :video_encoder_key, type: :string
+    setting :video_upload_access_key_id,
+            type: :string,
+            default: -> { Rails.env.test? ? "available" : ApplicationConfig["AWS_S3_VIDEO_ID"] }
+    setting :video_upload_secret_access_key,
+            type: :string,
+            default: -> { Rails.env.test? ? "available" : ApplicationConfig["AWS_S3_VIDEO_KEY"] }
+    setting :video_upload_bucket,
+            type: :string,
+            default: -> { Rails.env.test? ? "available" : ApplicationConfig["AWS_S3_INPUT_BUCKET"] }
+    setting :video_upload_region,
+            type: :string,
+            default: -> { ApplicationConfig["AWS_S3_VIDEO_REGION"] }
+    setting :video_upload_custom_endpoint,
+            type: :string,
+            default: -> { ApplicationConfig["AWS_S3_VIDEO_URL"] }
+    setting :video_cdn_base_url,
+            type: :string,
+            default: -> { ApplicationConfig["VIDEO_CDN_BASE_URL"] }
 
     # Emails
     setting :contact_email, type: :string, default: ApplicationConfig["DEFAULT_EMAIL"]
@@ -58,6 +76,19 @@ module Settings
     setting :resized_logo_aspect_ratio, type: :string
 
     setting :enable_video_upload, type: :boolean, default: false
+
+    VIDEO_UPLOAD_CONFIGURATION_KEYS = %w[
+      video_upload_access_key_id
+      video_upload_secret_access_key
+      video_upload_bucket
+      video_upload_region
+      video_upload_custom_endpoint
+      video_cdn_base_url
+    ].freeze
+
+    after_commit :refresh_video_upload_configuration,
+                 if: :video_upload_configuration_key?,
+                 on: %i[create update]
 
     # Mascot
     setting :mascot_user_id, type: :integer, default: nil
@@ -196,6 +227,16 @@ module Settings
       SOCIAL_MEDIA_SERVICES.index_with do |name|
         social_media_handles[name]
       end
+    end
+
+    private
+
+    def video_upload_configuration_key?
+      var.in?(VIDEO_UPLOAD_CONFIGURATION_KEYS)
+    end
+
+    def refresh_video_upload_configuration
+      Video::UploadConfiguration.apply_s3_direct_upload!
     end
 
     class << self

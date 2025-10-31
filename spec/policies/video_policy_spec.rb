@@ -9,6 +9,7 @@ RSpec.describe VideoPolicy do
   before do
     allow(Settings::General).to receive(:enable_video_upload).and_return(enabled)
     allow(ArticlePolicy).to receive(:limit_post_creation_to_admins?).and_return(limit_post_creation_to_admins)
+    allow(Video::UploadConfiguration).to receive(:configured?).and_return(true)
   end
 
   describe "#create?" do
@@ -50,6 +51,17 @@ RSpec.describe VideoPolicy do
       let(:user) { build(:user) }
 
       before { user.created_at = 1.hour.ago }
+
+      it { is_expected.to be_falsey }
+    end
+
+    context "when upload configuration is missing" do
+      let(:user) { build(:user) }
+
+      before do
+        user.created_at = 3.weeks.ago
+        allow(Video::UploadConfiguration).to receive(:configured?).and_return(false)
+      end
 
       it { is_expected.to be_falsey }
     end

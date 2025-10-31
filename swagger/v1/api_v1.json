@@ -3807,11 +3807,11 @@
                     "type_of": "video_article",
                     "id": 34,
                     "path": "/username244/brandy-of-the-damned33-2cbm",
-                    "cloudinary_video_url": "https://dw71fyauz7yz9.cloudfront.net/video-upload__1e42eb0bab4abb3c63baeb5e8bdfe69f/thumbs-video-upload__1e42eb0bab4abb3c63baeb5e8bdfe69f-00001.png",
+                    "cloudinary_video_url": "https://videos.example.com/video-upload__1e42eb0bab4abb3c63baeb5e8bdfe69f/thumbs-video-upload__1e42eb0bab4abb3c63baeb5e8bdfe69f-00001.png",
                     "title": "Brandy of the Damned33",
                     "user_id": 1125,
                     "video_duration_in_minutes": "00:00",
-                    "video_source_url": "https://dw71fyauz7yz9.cloudfront.net/video-upload__1e42eb0bab4abb3c63baeb5e8bdfe69f/video-upload__1e42eb0bab4abb3c63baeb5e8bdfe69f.m3u8",
+                    "video_source_url": "https://videos.example.com/video-upload__1e42eb0bab4abb3c63baeb5e8bdfe69f/video-upload__1e42eb0bab4abb3c63baeb5e8bdfe69f.m3u8",
                     "user": {
                       "name": "Effie \"Kieth\" \\:/ Weimann"
                     }
@@ -3820,11 +3820,11 @@
                     "type_of": "video_article",
                     "id": 33,
                     "path": "/username243/o-pioneers32-1ejl",
-                    "cloudinary_video_url": "https://dw71fyauz7yz9.cloudfront.net/video-upload__1e42eb0bab4abb3c63baeb5e8bdfe69f/thumbs-video-upload__1e42eb0bab4abb3c63baeb5e8bdfe69f-00001.png",
+                    "cloudinary_video_url": "https://videos.example.com/video-upload__1e42eb0bab4abb3c63baeb5e8bdfe69f/thumbs-video-upload__1e42eb0bab4abb3c63baeb5e8bdfe69f-00001.png",
                     "title": "O Pioneers!32",
                     "user_id": 1124,
                     "video_duration_in_minutes": "00:00",
-                    "video_source_url": "https://dw71fyauz7yz9.cloudfront.net/video-upload__1e42eb0bab4abb3c63baeb5e8bdfe69f/video-upload__1e42eb0bab4abb3c63baeb5e8bdfe69f.m3u8",
+                    "video_source_url": "https://videos.example.com/video-upload__1e42eb0bab4abb3c63baeb5e8bdfe69f/video-upload__1e42eb0bab4abb3c63baeb5e8bdfe69f.m3u8",
                     "user": {
                       "name": "Preston \"Darius\" \\:/ Runolfsdottir"
                     }
