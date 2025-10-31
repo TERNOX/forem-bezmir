@@ -10,6 +10,13 @@
       <div class="ml-auto flex gap-2">
         <%= link_to "View", admin_subforem_path(subforem), class: "crayons-btn crayons-btn--s" %>
         <%= link_to "Edit", edit_admin_subforem_path(subforem), class: "crayons-btn crayons-btn--s" %>
+        <% if policy(subforem).destroy? %>
+          <%= link_to t("views.admin.subforems.delete_button"),
+              admin_subforem_path(subforem),
+              data: { confirm: t("views.admin.subforems.delete_confirm", domain: subforem.domain) },
+              method: :delete,
+              class: "crayons-btn crayons-btn--danger crayons-btn--s" %>
+        <% end %>
       </div>
     </div>
   <% end %>

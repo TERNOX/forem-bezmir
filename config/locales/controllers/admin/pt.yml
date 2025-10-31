@@ -118,6 +118,7 @@ pt:
       created_with_ai: Subforem criado com IA com sucesso!
       updated: Subforem atualizado com sucesso!
       deleted: Subforem excluído com sucesso!
+      delete_failed: Não foi possível excluir o subforem.
     tags:
       moderators_controller:
         not_found: 'Nome de usuário "%{username}" não foi encontrado'

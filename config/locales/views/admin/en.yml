@@ -43,6 +43,11 @@ en:
           valid:
             title: Flag marked as valid by admin
             value: Valid
+      subforems:
+        delete_heading: Delete subforem
+        delete_warning: Deleting a subforem will remove its dedicated domain and detach associated content. This action cannot be undone.
+        delete_button: Delete subforem
+        delete_confirm: "Are you sure you want to delete %{domain}? This action cannot be undone."
       users:
         heading: Members
         aria_paginate: Paginate users

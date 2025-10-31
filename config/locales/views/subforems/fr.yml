@@ -40,6 +40,9 @@ fr:
           discoverable:
             label: Découvrable dans l'Annuaire
             description: Permettre à cette communauté d'apparaître dans l'annuaire des subforems.
+          default_subforem:
+            label: Définir comme communauté par défaut
+            description: Faire de cette communauté celle qui s'affiche lorsque aucun autre subforem n'est spécifié.
           community_description:
             label: Description de la Communauté
             placeholder: Décrivez votre communauté...
@@ -70,7 +73,7 @@ fr:
           sidebar_tags:
             label: Tags de la Barre Latérale
             placeholder: "help,discuss,explainlikeimfive,meta"
-            description: Liste de tags séparés par des virgules à afficher dans la barre latérale de la page d'accueil (minuscules, sans espaces).
+            description: Liste de tags séparés par des virgules à afficher dans la barre latérale de la page d'accueil. Les lettres de tout alphabet, les chiffres et les tirets sont pris en charge ; les espaces sont ignorés.
           primary_color:
             label: Couleur Principale de la Marque
             placeholder: "#3b49df"

@@ -43,6 +43,10 @@ class SubforemPolicy < ApplicationPolicy
     has_mod_permission? || user_super_moderator?
   end
 
+  def destroy?
+    user_super_admin?
+  end
+
   def admin?
     user_super_admin?
   end

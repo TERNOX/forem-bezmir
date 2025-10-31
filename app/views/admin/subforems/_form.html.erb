@@ -46,6 +46,12 @@
     <%= form.check_box :discoverable, class: "crayons-checkbox" %>
   </div>
 
+  <div class="crayons-field">
+    <%= form.label :default_subforem, t("views.subforems.edit.form.default_subforem.label"), class: "crayons-label" %>
+    <%= form.check_box :default_subforem, class: "crayons-checkbox" %>
+    <small class="crayons-field__description"><%= t("views.subforems.edit.form.default_subforem.description") %></small>
+  </div>
+
   <% if @subforem.persisted? %>
     <div class="crayons-field">
       <%= form.label :community_description, "Community Description", class: "crayons-label" %>
