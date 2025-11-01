@@ -11,6 +11,35 @@ uk:
           heading: Перебудувати вбудовування у опублікованих матеріалах
           description_html: "Запускає фонове завдання, яке <strong>повторно збереже всі наразі опубліковані матеріали</strong>, щоб перебудувати вбудовані медіа. Чернетки та заплановані публікації буде пропущено."
           submit: Перезберегти опубліковані матеріали
+        monthly_top_users:
+          heading: Бейджі «Топ-10 користувачів місяця»
+          description_html: "Налаштуйте, який бейдж отримують 10 найкращих користувачів за місяць і коли запускається видача. Сервіс завжди обраховує попередній місяць."
+          form:
+            badge_slug: Слаг бейджа
+            badge_slug_help: "Бейдж має існувати та дозволяти багаторазову видачу."
+            award_day: День місяця для нагородження
+            award_day_help: "Бейджі за попередній місяць буде надіслано у цей день."
+            award_time: Час нагородження (UTC)
+            award_time_help: "Бейджі буде відправлено у зазначений час обраного дня."
+            message_template: Шаблон повідомлення
+            message_template_help_html: "Використовуйте плейсхолдери на кшталт <code>%%{period}</code>, <code>%%{month}</code> та <code>%%{year}</code>, щоб підставити локалізовану назву місяця й рік."
+            save: Зберегти налаштування топ-10
+          next_run: "Наступний запуск: %{timestamp}"
+          placeholders:
+            heading: Доступні плейсхолдери
+            items:
+              - "<code>%%{period}</code> – повна назва місяця з роком (наприклад, <code>жовтень 2024</code>)"
+              - "<code>%%{month}</code> – назва місяця у правильній формі"
+              - "<code>%%{year}</code> – рік (4 цифри)"
+          status:
+            heading: Останні нагородження
+            last_run: "Останнє нагородження за %{period} відбулося %{timestamp}."
+            recipients_html: "Отримали: %{usernames}."
+            message_html: "Повідомлення: %{message}"
+            empty: "Бейджі за місячний топ-10 ще не відправлялися."
+          save_success: Налаштування місячного топ-10 збережено.
+          errors:
+            invalid_day: "Вкажіть день від 1 до 31."
         top_seven:
           heading: Weekly Top 7 preview
           description_html: "Preview the seven most reacted posts for each week. These are the articles that will be considered when awarding the Top 7 badge."

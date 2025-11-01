@@ -47,6 +47,71 @@
 </div>
 
 <div class="crayons-card p-6 mb-6">
+  <h2 class="crayons-subtitle-1 mb-4"><%= t("views.admin.tools.monthly_top_users.heading") %></h2>
+  <p class="mb-6"><%= t("views.admin.tools.monthly_top_users.description_html") %></p>
+
+  <%= form_with url: monthly_top_users_awards_admin_tools_path, method: :post, local: true do %>
+    <div class="grid gap-6 md:grid-cols-2">
+      <div class="crayons-field">
+        <%= label_tag "monthly_top_users_badge_slug", t("views.admin.tools.monthly_top_users.form.badge_slug"), class: "crayons-field__label" %>
+        <%= text_field_tag "monthly_top_users[badge_slug]", @monthly_top_users_settings[:badge_slug], class: "crayons-textfield" %>
+        <p class="crayons-field__description"><%= t("views.admin.tools.monthly_top_users.form.badge_slug_help") %></p>
+      </div>
+
+      <div class="crayons-field">
+        <%= label_tag "monthly_top_users_award_day", t("views.admin.tools.monthly_top_users.form.award_day"), class: "crayons-field__label" %>
+        <%= number_field_tag "monthly_top_users[award_day]", @monthly_top_users_settings[:award_day], class: "crayons-textfield", min: 1, max: 31 %>
+        <p class="crayons-field__description"><%= t("views.admin.tools.monthly_top_users.form.award_day_help") %></p>
+      </div>
+
+      <div class="crayons-field">
+        <%= label_tag "monthly_top_users_award_time", t("views.admin.tools.monthly_top_users.form.award_time"), class: "crayons-field__label" %>
+        <%= time_field_tag "monthly_top_users[award_time]", @monthly_top_users_settings[:award_time], class: "crayons-textfield" %>
+        <p class="crayons-field__description"><%= t("views.admin.tools.monthly_top_users.form.award_time_help") %></p>
+      </div>
+
+      <div class="crayons-field md:col-span-2">
+        <%= label_tag "monthly_top_users_message_template", t("views.admin.tools.monthly_top_users.form.message_template"), class: "crayons-field__label" %>
+        <%= text_area_tag "monthly_top_users[message_template]", @monthly_top_users_settings[:message_template], class: "crayons-textfield", rows: 3 %>
+        <p class="crayons-field__description"><%= t("views.admin.tools.monthly_top_users.form.message_template_help_html").html_safe %></p>
+      </div>
+    </div>
+
+    <div class="flex items-center mt-6">
+      <%= submit_tag t("views.admin.tools.monthly_top_users.form.save"), class: "crayons-btn" %>
+      <% if @monthly_top_users_next_run_at.present? %>
+        <span class="ml-4 color-base-60 text-sm"><%= t("views.admin.tools.monthly_top_users.next_run", timestamp: l(@monthly_top_users_next_run_at, format: :long)) %></span>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="crayons-callout crayons-callout--info mt-6">
+    <h4 class="crayons-subtitle-3 mb-2"><%= t("views.admin.tools.monthly_top_users.placeholders.heading") %></h4>
+    <ul class="pl-6 list-disc">
+      <% t("views.admin.tools.monthly_top_users.placeholders.items").each do |item| %>
+        <li class="mb-1"><%= item.respond_to?(:html_safe) ? item.html_safe : item %></li>
+      <% end %>
+    </ul>
+  </div>
+
+  <section class="mt-6">
+    <h4 class="crayons-subtitle-3 mb-2"><%= t("views.admin.tools.monthly_top_users.status.heading") %></h4>
+
+    <% if @monthly_top_users_status.present? && @monthly_top_users_status[:at].present? %>
+      <p class="mb-2"><%= t("views.admin.tools.monthly_top_users.status.last_run", period: @monthly_top_users_status[:period], timestamp: l(@monthly_top_users_status[:at], format: :long)) %></p>
+      <% if @monthly_top_users_status[:usernames].present? %>
+        <p class="mb-2"><%= t("views.admin.tools.monthly_top_users.status.recipients_html", usernames: @monthly_top_users_status[:usernames].map { |username| content_tag(:code, username) }.to_sentence.html_safe) %></p>
+      <% end %>
+      <% if @monthly_top_users_status[:message].present? %>
+        <p class="mb-0"><%= t("views.admin.tools.monthly_top_users.status.message_html", message: content_tag(:code, @monthly_top_users_status[:message])) %></p>
+      <% end %>
+    <% else %>
+      <p class="color-base-70 mb-0"><%= t("views.admin.tools.monthly_top_users.status.empty") %></p>
+    <% end %>
+  </section>
+</div>
+
+<div class="crayons-card p-6 mb-6">
   <h2 class="crayons-subtitle-1 mb-4"><%= t("views.admin.tools.top_seven.heading") %></h2>
   <p class="mb-6"><%= t("views.admin.tools.top_seven.description_html") %></p>
 

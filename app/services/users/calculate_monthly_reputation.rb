@@ -78,25 +78,31 @@ module Users
       to_award = leaderboard.reject { |entry| entry.awarded_top_ten_at.present? }
       return if to_award.empty?
 
-      return unless Badge.id_for_slug(BADGE_SLUG)
+      slug = badge_slug
+      return if slug.blank?
+      return unless Badge.id_for_slug(slug)
 
-      message = I18n.t(
-        "services.users.calculate_monthly_reputation.badge_message",
-        month: formatted_period,
-      )
+      message = award_message
 
       Badges::Award.call(
         User.where(id: to_award.map(&:user_id)),
-        BADGE_SLUG,
+        slug,
         message,
         include_default_description: false,
       )
 
       MonthlyUserReputation.where(id: to_award.map(&:id)).update_all(awarded_top_ten_at: Time.current)
+
+      Settings::General.set_monthly_top_users_last_awarded_period(schedule.identifier_for(period))
+      Settings::General.set_monthly_top_users_last_awarded_at(Time.current)
+      Settings::General.set_monthly_top_users_last_awarded_message(message)
+      Settings::General.set_monthly_top_users_last_awarded_usernames(
+        to_award.filter_map { |entry| entry.user&.username },
+      )
     end
 
     def formatted_period
-      I18n.l(period, format: :long_month)
+      MonthlyUserReputationFormatter.period_label(period)
     end
 
     def like_counts_by_recipient
@@ -125,6 +131,34 @@ module Users
         .where.not(articles: { user_id: nil })
         .group("articles.user_id")
         .count
+    end
+
+    def badge_slug
+      Settings::General.monthly_top_users_badge_slug.presence || BADGE_SLUG
+    end
+
+    def award_message
+      template = Settings::General.monthly_top_users_message_template.presence ||
+        I18n.t("services.users.calculate_monthly_reputation.badge_message")
+
+      components = MonthlyUserReputationFormatter.components_for(period)
+
+      template % {
+        month: components.period,
+        period: components.period,
+        month_name: components.month,
+        year: components.year,
+      }
+    rescue KeyError => e
+      Rails.logger.warn("Monthly top users message template missing key: #{e.message}")
+      I18n.t(
+        "services.users.calculate_monthly_reputation.badge_message",
+        month: components.period,
+      )
+    end
+
+    def schedule
+      @schedule ||= Users::MonthlyTopUsersSchedule.new
     end
   end
 end
