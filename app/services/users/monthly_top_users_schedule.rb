@@ -4,7 +4,7 @@ module Users
   class MonthlyTopUsersSchedule
     def initialize(settings: Settings::General, reference_time: Time.zone.now)
       @settings = settings
-      @reference_time = reference_time
+      @default_reference_time = reference_time
     end
 
     def current_period
@@ -20,7 +20,7 @@ module Users
       Time.zone.local(target_month.year, target_month.month, day, hour, minute)
     end
 
-    def due?(period = current_period, reference_time: reference_time)
+    def due?(period = current_period, reference_time: default_reference_time)
       return false if already_awarded?(period)
 
       reference_time >= scheduled_time_for(period)
@@ -45,7 +45,7 @@ module Users
 
     private
 
-    attr_reader :settings, :reference_time
+    attr_reader :settings, :default_reference_time
 
     def normalize_day(value)
       day = value.to_i
