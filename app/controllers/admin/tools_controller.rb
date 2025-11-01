@@ -101,10 +101,10 @@ module Admin
 
       validate_award_day!(permitted[:award_day])
 
-      Settings::General.set_monthly_top_users_badge_slug(permitted[:badge_slug])
-      Settings::General.set_monthly_top_users_award_day(permitted[:award_day])
-      Settings::General.set_monthly_top_users_award_time(normalized_time(permitted[:award_time]))
-      Settings::General.set_monthly_top_users_message_template(permitted[:message_template])
+      ::Settings::General.set_monthly_top_users_badge_slug(permitted[:badge_slug])
+      ::Settings::General.set_monthly_top_users_award_day(permitted[:award_day])
+      ::Settings::General.set_monthly_top_users_award_time(normalized_time(permitted[:award_time]))
+      ::Settings::General.set_monthly_top_users_message_template(permitted[:message_template])
 
       flash[:success] = I18n.t("views.admin.tools.monthly_top_users.save_success")
     rescue StandardError => e
@@ -320,24 +320,24 @@ module Admin
 
     def monthly_top_users_settings
       {
-        badge_slug: Settings::General.monthly_top_users_badge_slug,
-        award_day: Settings::General.monthly_top_users_award_day,
-        award_time: Settings::General.monthly_top_users_award_time,
-        message_template: Settings::General.monthly_top_users_message_template,
+        badge_slug: ::Settings::General.monthly_top_users_badge_slug,
+        award_day: ::Settings::General.monthly_top_users_award_day,
+        award_time: ::Settings::General.monthly_top_users_award_time,
+        message_template: ::Settings::General.monthly_top_users_message_template,
       }
     end
 
     def monthly_top_users_status
-      period_identifier = Settings::General.monthly_top_users_last_awarded_period
+      period_identifier = ::Settings::General.monthly_top_users_last_awarded_period
       return {} if period_identifier.blank?
 
       period = Date.strptime(period_identifier, "%Y-%m")
 
       {
         period: MonthlyUserReputationFormatter.period_label(period),
-        at: Settings::General.monthly_top_users_last_awarded_at,
-        message: Settings::General.monthly_top_users_last_awarded_message,
-        usernames: Settings::General.monthly_top_users_last_awarded_usernames,
+        at: ::Settings::General.monthly_top_users_last_awarded_at,
+        message: ::Settings::General.monthly_top_users_last_awarded_message,
+        usernames: ::Settings::General.monthly_top_users_last_awarded_usernames,
       }
     rescue ArgumentError
       {}
