@@ -10,6 +10,12 @@ RSpec.describe Users::CalculateMonthlyReputation do
   before do
     # Ensure the badge slug matches the expected value
     badge.update!(slug: Users::CalculateMonthlyReputation::BADGE_SLUG)
+    Settings::General.set_monthly_top_users_badge_slug(badge.slug)
+    Settings::General.set_monthly_top_users_message_template(nil)
+    Settings::General.set_monthly_top_users_last_awarded_period(nil)
+    Settings::General.set_monthly_top_users_last_awarded_usernames([])
+    Settings::General.set_monthly_top_users_last_awarded_message(nil)
+    Settings::General.set_monthly_top_users_last_awarded_at(nil)
   end
 
   it "persists monthly scores and awards the top 10 for completed months" do
@@ -43,6 +49,12 @@ RSpec.describe Users::CalculateMonthlyReputation do
       expect do
         described_class.call(period: period)
       end.not_to change(BadgeAchievement, :count)
+
+      expect(Settings::General.monthly_top_users_last_awarded_period).to eq("2025-10")
+      expect(Settings::General.monthly_top_users_last_awarded_usernames).to match_array(
+        [recipient.username, other_recipient.username],
+      )
+      expect(Settings::General.monthly_top_users_last_awarded_message).to include(period.year.to_s)
     end
   end
 
@@ -59,6 +71,7 @@ RSpec.describe Users::CalculateMonthlyReputation do
         .and change(BadgeAchievement, :count).by(0)
 
       expect(MonthlyUserReputation.find_by(user: recipient, period: period).awarded_top_ten_at).to be_nil
+      expect(Settings::General.monthly_top_users_last_awarded_period).to be_nil
     end
   end
 
@@ -69,5 +82,24 @@ RSpec.describe Users::CalculateMonthlyReputation do
     described_class.call(period: period)
 
     expect(MonthlyUserReputation.for_period(period)).to be_empty
+  end
+
+  it "uses the configured message template" do
+    Settings::General.set_monthly_top_users_message_template("Вітаємо %{month_name} %{year}!")
+
+    travel_to(Time.zone.local(2025, 11, 2, 8, 0, 0)) do
+      recipient = create(:user)
+      liker = create(:user)
+      create(:article, user: recipient).tap do |article|
+        create(:reaction, reactable: article, user: liker, status: "valid", category: "like", created_at: period + 1.day)
+      end
+
+      expect(Badges::Award).to receive(:call) do |_scope, _slug, message, **|
+        expect(message).to include("#{MonthlyUserReputationFormatter.month_name(period)}")
+        expect(message).to include(period.year.to_s)
+      end
+
+      described_class.call(period: period)
+    end
   end
 end

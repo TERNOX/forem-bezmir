@@ -89,18 +89,6 @@ class TopUsersController < ApplicationController
   def formatted_period(period)
     return if period.blank?
 
-    month_names = I18n.t("date.month_names_standalone", default: [])
-    month_name = month_names.is_a?(Array) ? month_names[period.month] : nil
-
-    if month_name.present?
-      I18n.t(
-        "date.formats.month_year_standalone",
-        default: "%{month} %{year}",
-        month: month_name,
-        year: period.year,
-      )
-    else
-      I18n.l(period, format: :long_month)
-    end
+    MonthlyUserReputationFormatter.period_label(period)
   end
 end

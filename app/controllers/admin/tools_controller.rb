@@ -11,9 +11,15 @@ module Admin
       @digest_period_range = digest_period_range
       @top_articles_digest_preview = build_digest_publisher.preview
       @top_articles_digest_settings = current_digest_settings
+      @monthly_top_users_settings = monthly_top_users_settings
+      @monthly_top_users_status = monthly_top_users_status
+      @monthly_top_users_next_run_at = monthly_top_users_schedule.next_run_at
     rescue InvalidDigestPreviewRangeError => e
       flash.now[:danger] = e.message
       @top_articles_digest_preview = { available?: false, articles: [], embed_urls: [] }
+      @monthly_top_users_settings = monthly_top_users_settings
+      @monthly_top_users_status = monthly_top_users_status
+      @monthly_top_users_next_run_at = monthly_top_users_schedule.next_run_at
     end
 
     def create
@@ -84,6 +90,23 @@ module Admin
     def resave_published_articles
       Articles::ResavePublishedWorker.perform_async
       flash[:success] = I18n.t("admin.tools_controller.resave_published_articles.enqueued")
+    rescue StandardError => e
+      flash[:danger] = e.message
+    ensure
+      redirect_to admin_tools_path
+    end
+
+    def update_monthly_top_users_awards
+      permitted = monthly_top_users_awards_params
+
+      validate_award_day!(permitted[:award_day])
+
+      ::Settings::General.set_monthly_top_users_badge_slug(permitted[:badge_slug])
+      ::Settings::General.set_monthly_top_users_award_day(permitted[:award_day])
+      ::Settings::General.set_monthly_top_users_award_time(normalized_time(permitted[:award_time]))
+      ::Settings::General.set_monthly_top_users_message_template(permitted[:message_template])
+
+      flash[:success] = I18n.t("views.admin.tools.monthly_top_users.save_success")
     rescue StandardError => e
       flash[:danger] = e.message
     ensure
@@ -283,6 +306,45 @@ module Admin
 
     def normalized_time(value)
       TimeOfDaySetting.normalize(value) || "00:00"
+    end
+
+    def monthly_top_users_awards_params
+      params.require(:monthly_top_users).permit(:badge_slug, :award_day, :award_time, :message_template)
+    end
+
+    def validate_award_day!(value)
+      return if value.to_i.between?(1, 31)
+
+      raise ArgumentError, I18n.t("views.admin.tools.monthly_top_users.errors.invalid_day")
+    end
+
+    def monthly_top_users_settings
+      {
+        badge_slug: ::Settings::General.monthly_top_users_badge_slug,
+        award_day: ::Settings::General.monthly_top_users_award_day,
+        award_time: ::Settings::General.monthly_top_users_award_time,
+        message_template: ::Settings::General.monthly_top_users_message_template,
+      }
+    end
+
+    def monthly_top_users_status
+      period_identifier = ::Settings::General.monthly_top_users_last_awarded_period
+      return {} if period_identifier.blank?
+
+      period = Date.strptime(period_identifier, "%Y-%m")
+
+      {
+        period: MonthlyUserReputationFormatter.period_label(period),
+        at: ::Settings::General.monthly_top_users_last_awarded_at,
+        message: ::Settings::General.monthly_top_users_last_awarded_message,
+        usernames: ::Settings::General.monthly_top_users_last_awarded_usernames,
+      }
+    rescue ArgumentError
+      {}
+    end
+
+    def monthly_top_users_schedule
+      @monthly_top_users_schedule ||= Users::MonthlyTopUsersSchedule.new
     end
 
     def handle_dead_path

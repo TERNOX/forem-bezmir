@@ -107,4 +107,44 @@ RSpec.describe "/admin/advanced/tools" do
       expect(flash[:success]).to be_present
     end
   end
+
+  describe "POST /admin/advanced/tools/monthly_top_users_awards" do
+    let(:super_admin) { create(:user, :super_admin) }
+
+    before do
+      sign_in super_admin
+    end
+
+    it "updates the monthly top users settings" do
+      post monthly_top_users_awards_admin_tools_path, params: {
+        monthly_top_users: {
+          badge_slug: "custom-badge",
+          award_day: 3,
+          award_time: "05:30",
+          message_template: "Congrats %{period}",
+        },
+      }
+
+      expect(response).to redirect_to(admin_tools_path)
+      expect(flash[:success]).to eq(I18n.t("views.admin.tools.monthly_top_users.save_success"))
+      expect(Settings::General.monthly_top_users_badge_slug).to eq("custom-badge")
+      expect(Settings::General.monthly_top_users_award_day).to eq(3)
+      expect(Settings::General.monthly_top_users_award_time).to eq("05:30")
+      expect(Settings::General.monthly_top_users_message_template).to eq("Congrats %{period}")
+    end
+
+    it "rejects an invalid day" do
+      post monthly_top_users_awards_admin_tools_path, params: {
+        monthly_top_users: {
+          badge_slug: "custom-badge",
+          award_day: 0,
+          award_time: "05:30",
+          message_template: "Congrats %{period}",
+        },
+      }
+
+      expect(response).to redirect_to(admin_tools_path)
+      expect(flash[:danger]).to eq(I18n.t("views.admin.tools.monthly_top_users.errors.invalid_day"))
+    end
+  end
 end
