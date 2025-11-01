@@ -165,6 +165,17 @@ module Settings
     setting :top_articles_digest_last_period_identifier, type: :string
     setting :top_articles_digest_last_article_id, type: :integer
 
+    # Monthly top users awards
+    setting :monthly_top_users_badge_slug, type: :string, default: Users::CalculateMonthlyReputation::BADGE_SLUG
+    setting :monthly_top_users_award_day, type: :integer, default: 1
+    setting :monthly_top_users_award_time, type: :string, default: "00:00"
+    setting :monthly_top_users_message_template, type: :string,
+            default: -> { I18n.t("services.users.calculate_monthly_reputation.badge_message") }
+    setting :monthly_top_users_last_awarded_period, type: :string
+    setting :monthly_top_users_last_awarded_at, type: :datetime
+    setting :monthly_top_users_last_awarded_usernames, type: :array, default: []
+    setting :monthly_top_users_last_awarded_message, type: :string
+
     # Onboarding newsletter
     setting :onboarding_newsletter_content, type: :markdown
     setting :onboarding_newsletter_content_processed_html

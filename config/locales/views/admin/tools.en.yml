@@ -11,6 +11,35 @@ en:
           heading: Rebuild embeds in published articles
           description_html: "Enqueue a background job to <strong>resave every currently published article</strong> so that embedded media is rebuilt. Drafts and scheduled posts are skipped."
           submit: Resave published articles
+        monthly_top_users:
+          heading: Monthly Top Users badges
+          description_html: "Configure which badge is awarded to the monthly top 10 users and when the award job should run. The job always evaluates the previous month's leaderboard."
+          form:
+            badge_slug: Badge slug
+            badge_slug_help: "This badge must exist and allow multiple awards."
+            award_day: Award day of the month
+            award_day_help: "Badges will be issued on this day for the previous month."
+            award_time: Award time (UTC)
+            award_time_help: "Badges will be awarded at this time on the selected day."
+            message_template: Notification message template
+            message_template_help_html: "Use placeholders like <code>%%{period}</code>, <code>%%{month}</code>, and <code>%%{year}</code> to insert the localized month, standalone month name, and year."
+            save: Save monthly top users settings
+          next_run: "Next run: %{timestamp}"
+          placeholders:
+            heading: Available placeholders
+            items:
+              - "<code>%%{period}</code> – full month name with year (e.g. <code>October 2024</code>)"
+              - "<code>%%{month}</code> – standalone localized month name (e.g. <code>October</code>)"
+              - "<code>%%{year}</code> – four-digit year"
+          status:
+            heading: Latest awards
+            last_run: "Last awarded for %{period} on %{timestamp}."
+            recipients_html: "Awarded to %{usernames}."
+            message_html: "Message: %{message}"
+            empty: "Monthly top user badges have not been awarded yet."
+          save_success: Monthly top users settings updated.
+          errors:
+            invalid_day: "Choose a day between 1 and 31."
         top_seven:
           heading: Weekly Top 7 preview
           description_html: "Preview the seven most reacted posts for each week. These are the articles that will be considered when awarding the Top 7 badge."
