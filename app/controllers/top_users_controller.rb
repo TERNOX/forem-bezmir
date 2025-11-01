@@ -7,10 +7,11 @@ class TopUsersController < ApplicationController
   def index
     skip_authorization
 
-    ensure_snapshot_for_period(current_period)
+    current = current_period
+    ensure_snapshot_for_period(current)
 
     @selected_period = parse_period(params[:period])
-    ensure_snapshot_for_period(@selected_period) if @selected_period.present?
+    ensure_snapshot_for_period(@selected_period) if @selected_period.present? && @selected_period != current
 
     @available_periods = available_periods
 
@@ -53,6 +54,12 @@ class TopUsersController < ApplicationController
 
   def ensure_snapshot_for_period(period)
     return if period.blank?
+
+    if period == current_period
+      Users::CalculateMonthlyReputation.call(period: period)
+      return
+    end
+
     return if MonthlyUserReputation.for_period(period).exists?
 
     Users::CalculateMonthlyReputation.call(period: period)
