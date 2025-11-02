@@ -1,13 +1,16 @@
 module Users
   class ReputationBreakdown
     VALID_STATUSES = Users::RecalculateReputation::VALID_STATUSES
+    ARTICLE_WEIGHT = 2
+    COMMENT_WEIGHT = 1
 
-    def self.call(user)
-      new(user).call
+    def self.call(user, range: nil)
+      new(user, range: range).call
     end
 
-    def initialize(user)
+    def initialize(user, range: nil)
       @user = user
+      @range = range
     end
 
     def call
@@ -19,10 +22,13 @@ module Users
 
     private
 
-    attr_reader :user
+    attr_reader :user, :range
 
     def base_scope
-      Reaction.where(category: "like", status: VALID_STATUSES)
+      scope = Reaction.where(category: "like", status: VALID_STATUSES)
+      return scope unless range
+
+      scope.where(created_at: range)
     end
 
     def article_score
@@ -30,7 +36,7 @@ module Users
         .where(reactable_type: "Article")
         .joins("INNER JOIN articles ON articles.id = reactions.reactable_id")
         .where(articles: { user_id: user.id })
-        .count * 2
+        .count * ARTICLE_WEIGHT
     end
 
     def comment_score
@@ -38,7 +44,7 @@ module Users
         .where(reactable_type: "Comment")
         .joins("INNER JOIN comments ON comments.id = reactions.reactable_id")
         .where(comments: { user_id: user.id })
-        .count
+        .count * COMMENT_WEIGHT
     end
   end
 end

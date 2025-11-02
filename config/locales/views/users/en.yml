@@ -70,11 +70,20 @@ en:
             other: "%{count} tags followed"
       reputation:
         title: Reputation
-        text_html: "Reputation from post and comment likes: %{score}"
         modal:
           title: "%{user}'s reputation"
-          description_html: "Total reputation: <b>%{total}</b>"
           no_reputation: "%{user} hasn't earned any reputation yet."
+          summary_html: "Total reputation: <b>%{total}</b>. This month (%{monthly_period}): <b>%{monthly_total}</b>"
+          rules_html: "Each post like gives %{post_points} points and each comment like gives %{comment_points}. Check the %{monthly_link} to explore more leaders."
+          monthly_link_text: monthly rankings
+          overall:
+            title: Lifetime breakdown
+            total_html: "Lifetime total: <b>%{total}</b>"
+            rank_html: "Overall leaderboard position: <b>#%{rank}</b>"
+          monthly:
+            title: "This month (%{period})"
+            total_html: "Points this month: <b>%{total}</b>"
+            rank_html: "Monthly leaderboard position: <b>#%{rank}</b>"
           articles:
             title: Post likes
             details_html: "%{percentage} of total (%{points} points)"
