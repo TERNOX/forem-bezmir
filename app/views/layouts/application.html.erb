@@ -100,8 +100,11 @@
             }
           </style>
         </div>
+        <%= render "layouts/theme_styles" %>
         <% if user_signed_in? %>
           <%= render "layouts/user_config" %>
+        <% else %>
+          <%= render "layouts/guest_theme" %>
         <% end %>
         <div id="audiocontent" data-podcast="">
           <%= yield(:audio) %>

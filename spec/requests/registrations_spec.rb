@@ -302,7 +302,21 @@ RSpec.describe "Registrations" do
         expect(new_user.onboarding_subforem_id).to eq(subforem.id)
       end
 
+      it "uses the preferred theme cookie for the new user's settings" do
+        user_params = {
+          name: "test #{rand(10)}",
+          username: "haha_#{rand(10)}",
+          email: "yoooo#{rand(100)}@yo.co",
+          password: "PaSSw0rd_yo000",
+          password_confirmation: "PaSSw0rd_yo000"
+        }
 
+        post "/users", params: { user: user_params }, headers: { "HTTP_COOKIE" => "preferred_theme=dark_theme" }
+
+        expect(User.last.setting.config_theme).to eq("dark_theme")
+      end
+
+      
       it "limits the user if the admins have set new user status to limited" do
         allow(Settings::Authentication).to receive(:new_user_status).and_return("limited")
 
