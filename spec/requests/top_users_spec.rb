@@ -55,5 +55,38 @@ RSpec.describe "TopUsers", type: :request do
         expect(response.body).to include(current_label)
       end
     end
+
+    it "refreshes the current month leaderboard after new likes" do
+      travel_to(Time.zone.local(2025, 10, 15, 12, 0, 0)) do
+        period_param = Time.zone.today.strftime("%Y-%m")
+        tracked_period = Time.zone.today.beginning_of_month.to_date
+        score_selector = ".top-users__score .fs-xl.fw-bold.color-base-90"
+
+        top_user = create(:user, username: "refresh-me")
+        article = create(:article, user: top_user)
+
+        liker_one = create(:user)
+        create(:reaction, user: liker_one, reactable: article, category: "like", created_at: Time.current)
+
+        get "/top_users", params: { period: period_param }
+        expect(response).to have_http_status(:ok)
+
+        initial_document = Nokogiri::HTML(response.body)
+        initial_score = initial_document.at_css(score_selector)&.text&.strip
+        expect(initial_score).to eq("1")
+        expect(MonthlyUserReputation.for_period(tracked_period).pluck(:score)).to eq([1])
+
+        liker_two = create(:user)
+        create(:reaction, user: liker_two, reactable: article, category: "like", created_at: Time.current + 1.hour)
+
+        get "/top_users", params: { period: period_param }
+        expect(response).to have_http_status(:ok)
+
+        updated_document = Nokogiri::HTML(response.body)
+        updated_score = updated_document.at_css(score_selector)&.text&.strip
+        expect(updated_score).to eq("2")
+        expect(MonthlyUserReputation.for_period(tracked_period).pluck(:score)).to eq([2])
+      end
+    end
   end
 end
