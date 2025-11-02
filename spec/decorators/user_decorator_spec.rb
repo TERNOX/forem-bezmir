@@ -75,7 +75,7 @@ RSpec.describe UserDecorator, type: :decorator do
   describe "#config_body_class" do
     it "creates proper body class with defaults" do
       expected_result = %W[
-        light-theme sans-serif-article-body
+        system-theme-preference sans-serif-article-body
         mod-status-#{user.admin? || !user.moderator_for_tags.empty?}
         trusted-status-#{user.trusted?} #{user.setting.config_navbar}-header
       ].join(" ")
@@ -85,7 +85,7 @@ RSpec.describe UserDecorator, type: :decorator do
     it "includes user role names in body class" do
       user.add_role(:tag_moderator)
       expected_result = %W[
-        light-theme sans-serif-article-body
+        system-theme-preference sans-serif-article-body
         mod-status-#{user.admin? || !user.moderator_for_tags.empty?}
         trusted-status-#{user.trusted?} #{user.setting.config_navbar}-header
         user-role--tag_moderator
@@ -96,7 +96,7 @@ RSpec.describe UserDecorator, type: :decorator do
     it "creates proper body class with sans serif config" do
       user.setting.config_font = "sans_serif"
       expected_result = %W[
-        light-theme sans-serif-article-body
+        system-theme-preference sans-serif-article-body
         mod-status-#{user.admin? || !user.moderator_for_tags.empty?}
         trusted-status-#{user.trusted?} #{user.setting.config_navbar}-header
       ].join(" ")
@@ -104,6 +104,7 @@ RSpec.describe UserDecorator, type: :decorator do
     end
 
     it "creates proper body class with dark theme" do
+      user.setting.prefer_os_color_scheme = false
       user.setting.config_theme = "dark_theme"
       expected_result = %W[
         dark-theme sans-serif-article-body
@@ -117,7 +118,7 @@ RSpec.describe UserDecorator, type: :decorator do
     it "works with static navbar" do
       user.setting.config_navbar = "static"
       expected_result = %W[
-        light-theme sans-serif-article-body
+        system-theme-preference sans-serif-article-body
         mod-status-#{user.admin? || !user.moderator_for_tags.empty?}
         trusted-status-#{user.trusted?} static-header
       ].join(" ")
@@ -131,7 +132,7 @@ RSpec.describe UserDecorator, type: :decorator do
         user.add_role(:trusted)
 
         expected_result = %w[
-          light-theme sans-serif-article-body mod-status-false
+          system-theme-preference sans-serif-article-body mod-status-false
           trusted-status-true default-header user-role--trusted
         ].join(" ")
         expect(user.decorate.config_body_class).to eq(expected_result)

@@ -100,6 +100,163 @@
             }
           </style>
         </div>
+        <%= render "layouts/theme_styles" %>
+        <script>
+          (function () {
+            var darkQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+            var currentPreference = null;
+            var lastFallbackTheme = 'light_theme';
+            var isListening = false;
+            var baseClassName = document.body.className;
+
+            function determineTheme(preference, fallback) {
+              if (preference === 'system') {
+                if (darkQuery && typeof darkQuery.matches === 'boolean') {
+                  return darkQuery.matches ? 'dark-theme' : 'light-theme';
+                }
+                return fallback === 'dark_theme' || fallback === 'dark-theme' ? 'dark-theme' : 'light-theme';
+              }
+
+              if (preference === 'dark_theme' || preference === 'dark-theme') {
+                return 'dark-theme';
+              }
+
+              return 'light-theme';
+            }
+
+            function updateListener() {
+              if (!darkQuery) {
+                return;
+              }
+
+              if (currentPreference === 'system' && !isListening) {
+                if (typeof darkQuery.addEventListener === 'function') {
+                  darkQuery.addEventListener('change', handleDarkPreferenceChange);
+                } else if (typeof darkQuery.addListener === 'function') {
+                  darkQuery.addListener(handleDarkPreferenceChange);
+                }
+                isListening = true;
+              } else if (currentPreference !== 'system' && isListening) {
+                if (typeof darkQuery.removeEventListener === 'function') {
+                  darkQuery.removeEventListener('change', handleDarkPreferenceChange);
+                } else if (typeof darkQuery.removeListener === 'function') {
+                  darkQuery.removeListener(handleDarkPreferenceChange);
+                }
+                isListening = false;
+              }
+            }
+
+            function handleDarkPreferenceChange() {
+              if (currentPreference === 'system') {
+                applyPreference('system');
+              }
+            }
+
+            function loadStyles(themeClass) {
+              var stylesContainer = document.getElementById('body-styles');
+              if (!stylesContainer) {
+                return;
+              }
+
+              var sourceId = themeClass === 'dark-theme' ? 'dark-mode-style' : 'light-mode-style';
+              var styleSource = document.getElementById(sourceId);
+              if (!styleSource) {
+                return;
+              }
+
+              stylesContainer.innerHTML = '<style>' + styleSource.innerHTML + '</style>';
+            }
+
+            function dispatchTheme(themeClass, preference) {
+              var detail = { theme: themeClass, preference: preference };
+              var event;
+
+              if (typeof window.CustomEvent === 'function') {
+                event = new CustomEvent('forem:theme-changed', { detail: detail });
+              } else {
+                event = document.createEvent('CustomEvent');
+                event.initCustomEvent('forem:theme-changed', false, false, detail);
+              }
+
+              window.dispatchEvent(event);
+            }
+
+            function applyPreference(preference, options) {
+              options = options || {};
+              var body = document.body;
+              if (!body) {
+                return 'light-theme';
+              }
+
+              if (typeof options.bodyClass === 'string') {
+                baseClassName = options.bodyClass;
+                body.className = baseClassName;
+
+                if (navigator.userAgent === 'ForemWebView/1' || window.frameElement) {
+                  body.classList.add('hidden-shell');
+                }
+              }
+
+              if (typeof options.fallbackTheme === 'string' && options.fallbackTheme.length > 0) {
+                lastFallbackTheme = options.fallbackTheme;
+              }
+
+              var resolvedPreference = preference || 'light_theme';
+              var themeClass = determineTheme(resolvedPreference, lastFallbackTheme);
+
+              body.classList.remove('light-theme', 'dark-theme', 'ten-x-hacker-theme');
+              if (resolvedPreference === 'system') {
+                body.classList.add('system-theme-preference');
+              } else {
+                body.classList.remove('system-theme-preference');
+              }
+
+              body.classList.add(themeClass);
+              if (themeClass === 'dark-theme') {
+                body.classList.add('ten-x-hacker-theme');
+              }
+
+              loadStyles(themeClass);
+              currentPreference = resolvedPreference;
+              updateListener();
+              dispatchTheme(themeClass, resolvedPreference);
+
+              return themeClass;
+            }
+
+            window.__foremTheme = {
+              setPreference: function (preference, options) {
+                return applyPreference(preference, options);
+              },
+              currentPreference: function () {
+                return currentPreference;
+              },
+            };
+          })();
+        </script>
+        <script>
+          (function () {
+            if (!window.__foremTheme) {
+              return;
+            }
+
+            try {
+              var storedBodyClass = localStorage.getItem('config_body_class');
+              var storedPreference = localStorage.getItem('theme_preference');
+              var fallbackTheme = localStorage.getItem('theme_fallback') || 'light_theme';
+
+              window.__foremTheme.setPreference(storedPreference || 'system', {
+                bodyClass: storedBodyClass || document.body.className,
+                fallbackTheme: fallbackTheme || 'light_theme',
+              });
+            } catch (error) {
+              window.__foremTheme.setPreference('system', {
+                bodyClass: document.body.className,
+                fallbackTheme: 'light_theme',
+              });
+            }
+          })();
+        </script>
         <% if user_signed_in? %>
           <%= render "layouts/user_config" %>
         <% end %>

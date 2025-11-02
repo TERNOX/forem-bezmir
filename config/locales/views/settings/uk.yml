@@ -80,6 +80,10 @@ uk:
         subforem_reassignment_desc: Якщо ваш контент позначено як офтопік, він може бути автоматично переміщений до відповіднішої спільноти. Ви можете вимкнути цю функцію.
         subforem_reassignment_field: Вимкнути автоматичне переміщення контенту
         theme: Тема сайту
+        theme_options:
+          system: За системою
+          light_theme: Світла тема
+          dark_theme: Темна тема
         writing: Написання
       danger: Небезпечна зона
       destroy:

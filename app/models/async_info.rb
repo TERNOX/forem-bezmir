@@ -47,6 +47,7 @@ class AsyncInfo
       trusted: user.trusted?,
       moderator_for_tags: user.moderator_for_tags,
       config_body_class: user.config_body_class,
+      prefer_os_color_scheme: user.setting.prefer_os_color_scheme,
       feed_style: feed_style_preference_variable(user),
       created_at: user.created_at,
       admin: user.any_admin?,
