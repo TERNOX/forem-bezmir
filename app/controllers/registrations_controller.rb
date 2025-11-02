@@ -80,7 +80,7 @@ class RegistrationsController < Devise::RegistrationsController
   def build_devise_resource
     build_resource(sign_up_params)
     resource.registered_at = Time.current
-    resource.build_setting(editor_version: "v2")
+    resource.build_setting(editor_version: "v2", config_theme: preferred_config_theme)
     resource.profile_image = Images::ProfileImageGenerator.call if resource.profile_image.blank?
     if Settings::General.waiting_on_first_user
       resource.password_confirmation = resource.password
@@ -88,5 +88,15 @@ class RegistrationsController < Devise::RegistrationsController
     check_allowed_email(resource) if resource.email.present?
     resource.onboarding_subforem_id = RequestStore.store[:subforem_id] if RequestStore.store[:subforem_id].present?
     resource.save if resource.email.present?
+  end
+
+  def preferred_config_theme
+    theme_from_cookie = cookies[:preferred_theme]
+    return theme_from_cookie if Users::Setting.config_themes.key?(theme_from_cookie)
+
+    normalized_theme = theme_from_cookie.to_s.tr('-', '_')
+    return normalized_theme if Users::Setting.config_themes.key?(normalized_theme)
+
+    "light_theme"
   end
 end

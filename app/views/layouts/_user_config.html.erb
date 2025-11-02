@@ -1,14 +1,3 @@
-<div id="dark-mode-style" style="display:none;">
-  <%= Rails.application.assets["themes/dark.css"].to_s.squish.html_safe %>
-</div>
-<div id="light-mode-style" style="display:none;">
-  :root {
-    --accent-brand-lighter-rgb: <%= Color::CompareHex.new([Settings::UserExperience.primary_brand_color_hex]).brightness(1.35, only_values: true) %>;
-    --accent-brand-rgb: <%= Color::CompareHex.new([Settings::UserExperience.primary_brand_color_hex]).brightness(1, only_values: true) %>;
-    --accent-brand-darker-rgb: <%= Color::CompareHex.new([Settings::UserExperience.primary_brand_color_hex]).brightness(0.8, only_values: true) %>;
-  }
-</div>
-<div id="user-prestyle"></div>
 <script>
   try {
     const bodyClass = localStorage.getItem('config_body_class');
@@ -19,10 +8,14 @@
 
       if (bodyClass.includes('dark-theme')) {
         document.getElementById('body-styles').innerHTML = '<style>'+document.getElementById('dark-mode-style').innerHTML+'</style>';
+        document.cookie = 'preferred_theme=dark_theme; path=/; max-age=31536000; SameSite=Lax';
+        document.documentElement.style.colorScheme = 'dark';
         if (window && window.ReactNativeWebView) {
           window.ReactNativeWebView.postMessage(JSON.stringify({ action: 'update_color_mode', value: 'dark' }));
         }
       } else {
+        document.cookie = 'preferred_theme=light_theme; path=/; max-age=31536000; SameSite=Lax';
+        document.documentElement.style.colorScheme = 'light';
         if (window && window.ReactNativeWebView) {
           window.ReactNativeWebView.postMessage(JSON.stringify({ action: 'update_color_mode', value: 'light' }));
         }
