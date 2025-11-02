@@ -89,7 +89,11 @@
 
 <span class="profile-header__meta__item">
   <span aria-hidden="true" class="mr-2 shrink-0">⭐</span>
-  <span>
+  <span
+    class="crayons-hover-tooltip"
+    data-tooltip="<%= reputation_breakdown_tooltip(@user) %>"
+    tabindex="0"
+  >
     <%= t("views.users.reputation.title") %>:
     <b><%= number_with_delimiter(@user.reputation_score) %></b>
   </span>

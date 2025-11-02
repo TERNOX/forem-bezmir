@@ -71,6 +71,9 @@ en:
       reputation:
         title: Reputation
         text_html: "Reputation from post and comment likes: %{score}"
+        tooltip:
+          breakdown: "Post likes: %{article_percentage} (%{article_points}) • Comment likes: %{comment_percentage} (%{comment_points})"
+          no_reputation: "No reputation earned yet"
       signout:
         meta:
           title: Confirm Signout - %{community}
