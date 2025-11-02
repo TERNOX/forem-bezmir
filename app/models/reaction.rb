@@ -290,6 +290,7 @@ class Reaction < ApplicationRecord
     SQL
 
     User.where(id: recipient.id).update_all([update_sql, delta, delta])
+    recipient.touch if recipient.persisted?
   end
 
   def increment_recipient_reputation

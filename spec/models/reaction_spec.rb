@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe Reaction do
+  include ActiveSupport::Testing::TimeHelpers
+
   let(:user) { create(:user, registered_at: 20.days.ago) }
   let(:article) { create(:article, user: user) }
   let(:reaction) { build(:reaction, reactable: article, user: user) }
@@ -99,6 +101,16 @@ RSpec.describe Reaction do
       expect do
         create(:reaction, reactable: article, user: reactor, category: "like")
       end.to change { author.reload.reputation_score }.by(2)
+    end
+
+    it "updates the author's cache key when their reputation changes" do
+      initial_cache_key = author.cache_key_with_version
+
+      travel_to(1.second.from_now) do
+        create(:reaction, reactable: comment, user: reactor, category: "like")
+      end
+
+      expect(author.reload.cache_key_with_version).not_to eq(initial_cache_key)
     end
   end
 
