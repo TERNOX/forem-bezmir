@@ -1,4 +1,13 @@
-<div class="crayons-modal__content p-6">
+<div class="crayons-modal__content p-6 relative">
+  <button
+    type="button"
+    class="c-btn c-btn--icon-alone crayons-modal__dismiss absolute top-4 right-4"
+    aria-label="<%= t("views.users.reputation.modal.close") %>"
+    onclick="window.Forem.closeModal()"
+  >
+    <%= crayons_icon_tag(:x, aria_hidden: true) %>
+  </button>
+
   <h2 class="crayons-title mb-4"><%= t("views.users.reputation.modal.title", user: user.name) %></h2>
 
   <% overall = breakdown[:overall] %>

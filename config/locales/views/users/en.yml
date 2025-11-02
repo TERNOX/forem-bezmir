@@ -72,6 +72,7 @@ en:
         title: Reputation
         modal:
           title: "%{user}'s reputation"
+          close: Close reputation breakdown modal
           no_reputation: "%{user} hasn't earned any reputation yet."
           summary_html: "Total reputation: <b>%{total}</b>. This month (%{monthly_period}): <b>%{monthly_total}</b>"
           rules_html: "Each post like gives %{post_points} points and each comment like gives %{comment_points}. Check the %{monthly_link} to explore more leaders."

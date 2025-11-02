@@ -72,6 +72,7 @@ uk:
         title: Репутація
         modal:
           title: "Репутація %{user}"
+          close: Закрити вікно розподілу репутації
           summary_html: "Загальна репутація: <b>%{total}</b>. За цей місяць (%{monthly_period}): <b>%{monthly_total}</b>"
           rules_html: "Кожна вподобайка допису дає %{post_points} очок, а коментаря — %{comment_points}. Перегляньте %{monthly_link}, щоб дізнатися більше про лідерів."
           monthly_link_text: місячний рейтинг
