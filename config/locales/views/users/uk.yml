@@ -104,8 +104,8 @@ uk:
       flag: Позначити @%{user}
       follow: Підписатися
       joined:
-        icon: Приєднався
-        text_html: "Приєднався %{date}"
+        icon: Дата реєстрації
+        text_html: "На сайті з %{date}"
       location_icon: Місцезнаходження
       logo: Фото профілю %{user}
       more: Докладніше про @%{user}
