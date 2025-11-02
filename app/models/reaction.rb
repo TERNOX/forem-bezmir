@@ -269,6 +269,12 @@ class Reaction < ApplicationRecord
       reactable_type_value.in?(REPUTATION_REACTABLE_TYPES)
   end
 
+  def reputation_points(category_value = category, status_value = status, reactable_type_value = reactable_type)
+    return 0 unless counts_for_reputation?(category_value, status_value, reactable_type_value)
+
+    reactable_type_value == "Article" ? 2 : 1
+  end
+
   def reputation_recipient
     @reputation_recipient || target_user
   end
@@ -287,13 +293,14 @@ class Reaction < ApplicationRecord
   end
 
   def increment_recipient_reputation
-    adjust_recipient_reputation(1) if counts_for_reputation?
+    points = reputation_points
+    adjust_recipient_reputation(points) if points.positive?
   end
 
   def decrement_recipient_reputation
-    return unless @counted_for_reputation_before_destroy
+    return unless @reputation_points_before_destroy&.positive?
 
-    adjust_recipient_reputation(-1)
+    adjust_recipient_reputation(-@reputation_points_before_destroy)
   end
 
   def adjust_recipient_reputation_on_update
@@ -302,24 +309,24 @@ class Reaction < ApplicationRecord
     previous_type = reactable_type_before_last_save || reactable_type
     reactable_changed = saved_change_to_reactable_id? || saved_change_to_reactable_type?
 
-    previously_counted = counts_for_reputation?(previous_category, previous_status, previous_type)
-    currently_counted = counts_for_reputation?
+    previous_points = reputation_points(previous_category, previous_status, previous_type)
+    current_points = reputation_points
 
     if reactable_changed
-      adjust_recipient_reputation(-1, recipient: previous_reputation_recipient) if previously_counted
-      adjust_recipient_reputation(1, recipient: target_user) if currently_counted
+      adjust_recipient_reputation(-previous_points, recipient: previous_reputation_recipient) if previous_points.positive?
+      adjust_recipient_reputation(current_points, recipient: target_user) if current_points.positive?
       return
     end
 
-    return if previously_counted == currently_counted
+    return if previous_points == current_points
 
-    delta = currently_counted ? 1 : -1
+    delta = current_points - previous_points
     adjust_recipient_reputation(delta)
   end
 
   def store_reputation_snapshot
-    @counted_for_reputation_before_destroy = counts_for_reputation?
-    @reputation_recipient = target_user if @counted_for_reputation_before_destroy
+    @reputation_points_before_destroy = reputation_points
+    @reputation_recipient = target_user if @reputation_points_before_destroy.positive?
   end
 
   def previous_reputation_recipient

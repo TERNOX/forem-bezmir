@@ -78,7 +78,7 @@ RSpec.describe Reaction do
 
       expect do
         reaction.destroy
-      end.to change { author.reload.reputation_score }.by(-1)
+      end.to change { author.reload.reputation_score }.by(-2)
     end
 
     it "removes article like reputation when the reaction becomes invalid" do
@@ -86,7 +86,7 @@ RSpec.describe Reaction do
 
       expect do
         reaction.update!(status: "invalid")
-      end.to change { author.reload.reputation_score }.by(-1)
+      end.to change { author.reload.reputation_score }.by(-2)
     end
 
     it "does not change reputation for non-like reactions" do
@@ -98,7 +98,7 @@ RSpec.describe Reaction do
     it "increments the author's reputation when a like is added to an article" do
       expect do
         create(:reaction, reactable: article, user: reactor, category: "like")
-      end.to change { author.reload.reputation_score }.by(1)
+      end.to change { author.reload.reputation_score }.by(2)
     end
   end
 
