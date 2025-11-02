@@ -10,6 +10,8 @@ module Users
     belongs_to :user, touch: true
     scope :with_feed, -> { where.not(feed_url: [nil, ""]) }
 
+    THEME_SYSTEM = "system".freeze
+
     enum editor_version: { v2: 0, v1: 1 }, _suffix: :editor
     enum config_font: { default: 0, comic_sans: 1, monospace: 2, open_dyslexic: 3, sans_serif: 4, serif: 5 },
          _suffix: :font
@@ -38,6 +40,21 @@ module Users
 
     def resolved_font_name
       config_font.gsub("default", Settings::UserExperience.default_font)
+    end
+
+    def theme_preference
+      prefer_os_color_scheme? ? THEME_SYSTEM : config_theme
+    end
+
+    def theme_preference=(value)
+      value = value.to_s
+
+      if value == THEME_SYSTEM
+        self.prefer_os_color_scheme = true
+      elsif self.class.config_themes.key?(value)
+        self.prefer_os_color_scheme = false
+        self.config_theme = value
+      end
     end
 
     private

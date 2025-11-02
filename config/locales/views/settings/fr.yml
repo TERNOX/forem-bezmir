@@ -81,6 +81,10 @@ fr:
         subforem_reassignment_desc: Lorsque votre contenu est marqué comme hors-sujet pour son sous-forum actuel, il peut être automatiquement déplacé vers un sous-forum plus approprié. Vous pouvez désactiver cette relocalisation automatique si vous préférez garder votre contenu dans son emplacement d'origine.
         subforem_reassignment_field: Désactiver la relocalisation automatique de mon contenu vers d'autres sous-forums
         theme: Site Theme
+        theme_options:
+          system: Selon le système
+          light_theme: Thème clair
+          dark_theme: Thème sombre
         writing: Writing
       danger: Danger Zone
       destroy:

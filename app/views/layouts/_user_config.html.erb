@@ -1,41 +1,83 @@
-<div id="dark-mode-style" style="display:none;">
-  <%= Rails.application.assets["themes/dark.css"].to_s.squish.html_safe %>
-</div>
-<div id="light-mode-style" style="display:none;">
-  :root {
-    --accent-brand-lighter-rgb: <%= Color::CompareHex.new([Settings::UserExperience.primary_brand_color_hex]).brightness(1.35, only_values: true) %>;
-    --accent-brand-rgb: <%= Color::CompareHex.new([Settings::UserExperience.primary_brand_color_hex]).brightness(1, only_values: true) %>;
-    --accent-brand-darker-rgb: <%= Color::CompareHex.new([Settings::UserExperience.primary_brand_color_hex]).brightness(0.8, only_values: true) %>;
-  }
-</div>
 <div id="user-prestyle"></div>
 <script>
   try {
-    const bodyClass = localStorage.getItem('config_body_class');
     const userString = localStorage.getItem('current_user');
+    const bodyClass = localStorage.getItem('config_body_class');
+    const themePreference = localStorage.getItem('theme_preference');
+    const fallbackTheme = localStorage.getItem('theme_fallback');
 
-    if (bodyClass) {
+    const updateNativeTheme = (themeClass) => {
+      if (window && window.ReactNativeWebView) {
+        window.ReactNativeWebView.postMessage(
+          JSON.stringify({ action: 'update_color_mode', value: themeClass === 'dark-theme' ? 'dark' : 'light' }),
+        );
+      }
+    };
+
+    if (window && typeof window.addEventListener === 'function') {
+      window.addEventListener('forem:theme-changed', (event) => {
+        if (event && event.detail && event.detail.theme) {
+          updateNativeTheme(event.detail.theme);
+        }
+      });
+    }
+
+    let appliedTheme;
+    if (window.__foremTheme) {
+      let resolvedPreference = themePreference;
+      let resolvedFallback = fallbackTheme;
+
+      if (!resolvedPreference) {
+        const classSource = bodyClass || document.body.className;
+        if (
+          typeof classSource === 'string' &&
+          classSource.indexOf('system-theme-preference') === -1
+        ) {
+          if (classSource.indexOf('dark-theme') !== -1) {
+            resolvedPreference = 'dark_theme';
+          } else if (classSource.indexOf('light-theme') !== -1) {
+            resolvedPreference = 'light_theme';
+          }
+        }
+      }
+
+      if (!resolvedPreference) {
+        resolvedPreference = 'system';
+      }
+
+      if (!resolvedFallback) {
+        if (resolvedPreference === 'system') {
+          resolvedFallback = document.body && document.body.classList.contains('dark-theme')
+            ? 'dark_theme'
+            : document.body && document.body.classList.contains('light-theme')
+              ? 'light_theme'
+              : null;
+        } else {
+          resolvedFallback = resolvedPreference;
+        }
+      }
+
+      appliedTheme = window.__foremTheme.setPreference(resolvedPreference, {
+        bodyClass: bodyClass || document.body.className,
+        fallbackTheme: resolvedFallback || 'light_theme',
+      });
+    } else if (bodyClass) {
       document.body.className = bodyClass;
+    }
 
-      if (bodyClass.includes('dark-theme')) {
-        document.getElementById('body-styles').innerHTML = '<style>'+document.getElementById('dark-mode-style').innerHTML+'</style>';
-        if (window && window.ReactNativeWebView) {
-          window.ReactNativeWebView.postMessage(JSON.stringify({ action: 'update_color_mode', value: 'dark' }));
-        }
-      } else {
-        if (window && window.ReactNativeWebView) {
-          window.ReactNativeWebView.postMessage(JSON.stringify({ action: 'update_color_mode', value: 'light' }));
-        }
-      }
+    if (appliedTheme) {
+      updateNativeTheme(appliedTheme);
+    }
 
-      if (bodyClass.includes('open-dyslexic-article-body')) { // Preloading custom font for anticipated use
-        const link = document.createElement('link');
-        link.as = 'font'
-        link.rel = 'preload'
-        crossorigin = 'anonymous'
-        link.href = '<%= asset_path "OpenDyslexic-Regular.otf" %>';
-        document.head.appendChild(link);
-      }
+    const currentBodyClass = document.body.className;
+
+    if (currentBodyClass.includes('open-dyslexic-article-body')) { // Preloading custom font for anticipated use
+      const link = document.createElement('link');
+      link.as = 'font'
+      link.rel = 'preload'
+      crossorigin = 'anonymous'
+      link.href = '<%= asset_path "OpenDyslexic-Regular.otf" %>';
+      document.head.appendChild(link);
     }
     if (navigator.userAgent === 'DEV-Native-ios') {
       document.body.classList.add("dev-ios-native-body");
@@ -51,9 +93,9 @@
       if (numTags < 6) {
         document.body.classList.add("user-tags-followed-" + numTags);
       } else {
-        document.body.classList.add("user-tags-followed-max");
-      }
-      document.getElementById('user-prestyle').innerHTML += '<style>.hide-if-belongs-to-current-user-'+user.id+' { display: none !important; }</style>';
+      document.body.classList.add("user-tags-followed-max");
+    }
+    document.getElementById('user-prestyle').innerHTML += '<style>.hide-if-belongs-to-current-user-'+user.id+' { display: none !important; }</style>';
     }
   } catch (e) {
     setTimeout(function () {

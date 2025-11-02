@@ -104,8 +104,14 @@ class UserDecorator < ApplicationDecorator
 
 
   def config_body_class
+    theme_class = if setting.prefer_os_color_scheme?
+      "system-theme-preference"
+    else
+      setting.config_theme.tr("_", "-")
+    end
+
     body_class = [
-      setting.config_theme.tr("_", "-"),
+      theme_class,
       "#{setting.resolved_font_name.tr('_', '-')}-article-body",
       "mod-status-#{any_admin? || !moderator_for_tags.empty?}",
       "trusted-status-#{trusted?}",
@@ -117,7 +123,7 @@ class UserDecorator < ApplicationDecorator
     end
 
     # Backfill ten-x-hacker-theme because the ios app looks for it to render native dark shell.
-    body_class << "ten-x-hacker-theme" if setting.config_theme == "dark_theme"
+    body_class << "ten-x-hacker-theme" if !setting.prefer_os_color_scheme? && setting.config_theme == "dark_theme"
     body_class.join(" ")
   end
 

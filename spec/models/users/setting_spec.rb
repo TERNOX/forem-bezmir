@@ -66,6 +66,31 @@ RSpec.describe Users::Setting do
       end
     end
 
+    describe "#theme_preference" do
+      it "returns system when user follows OS preference" do
+        setting.prefer_os_color_scheme = true
+        expect(setting.theme_preference).to eq("system")
+      end
+
+      it "returns explicit theme when OS preference disabled" do
+        setting.theme_preference = "dark_theme"
+
+        expect(setting.prefer_os_color_scheme).to be false
+        expect(setting.config_theme).to eq("dark_theme")
+        expect(setting.theme_preference).to eq("dark_theme")
+      end
+
+      it "enables OS preference when assigning system" do
+        setting.prefer_os_color_scheme = false
+        setting.config_theme = "dark_theme"
+
+        setting.theme_preference = "system"
+
+        expect(setting.prefer_os_color_scheme).to be true
+        expect(setting.config_theme).to eq("dark_theme")
+      end
+    end
+
     describe "#content_preferences_input" do
       it "updates content_preferences_updated_at if changed" do
         setting.content_preferences_input = "New content preferences"

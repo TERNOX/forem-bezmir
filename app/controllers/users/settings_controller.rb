@@ -19,7 +19,8 @@ module Users
                         feed_url
                         inbox_guidelines
                         inbox_type
-                        permit_adjacent_sponsors].freeze
+                        permit_adjacent_sponsors
+                        theme_preference].freeze
 
     def update
       authorize current_user, policy_class: UserPolicy

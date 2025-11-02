@@ -76,6 +76,31 @@ function browserStoreCache(action, userData) {
         if (userObj.config_body_class) {
           localStorage.setItem("config_body_class", userObj.config_body_class);
         }
+        if (typeof userObj.prefer_os_color_scheme === "boolean") {
+          const themePreference = userObj.prefer_os_color_scheme
+            ? "system"
+            : userObj.config_theme;
+          if (themePreference) {
+            localStorage.setItem("theme_preference", themePreference);
+          }
+
+          let fallbackTheme = userObj.config_theme;
+          if (
+            themePreference === "system" &&
+            typeof document !== "undefined" &&
+            document.body
+          ) {
+            if (document.body.classList.contains("dark-theme")) {
+              fallbackTheme = "dark_theme";
+            } else if (document.body.classList.contains("light-theme")) {
+              fallbackTheme = "light_theme";
+            }
+          }
+
+          if (fallbackTheme) {
+            localStorage.setItem("theme_fallback", fallbackTheme);
+          }
+        }
 
         // set cross-subdomain cookie: base64-encoded so it can be decoded
         if (navigator.cookieEnabled) {
@@ -87,6 +112,9 @@ function browserStoreCache(action, userData) {
       }
       case "remove":
         localStorage.removeItem("current_user");
+        localStorage.removeItem("config_body_class");
+        localStorage.removeItem("theme_preference");
+        localStorage.removeItem("theme_fallback");
         // also remove cookie (set Max-Age=0)
         const domain = getCrossSubdomainCookieDomain();
         setCookie("current_user", "", -1, domain);

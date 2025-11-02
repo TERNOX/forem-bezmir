@@ -50,12 +50,24 @@ function fetchBaseData() {
             default_email_optin_allowed;
           const userJson = JSON.parse(user);
           browserStoreCache('set', user);
-          document.body.className = userJson.config_body_class;
 
-          if (userJson.config_body_class && userJson.config_body_class.includes('dark-theme') && document.getElementById('dark-mode-style')) {
-            document.getElementById('body-styles').innerHTML = '<style>'+document.getElementById('dark-mode-style').innerHTML+'</style>'
+          const themePreference = userJson.prefer_os_color_scheme ? 'system' : userJson.config_theme;
+          if (window.__foremTheme) {
+            let fallback = userJson.config_theme;
+            if (themePreference === 'system') {
+              if (document.body && document.body.classList.contains('dark-theme')) {
+                fallback = 'dark_theme';
+              } else if (document.body && document.body.classList.contains('light-theme')) {
+                fallback = 'light_theme';
+              }
+            }
+
+            window.__foremTheme.setPreference(themePreference, {
+              bodyClass: userJson.config_body_class,
+              fallbackTheme: fallback,
+            });
           } else {
-            document.getElementById('body-styles').innerHTML = '<style>'+document.getElementById('light-mode-style').innerHTML+'</style>'
+            document.body.className = userJson.config_body_class;
           }
 
           if (window && window.ReactNativeWebView) {
