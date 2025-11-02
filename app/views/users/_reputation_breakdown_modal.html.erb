@@ -1,0 +1,113 @@
+<div class="crayons-modal__content p-6 relative">
+  <button
+    type="button"
+    class="c-btn c-btn--icon-alone crayons-modal__dismiss absolute top-4 right-4"
+    aria-label="<%= t("views.users.reputation.modal.close") %>"
+    onclick="window.Forem.closeModal()"
+  >
+    <%= crayons_icon_tag(:x, aria_hidden: true) %>
+  </button>
+
+  <h2 class="crayons-title mb-4"><%= t("views.users.reputation.modal.title", user: user.name) %></h2>
+
+  <% overall = breakdown[:overall] %>
+  <% monthly = breakdown[:monthly] %>
+
+  <% if overall[:total].zero? %>
+    <p class="mb-0"><%= t("views.users.reputation.modal.no_reputation", user: user.name) %></p>
+  <% else %>
+    <p class="mb-2">
+      <%= t(
+            "views.users.reputation.modal.summary_html",
+            total: overall[:formatted_total],
+            monthly_total: monthly[:formatted_total],
+            monthly_period: monthly[:period_label],
+          ) %>
+    </p>
+
+    <p class="color-base-70 mb-4">
+      <%= t(
+            "views.users.reputation.modal.rules_html",
+            post_points: breakdown[:points_per_article_like],
+            comment_points: breakdown[:points_per_comment_like],
+            monthly_link: link_to(
+              t("views.users.reputation.modal.monthly_link_text"),
+              top_users_path(period: monthly[:period_param]),
+              class: "crayons-link",
+            ),
+          ) %>
+    </p>
+
+    <section class="mb-5">
+      <h3 class="crayons-subtitle-1 mb-2"><%= t("views.users.reputation.modal.overall.title") %></h3>
+      <p class="mb-1">
+        <%= t("views.users.reputation.modal.overall.total_html", total: overall[:formatted_total]) %>
+      </p>
+      <% if overall[:rank].present? %>
+        <p class="color-base-70 mb-3">
+          <%= t("views.users.reputation.modal.overall.rank_html", rank: overall[:rank]) %>
+        </p>
+      <% end %>
+
+      <ul class="list-style-none p-0 m-0">
+        <li class="mb-3">
+          <strong><%= t("views.users.reputation.modal.articles.title") %></strong>
+          <div class="color-base-70">
+            <%= t(
+                  "views.users.reputation.modal.articles.details_html",
+                  percentage: overall[:articles][:formatted_percentage],
+                  points: overall[:articles][:formatted_points],
+                ) %>
+          </div>
+        </li>
+        <li>
+          <strong><%= t("views.users.reputation.modal.comments.title") %></strong>
+          <div class="color-base-70">
+            <%= t(
+                  "views.users.reputation.modal.comments.details_html",
+                  percentage: overall[:comments][:formatted_percentage],
+                  points: overall[:comments][:formatted_points],
+                ) %>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <section>
+      <h3 class="crayons-subtitle-1 mb-2">
+        <%= t("views.users.reputation.modal.monthly.title", period: monthly[:period_label]) %>
+      </h3>
+      <p class="mb-1">
+        <%= t("views.users.reputation.modal.monthly.total_html", total: monthly[:formatted_total]) %>
+      </p>
+      <% if monthly[:rank].present? %>
+        <p class="color-base-70 mb-3">
+          <%= t("views.users.reputation.modal.monthly.rank_html", rank: monthly[:rank]) %>
+        </p>
+      <% end %>
+
+      <ul class="list-style-none p-0 m-0">
+        <li class="mb-3">
+          <strong><%= t("views.users.reputation.modal.articles.title") %></strong>
+          <div class="color-base-70">
+            <%= t(
+                  "views.users.reputation.modal.articles.details_html",
+                  percentage: monthly[:articles][:formatted_percentage],
+                  points: monthly[:articles][:formatted_points],
+                ) %>
+          </div>
+        </li>
+        <li>
+          <strong><%= t("views.users.reputation.modal.comments.title") %></strong>
+          <div class="color-base-70">
+            <%= t(
+                  "views.users.reputation.modal.comments.details_html",
+                  percentage: monthly[:comments][:formatted_percentage],
+                  points: monthly[:comments][:formatted_points],
+                ) %>
+          </div>
+        </li>
+      </ul>
+    </section>
+  <% end %>
+</div>
