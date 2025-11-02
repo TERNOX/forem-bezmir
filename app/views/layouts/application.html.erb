@@ -244,7 +244,29 @@
               var storedBodyClass = localStorage.getItem('config_body_class');
               var storedPreference = localStorage.getItem('theme_preference');
               var fallbackTheme = localStorage.getItem('theme_fallback');
-              var resolvedPreference = storedPreference || 'system';
+              var resolvedPreference = storedPreference;
+
+              if (!resolvedPreference) {
+                var classSource = storedBodyClass || document.body.className;
+                if (
+                  typeof classSource === 'string' &&
+                  classSource.indexOf('system-theme-preference') === -1
+                ) {
+                  if (classSource.indexOf('dark-theme') !== -1) {
+                    resolvedPreference = 'dark_theme';
+                  } else if (classSource.indexOf('light-theme') !== -1) {
+                    resolvedPreference = 'light_theme';
+                  }
+                }
+              }
+
+              if (!resolvedPreference) {
+                resolvedPreference = 'system';
+              }
+
+              if (!fallbackTheme && resolvedPreference !== 'system') {
+                fallbackTheme = resolvedPreference;
+              }
 
               if (resolvedPreference === 'system') {
                 var inferredTheme = document.body && document.body.classList.contains('dark-theme')

@@ -24,15 +24,37 @@
 
     let appliedTheme;
     if (window.__foremTheme) {
-      const resolvedPreference = themePreference || 'system';
+      let resolvedPreference = themePreference;
       let resolvedFallback = fallbackTheme;
 
-      if (!resolvedFallback && resolvedPreference === 'system') {
-        resolvedFallback = document.body && document.body.classList.contains('dark-theme')
-          ? 'dark_theme'
-          : document.body && document.body.classList.contains('light-theme')
-            ? 'light_theme'
-            : null;
+      if (!resolvedPreference) {
+        const classSource = bodyClass || document.body.className;
+        if (
+          typeof classSource === 'string' &&
+          classSource.indexOf('system-theme-preference') === -1
+        ) {
+          if (classSource.indexOf('dark-theme') !== -1) {
+            resolvedPreference = 'dark_theme';
+          } else if (classSource.indexOf('light-theme') !== -1) {
+            resolvedPreference = 'light_theme';
+          }
+        }
+      }
+
+      if (!resolvedPreference) {
+        resolvedPreference = 'system';
+      }
+
+      if (!resolvedFallback) {
+        if (resolvedPreference === 'system') {
+          resolvedFallback = document.body && document.body.classList.contains('dark-theme')
+            ? 'dark_theme'
+            : document.body && document.body.classList.contains('light-theme')
+              ? 'light_theme'
+              : null;
+        } else {
+          resolvedFallback = resolvedPreference;
+        }
       }
 
       appliedTheme = window.__foremTheme.setPreference(resolvedPreference, {
