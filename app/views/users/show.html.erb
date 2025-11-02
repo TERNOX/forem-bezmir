@@ -87,18 +87,23 @@
               </span>
             <% end %>
 
-<span class="profile-header__meta__item">
-  <span aria-hidden="true" class="mr-2 shrink-0">⭐</span>
-  <span
-    class="crayons-hover-tooltip"
-    data-tooltip="<%= reputation_breakdown_tooltip(@user) %>"
-    tabindex="0"
-  >
-    <%= t("views.users.reputation.title") %>:
-    <b><%= number_with_delimiter(@user.reputation_score) %></b>
-  </span>
-</span>
+            <% breakdown = reputation_breakdown(@user) %>
+            <span class="profile-header__meta__item">
+              <span aria-hidden="true" class="mr-2 shrink-0">⭐</span>
+              <a
+                href="javascript:void(0);"
+                class="crayons-link crayons-link--secondary"
+                onclick="window.Forem.showModal({size: 'small', showHeader: false, contentSelector: '#reputation-breakdown-<%= @user.id %>', overlay: true})"
+                aria-controls="reputation-breakdown-<%= @user.id %>"
+              >
+                <%= t("views.users.reputation.title") %>:
+                <b><%= number_with_delimiter(@user.reputation_score) %></b>
+              </a>
+            </span>
 
+            <div id="reputation-breakdown-<%= @user.id %>" class="hidden">
+              <%= render "users/reputation_breakdown_modal", user: @user, breakdown: breakdown %>
+            </div>
 
             <span class="profile-header__meta__item">
               <%= crayons_icon_tag(:cake, class: "mr-2 shrink-0", title: t("views.users.joined.icon")) %>

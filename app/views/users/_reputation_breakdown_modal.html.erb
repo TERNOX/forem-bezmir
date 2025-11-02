@@ -1,0 +1,34 @@
+<div class="crayons-modal__content p-6">
+  <h2 class="crayons-title mb-4"><%= t("views.users.reputation.modal.title", user: user.name) %></h2>
+
+  <% if breakdown[:total].zero? %>
+    <p class="mb-0"><%= t("views.users.reputation.modal.no_reputation", user: user.name) %></p>
+  <% else %>
+    <p class="color-base-70 mb-4">
+      <%= t("views.users.reputation.modal.description_html", total: breakdown[:formatted_total]) %>
+    </p>
+
+    <ul class="list-style-none p-0 m-0">
+      <li class="mb-3">
+        <strong><%= t("views.users.reputation.modal.articles.title") %></strong>
+        <div class="color-base-70">
+          <%= t(
+                "views.users.reputation.modal.articles.details_html",
+                percentage: breakdown[:articles][:formatted_percentage],
+                points: breakdown[:articles][:formatted_points],
+              ) %>
+        </div>
+      </li>
+      <li>
+        <strong><%= t("views.users.reputation.modal.comments.title") %></strong>
+        <div class="color-base-70">
+          <%= t(
+                "views.users.reputation.modal.comments.details_html",
+                percentage: breakdown[:comments][:formatted_percentage],
+                points: breakdown[:comments][:formatted_points],
+              ) %>
+        </div>
+      </li>
+    </ul>
+  <% end %>
+</div>

@@ -10,21 +10,28 @@ module UsersHelper
     end
   end
 
-  def reputation_breakdown_tooltip(user)
+  def reputation_breakdown(user)
     breakdown = Users::ReputationBreakdown.call(user)
     total = breakdown.values.sum
 
-    return t("views.users.reputation.tooltip.no_reputation") if total.zero?
+    {
+      total: total,
+      formatted_total: number_with_delimiter(total),
+      articles: breakdown_item(breakdown[:articles], total),
+      comments: breakdown_item(breakdown[:comments], total),
+    }
+  end
 
-    article_percentage = number_to_percentage((breakdown[:articles].to_f / total) * 100, precision: 0)
-    comment_percentage = number_to_percentage((breakdown[:comments].to_f / total) * 100, precision: 0)
+  private
 
-    t(
-      "views.users.reputation.tooltip.breakdown",
-      article_percentage: article_percentage,
-      article_points: number_with_delimiter(breakdown[:articles]),
-      comment_percentage: comment_percentage,
-      comment_points: number_with_delimiter(breakdown[:comments]),
-    )
+  def breakdown_item(points, total)
+    percentage = total.zero? ? 0 : (points.to_f / total) * 100
+
+    {
+      points: points,
+      formatted_points: number_with_delimiter(points),
+      percentage: percentage,
+      formatted_percentage: number_to_percentage(percentage, precision: 0),
+    }
   end
 end
