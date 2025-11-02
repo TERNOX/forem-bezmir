@@ -83,8 +83,22 @@ function browserStoreCache(action, userData) {
           if (themePreference) {
             localStorage.setItem("theme_preference", themePreference);
           }
-          if (userObj.config_theme) {
-            localStorage.setItem("theme_fallback", userObj.config_theme);
+
+          let fallbackTheme = userObj.config_theme;
+          if (
+            themePreference === "system" &&
+            typeof document !== "undefined" &&
+            document.body
+          ) {
+            if (document.body.classList.contains("dark-theme")) {
+              fallbackTheme = "dark_theme";
+            } else if (document.body.classList.contains("light-theme")) {
+              fallbackTheme = "light_theme";
+            }
+          }
+
+          if (fallbackTheme) {
+            localStorage.setItem("theme_fallback", fallbackTheme);
           }
         }
 

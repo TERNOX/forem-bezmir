@@ -243,9 +243,19 @@
             try {
               var storedBodyClass = localStorage.getItem('config_body_class');
               var storedPreference = localStorage.getItem('theme_preference');
-              var fallbackTheme = localStorage.getItem('theme_fallback') || 'light_theme';
+              var fallbackTheme = localStorage.getItem('theme_fallback');
+              var resolvedPreference = storedPreference || 'system';
 
-              window.__foremTheme.setPreference(storedPreference || 'system', {
+              if (resolvedPreference === 'system') {
+                var inferredTheme = document.body && document.body.classList.contains('dark-theme')
+                  ? 'dark_theme'
+                  : document.body && document.body.classList.contains('light-theme')
+                    ? 'light_theme'
+                    : null;
+                fallbackTheme = fallbackTheme || inferredTheme;
+              }
+
+              window.__foremTheme.setPreference(resolvedPreference, {
                 bodyClass: storedBodyClass || document.body.className,
                 fallbackTheme: fallbackTheme || 'light_theme',
               });

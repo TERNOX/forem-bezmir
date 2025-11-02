@@ -4,7 +4,7 @@
     const userString = localStorage.getItem('current_user');
     const bodyClass = localStorage.getItem('config_body_class');
     const themePreference = localStorage.getItem('theme_preference');
-    const fallbackTheme = localStorage.getItem('theme_fallback') || 'light_theme';
+    const fallbackTheme = localStorage.getItem('theme_fallback');
 
     const updateNativeTheme = (themeClass) => {
       if (window && window.ReactNativeWebView) {
@@ -24,9 +24,20 @@
 
     let appliedTheme;
     if (window.__foremTheme) {
-      appliedTheme = window.__foremTheme.setPreference(themePreference || 'system', {
+      const resolvedPreference = themePreference || 'system';
+      let resolvedFallback = fallbackTheme;
+
+      if (!resolvedFallback && resolvedPreference === 'system') {
+        resolvedFallback = document.body && document.body.classList.contains('dark-theme')
+          ? 'dark_theme'
+          : document.body && document.body.classList.contains('light-theme')
+            ? 'light_theme'
+            : null;
+      }
+
+      appliedTheme = window.__foremTheme.setPreference(resolvedPreference, {
         bodyClass: bodyClass || document.body.className,
-        fallbackTheme: fallbackTheme || 'light_theme',
+        fallbackTheme: resolvedFallback || 'light_theme',
       });
     } else if (bodyClass) {
       document.body.className = bodyClass;
