@@ -17,14 +17,14 @@ RSpec.describe Users::RecalculateReputation do
     it "resets all reputation scores based on likes for comments and articles" do
       described_class.call
 
-      expect(author.reload.reputation_score).to eq(2)
+      expect(author.reload.reputation_score).to eq(3)
       expect(other_user.reload.reputation_score).to eq(0)
     end
 
     it "returns summary information" do
       result = described_class.call
 
-      expect(result).to eq(users: 1, likes: 2)
+      expect(result).to eq(users: 1, likes: 3)
     end
   end
 end

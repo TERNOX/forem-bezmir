@@ -46,6 +46,7 @@ module Users
         .where.not(articles: { user_id: nil })
         .group("articles.user_id")
         .count
+        .transform_values { |count| count * 2 }
     end
   end
 end

@@ -38,7 +38,7 @@ RSpec.describe Users::CalculateMonthlyReputation do
       top_entry = MonthlyUserReputation.find_by(user: recipient, period: period)
       second_entry = MonthlyUserReputation.find_by(user: other_recipient, period: period)
 
-      expect(top_entry.score).to eq(1)
+      expect(top_entry.score).to eq(2)
       expect(top_entry.rank).to eq(1)
       expect(top_entry.awarded_top_ten_at).to be_present
 
