@@ -276,14 +276,14 @@
           <%= hidden_field_tag :digest_preview_mode, @digest_preview_mode %>
           <%= hidden_field_tag "digest_preview[start_date]", @digest_preview_form_params[:start_date] %>
           <%= hidden_field_tag "digest_preview[end_date]", @digest_preview_form_params[:end_date] %>
-          <%= submit_tag t("views.admin.tools.top_articles_digest.test_publish.button"), class: "crayons-btn" %>
+          <%= submit_tag t("views.admin.tools.top_articles_digest.preview.test_publish.button"), class: "crayons-btn" %>
         <% end %>
 
         <%= form_with url: top_articles_digest_test_badges_admin_tools_path, method: :post, local: true do %>
           <%= hidden_field_tag :digest_preview_mode, @digest_preview_mode %>
           <%= hidden_field_tag "digest_preview[start_date]", @digest_preview_form_params[:start_date] %>
           <%= hidden_field_tag "digest_preview[end_date]", @digest_preview_form_params[:end_date] %>
-          <%= submit_tag t("views.admin.tools.top_articles_digest.test_badges.button"), class: "crayons-btn" %>
+          <%= submit_tag t("views.admin.tools.top_articles_digest.preview.test_badges.button"), class: "crayons-btn" %>
         <% end %>
       </div>
 
