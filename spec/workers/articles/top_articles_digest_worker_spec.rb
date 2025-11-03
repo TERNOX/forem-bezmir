@@ -13,7 +13,7 @@ RSpec.describe Articles::TopArticlesDigestWorker do
     Settings::General.set_top_articles_digest_last_run_status(nil)
     Settings::General.set_top_articles_digest_last_run_at(nil)
     Settings::General.set_top_articles_digest_last_run_message(nil)
-    Settings::General.set_top_articles_digest_next_run_at(nil)
+    Settings::General.set_top_articles_digest_next_run_at(current_time)
 
     allow(Articles::TopArticles::DigestSchedule).to receive(:new).and_return(schedule)
   end
@@ -59,6 +59,7 @@ RSpec.describe Articles::TopArticlesDigestWorker do
       expect(Settings::General.top_articles_digest_last_run_status).to eq("skipped")
       expect(Settings::General.top_articles_digest_last_run_at).to eq(current_time)
       expect(Settings::General.top_articles_digest_last_run_message).to be_nil
+      expect(Settings::General.top_articles_digest_next_run_at).to eq(next_run_time)
     end
   end
 
@@ -97,17 +98,18 @@ RSpec.describe Articles::TopArticlesDigestWorker do
     end
   end
 
-  context "when the configured time does not match the current hour" do
+  context "when the next scheduled run is still in the future" do
     let(:current_time) { Time.zone.local(2024, 6, 17, 9, 0, 0) }
 
     before do
-      Settings::General.set_top_articles_digest_publish_time("07:00")
+      Settings::General.set_top_articles_digest_next_run_at(current_time + 1.hour)
     end
 
-    it "skips the publisher" do
+    it "skips the publisher when the next run is still in the future" do
       worker.perform
 
       expect(Articles::TopArticles::DigestPublisher).not_to have_received(:new)
+      expect(Settings::General.top_articles_digest_last_run_status).to be_nil
     end
   end
 
@@ -120,6 +122,7 @@ RSpec.describe Articles::TopArticlesDigestWorker do
 
     before do
       Settings::General.set_top_articles_digest_publish_time("16:00")
+      Settings::General.set_top_articles_digest_next_run_at(current_time)
       allow(Articles::TopArticles::DigestPublisher).to receive(:new).and_return(publisher)
       allow(publisher).to receive(:publication_errors).and_return([])
       allow(publisher).to receive(:publication_due?).and_return(true)
@@ -135,9 +138,23 @@ RSpec.describe Articles::TopArticlesDigestWorker do
 
     it "does not publish when only the local time matches the configuration" do
       Settings::General.set_top_articles_digest_publish_time("12:00")
+      Settings::General.set_top_articles_digest_next_run_at(current_time + 4.hours)
 
       worker.perform
 
+      expect(Articles::TopArticles::DigestPublisher).not_to have_received(:new)
+    end
+  end
+
+  context "when the next run has not been scheduled" do
+    before do
+      Settings::General.set_top_articles_digest_next_run_at(nil)
+    end
+
+    it "initializes the upcoming schedule" do
+      worker.perform
+
+      expect(Settings::General.top_articles_digest_next_run_at).to eq(next_run_time)
       expect(Articles::TopArticles::DigestPublisher).not_to have_received(:new)
     end
   end

@@ -8,7 +8,12 @@ module Articles
 
     def perform(run_time = nil)
       reference_time = parse_reference_time(run_time)
-      return unless publication_window?(reference_time)
+      scheduled_run_at = fetch_or_initialize_next_run_at(reference_time)
+
+      attempted = false
+      return unless due_for_publication?(reference_time, scheduled_run_at)
+
+      attempted = true
 
       publisher = Articles::TopArticles::DigestPublisher.new(reference_time: reference_time)
       errors = publisher.publication_errors
@@ -34,7 +39,7 @@ module Articles
       record_failure(reference_time || Time.zone.now, [e.message])
       raise
     ensure
-      update_next_run_at
+      update_next_run_at(reference_time) if attempted
     end
 
     private
@@ -52,8 +57,29 @@ module Articles
       Time.zone.now
     end
 
-    def publication_window?(reference_time)
-      TimeOfDaySetting.matches?(reference_time, Settings::General.top_articles_digest_publish_time)
+    def fetch_or_initialize_next_run_at(reference_time)
+      stored = Settings::General.top_articles_digest_next_run_at
+      return stored.in_time_zone if stored.present?
+
+      next_run_at = compute_next_run_at(reference_time)
+      Settings::General.set_top_articles_digest_next_run_at(next_run_at)
+      next_run_at
+    end
+
+    def compute_next_run_at(reference_time)
+      schedule_reference = reference_time - 1.minute
+      Articles::TopArticles::DigestSchedule
+        .new(reference_time: schedule_reference)
+        .next_run_at
+    end
+
+    def due_for_publication?(reference_time, scheduled_run_at)
+      return false if scheduled_run_at.blank?
+
+      reference_utc = reference_time.utc
+      scheduled_utc = scheduled_run_at.utc
+
+      reference_utc >= scheduled_utc && reference_utc < scheduled_utc + 1.hour
     end
 
     def record_success(reference_time)
@@ -75,8 +101,8 @@ module Articles
       Settings::General.set_top_articles_digest_last_run_message(nil)
     end
 
-    def update_next_run_at
-      schedule = Articles::TopArticles::DigestSchedule.new
+    def update_next_run_at(reference_time)
+      schedule = Articles::TopArticles::DigestSchedule.new(reference_time: reference_time)
       Settings::General.set_top_articles_digest_next_run_at(schedule.next_run_at)
     end
   end
