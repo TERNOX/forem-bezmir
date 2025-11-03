@@ -21,6 +21,8 @@ uk:
         aria_label: Увійти
         text: Увійти
         forgot: Забули пароль?
+        password_label: Пароль
+        remember_me_label: Запам’ятати мене
       provider:
         text: "%{action} через %{provider}"
         login: Продовжити

@@ -49,6 +49,8 @@ uk:
         email: Електронна пошта
         username: Юзернейм
         profile_image: Зображення профілю
+        password: Пароль
+        remember_me: Запам’ятати мене
       users_notification_setting:
         email_newsletter: Надсилати мені важливі новини сайту (не часто)
         email_digest_periodic: Надсилати мені періодичний персоналізований дайджест найпопулярніших дописів
