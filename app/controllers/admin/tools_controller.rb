@@ -11,12 +11,17 @@ module Admin
       @digest_period_range = digest_period_range
       @top_articles_digest_preview = build_digest_publisher.preview
       @top_articles_digest_settings = current_digest_settings
+      @top_articles_digest_status = top_articles_digest_status
+      @top_articles_digest_next_run_at = top_articles_digest_next_run_at
       @monthly_top_users_settings = monthly_top_users_settings
       @monthly_top_users_status = monthly_top_users_status
       @monthly_top_users_next_run_at = monthly_top_users_schedule.next_run_at
     rescue InvalidDigestPreviewRangeError => e
       flash.now[:danger] = e.message
       @top_articles_digest_preview = { available?: false, articles: [], embed_urls: [] }
+      @top_articles_digest_settings = current_digest_settings
+      @top_articles_digest_status = top_articles_digest_status
+      @top_articles_digest_next_run_at = top_articles_digest_next_run_at
       @monthly_top_users_settings = monthly_top_users_settings
       @monthly_top_users_status = monthly_top_users_status
       @monthly_top_users_next_run_at = monthly_top_users_schedule.next_run_at
@@ -178,8 +183,8 @@ module Admin
         intro_markdown: ::Settings::General.top_articles_digest_intro_markdown,
         frequency: ::Settings::General.top_articles_digest_frequency,
         article_limit: ::Settings::General.top_articles_digest_article_limit,
-        publish_time: ::Settings::General.top_articles_digest_publish_time,
-        badge_time: ::Settings::General.top_articles_digest_badge_time,
+        publish_time: localized_digest_time(::Settings::General.top_articles_digest_publish_time),
+        badge_time: localized_digest_time(::Settings::General.top_articles_digest_badge_time),
         badge_slug: ::Settings::General.top_articles_badge_slug,
         excluded_organization_ids: Array(::Settings::General.top_articles_digest_excluded_organization_ids).join(", "),
       }
@@ -196,12 +201,14 @@ module Admin
       ::Settings::General.set_top_articles_digest_intro_markdown(permitted[:intro_markdown])
       ::Settings::General.set_top_articles_digest_frequency(permitted[:frequency])
       ::Settings::General.set_top_articles_digest_article_limit(permitted[:article_limit].presence)
-      ::Settings::General.set_top_articles_digest_publish_time(normalized_time(permitted[:publish_time]))
-      ::Settings::General.set_top_articles_digest_badge_time(normalized_time(permitted[:badge_time]))
+      ::Settings::General.set_top_articles_digest_publish_time(normalized_digest_time(permitted[:publish_time]))
+      ::Settings::General.set_top_articles_digest_badge_time(normalized_digest_time(permitted[:badge_time]))
       ::Settings::General.set_top_articles_badge_slug(permitted[:badge_slug])
       ::Settings::General.set_top_articles_digest_excluded_organization_ids(
         parse_id_list(permitted[:excluded_organization_ids])
       )
+
+      refresh_digest_schedule!
     end
 
     def build_digest_publisher
@@ -304,8 +311,44 @@ module Admin
         .uniq
     end
 
-    def normalized_time(value)
-      TimeOfDaySetting.normalize(value) || "00:00"
+    def normalized_digest_time(value)
+      hours, minutes = TimeOfDaySetting.extract_components(value)
+      return "00:00" if hours.nil? || minutes.nil?
+
+      reference = current_digest_reference_date
+      Time.zone.local(reference.year, reference.month, reference.day, hours, minutes).utc.strftime("%H:%M")
+    rescue ArgumentError
+      "00:00"
+    end
+
+    def localized_digest_time(value)
+      hours, minutes = TimeOfDaySetting.extract_components(value)
+      return format("%02d:%02d", 0, 0) if hours.nil? || minutes.nil?
+
+      reference = current_digest_reference_date
+      Time.utc(reference.year, reference.month, reference.day, hours, minutes).in_time_zone.strftime("%H:%M")
+    end
+
+    def current_digest_reference_date
+      Time.zone.today
+    end
+
+    def top_articles_digest_status
+      {
+        status: ::Settings::General.top_articles_digest_last_run_status,
+        at: ::Settings::General.top_articles_digest_last_run_at,
+        message: ::Settings::General.top_articles_digest_last_run_message,
+      }
+    end
+
+    def top_articles_digest_next_run_at
+      ::Settings::General.top_articles_digest_next_run_at ||
+        Articles::TopArticles::DigestSchedule.new.next_run_at
+    end
+
+    def refresh_digest_schedule!
+      next_run = Articles::TopArticles::DigestSchedule.new.next_run_at
+      ::Settings::General.set_top_articles_digest_next_run_at(next_run)
     end
 
     def monthly_top_users_awards_params

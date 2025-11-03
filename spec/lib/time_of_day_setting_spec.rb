@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe TimeOfDaySetting do
   describe ".matches?" do
     it "returns true when the hour and minute match" do
-      time = Time.zone.local(2024, 6, 17, 10, 0, 0)
+      time = Time.utc(2024, 6, 17, 10, 0, 0)
 
       expect(described_class.matches?(time, "10:00")).to be(true)
     end

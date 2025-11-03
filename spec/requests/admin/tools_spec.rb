@@ -147,4 +147,40 @@ RSpec.describe "/admin/advanced/tools" do
       expect(flash[:danger]).to eq(I18n.t("views.admin.tools.monthly_top_users.errors.invalid_day"))
     end
   end
+
+  describe "POST /admin/advanced/tools" do
+    let(:super_admin) { create(:user, :super_admin) }
+    let(:next_run_at) { Time.zone.local(2024, 6, 18, 10, 0, 0) }
+    let(:schedule) { instance_double(Articles::TopArticles::DigestSchedule, next_run_at: next_run_at) }
+
+    before do
+      sign_in super_admin
+      allow(Articles::TopArticles::DigestSchedule).to receive(:new).and_return(schedule)
+    end
+
+    it "stores digest times in UTC and refreshes the next run" do
+      travel_to(Time.zone.local(2024, 6, 17, 8, 0, 0)) do
+        post admin_tools_path, params: {
+          top_articles_digest: {
+            bot_api_key: "secret",
+            title_template: "Digest",
+            tags: "digest",
+            image_url: "",
+            organization_id: "",
+            intro_markdown: "",
+            frequency: "weekly",
+            article_limit: "5",
+            publish_time: "10:00",
+            badge_time: "11:30",
+            badge_slug: "top-7",
+            excluded_organization_ids: "",
+          },
+        }
+      end
+
+      expect(Settings::General.top_articles_digest_publish_time).to eq("07:00")
+      expect(Settings::General.top_articles_digest_badge_time).to eq("08:30")
+      expect(Settings::General.top_articles_digest_next_run_at).to eq(next_run_at)
+    end
+  end
 end

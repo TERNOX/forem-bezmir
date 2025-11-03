@@ -1,0 +1,5 @@
+uk:
+  workers:
+    articles:
+      top_articles_digest:
+        publication_failed: "Не вдалося опублікувати дайджест."

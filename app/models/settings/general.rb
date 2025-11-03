@@ -164,6 +164,10 @@ module Settings
     setting :top_articles_badge_slug, type: :string, default: Badges::AwardTopSeven::DEFAULT_BADGE_SLUG
     setting :top_articles_digest_last_period_identifier, type: :string
     setting :top_articles_digest_last_article_id, type: :integer
+    setting :top_articles_digest_last_run_at, type: :datetime
+    setting :top_articles_digest_last_run_status, type: :string
+    setting :top_articles_digest_last_run_message, type: :string
+    setting :top_articles_digest_next_run_at, type: :datetime
 
     # Monthly top users awards
     setting :monthly_top_users_badge_slug, type: :string, default: Users::CalculateMonthlyReputation::BADGE_SLUG
