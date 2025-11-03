@@ -54,6 +54,28 @@ RSpec.describe Articles::TopSeven::WeeklyQuery, type: :service do
     end
   end
 
+  it "excludes quickie posts" do
+    travel_to(range_start + 1.week + 1.day) do
+      quickie_article = create(
+        :article,
+        type_of: :status,
+        title: "Quickie",
+        body_markdown: "",
+        main_image: nil,
+        with_main_image: false,
+        with_tags: false,
+      )
+      full_article = create(:article)
+
+      create(:reaction, reactable: quickie_article, category: "like", created_at: range_middle)
+      create(:reaction, reactable: full_article, category: "like", created_at: range_middle)
+
+      result = described_class.call(week_start)
+
+      expect(result).to contain_exactly(full_article.id)
+    end
+  end
+
   it "ignores non-positive reactions" do
     travel_to(range_start + 1.week + 1.day) do
       article = create(:article)

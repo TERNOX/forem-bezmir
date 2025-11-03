@@ -41,6 +41,7 @@ module Articles
           .where(created_at: start_time...end_time)
           .where(articles: { published: true })
           .where(articles: { published_at: start_time...end_time })
+          .where.not(articles: { type_of: Article.type_ofs[:status] })
           .where(Arel.sql("#{article_score_expression} >= 0"))
 
         if (predicate = organization_filter_predicate)
