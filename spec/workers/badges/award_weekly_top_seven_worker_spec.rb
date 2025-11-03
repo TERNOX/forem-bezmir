@@ -111,4 +111,41 @@ RSpec.describe Badges::AwardWeeklyTopSevenWorker do
       expect(Badges::AwardTopSeven).not_to have_received(:call)
     end
   end
+
+  context "when the application time zone differs from UTC" do
+    around do |example|
+      Time.use_zone("Eastern Time (US & Canada)") { example.run }
+    end
+
+    let(:current_time) { Time.zone.local(2024, 6, 17, 12, 0, 0) }
+    let(:article) { create(:article) }
+    let(:selection) do
+      instance_double(TopSevenArticleSelection, article_ids: [article.id], awarded_at: nil, update!: true)
+    end
+
+    before do
+      allow(TopSevenArticleSelection).to receive(:ensure_for_week!).and_return(selection)
+      allow(Badges::AwardTopSeven).to receive(:call)
+    end
+
+    it "awards badges when the UTC time matches the configuration" do
+      Settings::General.set_top_articles_digest_badge_time("16:00")
+
+      travel_to(current_time) { worker.perform }
+
+      expect(TopSevenArticleSelection).to have_received(:ensure_for_week!).with(
+        (current_time - 1.week).beginning_of_week(:monday).to_date
+      )
+      expect(Badges::AwardTopSeven).to have_received(:call).with([article.user.username])
+    end
+
+    it "skips awarding when only the local time matches" do
+      Settings::General.set_top_articles_digest_badge_time("12:00")
+
+      travel_to(current_time) { worker.perform }
+
+      expect(TopSevenArticleSelection).not_to have_received(:ensure_for_week!)
+      expect(Badges::AwardTopSeven).not_to have_received(:call)
+    end
+  end
 end

@@ -41,4 +41,29 @@ RSpec.describe Articles::TopArticlesDigestWorker do
       expect(Articles::TopArticles::DigestPublisher).not_to have_received(:new)
     end
   end
+
+  context "when the application time zone differs from UTC" do
+    around do |example|
+      Time.use_zone("Eastern Time (US & Canada)") { example.run }
+    end
+
+    let(:current_time) { Time.zone.local(2024, 6, 17, 12, 0, 0) }
+
+    it "publishes when the UTC time matches the configuration" do
+      Settings::General.set_top_articles_digest_publish_time("16:00")
+
+      worker.perform
+
+      expect(Articles::TopArticles::DigestPublisher).to have_received(:new).with(reference_time: current_time)
+      expect(publisher).to have_received(:call)
+    end
+
+    it "does not publish when only the local time matches the configuration" do
+      Settings::General.set_top_articles_digest_publish_time("12:00")
+
+      worker.perform
+
+      expect(Articles::TopArticles::DigestPublisher).not_to have_received(:new)
+    end
+  end
 end

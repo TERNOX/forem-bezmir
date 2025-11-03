@@ -8,7 +8,8 @@ class TimeOfDaySetting
       hours, minutes = extract_components(configured_value)
       return false if hours.nil? || minutes.nil?
 
-      time.hour == hours && time.min == minutes
+      utc_time = time.utc
+      utc_time.hour == hours && utc_time.min == minutes
     end
 
     def normalize(value)
