@@ -39,7 +39,7 @@ module Articles
       record_failure(reference_time || Time.zone.now, [e.message])
       raise
     ensure
-      update_next_run_at(reference_time) if attempted
+      update_next_run_at(scheduled_run_at) if attempted
     end
 
     private
@@ -61,25 +61,18 @@ module Articles
       stored = Settings::General.top_articles_digest_next_run_at
       return stored.in_time_zone if stored.present?
 
-      next_run_at = compute_next_run_at(reference_time)
-      Settings::General.set_top_articles_digest_next_run_at(next_run_at)
-      next_run_at
-    end
-
-    def compute_next_run_at(reference_time)
-      schedule_reference = reference_time - 1.minute
-      Articles::TopArticles::DigestSchedule
+      schedule_reference = reference_time - Articles::TopArticles::DigestSchedule.window
+      next_run_at = Articles::TopArticles::DigestSchedule
         .new(reference_time: schedule_reference)
         .next_run_at
+      Settings::General.set_top_articles_digest_next_run_at(next_run_at)
+      next_run_at
     end
 
     def due_for_publication?(reference_time, scheduled_run_at)
       return false if scheduled_run_at.blank?
 
-      reference_utc = reference_time.utc
-      scheduled_utc = scheduled_run_at.utc
-
-      reference_utc >= scheduled_utc && reference_utc < scheduled_utc + 1.hour
+      reference_time >= scheduled_run_at
     end
 
     def record_success(reference_time)
@@ -101,9 +94,12 @@ module Articles
       Settings::General.set_top_articles_digest_last_run_message(nil)
     end
 
-    def update_next_run_at(reference_time)
-      schedule = Articles::TopArticles::DigestSchedule.new(reference_time: reference_time)
-      Settings::General.set_top_articles_digest_next_run_at(schedule.next_run_at)
+    def update_next_run_at(previous_run_at)
+      schedule_reference = previous_run_at + Articles::TopArticles::DigestSchedule.window
+      next_run = Articles::TopArticles::DigestSchedule
+        .new(reference_time: schedule_reference)
+        .next_run_at
+      Settings::General.set_top_articles_digest_next_run_at(next_run)
     end
   end
 end

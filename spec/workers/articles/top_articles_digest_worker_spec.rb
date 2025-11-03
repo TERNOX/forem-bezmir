@@ -3,19 +3,20 @@ require "rails_helper"
 RSpec.describe Articles::TopArticlesDigestWorker do
   subject(:worker) { described_class.new }
 
-  let(:current_time) { Time.zone.local(2024, 6, 17, 10, 0, 0) }
-  let(:next_run_time) { current_time + 1.day }
+  let(:scheduled_run_at) { Time.zone.local(2024, 6, 17, 20, 0, 0) }
+  let(:current_time) { scheduled_run_at + 15.minutes }
+  let(:next_run_time) { scheduled_run_at + 1.week }
   let(:publisher) { instance_double(Articles::TopArticles::DigestPublisher) }
-  let(:schedule) { instance_double(Articles::TopArticles::DigestSchedule, next_run_at: next_run_time) }
+  let(:schedule) { instance_double(Articles::TopArticles::DigestSchedule) }
 
   before do
-    Settings::General.set_top_articles_digest_publish_time("07:00")
     Settings::General.set_top_articles_digest_last_run_status(nil)
     Settings::General.set_top_articles_digest_last_run_at(nil)
     Settings::General.set_top_articles_digest_last_run_message(nil)
-    Settings::General.set_top_articles_digest_next_run_at(current_time)
+    Settings::General.set_top_articles_digest_next_run_at(scheduled_run_at)
 
     allow(Articles::TopArticles::DigestSchedule).to receive(:new).and_return(schedule)
+    allow(schedule).to receive(:next_run_at).and_return(next_run_time)
   end
 
   around do |example|
@@ -32,7 +33,7 @@ RSpec.describe Articles::TopArticlesDigestWorker do
       allow(publisher).to receive(:call).and_return(article)
     end
 
-    it "publishes the digest and records a successful run" do
+    it "publishes the digest, records success, and schedules the next run" do
       worker.perform
 
       expect(Articles::TopArticles::DigestPublisher).to have_received(:new).with(reference_time: current_time)
@@ -42,17 +43,35 @@ RSpec.describe Articles::TopArticlesDigestWorker do
       expect(Settings::General.top_articles_digest_last_run_at).to eq(current_time)
       expect(Settings::General.top_articles_digest_last_run_message).to be_nil
       expect(Settings::General.top_articles_digest_next_run_at).to eq(next_run_time)
+      expect(Articles::TopArticles::DigestSchedule).to have_received(:new).with(
+        reference_time: scheduled_run_at + Articles::TopArticles::DigestSchedule.window,
+      )
     end
   end
 
-  context "when the publication is not due" do
+  context "when the publisher reports configuration errors" do
+    before do
+      allow(Articles::TopArticles::DigestPublisher).to receive(:new).and_return(publisher)
+      allow(publisher).to receive(:publication_errors).and_return(["Missing API key"])
+    end
+
+    it "records the failure and advances the schedule" do
+      expect { worker.perform }.not_to raise_error
+
+      expect(Settings::General.top_articles_digest_last_run_status).to eq("failed")
+      expect(Settings::General.top_articles_digest_last_run_message).to eq("Missing API key")
+      expect(Settings::General.top_articles_digest_next_run_at).to eq(next_run_time)
+    end
+  end
+
+  context "when publication is skipped" do
     before do
       allow(Articles::TopArticles::DigestPublisher).to receive(:new).and_return(publisher)
       allow(publisher).to receive(:publication_errors).and_return([])
       allow(publisher).to receive(:publication_due?).and_return(false)
     end
 
-    it "records a skipped run" do
+    it "records the skip and advances the schedule" do
       worker.perform
 
       expect(publisher).not_to have_received(:call)
@@ -63,99 +82,57 @@ RSpec.describe Articles::TopArticlesDigestWorker do
     end
   end
 
-  context "when configuration errors are present" do
-    before do
-      allow(Articles::TopArticles::DigestPublisher).to receive(:new).and_return(publisher)
-      allow(publisher).to receive(:publication_errors).and_return(["Missing API key"])
-    end
-
-    it "records a failed run with the error message" do
-      worker.perform
-
-      expect(publisher).not_to have_received(:call)
-      expect(Settings::General.top_articles_digest_last_run_status).to eq("failed")
-      expect(Settings::General.top_articles_digest_last_run_message).to eq("Missing API key")
-    end
-  end
-
-  context "when the article cannot be published" do
-    let(:article) { instance_double(Article, persisted?: false) }
-
+  context "when the digest publication raises an exception" do
     before do
       allow(Articles::TopArticles::DigestPublisher).to receive(:new).and_return(publisher)
       allow(publisher).to receive(:publication_errors).and_return([])
       allow(publisher).to receive(:publication_due?).and_return(true)
-      allow(publisher).to receive(:call).and_return(article)
+      allow(publisher).to receive(:call).and_raise(StandardError, "boom")
     end
 
-    it "stores a failure message" do
-      worker.perform
+    it "records the failure and re-raises" do
+      expect { worker.perform }.to raise_error(StandardError, "boom")
 
       expect(Settings::General.top_articles_digest_last_run_status).to eq("failed")
-      expect(Settings::General.top_articles_digest_last_run_message).to eq(
-        I18n.t("workers.articles.top_articles_digest.publication_failed"),
-      )
+      expect(Settings::General.top_articles_digest_last_run_message).to eq("boom")
+      expect(Settings::General.top_articles_digest_next_run_at).to eq(next_run_time)
     end
   end
 
-  context "when the next scheduled run is still in the future" do
-    let(:current_time) { Time.zone.local(2024, 6, 17, 9, 0, 0) }
+  context "when the next run is still in the future" do
+    let(:current_time) { Time.zone.local(2024, 6, 17, 10, 0, 0) }
 
     before do
-      Settings::General.set_top_articles_digest_next_run_at(current_time + 1.hour)
+      Settings::General.set_top_articles_digest_next_run_at(current_time + 5.hours)
     end
 
-    it "skips the publisher when the next run is still in the future" do
+    it "does nothing" do
       worker.perform
 
       expect(Articles::TopArticles::DigestPublisher).not_to have_received(:new)
       expect(Settings::General.top_articles_digest_last_run_status).to be_nil
+      expect(Settings::General.top_articles_digest_next_run_at).to eq(current_time + 5.hours)
     end
   end
 
-  context "when the application time zone differs from UTC" do
-    around do |example|
-      Time.use_zone("Eastern Time (US & Canada)") { example.run }
-    end
-
-    let(:current_time) { Time.zone.local(2024, 6, 17, 12, 0, 0) }
-
+  context "when the schedule needs to be seeded" do
     before do
-      Settings::General.set_top_articles_digest_publish_time("16:00")
-      Settings::General.set_top_articles_digest_next_run_at(current_time)
+      Settings::General.set_top_articles_digest_next_run_at(nil)
+      allow(schedule).to receive(:next_run_at).and_return(scheduled_run_at, next_run_time)
       allow(Articles::TopArticles::DigestPublisher).to receive(:new).and_return(publisher)
       allow(publisher).to receive(:publication_errors).and_return([])
       allow(publisher).to receive(:publication_due?).and_return(true)
       allow(publisher).to receive(:call).and_return(instance_double(Article, persisted?: true))
     end
 
-    it "publishes when the UTC time matches the configuration" do
-      worker.perform
-
-      expect(Articles::TopArticles::DigestPublisher).to have_received(:new).with(reference_time: current_time)
-      expect(publisher).to have_received(:call)
-    end
-
-    it "does not publish when only the local time matches the configuration" do
-      Settings::General.set_top_articles_digest_publish_time("12:00")
-      Settings::General.set_top_articles_digest_next_run_at(current_time + 4.hours)
-
-      worker.perform
-
-      expect(Articles::TopArticles::DigestPublisher).not_to have_received(:new)
-    end
-  end
-
-  context "when the next run has not been scheduled" do
-    before do
-      Settings::General.set_top_articles_digest_next_run_at(nil)
-    end
-
-    it "initializes the upcoming schedule" do
+    it "initializes the schedule and publishes immediately" do
       worker.perform
 
       expect(Settings::General.top_articles_digest_next_run_at).to eq(next_run_time)
-      expect(Articles::TopArticles::DigestPublisher).not_to have_received(:new)
+      expect(Articles::TopArticles::DigestSchedule).to have_received(:new).with(
+        reference_time: current_time - Articles::TopArticles::DigestSchedule.window,
+      )
+      expect(Articles::TopArticles::DigestPublisher).to have_received(:new).with(reference_time: current_time)
     end
   end
 end

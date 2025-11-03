@@ -65,14 +65,11 @@ en:
               daily: Daily (previous day)
               weekly: Weekly (previous week)
               monthly: Monthly (previous month)
-            publish_time: "Publication time (%{time_zone})"
-            publish_time_help: "Choose the hour and minute in %{time_zone} when the digest article should be published."
             article_limit: Number of articles to include
             badge_slug: Badge slug to reward the authors
-            badge_time: "Badge award time (%{time_zone})"
-            badge_time_help: "Choose the hour and minute in %{time_zone} when the Top 7 badges should be awarded."
           status:
             heading: Automation status
+            schedule_summary: The digest is published automatically every Monday at 20:00 (Europe/Kyiv).
             last_run: Last run
             last_run_empty: No publication attempt has been recorded yet.
             next_run: Next scheduled run

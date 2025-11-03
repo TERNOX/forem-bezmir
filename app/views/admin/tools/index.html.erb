@@ -150,6 +150,7 @@
 
     <div class="crayons-card crayons-card--secondary p-4 mb-6">
       <h4 class="crayons-subtitle-3 mb-2"><%= t("views.admin.tools.top_articles_digest.status.heading") %></h4>
+      <p class="mb-4"><%= t("views.admin.tools.top_articles_digest.status.schedule_summary") %></p>
       <dl class="grid gap-4">
         <div>
           <dt class="crayons-subtitle-4 color-base-70"><%= t("views.admin.tools.top_articles_digest.status.last_run") %></dt>
@@ -235,12 +236,6 @@
         </div>
 
         <div class="crayons-field">
-          <%= label_tag "top_articles_digest_publish_time", t("views.admin.tools.top_articles_digest.form.publish_time", time_zone: Time.zone.name), class: "crayons-field__label" %>
-          <%= time_field_tag "top_articles_digest[publish_time]", @top_articles_digest_settings[:publish_time], class: "crayons-textfield" %>
-          <p class="crayons-field__description"><%= t("views.admin.tools.top_articles_digest.form.publish_time_help", time_zone: Time.zone.name) %></p>
-        </div>
-
-        <div class="crayons-field">
           <%= label_tag "top_articles_digest_article_limit", t("views.admin.tools.top_articles_digest.form.article_limit"), class: "crayons-field__label" %>
           <%= number_field_tag "top_articles_digest[article_limit]", @top_articles_digest_settings[:article_limit], class: "crayons-textfield", min: 1 %>
         </div>
@@ -250,11 +245,7 @@
           <%= text_field_tag "top_articles_digest[badge_slug]", @top_articles_digest_settings[:badge_slug], class: "crayons-textfield" %>
         </div>
 
-        <div class="crayons-field">
-          <%= label_tag "top_articles_digest_badge_time", t("views.admin.tools.top_articles_digest.form.badge_time", time_zone: Time.zone.name), class: "crayons-field__label" %>
-          <%= time_field_tag "top_articles_digest[badge_time]", @top_articles_digest_settings[:badge_time], class: "crayons-textfield" %>
-          <p class="crayons-field__description"><%= t("views.admin.tools.top_articles_digest.form.badge_time_help", time_zone: Time.zone.name) %></p>
-        </div>
+        
       </div>
 
       <div class="flex items-center mt-6">

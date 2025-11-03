@@ -65,14 +65,11 @@ uk:
               daily: Daily (previous day)
               weekly: Weekly (previous week)
               monthly: Monthly (previous month)
-            publish_time: "Час публікації (%{time_zone})"
-            publish_time_help: "Виберіть годину та хвилину в %{time_zone}, коли має вийти дайджест."
             article_limit: Number of articles to include
             badge_slug: Badge slug to reward the authors
-            badge_time: "Час нагородження бейджами (%{time_zone})"
-            badge_time_help: "Вкажіть годину та хвилину в %{time_zone}, коли слід видати бейджі Top 7."
           status:
             heading: Статус автоматизації
+            schedule_summary: Дайджест автоматично виходить щопонеділка о 20:00 (Europe/Kyiv).
             last_run: Останній запуск
             last_run_empty: Спроб публікації ще не було.
             next_run: Наступний запланований запуск

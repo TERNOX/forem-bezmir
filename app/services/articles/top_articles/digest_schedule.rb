@@ -3,75 +3,67 @@
 module Articles
   module TopArticles
     class DigestSchedule
-      MAX_ATTEMPTS = 400
+      TIME_ZONE_NAMES = ["Europe/Kyiv", "Kyiv", "Europe/Kiev"].freeze
+      TIME_ZONE = begin
+        zone = TIME_ZONE_NAMES.filter_map { |name| ActiveSupport::TimeZone[name] }.first
+        raise "Kyiv time zone is unavailable" unless zone
 
-      def initialize(settings: Settings::General, reference_time: Time.zone.now)
-        @settings = settings
+        zone.freeze
+      end
+      RUN_DAY = :monday
+      RUN_HOUR = 20
+      RUN_MINUTE = 0
+      WINDOW = 1.hour
+
+      attr_reader :reference_time
+
+      def initialize(reference_time: Time.zone.now)
         @reference_time = reference_time
       end
 
       def next_run_at
-        return @next_run_at if defined?(@next_run_at)
+        local_reference = reference_time.in_time_zone(TIME_ZONE)
+        week_start = local_reference.beginning_of_week(RUN_DAY)
+        candidate = scheduled_time_from(week_start)
 
-        @next_run_at = begin
-          candidate = initial_candidate_utc
-          attempts = 0
+        candidate += 1.week while candidate < local_reference
 
-          while candidate && attempts < MAX_ATTEMPTS
-            local_candidate = candidate.in_time_zone(Time.zone)
-            return local_candidate if due_for?(local_candidate)
+        candidate.in_time_zone(Time.zone)
+      end
 
-            candidate += step_size
-            attempts += 1
-          end
+      def self.window
+        WINDOW
+      end
 
-          nil
+      def self.time_zone
+        TIME_ZONE
+      end
+
+      def self.scheduled_time_for(reference_time)
+        local_reference = reference_time.in_time_zone(TIME_ZONE)
+        week_start = local_reference.beginning_of_week(RUN_DAY)
+        scheduled_time_from(week_start)
+      end
+
+      class << self
+        private
+
+        def scheduled_time_from(week_start)
+          TIME_ZONE.local(
+            week_start.year,
+            week_start.month,
+            week_start.day,
+            RUN_HOUR,
+            RUN_MINUTE,
+            0,
+          )
         end
       end
 
       private
 
-      attr_reader :settings, :reference_time
-
-      def publication_time_components
-        @publication_time_components ||= begin
-          hours, minutes = TimeOfDaySetting.extract_components(settings.top_articles_digest_publish_time)
-          return if hours.nil? || minutes.nil?
-
-          [hours, minutes]
-        end
-      end
-
-      def initial_candidate_utc
-        hours, minutes = publication_time_components
-        return if hours.nil? || minutes.nil?
-
-        utc_now = reference_time.utc
-        candidate = Time.utc(utc_now.year, utc_now.month, utc_now.day, hours, minutes)
-
-        if candidate.in_time_zone(Time.zone) <= reference_time
-          candidate += step_size
-        end
-
-        candidate
-      end
-
-      def step_size
-        case settings.top_articles_digest_frequency.to_s
-        when "daily"
-          1.day
-        when "monthly"
-          1.day
-        else
-          1.day
-        end
-      end
-
-      def due_for?(local_time)
-        return false unless local_time
-
-        publisher = Articles::TopArticles::DigestPublisher.new(reference_time: local_time)
-        publisher.send(:publication_due?)
+      def scheduled_time_from(week_start)
+        self.class.send(:scheduled_time_from, week_start)
       end
     end
   end

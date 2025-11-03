@@ -174,7 +174,7 @@ module Admin
     private
 
     def current_digest_settings
-      {
+      { 
         bot_api_key: ::Settings::General.top_articles_digest_bot_api_key,
         title_template: ::Settings::General.top_articles_digest_title_template,
         tags: ::Settings::General.top_articles_digest_tags.join(", "),
@@ -183,8 +183,6 @@ module Admin
         intro_markdown: ::Settings::General.top_articles_digest_intro_markdown,
         frequency: ::Settings::General.top_articles_digest_frequency,
         article_limit: ::Settings::General.top_articles_digest_article_limit,
-        publish_time: localized_digest_time(::Settings::General.top_articles_digest_publish_time),
-        badge_time: localized_digest_time(::Settings::General.top_articles_digest_badge_time),
         badge_slug: ::Settings::General.top_articles_badge_slug,
         excluded_organization_ids: Array(::Settings::General.top_articles_digest_excluded_organization_ids).join(", "),
       }
@@ -201,8 +199,6 @@ module Admin
       ::Settings::General.set_top_articles_digest_intro_markdown(permitted[:intro_markdown])
       ::Settings::General.set_top_articles_digest_frequency(permitted[:frequency])
       ::Settings::General.set_top_articles_digest_article_limit(permitted[:article_limit].presence)
-      ::Settings::General.set_top_articles_digest_publish_time(normalized_digest_time(permitted[:publish_time]))
-      ::Settings::General.set_top_articles_digest_badge_time(normalized_digest_time(permitted[:badge_time]))
       ::Settings::General.set_top_articles_badge_slug(permitted[:badge_slug])
       ::Settings::General.set_top_articles_digest_excluded_organization_ids(
         parse_id_list(permitted[:excluded_organization_ids])
@@ -290,8 +286,6 @@ module Admin
         :intro_markdown,
         :frequency,
         :article_limit,
-        :publish_time,
-        :badge_time,
         :badge_slug,
         :excluded_organization_ids,
       )
@@ -309,28 +303,6 @@ module Admin
           id if id.positive?
         end
         .uniq
-    end
-
-    def normalized_digest_time(value)
-      hours, minutes = TimeOfDaySetting.extract_components(value)
-      return "00:00" if hours.nil? || minutes.nil?
-
-      reference = current_digest_reference_date
-      Time.zone.local(reference.year, reference.month, reference.day, hours, minutes).utc.strftime("%H:%M")
-    rescue ArgumentError
-      "00:00"
-    end
-
-    def localized_digest_time(value)
-      hours, minutes = TimeOfDaySetting.extract_components(value)
-      return format("%02d:%02d", 0, 0) if hours.nil? || minutes.nil?
-
-      reference = current_digest_reference_date
-      Time.utc(reference.year, reference.month, reference.day, hours, minutes).in_time_zone.strftime("%H:%M")
-    end
-
-    def current_digest_reference_date
-      Time.zone.today
     end
 
     def top_articles_digest_status
