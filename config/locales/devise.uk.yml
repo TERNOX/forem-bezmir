@@ -64,7 +64,7 @@ uk:
       title:
         invite_only_commuty: "%{community_name} — лише за запрошеннями."
         join_community: "Приєднатися до %{community_name}"
-        welcome_back_community: "Повернення до %{community_name}"
+        welcome_back_community: "Повернення до сайту %{community_name}"
       update_needs_confirmation: "Ваш акаунт оновлено, але потрібно підтвердити нову електронну адресу. Перевірте пошту та перейдіть за посиланням для підтвердження."
       updated: "Ваш акаунт успішно оновлено."
       updated_but_not_signed_in: "Ваш акаунт успішно оновлено, але через зміну пароля потрібно увійти знову."
