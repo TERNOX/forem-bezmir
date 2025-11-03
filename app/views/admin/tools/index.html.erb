@@ -148,6 +148,41 @@
     <h3 class="crayons-subtitle-2 mb-2"><%= t("views.admin.tools.top_articles_digest.heading") %></h3>
     <p class="mb-6"><%= t("views.admin.tools.top_articles_digest.description_html") %></p>
 
+    <div class="crayons-card crayons-card--secondary p-4 mb-6">
+      <h4 class="crayons-subtitle-3 mb-2"><%= t("views.admin.tools.top_articles_digest.status.heading") %></h4>
+      <p class="mb-4"><%= t("views.admin.tools.top_articles_digest.status.schedule_summary") %></p>
+      <dl class="grid gap-4">
+        <div>
+          <dt class="crayons-subtitle-4 color-base-70"><%= t("views.admin.tools.top_articles_digest.status.last_run") %></dt>
+          <dd>
+            <% if @top_articles_digest_status[:at].present? %>
+              <span><%= l(@top_articles_digest_status[:at], format: :long) %></span>
+              <% if @top_articles_digest_status[:status].present? %>
+                <span class="ml-2">
+                  <%= t("views.admin.tools.top_articles_digest.status.states.#{@top_articles_digest_status[:status]}", default: @top_articles_digest_status[:status].to_s.humanize) %>
+                </span>
+              <% end %>
+            <% else %>
+              <span class="color-base-70"><%= t("views.admin.tools.top_articles_digest.status.last_run_empty") %></span>
+            <% end %>
+          </dd>
+          <% if @top_articles_digest_status[:message].present? %>
+            <dd class="color-error mt-1"><%= @top_articles_digest_status[:message] %></dd>
+          <% end %>
+        </div>
+        <div>
+          <dt class="crayons-subtitle-4 color-base-70"><%= t("views.admin.tools.top_articles_digest.status.next_run") %></dt>
+          <dd>
+            <% if @top_articles_digest_next_run_at.present? %>
+              <span><%= l(@top_articles_digest_next_run_at, format: :long) %></span>
+            <% else %>
+              <span class="color-base-70"><%= t("views.admin.tools.top_articles_digest.status.next_run_empty") %></span>
+            <% end %>
+          </dd>
+        </div>
+      </dl>
+    </div>
+
     <%= form_with url: admin_tools_path, method: :post, local: true do %>
       <div class="grid gap-6">
         <div class="crayons-field">
@@ -201,12 +236,6 @@
         </div>
 
         <div class="crayons-field">
-          <%= label_tag "top_articles_digest_publish_time", t("views.admin.tools.top_articles_digest.form.publish_time"), class: "crayons-field__label" %>
-          <%= time_field_tag "top_articles_digest[publish_time]", @top_articles_digest_settings[:publish_time], class: "crayons-textfield" %>
-          <p class="crayons-field__description"><%= t("views.admin.tools.top_articles_digest.form.publish_time_help") %></p>
-        </div>
-
-        <div class="crayons-field">
           <%= label_tag "top_articles_digest_article_limit", t("views.admin.tools.top_articles_digest.form.article_limit"), class: "crayons-field__label" %>
           <%= number_field_tag "top_articles_digest[article_limit]", @top_articles_digest_settings[:article_limit], class: "crayons-textfield", min: 1 %>
         </div>
@@ -217,10 +246,17 @@
         </div>
 
         <div class="crayons-field">
-          <%= label_tag "top_articles_digest_badge_time", t("views.admin.tools.top_articles_digest.form.badge_time"), class: "crayons-field__label" %>
-          <%= time_field_tag "top_articles_digest[badge_time]", @top_articles_digest_settings[:badge_time], class: "crayons-textfield" %>
-          <p class="crayons-field__description"><%= t("views.admin.tools.top_articles_digest.form.badge_time_help") %></p>
+          <%= label_tag "top_articles_digest_next_run_hour", t("views.admin.tools.top_articles_digest.form.next_run_hour"), class: "crayons-field__label" %>
+          <% hour_options = (0..23).map { |hour| [format("%02d:00", hour), hour.to_s] } %>
+          <%= select_tag "top_articles_digest[next_run_hour]",
+                        options_for_select(
+                          [[t("views.admin.tools.top_articles_digest.form.next_run_hour_placeholder"), ""]] + hour_options,
+                          @top_articles_digest_settings[:next_run_hour]&.to_s,
+                        ),
+                        class: "crayons-select" %>
+          <p class="crayons-field__description"><%= t("views.admin.tools.top_articles_digest.form.next_run_hour_help") %></p>
         </div>
+
       </div>
 
       <div class="flex items-center mt-6">

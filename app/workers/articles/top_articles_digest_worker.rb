@@ -8,9 +8,38 @@ module Articles
 
     def perform(run_time = nil)
       reference_time = parse_reference_time(run_time)
-      return unless publication_window?(reference_time)
+      scheduled_run_at = fetch_or_initialize_next_run_at(reference_time)
 
-      Articles::TopArticles::DigestPublisher.new(reference_time: reference_time).call
+      attempted = false
+      return unless due_for_publication?(reference_time, scheduled_run_at)
+
+      attempted = true
+
+      publisher = Articles::TopArticles::DigestPublisher.new(reference_time: reference_time)
+      errors = publisher.publication_errors
+
+      if errors.present?
+        record_failure(reference_time, errors)
+        return
+      end
+
+      unless publisher.send(:publication_due?)
+        record_skip(reference_time)
+        return
+      end
+
+      article = publisher.call
+
+      if article&.persisted?
+        record_success(reference_time)
+      else
+        record_failure(reference_time, [I18n.t("workers.articles.top_articles_digest.publication_failed")])
+      end
+    rescue StandardError => e
+      record_failure(reference_time || Time.zone.now, [e.message])
+      raise
+    ensure
+      update_next_run_at(scheduled_run_at) if attempted
     end
 
     private
@@ -28,8 +57,49 @@ module Articles
       Time.zone.now
     end
 
-    def publication_window?(reference_time)
-      TimeOfDaySetting.matches?(reference_time, Settings::General.top_articles_digest_publish_time)
+    def fetch_or_initialize_next_run_at(reference_time)
+      stored = Settings::General.top_articles_digest_next_run_at
+      return stored.in_time_zone if stored.present?
+
+      schedule_reference = reference_time - Articles::TopArticles::DigestSchedule.window
+      next_run_at = Articles::TopArticles::DigestSchedule
+        .new(reference_time: schedule_reference)
+        .next_run_at
+      Settings::General.set_top_articles_digest_next_run_at(next_run_at)
+      next_run_at
+    end
+
+    def due_for_publication?(reference_time, scheduled_run_at)
+      return false if scheduled_run_at.blank?
+
+      reference_time >= scheduled_run_at
+    end
+
+    def record_success(reference_time)
+      Settings::General.set_top_articles_digest_last_run_at(reference_time)
+      Settings::General.set_top_articles_digest_last_run_status("success")
+      Settings::General.set_top_articles_digest_last_run_message(nil)
+    end
+
+    def record_failure(reference_time, errors)
+      Settings::General.set_top_articles_digest_last_run_at(reference_time)
+      Settings::General.set_top_articles_digest_last_run_status("failed")
+      message = Array(errors).compact_blank.join("\n").presence
+      Settings::General.set_top_articles_digest_last_run_message(message)
+    end
+
+    def record_skip(reference_time)
+      Settings::General.set_top_articles_digest_last_run_at(reference_time)
+      Settings::General.set_top_articles_digest_last_run_status("skipped")
+      Settings::General.set_top_articles_digest_last_run_message(nil)
+    end
+
+    def update_next_run_at(previous_run_at)
+      schedule_reference = previous_run_at + Articles::TopArticles::DigestSchedule.window
+      next_run = Articles::TopArticles::DigestSchedule
+        .new(reference_time: schedule_reference)
+        .next_run_at
+      Settings::General.set_top_articles_digest_next_run_at(next_run)
     end
   end
 end

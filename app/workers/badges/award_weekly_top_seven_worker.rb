@@ -6,9 +6,10 @@ module Badges
 
     def perform(run_time = nil)
       reference_time = parse_reference_time(run_time)
-      return unless should_award_now?(reference_time)
+      schedule_zone_time = reference_time.in_time_zone(Articles::TopArticles::DigestSchedule.time_zone)
+      return unless should_award_now?(schedule_zone_time)
 
-      week_start = (reference_time - 1.week).beginning_of_week(:monday).to_date
+      week_start = (schedule_zone_time - 1.week).beginning_of_week(:monday).to_date
 
       selection = TopSevenArticleSelection.ensure_for_week!(week_start) do
         Articles::TopSeven::WeeklyQuery.call(week_start, limit: configured_limit)
@@ -38,9 +39,11 @@ module Badges
       Time.zone.now
     end
 
-    def should_award_now?(reference_time)
-      reference_time.monday? &&
-        TimeOfDaySetting.matches?(reference_time, Settings::General.top_articles_digest_badge_time)
+    def should_award_now?(schedule_zone_time)
+      run_time = Articles::TopArticles::DigestSchedule.scheduled_time_for(schedule_zone_time)
+      window_end = run_time + 1.day
+
+      schedule_zone_time >= run_time && schedule_zone_time < window_end
     end
 
     def configured_limit

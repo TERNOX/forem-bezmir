@@ -3,7 +3,10 @@ require "rails_helper"
 RSpec.describe Badges::AwardWeeklyTopSevenWorker do
   subject(:worker) { described_class.new }
 
-  let(:current_time) { Time.zone.local(2024, 6, 17, 0, 0, 0) }
+  let(:schedule_zone) { Articles::TopArticles::DigestSchedule.time_zone }
+  let(:current_time) do
+    schedule_zone.local(2024, 6, 17, 20, 30, 0).in_time_zone(Time.zone)
+  end
   let(:previous_week_start) { (current_time - 1.week).beginning_of_week(:monday) }
   let(:reaction_time) { previous_week_start + 2.days + 8.hours }
 
@@ -84,9 +87,10 @@ RSpec.describe Badges::AwardWeeklyTopSevenWorker do
     end
   end
 
-  it "skips awarding when the current time does not match the configured hour" do
-    travel_to(current_time.change(hour: 9)) do
-      Settings::General.set_top_articles_digest_badge_time("10:00")
+  it "skips awarding before the scheduled time" do
+    early_time = schedule_zone.local(2024, 6, 17, 19, 0, 0).in_time_zone(Time.zone)
+
+    travel_to(early_time) do
       article = create(:article)
       create(:reaction, reactable: article, category: "like", created_at: reaction_time)
 
@@ -100,8 +104,27 @@ RSpec.describe Badges::AwardWeeklyTopSevenWorker do
     end
   end
 
-  it "skips awarding when the current day is not Monday" do
-    travel_to(current_time + 1.day) do
+  it "awards within the Tuesday grace period" do
+    tuesday_morning = schedule_zone.local(2024, 6, 18, 10, 0, 0).in_time_zone(Time.zone)
+
+    travel_to(tuesday_morning) do
+      articles = create_list(:article, 2)
+
+      create_list(:reaction, 4, reactable: articles.first, category: "like", created_at: reaction_time)
+      create_list(:reaction, 3, reactable: articles.second, category: "like", created_at: reaction_time)
+
+      allow(Badges::AwardTopSeven).to receive(:call)
+
+      worker.perform
+
+      expect(Badges::AwardTopSeven).to have_received(:call)
+    end
+  end
+
+  it "skips awarding once the window has passed" do
+    late_tuesday = schedule_zone.local(2024, 6, 18, 21, 0, 0).in_time_zone(Time.zone)
+
+    travel_to(late_tuesday) do
       allow(Badges::AwardTopSeven).to receive(:call)
 
       expect do
@@ -109,6 +132,35 @@ RSpec.describe Badges::AwardWeeklyTopSevenWorker do
       end.not_to change(TopSevenArticleSelection, :count)
 
       expect(Badges::AwardTopSeven).not_to have_received(:call)
+    end
+  end
+
+  context "when the application time zone differs from UTC" do
+    around do |example|
+      Time.use_zone("Eastern Time (US & Canada)") { example.run }
+    end
+
+    let(:schedule_zone) { Articles::TopArticles::DigestSchedule.time_zone }
+    let(:current_time) do
+      schedule_zone.local(2024, 6, 17, 20, 15, 0).in_time_zone(Time.zone)
+    end
+    let(:article) { create(:article) }
+    let(:selection) do
+      instance_double(TopSevenArticleSelection, article_ids: [article.id], awarded_at: nil, update!: true)
+    end
+
+    before do
+      allow(TopSevenArticleSelection).to receive(:ensure_for_week!).and_return(selection)
+      allow(Badges::AwardTopSeven).to receive(:call)
+    end
+
+    it "awards badges once the Kyiv run window opens" do
+      travel_to(current_time) { worker.perform }
+
+      expect(TopSevenArticleSelection).to have_received(:ensure_for_week!).with(
+        (current_time - 1.week).beginning_of_week(:monday).to_date
+      )
+      expect(Badges::AwardTopSeven).to have_received(:call).with([article.user.username])
     end
   end
 end

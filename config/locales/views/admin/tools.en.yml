@@ -65,12 +65,22 @@ en:
               daily: Daily (previous day)
               weekly: Weekly (previous week)
               monthly: Monthly (previous month)
-            publish_time: Publication time (UTC)
-            publish_time_help: "Choose the hour and minute when the digest article should be published."
             article_limit: Number of articles to include
             badge_slug: Badge slug to reward the authors
-            badge_time: Badge award time (UTC)
-            badge_time_help: "Choose the hour and minute when the Top 7 badges should be awarded."
+            next_run_hour: Override next run hour (Europe/Kyiv)
+            next_run_hour_help: "Optional: set the next digest to run at the next occurrence of this hour in Kyiv time. Leave blank to keep the scheduled time."
+            next_run_hour_placeholder: Keep scheduled time
+          status:
+            heading: Automation status
+            schedule_summary: The digest is published automatically every Monday at 20:00 (Europe/Kyiv).
+            last_run: Last run
+            last_run_empty: No publication attempt has been recorded yet.
+            next_run: Next scheduled run
+            next_run_empty: The next run could not be determined yet.
+            states:
+              success: Successful
+              failed: Failed
+              skipped: Skipped
             save: Save digest settings
           placeholders:
             heading: Available template placeholders

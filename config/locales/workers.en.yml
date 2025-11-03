@@ -1,0 +1,5 @@
+en:
+  workers:
+    articles:
+      top_articles_digest:
+        publication_failed: "The digest article could not be published."
