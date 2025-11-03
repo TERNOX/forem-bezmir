@@ -88,22 +88,63 @@
 <%= javascript_include_tag "signupSubforemStorage", defer: true %>
 
 <script>
-  let registrationsPage = document.querySelector('.js-registration');
-  let topbarElement = document.querySelector('#topbar');
-  // Check if the registrations or notifications element exists and the topbar element exists.
-  if ((registrationsPage && topbarElement) || (notificationsPage && topbarElement)) {
-      topbarElement.style.display = 'none';
-      document.body.style.paddingTop = '0';
-      // This is needed to make sure that the bottom part of page is white when screen is zoomed-out.
-      document.body.style.backgroundColor = 'white';
-  }
-  // Reverse the above when the back button is clicked.
-  window.addEventListener('popstate', () => {
-    if (registrationsPage && topbarElement) {
-      topbarElement.style.display = 'block';
-      document.body.style.removeProperty('padding-top');
-      document.body.style.removeProperty('background-color');
-      document.body.classList.add('hide-popover-billboard');
+  const registrationsPage = document.querySelector('.js-registration');
+  const notificationsPage = document.querySelector('.js-notifications');
+  const topbarElement = document.querySelector('#topbar');
+  const originalTopbarDisplay = topbarElement ? topbarElement.style.display : '';
+
+  const cleanupRegistrationPage = () => {
+    if (topbarElement) {
+      if (originalTopbarDisplay) {
+        topbarElement.style.display = originalTopbarDisplay;
+      } else {
+        topbarElement.style.removeProperty('display');
+      }
     }
-  });
+    document.body.style.removeProperty('padding-top');
+    document.body.style.removeProperty('background-color');
+    document.body.classList.remove('hide-popover-billboard');
+  };
+
+  const registerCleanupListeners = () => {
+    if (window.__registrationCleanupListener) {
+      document.removeEventListener('turbo:before-visit', window.__registrationCleanupListener);
+      window.removeEventListener('pagehide', window.__registrationCleanupListener);
+      window.removeEventListener('beforeunload', window.__registrationCleanupListener);
+    }
+
+    window.__registrationCleanupListener = cleanupRegistrationPage;
+
+    if (window.Turbo) {
+      document.addEventListener('turbo:before-visit', window.__registrationCleanupListener, { once: false });
+    } else {
+      window.addEventListener('pagehide', window.__registrationCleanupListener, { once: false });
+      window.addEventListener('beforeunload', window.__registrationCleanupListener, { once: false });
+    }
+  };
+
+  const registerPopstateListener = () => {
+    if (window.__registrationPopstateListener) {
+      window.removeEventListener('popstate', window.__registrationPopstateListener);
+    }
+
+    window.__registrationPopstateListener = () => {
+      if (registrationsPage && topbarElement) {
+        cleanupRegistrationPage();
+      }
+    };
+
+    window.addEventListener('popstate', window.__registrationPopstateListener);
+  };
+
+  if ((registrationsPage && topbarElement) || (notificationsPage && topbarElement)) {
+    topbarElement.style.display = 'none';
+    document.body.style.paddingTop = '0';
+    // This is needed to make sure that the bottom part of page is white when screen is zoomed-out.
+    document.body.style.backgroundColor = 'white';
+    registerCleanupListeners();
+    registerPopstateListener();
+  } else {
+    cleanupRegistrationPage();
+  }
 </script>
