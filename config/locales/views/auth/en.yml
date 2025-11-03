@@ -21,6 +21,8 @@ en:
         aria_label: Log in
         text: Log in
         forgot: Forgot password?
+        password_label: Password
+        remember_me_label: Remember me
       provider:
         text: "%{action} with %{provider}"
         login: Continue

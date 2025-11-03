@@ -5,14 +5,14 @@
   </div>
 
   <div class="crayons-field mb-3">
-    <%= f.label :password, class: "crayons-field__label" %>
+    <%= f.label :password, t("views.auth.login.password_label"), class: "crayons-field__label" %>
     <%= f.password_field :password, autocomplete: "current-password", class: "crayons-textfield" %>
   </div>
 
   <div class="crayons-field flex flex-row items-center justify-between mb-3">
     <div>
       <%= f.check_box :remember_me, class: "crayons-checkbox" %>
-      <%= f.label :remember_me, class: "crayons-field__label fw-normal" %>
+      <%= f.label :remember_me, t("views.auth.login.remember_me_label"), class: "crayons-field__label fw-normal" %>
     </div>
     <a class="m-0" href="<%= new_password_path(:user) %>">
        <%= t("views.auth.login.forgot") %>
