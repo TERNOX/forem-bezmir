@@ -174,7 +174,12 @@ module Admin
     private
 
     def current_digest_settings
-      { 
+      next_run_at = top_articles_digest_next_run_at
+      next_run_hour = if next_run_at.present?
+        next_run_at.in_time_zone(Articles::TopArticles::DigestSchedule.time_zone).hour
+      end
+
+      {
         bot_api_key: ::Settings::General.top_articles_digest_bot_api_key,
         title_template: ::Settings::General.top_articles_digest_title_template,
         tags: ::Settings::General.top_articles_digest_tags.join(", "),
@@ -185,6 +190,7 @@ module Admin
         article_limit: ::Settings::General.top_articles_digest_article_limit,
         badge_slug: ::Settings::General.top_articles_badge_slug,
         excluded_organization_ids: Array(::Settings::General.top_articles_digest_excluded_organization_ids).join(", "),
+        next_run_hour: next_run_hour,
       }
     end
 
@@ -204,7 +210,11 @@ module Admin
         parse_id_list(permitted[:excluded_organization_ids])
       )
 
-      refresh_digest_schedule!
+      if permitted[:next_run_hour].present?
+        override_digest_next_run!(permitted[:next_run_hour])
+      else
+        refresh_digest_schedule!
+      end
     end
 
     def build_digest_publisher
@@ -288,6 +298,7 @@ module Admin
         :article_limit,
         :badge_slug,
         :excluded_organization_ids,
+        :next_run_hour,
       )
     end
 
@@ -321,6 +332,30 @@ module Admin
     def refresh_digest_schedule!
       next_run = Articles::TopArticles::DigestSchedule.new.next_run_at
       ::Settings::General.set_top_articles_digest_next_run_at(next_run)
+    end
+
+    def override_digest_next_run!(hour_value)
+      hour = Integer(hour_value)
+      unless hour.between?(0, 23)
+        raise ArgumentError
+      end
+
+      schedule_zone = Articles::TopArticles::DigestSchedule.time_zone
+      local_now = Time.zone.now.in_time_zone(schedule_zone)
+      candidate = schedule_zone.local(
+        local_now.year,
+        local_now.month,
+        local_now.day,
+        hour,
+        0,
+        0,
+      )
+
+      candidate += 1.day while candidate <= local_now
+
+      ::Settings::General.set_top_articles_digest_next_run_at(candidate.in_time_zone(Time.zone))
+    rescue ArgumentError, TypeError
+      raise ArgumentError, I18n.t("admin.tools_controller.invalid_next_run_hour")
     end
 
     def monthly_top_users_awards_params

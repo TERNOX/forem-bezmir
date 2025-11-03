@@ -204,6 +204,7 @@ en:
       link_busted: '%{link} was successfully busted'
       top_articles_digest_updated: 'Top articles digest settings updated successfully'
       top_articles_digest_missing: 'Could not update digest settings: configuration was missing'
+      invalid_next_run_hour: 'Invalid hour selected for the next digest run'
       resave_published_articles:
         enqueued: 'All published articles will be resaved in the background. Embeds will be rebuilt shortly.'
     users_controller:

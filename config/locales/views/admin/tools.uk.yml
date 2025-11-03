@@ -67,6 +67,9 @@ uk:
               monthly: Monthly (previous month)
             article_limit: Number of articles to include
             badge_slug: Badge slug to reward the authors
+            next_run_hour: Налаштувати годину наступного запуску (Europe/Kyiv)
+            next_run_hour_help: "За потреби заплануйте наступний дайджест на найближчу появу цієї години за київським часом. Залиште порожнім, щоб зберегти розклад."
+            next_run_hour_placeholder: Залишити запланований час
           status:
             heading: Статус автоматизації
             schedule_summary: Дайджест автоматично виходить щопонеділка о 20:00 (Europe/Kyiv).

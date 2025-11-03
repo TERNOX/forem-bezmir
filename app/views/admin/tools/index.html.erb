@@ -245,7 +245,18 @@
           <%= text_field_tag "top_articles_digest[badge_slug]", @top_articles_digest_settings[:badge_slug], class: "crayons-textfield" %>
         </div>
 
-        
+        <div class="crayons-field">
+          <%= label_tag "top_articles_digest_next_run_hour", t("views.admin.tools.top_articles_digest.form.next_run_hour"), class: "crayons-field__label" %>
+          <% hour_options = (0..23).map { |hour| [format("%02d:00", hour), hour.to_s] } %>
+          <%= select_tag "top_articles_digest[next_run_hour]",
+                        options_for_select(
+                          [[t("views.admin.tools.top_articles_digest.form.next_run_hour_placeholder"), ""]] + hour_options,
+                          @top_articles_digest_settings[:next_run_hour]&.to_s,
+                        ),
+                        class: "crayons-select" %>
+          <p class="crayons-field__description"><%= t("views.admin.tools.top_articles_digest.form.next_run_hour_help") %></p>
+        </div>
+
       </div>
 
       <div class="flex items-center mt-6">

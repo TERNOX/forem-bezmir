@@ -67,6 +67,9 @@ en:
               monthly: Monthly (previous month)
             article_limit: Number of articles to include
             badge_slug: Badge slug to reward the authors
+            next_run_hour: Override next run hour (Europe/Kyiv)
+            next_run_hour_help: "Optional: set the next digest to run at the next occurrence of this hour in Kyiv time. Leave blank to keep the scheduled time."
+            next_run_hour_placeholder: Keep scheduled time
           status:
             heading: Automation status
             schedule_summary: The digest is published automatically every Monday at 20:00 (Europe/Kyiv).

@@ -151,14 +151,15 @@ RSpec.describe "/admin/advanced/tools" do
   describe "POST /admin/advanced/tools" do
     let(:super_admin) { create(:user, :super_admin) }
     let(:next_run_at) { Time.zone.local(2024, 6, 18, 10, 0, 0) }
-    let(:schedule) { instance_double(Articles::TopArticles::DigestSchedule, next_run_at: next_run_at) }
-
     before do
       sign_in super_admin
-      allow(Articles::TopArticles::DigestSchedule).to receive(:new).and_return(schedule)
+      Settings::General.set_top_articles_digest_next_run_at(nil)
     end
 
     it "updates digest configuration and refreshes the next run" do
+      schedule = instance_double(Articles::TopArticles::DigestSchedule, next_run_at: next_run_at)
+      allow(Articles::TopArticles::DigestSchedule).to receive(:new).and_return(schedule)
+
       travel_to(Time.zone.local(2024, 6, 17, 8, 0, 0)) do
         post admin_tools_path, params: {
           top_articles_digest: {
@@ -178,6 +179,61 @@ RSpec.describe "/admin/advanced/tools" do
 
       expect(Settings::General.top_articles_digest_bot_api_key).to eq("secret")
       expect(Settings::General.top_articles_digest_next_run_at).to eq(next_run_at)
+    end
+
+    it "overrides the next run when an hour is selected" do
+      expected = nil
+
+      expect(Articles::TopArticles::DigestSchedule).not_to receive(:new)
+
+      travel_to(Time.zone.local(2024, 6, 17, 8, 0, 0)) do
+        post admin_tools_path, params: {
+          top_articles_digest: {
+            bot_api_key: "secret",
+            title_template: "Digest",
+            tags: "digest",
+            image_url: "",
+            organization_id: "",
+            intro_markdown: "",
+            frequency: "weekly",
+            article_limit: "5",
+            badge_slug: "top-7",
+            excluded_organization_ids: "",
+            next_run_hour: "16",
+          },
+        }
+
+        schedule_zone = Articles::TopArticles::DigestSchedule.time_zone
+        expected = schedule_zone.local(2024, 6, 17, 16, 0, 0).in_time_zone(Time.zone)
+      end
+
+      expect(Settings::General.top_articles_digest_next_run_at).to eq(expected)
+    end
+
+    it "rejects an invalid hour selection" do
+      expect(Articles::TopArticles::DigestSchedule).not_to receive(:new)
+
+      travel_to(Time.zone.local(2024, 6, 17, 8, 0, 0)) do
+        post admin_tools_path, params: {
+          top_articles_digest: {
+            bot_api_key: "secret",
+            title_template: "Digest",
+            tags: "digest",
+            image_url: "",
+            organization_id: "",
+            intro_markdown: "",
+            frequency: "weekly",
+            article_limit: "5",
+            badge_slug: "top-7",
+            excluded_organization_ids: "",
+            next_run_hour: "invalid",
+          },
+        }
+      end
+
+      expect(response).to redirect_to(admin_tools_path)
+      expect(flash[:danger]).to eq(I18n.t("admin.tools_controller.invalid_next_run_hour"))
+      expect(Settings::General.top_articles_digest_next_run_at).to be_nil
     end
   end
 end
