@@ -92,6 +92,8 @@
   const notificationsPage = document.querySelector('.js-notifications');
   const topbarElement = document.querySelector('#topbar');
   const originalTopbarDisplay = topbarElement ? topbarElement.style.display : '';
+  const originalBodyPaddingTop = document.body.style.paddingTop;
+  const originalBodyBackgroundColor = document.body.style.backgroundColor;
 
   const cleanupRegistrationPage = () => {
     if (topbarElement) {
@@ -101,40 +103,85 @@
         topbarElement.style.removeProperty('display');
       }
     }
-    document.body.style.removeProperty('padding-top');
-    document.body.style.removeProperty('background-color');
+
+    if (originalBodyPaddingTop) {
+      document.body.style.paddingTop = originalBodyPaddingTop;
+    } else {
+      document.body.style.removeProperty('padding-top');
+    }
+
+    if (originalBodyBackgroundColor) {
+      document.body.style.backgroundColor = originalBodyBackgroundColor;
+    } else {
+      document.body.style.removeProperty('background-color');
+    }
+
     document.body.classList.remove('hide-popover-billboard');
   };
 
-  const registerCleanupListeners = () => {
-    if (window.__registrationCleanupListener) {
-      document.removeEventListener('turbo:before-visit', window.__registrationCleanupListener);
-      window.removeEventListener('pagehide', window.__registrationCleanupListener);
-      window.removeEventListener('beforeunload', window.__registrationCleanupListener);
+  const detachCleanupListeners = () => {
+    if (!window.__registrationListeners) {
+      return;
     }
 
-    window.__registrationCleanupListener = cleanupRegistrationPage;
+    const { cleanupHandler, beforeCacheHandler, loadHandler, popstateHandler } = window.__registrationListeners;
 
     if (window.Turbo) {
-      document.addEventListener('turbo:before-visit', window.__registrationCleanupListener, { once: false });
+      document.removeEventListener('turbo:before-visit', cleanupHandler);
+      document.removeEventListener('turbo:before-cache', beforeCacheHandler);
+      document.removeEventListener('turbo:load', loadHandler);
     } else {
-      window.addEventListener('pagehide', window.__registrationCleanupListener, { once: false });
-      window.addEventListener('beforeunload', window.__registrationCleanupListener, { once: false });
+      window.removeEventListener('pagehide', cleanupHandler);
+      window.removeEventListener('beforeunload', cleanupHandler);
+      window.removeEventListener('load', loadHandler);
     }
+
+    window.removeEventListener('popstate', popstateHandler);
+    delete window.__registrationListeners;
   };
 
-  const registerPopstateListener = () => {
-    if (window.__registrationPopstateListener) {
-      window.removeEventListener('popstate', window.__registrationPopstateListener);
+  const cleanupAndDetach = () => {
+    cleanupRegistrationPage();
+    detachCleanupListeners();
+  };
+
+  const ensureCleanupAfterNavigation = () => {
+    if (document.querySelector('.js-registration') || document.querySelector('.js-notifications')) {
+      return;
     }
 
-    window.__registrationPopstateListener = () => {
-      if (registrationsPage && topbarElement) {
+    cleanupAndDetach();
+  };
+
+  const registerCleanupListeners = () => {
+    detachCleanupListeners();
+
+    const popstateHandler = () => {
+      if (document.querySelector('.js-registration') || document.querySelector('.js-notifications')) {
         cleanupRegistrationPage();
+      } else {
+        cleanupAndDetach();
       }
     };
 
-    window.addEventListener('popstate', window.__registrationPopstateListener);
+    if (window.Turbo) {
+      document.addEventListener('turbo:before-visit', cleanupAndDetach);
+      document.addEventListener('turbo:before-cache', cleanupRegistrationPage);
+      document.addEventListener('turbo:load', ensureCleanupAfterNavigation);
+    } else {
+      window.addEventListener('pagehide', cleanupAndDetach);
+      window.addEventListener('beforeunload', cleanupAndDetach);
+      window.addEventListener('load', ensureCleanupAfterNavigation);
+    }
+
+    window.addEventListener('popstate', popstateHandler);
+
+    window.__registrationListeners = {
+      cleanupHandler: cleanupAndDetach,
+      beforeCacheHandler: cleanupRegistrationPage,
+      loadHandler: ensureCleanupAfterNavigation,
+      popstateHandler,
+    };
   };
 
   if ((registrationsPage && topbarElement) || (notificationsPage && topbarElement)) {
@@ -143,7 +190,6 @@
     // This is needed to make sure that the bottom part of page is white when screen is zoomed-out.
     document.body.style.backgroundColor = 'white';
     registerCleanupListeners();
-    registerPopstateListener();
   } else {
     cleanupRegistrationPage();
   }
