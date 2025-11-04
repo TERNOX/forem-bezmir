@@ -48,7 +48,7 @@ xml.rss(:version => "2.0",
         xml.guid short_link
         xml.description sanitize(article.plain_html,
                                  tags: allowed_tags, attributes: allowed_attributes, scrubber: scrubber)
-        image_url = article_social_image_url(article, width: 1600)
+        image_url = article_social_image_url(article, width: 1600, height: 900)
         if image_url.present?
           image_url = app_url(image_url) unless image_url.start_with?("http://", "https://")
           xml.tag!("media:content", url: image_url, medium: "image")
