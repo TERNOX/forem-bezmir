@@ -1,26 +1,34 @@
 import { handleImageFailure } from './dragAndDropHelpers';
 
 // Placeholder text displayed while an image is uploading
-const UPLOADING_IMAGE_PLACEHOLDER = '![Uploading image](...)';
+const PLACEHOLDERS = {
+  image: '![Uploading image](...)',
+  video: '![Uploading video](...)',
+};
+
+function placeholderFor(kind) {
+  return PLACEHOLDERS[kind] || PLACEHOLDERS.image;
+}
 
 /**
  * Handles image uploading by showing UPLOADING_IMAGE_PLACEHOLDER text.
  *
  * @param {useRef} textAreaRef The reference of the text area with content.
  */
-export function handleImageUploading(textAreaRef) {
+export function handleImageUploading(textAreaRef, kind = 'image') {
   return function () {
     // Function is within the component to be able to access
     // textarea ref.
     const editableBodyElement = textAreaRef.current;
 
     const { selectionStart, selectionEnd, value } = editableBodyElement;
+    const placeholder = placeholderFor(kind);
     const before = value.substring(0, selectionStart);
     const after = value.substring(selectionEnd, value.length);
-    const newSelectionStart = `${before}\n${UPLOADING_IMAGE_PLACEHOLDER}`
+    const newSelectionStart = `${before}\n${placeholder}`
       .length;
 
-    editableBodyElement.value = `${before}\n${UPLOADING_IMAGE_PLACEHOLDER}\n${after}`;
+    editableBodyElement.value = `${before}\n${placeholder}\n${after}`;
     editableBodyElement.selectionStart = newSelectionStart;
     editableBodyElement.selectionEnd = newSelectionStart;
   };
@@ -31,22 +39,24 @@ export function handleImageUploading(textAreaRef) {
  *
  * @param {useRef} textAreaRef The reference of the text area with content.
  */
-export function handleImageUploadSuccess(textAreaRef) {
+export function handleImageUploadSuccess(textAreaRef, kind = 'image') {
   return function (response) {
     // Function is within the component to be able to access
     // textarea ref.
     const editableBodyElement = textAreaRef.current;
     const { links } = response;
-
-    const markdownImageLink = `![Image description](${links[0]})\n`;
+    const placeholder = placeholderFor(kind);
+    const markdownImageLink =
+      response.markdown ||
+      `${kind === 'video' ? `<video controls src="${links[0]}"></video>` : `![Image description](${links[0]})`}\n`;
     const { selectionStart, selectionEnd, value } = editableBodyElement;
-    if (value.includes(UPLOADING_IMAGE_PLACEHOLDER)) {
+    if (value.includes(placeholder)) {
       const newSelectedStart =
-        value.indexOf(UPLOADING_IMAGE_PLACEHOLDER, 0) +
+        value.indexOf(placeholder, 0) +
         markdownImageLink.length;
 
       editableBodyElement.value = value.replace(
-        UPLOADING_IMAGE_PLACEHOLDER,
+        placeholder,
         markdownImageLink,
       );
       editableBodyElement.selectionStart = newSelectedStart;
@@ -72,7 +82,7 @@ export function handleImageUploadSuccess(textAreaRef) {
  *
  * @param {useRef} textAreaRef The reference of the text area with content.
  */
-export function handleImageUploadFailure(textAreaRef) {
+export function handleImageUploadFailure(textAreaRef, kind = 'image') {
   return function (message) {
     // Function is within the component to be able to access
     // textarea ref.
@@ -80,14 +90,15 @@ export function handleImageUploadFailure(textAreaRef) {
     const editableBodyElement = textAreaRef.current;
 
     const { value } = editableBodyElement;
-    if (value.includes(`\n${UPLOADING_IMAGE_PLACEHOLDER}\n`)) {
+    const placeholder = placeholderFor(kind);
+    if (value.includes(`\n${placeholder}\n`)) {
       const newSelectionStart = value.indexOf(
-        `\n${UPLOADING_IMAGE_PLACEHOLDER}\n`,
+        `\n${placeholder}\n`,
         0,
       );
 
       editableBodyElement.value = value.replace(
-        `\n${UPLOADING_IMAGE_PLACEHOLDER}\n`,
+        `\n${placeholder}\n`,
         '',
       );
       editableBodyElement.selectionStart = newSelectionStart;

@@ -36,6 +36,13 @@ module RateLimitCheckerHelper
         title: I18n.t("helpers.rate_limit_checker_helper.upload.title"),
         description: I18n.t("helpers.rate_limit_checker_helper.upload.description")
       },
+      video_upload: {
+        enabled: true,
+        min: 0,
+        placeholder: 3,
+        title: I18n.t("helpers.rate_limit_checker_helper.video.title"),
+        description: I18n.t("helpers.rate_limit_checker_helper.video.description")
+      },
       user_update: {
         enabled: true,
         min: 1,

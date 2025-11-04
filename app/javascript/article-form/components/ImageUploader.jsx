@@ -322,7 +322,8 @@ export const ImageUploader = ({
       payload: { insertionImageUrls: response.links },
     });
 
-    onImageUploadSuccess?.(`![Опис картинки](${response.links})`);
+    const markdown = response.markdown || `![Опис картинки](${response.links[0]})`;
+    onImageUploadSuccess?.(markdown);
 
     document.getElementById('upload-success-info').innerText =
       'image upload complete';

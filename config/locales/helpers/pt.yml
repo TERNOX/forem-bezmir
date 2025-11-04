@@ -394,6 +394,9 @@ pt:
         upload:
           title: Upload title
           description: Upload description
+        video:
+          title: Video upload limit
+          description: How many videos can be uploaded within any 60 second period?
         user:
           title: User title
           description: User description

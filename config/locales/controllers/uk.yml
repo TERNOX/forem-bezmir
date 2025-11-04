@@ -54,6 +54,10 @@ uk:
     github_unauthorized: 'GitHub: доступ заборонено — %{e_message}'
   image_uploads_controller:
     server_error: Сталася помилка сервера!
+  video_uploads_controller:
+    invalid_format: Підтримуються лише файли MP4 та WebM.
+    too_large: "Відео завелике. Ліміт — %{max} МБ."
+    server_error: Під час обробки відео сталася помилка на сервері.
   listings_controller:
     deleted: Оголошення успішно видалено.
     no_credit: Недостатньо доступних балів
