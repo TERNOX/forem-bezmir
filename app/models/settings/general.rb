@@ -58,6 +58,7 @@ module Settings
     setting :resized_logo_aspect_ratio, type: :string
 
     setting :enable_video_upload, type: :boolean, default: false
+    setting :video_upload_max_file_size_mb, type: :integer, default: 50
 
     # Mascot
     setting :mascot_user_id, type: :integer, default: nil

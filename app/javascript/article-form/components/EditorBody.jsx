@@ -1,6 +1,6 @@
 import { h } from 'preact';
 import PropTypes from 'prop-types';
-import { useLayoutEffect, useRef } from 'preact/hooks';
+import { useLayoutEffect, useMemo, useRef } from 'preact/hooks';
 import { locale } from '@utilities/locale';
 import { Toolbar } from './Toolbar';
 import { handleImagePasted } from './pasteImageHelpers';
@@ -22,12 +22,39 @@ export const EditorBody = ({
   version,
 }) => {
   const textAreaRef = useRef(null);
+  const videoEnabled = useMemo(() => {
+    const main = typeof document !== 'undefined' ? document.getElementById('main-content') : null;
+    return (main?.dataset?.videoEnabled || 'false') === 'true';
+  }, []);
+
+  const imageHandlers = useMemo(
+    () => ({
+      uploading: handleImageUploading(textAreaRef),
+      success: handleImageUploadSuccess(textAreaRef),
+      failure: handleImageUploadFailure(textAreaRef),
+    }),
+    [textAreaRef],
+  );
+
+  const videoHandlers = useMemo(() => {
+    if (!videoEnabled) {
+      return { enabled: false };
+    }
+
+    return {
+      enabled: true,
+      uploading: handleImageUploading(textAreaRef, 'video'),
+      success: handleImageUploadSuccess(textAreaRef, 'video'),
+      failure: handleImageUploadFailure(textAreaRef, 'video'),
+    };
+  }, [textAreaRef, videoEnabled]);
 
   const { setElement } = useDragAndDrop({
     onDrop: handleImageDrop(
-      handleImageUploading(textAreaRef),
-      handleImageUploadSuccess(textAreaRef),
-      handleImageUploadFailure(textAreaRef),
+      imageHandlers.uploading,
+      imageHandlers.success,
+      imageHandlers.failure,
+      { videoHandlers },
     ),
     onDragOver,
     onDragExit,
@@ -35,9 +62,10 @@ export const EditorBody = ({
 
   const setPasteElement = usePasteImage({
     onPaste: handleImagePasted(
-      handleImageUploading(textAreaRef),
-      handleImageUploadSuccess(textAreaRef),
-      handleImageUploadFailure(textAreaRef),
+      imageHandlers.uploading,
+      imageHandlers.success,
+      imageHandlers.failure,
+      { videoHandlers },
     ),
   });
 

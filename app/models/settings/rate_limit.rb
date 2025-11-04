@@ -11,6 +11,7 @@ module Settings
     setting :feedback_message_creation, type: :integer, default: 5
     setting :follow_count_daily, type: :integer, default: 500
     setting :image_upload, type: :integer, default: 9
+    setting :video_upload, type: :integer, default: 3
     setting :listing_creation, type: :integer, default: 1
     setting :organization_creation, type: :integer, default: 1
     setting :published_article_antispam_creation, type: :integer, default: 1

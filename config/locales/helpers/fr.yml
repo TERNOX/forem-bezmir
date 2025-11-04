@@ -403,6 +403,9 @@ fr:
         upload:
           title: Titre de téléchargement
           description: Description de téléchargement
+        video:
+          title: Limiter les mises en ligne vidéo
+          description: Combien de vidéos peuvent être mises en ligne sur une période de 60 secondes ?
         user:
           title: Titre d'utilisateur
           description: Description d'utilisateur

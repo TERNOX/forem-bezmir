@@ -4,6 +4,10 @@ uk:
     constants:
       settings:
         general:
+          enable_video_upload:
+            description: Увімкніть, щоб дозволити членам спільноти завантажувати відео на Forem
+          video_upload_max_file_size_mb:
+            description: Максимальний розмір відео у мегабайтах, дозволений для завантаження
           news_sitemap_tags:
             description: "Укажіть теги (через кому), які роблять статтю частиною News sitemap."
             placeholder: "новини,огляди"

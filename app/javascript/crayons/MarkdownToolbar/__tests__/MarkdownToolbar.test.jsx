@@ -31,6 +31,20 @@ describe('<MarkdownToolbar />', () => {
     expect(results).toHaveNoViolations();
   });
 
+  it('renders the video upload button when enabled', () => {
+    const main = document.createElement('main');
+    main.id = 'main-content';
+    main.dataset.videoEnabled = 'true';
+    main.dataset.videoUploadMax = '50';
+    document.body.appendChild(main);
+
+    const { getByLabelText } = render(<MarkdownToolbar />);
+
+    expect(getByLabelText('Upload video')).toBeInTheDocument();
+
+    document.body.removeChild(main);
+  });
+
   describe('small screen layout', () => {
     const smallScreenMediaQuery = `(max-width: ${BREAKPOINTS.Medium - 1}px)`;
     beforeEach(() => {

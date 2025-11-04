@@ -16,6 +16,7 @@ module Html
     RAW_TAG_DELIMITERS = ["{", "}", "raw", "endraw", "----"].freeze
     RAW_TAG = "{----% raw %----}".freeze
     END_RAW_TAG = "{----% endraw %----}".freeze
+    MARKDOWN_VIDEO_PATTERN = /\.(mp4|webm|mov|m4v)\z/i.freeze
 
     attr_accessor :html
     private :html=
@@ -28,6 +29,58 @@ module Html
       html_doc = Nokogiri::HTML(@html)
       html_doc.xpath("//*[self::ul or self::ol or self::li]/br").each(&:remove)
       @html = html_doc.to_html
+
+      self
+    end
+
+    def convert_markdown_videos
+      fragment = Nokogiri::HTML.fragment(@html)
+      document = fragment.document || Nokogiri::HTML::Document.parse("")
+
+      fragment.css("img").each do |image|
+        src = image.attr("src")
+        next unless src&.match?(MARKDOWN_VIDEO_PATTERN)
+
+        container = image.parent.name == "a" ? image.parent : image
+        figure = document.create_element("figure")
+        figure["class"] = "article-body__video"
+
+        video = document.create_element("video")
+        video["class"] = "article-body__video-player"
+        video["controls"] = "controls"
+        video["playsinline"] = "playsinline"
+        video["preload"] = "metadata"
+        video["data-video-player"] = "markdown-embedded"
+        video["src"] = src
+
+        alt_text = image.attr("alt").to_s.strip
+        video["aria-label"] = alt_text if alt_text.present?
+
+        unless video.children.any?
+          fallback = document.create_element("span")
+          fallback["class"] = "sr-only"
+          fallback.content = I18n.t("services.html.parser.unsupported_video")
+          video.add_child(fallback)
+        end
+
+        figure.add_child(video)
+
+        parent = container.parent
+        if parent&.name == "p"
+          significant_children = parent.children.reject do |child|
+            child.text? && child.content.strip.empty?
+          end
+
+          if significant_children.one? && significant_children.first == container
+            parent.replace(figure)
+            next
+          end
+        end
+
+        container.replace(figure)
+      end
+
+      @html = fragment.to_html
 
       self
     end
@@ -260,6 +313,8 @@ module Html
       doc = Nokogiri::HTML.fragment(@html)
 
       doc.css("video").each do |video|
+        next if video["data-video-player"].present?
+
         # Mark as gif-like for JS to attach behavior
         video["data-gif-video"] = "true"
         # Default attributes to mimic GIF behavior, unless explicitly overridden

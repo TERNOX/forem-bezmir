@@ -311,6 +311,19 @@ body {
     cursor: zoom-in;
   }
 
+  .article-body__video {
+    margin: var(--content-rhythm) auto;
+  }
+
+  .article-body__video-player {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    max-height: calc(50vh + 180px);
+    border-radius: var(--radius);
+    background-color: var(--base-10);
+  }
+
   iframe {
     width: 100%;
     border: 0;

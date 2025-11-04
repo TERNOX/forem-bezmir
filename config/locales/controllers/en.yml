@@ -54,6 +54,10 @@ en:
     github_unauthorized: 'GitHub Unauthorized: %{e_message}'
   image_uploads_controller:
     server_error: A server error has occurred!
+  video_uploads_controller:
+    invalid_format: Only MP4 and WebM files are supported.
+    too_large: "Video is too large. The limit is %{max} MB."
+    server_error: A server error has occurred while processing the video.
   listings_controller:
     deleted: Listing was successfully deleted.
     no_credit: Not enough available credits

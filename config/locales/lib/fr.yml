@@ -176,6 +176,8 @@ fr:
             placeholder: 'List of valid tags: comma separated, letters only e.g. beginners,javascript,ruby,swift,kotlin'
           enable_video_upload:
             description: Toggle to allow members to upload videos on your Forem
+          video_upload_max_file_size_mb:
+            description: Maximum file size in megabytes allowed for uploaded videos
           video:
             description: Secret key used to allow AWS video encoding through the VideoStatesController
         rate_limit:

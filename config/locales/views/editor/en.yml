@@ -26,3 +26,4 @@ en:
           button: Submit Change
           text: 'Preview Image URL: '
           placeholder: New Thumbnail URL
+        too_large_client: "Video file is too large (%{size} MB). The limit is %{max} MB."

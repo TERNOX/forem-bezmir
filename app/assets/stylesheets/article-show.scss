@@ -453,6 +453,17 @@ article {
       }
     }
 
+    .article-body__video {
+      margin: 1.2em auto;
+    }
+
+    .article-body__video-player {
+      display: block;
+      width: 100%;
+      border-radius: var(--radius);
+      background-color: var(--base-10);
+    }
+
     a.article-body-image-wrapper {
       cursor: zoom-in;
     }

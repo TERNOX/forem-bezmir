@@ -171,6 +171,8 @@ pt:
             placeholder: Default tags for the community
           enable_video_upload:
             description: Toggle to allow members to upload videos on your Forem
+          video_upload_max_file_size_mb:
+            description: Maximum file size in megabytes allowed for uploaded videos
           hashtag:
             description: Default hashtag for the community
             placeholder: Default hashtag for the community

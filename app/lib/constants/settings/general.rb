@@ -148,6 +148,10 @@ module Constants
           enable_video_upload: {
             description: I18n.t("lib.constants.settings.general.enable_video_upload.description")
           },
+          video_upload_max_file_size_mb: {
+            description: I18n.t("lib.constants.settings.general.video_upload_max_file_size_mb.description"),
+            placeholder: 50
+          },
           video_encoder_key: {
             description: I18n.t("lib.constants.settings.general.video.description"),
             placeholder: ""

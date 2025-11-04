@@ -26,3 +26,4 @@ fr:
           button: Soumettre le changement
           text: "Prévisualiser l'URL de l'image: "
           placeholder: Nouvelle URL de miniature
+        too_large_client: "Le fichier vidéo est trop volumineux (%{size} Mo). La limite est de %{max} Mo."

@@ -60,6 +60,14 @@ RSpec.describe "/admin/customization/config" do
           }
           expect(Settings::General.video_encoder_key).to eq("123abc")
         end
+
+        it "updates video upload size limit" do
+          post admin_settings_general_settings_path, params: {
+            settings_general: { video_upload_max_file_size_mb: 75 }
+          }
+
+          expect(Settings::General.video_upload_max_file_size_mb).to eq(75)
+        end
       end
 
       describe "Authentication" do

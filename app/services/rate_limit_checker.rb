@@ -6,6 +6,7 @@ class RateLimitChecker
     article_update: { retry_after: 30 },
     feedback_message_creation: { retry_after: 300 },
     image_upload: { retry_after: 30 },
+    video_upload: { retry_after: 60 },
     listing_creation: { retry_after: 60 },
     organization_creation: { retry_after: 300 },
     published_article_creation: { retry_after: 30 },

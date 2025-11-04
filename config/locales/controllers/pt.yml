@@ -54,6 +54,10 @@ pt:
     github_unauthorized: 'GitHub não autorizado: %{e_message}'
   image_uploads_controller:
     server_error: Ocorreu um erro no servidor!
+  video_uploads_controller:
+    invalid_format: Apenas arquivos MP4 e WebM são suportados.
+    too_large: "O vídeo é muito grande. O limite é %{max} MB."
+    server_error: Ocorreu um erro no servidor durante o processamento do vídeo.
   listings_controller:
     deleted: Anúncio foi excluído com sucesso.
     no_credit: Créditos disponíveis insuficientes

@@ -1,6 +1,7 @@
 import { h, cloneElement } from 'preact';
-import { useState, useLayoutEffect, useRef } from 'preact/hooks';
+import { useState, useLayoutEffect, useRef, useMemo } from 'preact/hooks';
 import { ImageUploader } from '../../article-form/components/ImageUploader';
+import { VideoUploader } from '../../article-form/components/VideoUploader';
 import {
   markdownSyntaxFormatters,
   getNewTextAreaValueWithEdits,
@@ -11,8 +12,9 @@ import { useKeyboardShortcuts } from '@components/useKeyboardShortcuts';
 import { BREAKPOINTS, useMediaQuery } from '@components/useMediaQuery';
 import { getSelectionData } from '@utilities/textAreaUtils';
 
-// Placeholder text displayed while an image is uploading
+// Placeholder text displayed while media is uploading
 const UPLOADING_IMAGE_PLACEHOLDER = '![Uploading image](...)';
+const UPLOADING_VIDEO_PLACEHOLDER = '![Uploading video](...)';
 
 const MAX_CORE_FORMATTERS_BY_SCREEN_SIZE = {
   small: 5,
@@ -91,6 +93,11 @@ export const MarkdownToolbar = ({
   );
 
   const overflowMenuRows = smallScreen ? 2 : 1;
+
+  const videoUploadEnabled = useMemo(() => {
+    const main = document.getElementById('main-content');
+    return (main?.dataset?.videoEnabled || 'false') === 'true';
+  }, []);
 
   // Enhance any additional toolbar elements with the appropriate roles & listeners
   const additionalSecondaryItems = additionalSecondaryToolbarElements.map(
@@ -257,28 +264,25 @@ export const MarkdownToolbar = ({
     textArea.setSelectionRange(newCursorStart, newCursorEnd);
   };
 
-  const handleImageUploadStarted = () => {
+  const insertUploadingPlaceholder = (placeholder) => {
     const { current: textArea } = textAreaRef;
     const { textBeforeSelection, textAfterSelection } =
       getSelectionData(textArea);
 
     const { selectionEnd } = storedCursorPosition;
 
-    const textWithPlaceholder = `${textBeforeSelection}\n${UPLOADING_IMAGE_PLACEHOLDER}${textAfterSelection}`;
+    const textWithPlaceholder = `${textBeforeSelection}\n${placeholder}${textAfterSelection}`;
     textArea.value = textWithPlaceholder;
-    // Make sure Editor text area updates via linkstate
     textArea.dispatchEvent(new Event('input'));
 
     textArea.focus({ preventScroll: true });
 
-    // Set cursor to the end of the placeholder
-    const newCursorPosition =
-      selectionEnd + UPLOADING_IMAGE_PLACEHOLDER.length + 1;
+    const newCursorPosition = selectionEnd + placeholder.length + 1;
 
     textArea.setSelectionRange(newCursorPosition, newCursorPosition);
   };
 
-  const handleImageUploadEnd = (imageMarkdown = '') => {
+  const replaceUploadingPlaceholder = (placeholder, markdown = '') => {
     const { current: textArea } = textAreaRef;
 
     const {
@@ -287,36 +291,39 @@ export const MarkdownToolbar = ({
       value: currentTextAreaValue,
     } = textArea;
 
-    const indexOfPlaceholder = currentTextAreaValue.indexOf(
-      UPLOADING_IMAGE_PLACEHOLDER,
-    );
+    const indexOfPlaceholder = currentTextAreaValue.indexOf(placeholder);
 
-    // User has deleted placeholder, nothing to do
     if (indexOfPlaceholder === -1) return;
 
-    const newTextValue = textArea.value.replace(
-      UPLOADING_IMAGE_PLACEHOLDER,
-      imageMarkdown,
-    );
+    const newTextValue = textArea.value.replace(placeholder, markdown);
 
     textArea.value = newTextValue;
-    // Make sure Editor text area updates via linkstate
     textArea.dispatchEvent(new Event('input'));
 
-    // The change to image markdown length does not affect cursor position
     if (indexOfPlaceholder > selectionStart) {
       textArea.setSelectionRange(selectionStart, selectionEnd);
       return;
     }
 
-    const differenceInLength =
-      imageMarkdown.length - UPLOADING_IMAGE_PLACEHOLDER.length;
+    const differenceInLength = markdown.length - placeholder.length;
 
     textArea.setSelectionRange(
       selectionStart + differenceInLength,
       selectionEnd + differenceInLength,
     );
   };
+
+  const handleImageUploadStarted = () =>
+    insertUploadingPlaceholder(UPLOADING_IMAGE_PLACEHOLDER);
+
+  const handleVideoUploadStarted = () =>
+    insertUploadingPlaceholder(UPLOADING_VIDEO_PLACEHOLDER);
+
+  const handleImageUploadEnd = (imageMarkdown = '') =>
+    replaceUploadingPlaceholder(UPLOADING_IMAGE_PLACEHOLDER, imageMarkdown);
+
+  const handleVideoUploadEnd = (videoMarkdown = '') =>
+    replaceUploadingPlaceholder(UPLOADING_VIDEO_PLACEHOLDER, videoMarkdown);
 
   const numberOfCoreFormatters = getNumberOfIconsToDisplayInToolbar({
     isSmallScreen: smallScreen,
@@ -418,6 +425,29 @@ export const MarkdownToolbar = ({
           tabindex: '-1',
         }}
       />
+
+      {videoUploadEnabled && (
+        <VideoUploader
+          onVideoUploadStart={handleVideoUploadStarted}
+          onVideoUploadSuccess={handleVideoUploadEnd}
+          onVideoUploadError={handleVideoUploadEnd}
+          buttonProps={{
+            onKeyUp: (e) => handleToolbarButtonKeyPress(e, 'toolbar-btn'),
+            onClick: () => {
+              const {
+                current: { selectionStart, selectionEnd },
+              } = textAreaRef;
+              setStoredCursorPosition({ selectionStart, selectionEnd });
+            },
+            tooltip: smallScreen ? null : (
+              <span aria-hidden="true">Upload video</span>
+            ),
+            key: 'video-btn',
+            className: 'toolbar-btn formatter-btn mr-1',
+            tabindex: '-1',
+          }}
+        />
+      )}
 
       <Button
         id="overflow-menu-button"

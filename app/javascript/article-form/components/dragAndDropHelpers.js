@@ -1,5 +1,33 @@
 import { addSnackbarItem } from '../../Snackbar';
-import { processImageUpload } from '../actions';
+import { processImageUpload, processVideoUpload } from '../actions';
+
+const VIDEO_MIME_PATTERN = /^video\//i;
+const VIDEO_EXTENSION_PATTERN = /\.(mp4|webm|mov|m4v)$/i;
+
+function detectFileKind(files) {
+  const [file] = files || [];
+  if (!file) {
+    return 'image';
+  }
+
+  if (VIDEO_MIME_PATTERN.test(file.type)) {
+    return 'video';
+  }
+
+  if (VIDEO_EXTENSION_PATTERN.test(file.name || '')) {
+    return 'video';
+  }
+
+  return 'image';
+}
+
+function getMultiFileMessage(kind) {
+  if (kind === 'video') {
+    return 'Only one video can be dropped at a time.';
+  }
+
+  return 'Only one image can be dropped at a time.';
+}
 
 /**
  * Determines if at least one type of drag and drop datum type matches the data transfer type to match.
@@ -19,7 +47,9 @@ export function handleImageDrop(
   handleImageUploading,
   handleImageSuccess,
   handleImageFailure,
+  options = {},
 ) {
+  const { videoHandlers } = options;
   return function (event) {
     event.preventDefault();
 
@@ -32,12 +62,31 @@ export function handleImageDrop(
       .classList.remove('drop-area--active');
 
     const { files } = event.dataTransfer;
+    const kind = detectFileKind(files);
 
     if (files.length > 1) {
       addSnackbarItem({
-        message: 'Only one image can be dropped at a time.',
+        message: getMultiFileMessage(kind),
         addCloseButton: true,
       });
+      return;
+    }
+
+    if (kind === 'video') {
+      if (!videoHandlers?.enabled) {
+        addSnackbarItem({
+          message: 'Video uploads are not enabled for this community yet.',
+          addCloseButton: true,
+        });
+        return;
+      }
+
+      processVideoUpload(
+        files,
+        videoHandlers.uploading,
+        videoHandlers.success,
+        videoHandlers.failure,
+      );
       return;
     }
 
