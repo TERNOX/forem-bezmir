@@ -418,7 +418,7 @@ export const MarkdownToolbar = ({
             setStoredCursorPosition({ selectionStart, selectionEnd });
           },
           tooltip: smallScreen ? null : (
-            <span aria-hidden="true">Upload image</span>
+            <span aria-hidden="true">Завантажити картинку</span>
           ),
           key: 'image-btn',
           className: 'toolbar-btn formatter-btn mr-1',
@@ -440,7 +440,7 @@ export const MarkdownToolbar = ({
               setStoredCursorPosition({ selectionStart, selectionEnd });
             },
             tooltip: smallScreen ? null : (
-              <span aria-hidden="true">Upload video</span>
+              <span aria-hidden="true">Завантажити відео</span>
             ),
             key: 'video-btn',
             className: 'toolbar-btn formatter-btn mr-1',

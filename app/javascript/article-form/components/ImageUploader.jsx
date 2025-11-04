@@ -128,7 +128,7 @@ const V2EditorImageUpload = ({
         <input
           type="file"
           tabindex="-1"
-          aria-label="Upload image"
+          aria-label="Завантажити картинку"
           id="image-upload-field"
           onChange={startNewRequest}
           className="screen-reader-only"
