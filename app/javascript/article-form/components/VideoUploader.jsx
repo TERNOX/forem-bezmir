@@ -63,7 +63,7 @@ export const VideoUploader = ({
       <Button
         {...buttonProps}
         icon={uploading ? Spinner : VideoIcon}
-        aria-label="Upload video"
+        aria-label={`Завантажити відео (max ${maxFileSize} MB)`}
         onClick={(event) => {
           buttonProps.onClick?.(event);
           document.getElementById('video-upload-field').click();
