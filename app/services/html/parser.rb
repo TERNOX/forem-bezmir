@@ -35,16 +35,17 @@ module Html
 
     def convert_markdown_videos
       fragment = Nokogiri::HTML.fragment(@html)
+      document = fragment.document || Nokogiri::HTML::Document.parse("")
 
       fragment.css("img").each do |image|
         src = image.attr("src")
         next unless src&.match?(MARKDOWN_VIDEO_PATTERN)
 
         container = image.parent.name == "a" ? image.parent : image
-        figure = fragment.create_element("figure")
+        figure = document.create_element("figure")
         figure["class"] = "article-body__video"
 
-        video = fragment.create_element("video")
+        video = document.create_element("video")
         video["class"] = "article-body__video-player"
         video["controls"] = "controls"
         video["playsinline"] = "playsinline"
@@ -56,7 +57,7 @@ module Html
         video["aria-label"] = alt_text if alt_text.present?
 
         unless video.children.any?
-          fallback = fragment.create_element("span")
+          fallback = document.create_element("span")
           fallback["class"] = "sr-only"
           fallback.content = I18n.t("services.html.parser.unsupported_video")
           video.add_child(fallback)
