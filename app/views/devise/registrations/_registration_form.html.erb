@@ -93,7 +93,6 @@
   const topbarElement = document.querySelector('#topbar');
   const originalTopbarDisplay = topbarElement ? topbarElement.style.display : '';
   const originalBodyPaddingTop = document.body.style.paddingTop;
-  const originalBodyBackgroundColor = document.body.style.backgroundColor;
 
   const cleanupRegistrationPage = () => {
     if (topbarElement) {
@@ -108,12 +107,6 @@
       document.body.style.paddingTop = originalBodyPaddingTop;
     } else {
       document.body.style.removeProperty('padding-top');
-    }
-
-    if (originalBodyBackgroundColor) {
-      document.body.style.backgroundColor = originalBodyBackgroundColor;
-    } else {
-      document.body.style.removeProperty('background-color');
     }
 
     document.body.classList.remove('hide-popover-billboard');
@@ -187,8 +180,6 @@
   if ((registrationsPage && topbarElement) || (notificationsPage && topbarElement)) {
     topbarElement.style.display = 'none';
     document.body.style.paddingTop = '0';
-    // This is needed to make sure that the bottom part of page is white when screen is zoomed-out.
-    document.body.style.backgroundColor = 'white';
     registerCleanupListeners();
   } else {
     cleanupRegistrationPage();
