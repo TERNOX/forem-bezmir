@@ -42,6 +42,15 @@ RSpec.describe "VideoUploads" do
         expect(response).to have_http_status(:ok)
         expect(response.parsed_body["links"]).to eq(["https://example.com/video.mp4"])
         expect(response.parsed_body["kind"]).to eq("video")
+        expect(response.parsed_body["markdown"]).to eq("![](https://example.com/video.mp4)")
+      end
+
+      it "accepts quicktime files" do
+        quicktime = Rack::Test::UploadedFile.new(tempfile.path, "video/quicktime")
+
+        post "/video_uploads", headers: headers, params: { video: quicktime }
+
+        expect(response).to have_http_status(:ok)
       end
 
       it "rejects unsupported mime types" do

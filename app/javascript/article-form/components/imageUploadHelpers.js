@@ -46,9 +46,11 @@ export function handleImageUploadSuccess(textAreaRef, kind = 'image') {
     const editableBodyElement = textAreaRef.current;
     const { links } = response;
     const placeholder = placeholderFor(kind);
-    const markdownImageLink =
-      response.markdown ||
-      `${kind === 'video' ? `<video controls src="${links[0]}"></video>` : `![Image description](${links[0]})`}\n`;
+    const defaultMarkdown =
+      kind === 'video'
+        ? `![](${links[0]})`
+        : `![Image description](${links[0]})`;
+    const markdownImageLink = `${(response.markdown || defaultMarkdown).trim()}\n`;
     const { selectionStart, selectionEnd, value } = editableBodyElement;
     if (value.includes(placeholder)) {
       const newSelectedStart =

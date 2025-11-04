@@ -51,6 +51,7 @@ uk:
       parser:
         enter_fullscreen_mode: Увімкнути повноекранний режим
         exit_fullscreen_mode: Вимкнути повноекранний режим
+        unsupported_video: Ваш браузер не підтримує відтворення відео.
     markdown_processor:
       parser:
         invalid_markdown_detected: Виявлено некоректну розмітку!

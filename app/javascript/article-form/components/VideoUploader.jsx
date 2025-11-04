@@ -32,7 +32,7 @@ export const VideoUploader = ({
   const handleSuccess = (response) => {
     setUploading(false);
     const link = response.links[0];
-    const markdown = response.markdown || `<video controls src="${link}"></video>`;
+    const markdown = (response.markdown || `![](${link})`).trim();
     onVideoUploadSuccess?.(`${markdown}\n`);
   };
 
@@ -57,7 +57,7 @@ export const VideoUploader = ({
         type="file"
         id="video-upload-field"
         className="screen-reader-only"
-        accept="video/mp4,video/webm"
+        accept="video/mp4,video/webm,video/quicktime"
         data-permitted-file-types='["video"]'
         data-max-file-size-mb={maxFileSize}
         onChange={(event) => uploadVideo(event.target.files)}

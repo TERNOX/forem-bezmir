@@ -163,6 +163,7 @@ module MarkdownProcessor
       Html::Parser
         .new(html)
         .remove_nested_linebreak_in_list
+        .convert_markdown_videos
         .prefix_all_images(**prefix_images_options)
         .wrap_all_images_in_links
         .enforce_gif_like_videos

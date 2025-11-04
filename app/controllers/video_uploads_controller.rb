@@ -5,7 +5,7 @@ class VideoUploadsController < ApplicationController
   before_action :limit_uploads, only: [:create]
   after_action :verify_authorized
 
-  PERMITTED_MIME_TYPES = %w[video/mp4 video/webm].freeze
+  PERMITTED_MIME_TYPES = %w[video/mp4 video/webm video/quicktime].freeze
 
   def create
     authorize :video_upload
@@ -20,7 +20,11 @@ class VideoUploadsController < ApplicationController
 
     uploader = upload_video(params[:video])
 
-    render json: { links: [uploader.url], kind: "video" }, status: :ok
+    render json: {
+      links: [uploader.url],
+      kind: "video",
+      markdown: "![](#{uploader.url})"
+    }, status: :ok
   rescue CarrierWave::IntegrityError => e
     render json: { error: e.message }, status: :unprocessable_entity
   rescue CarrierWave::ProcessingError
