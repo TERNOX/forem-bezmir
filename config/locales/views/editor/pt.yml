@@ -26,3 +26,4 @@ pt:
           button: Enviar Alteração
           text: 'URL da Imagem de Visualização: '
           placeholder: Nova URL da Miniatura
+        too_large_client: "O arquivo de vídeo é grande demais (%{size} MB). O limite é %{max} MB."

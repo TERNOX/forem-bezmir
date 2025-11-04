@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { generateVideoUpload } from '../actions';
 import { validateFileInputs } from '../../packs/validateFileInputs';
 import { addSnackbarItem } from '../../Snackbar';
+import { getVideoConfig } from './mediaConfig';
 import { ButtonNew as Button, Spinner } from '@crayons';
 import VideoIcon from '@images/video-camera.svg';
 
@@ -14,10 +15,7 @@ export const VideoUploader = ({
   onVideoUploadError,
 }) => {
   const [uploading, setUploading] = useState(false);
-  const maxFileSize = useMemo(() => {
-    const main = document.getElementById('main-content');
-    return main?.dataset?.videoUploadMax || 50;
-  }, []);
+  const { limitMb: maxFileSize } = useMemo(() => getVideoConfig(), []);
 
   const handleError = (error) => {
     const message = error?.message || error;

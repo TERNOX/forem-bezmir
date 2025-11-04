@@ -1,4 +1,5 @@
 import { validateFileInputs } from '../packs/validateFileInputs';
+import { getVideoConfig, formatTemplate } from './components/mediaConfig';
 
 export function previewArticle(payload, successCb, failureCb) {
   fetch('/articles/preview', {
@@ -159,14 +160,34 @@ export function processVideoUpload(
   handleVideoSuccess,
   handleVideoFailure,
 ) {
-  if (videos.length > 0 && validateFileInputs()) {
-    const payload = { video: videos };
-
-    handleVideoUploading();
-    generateVideoUpload({
-      payload,
-      successCb: handleVideoSuccess,
-      failureCb: handleVideoFailure,
-    });
+  if (videos.length === 0) {
+    return;
   }
+
+  const { limitMb, limitBytes, tooLargeMessageTemplate } = getVideoConfig();
+  const oversizeFile = Array.from(videos).find((file) => file.size > limitBytes);
+
+  if (oversizeFile) {
+    const sizeMb = (oversizeFile.size / (1024 * 1024)).toFixed(2);
+    const message = formatTemplate(tooLargeMessageTemplate, {
+      size: sizeMb,
+      max: limitMb,
+    });
+
+    handleVideoFailure({ message: message || `Video file is too large (${sizeMb} MB). The limit is ${limitMb} MB.` });
+    return;
+  }
+
+  if (!validateFileInputs()) {
+    return;
+  }
+
+  const payload = { video: videos };
+
+  handleVideoUploading();
+  generateVideoUpload({
+    payload,
+    successCb: handleVideoSuccess,
+    failureCb: handleVideoFailure,
+  });
 }
