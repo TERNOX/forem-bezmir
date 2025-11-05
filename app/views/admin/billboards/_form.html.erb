@@ -71,7 +71,7 @@
 
     <div class="crayons-field hidden">
       <%= label_tag :tag_list, "Tag List:", class: "crayons-field__label" %>
-      <%= text_field_tag :tag_list, @billboard.tag_list.to_s, class: "crayons-textfield js-tags-textfield", autocomplete: "off" %>
+      <%= text_field_tag :tag_list, @billboard.cached_tag_list.to_s, class: "crayons-textfield js-tags-textfield", autocomplete: "off" %>
     </div>
 
     <div class="crayons-field hidden">

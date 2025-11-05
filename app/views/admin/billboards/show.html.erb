@@ -58,6 +58,11 @@
         <p><%= @billboard.placement_area %></p>
       </div>
 
+      <div class="crayons-field">
+        <strong>Targeted Tag(s):</strong>
+        <p><%= @billboard.cached_tag_list.presence || "N/A" %></p>
+      </div>
+
       <% if FeatureFlag.enabled?(Geolocation::FEATURE_FLAG) %>
         <div class="crayons-field">
           <strong>Target Geolocations:</strong>
