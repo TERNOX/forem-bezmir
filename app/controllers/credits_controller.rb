@@ -1,6 +1,5 @@
 class CreditsController < ApplicationController
   before_action :authenticate_user!
-  before_action :initialize_stripe
 
   def index
     @user_unspent_credits_count = current_user.credits.unspent.size
@@ -17,7 +16,8 @@ class CreditsController < ApplicationController
                    current_user
                  end
     @organizations = current_user.admin_organizations
-    @customer = Payments::Customer.get(current_user.stripe_id_code) if current_user.stripe_id_code
+    customer_id = customer_identifier_for(current_user)
+    @customer = Payments::Customer.get(customer_id) if customer_id.present?
   end
 
   def create
@@ -28,7 +28,7 @@ class CreditsController < ApplicationController
     payment = Payments::ProcessCreditPurchase.call(
       current_user,
       number_to_purchase,
-      purchase_options: params.slice(:stripe_token, :selected_card, :organization_id),
+      purchase_options: params.slice(:stripe_token, :payment_token, :selected_card, :organization_id),
     )
 
     if payment.success?
@@ -37,6 +37,17 @@ class CreditsController < ApplicationController
     else
       flash[:error] = payment.error
       redirect_to purchase_credits_path
-    end
+end
+
+  private
+
+  def payment_gateway
+    @payment_gateway ||= Payments::Gateway.build
   end
+
+  def customer_identifier_for(user)
+    attribute = payment_gateway.is_a?(Payments::MonobankGateway) ? :monobank_customer_id : :stripe_id_code
+    user.public_send(attribute)
+  end
+end
 end

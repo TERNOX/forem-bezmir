@@ -1,3 +1,4 @@
+<%= javascript_include_tag "admin/config/monetization", defer: true %>
 <%= form_for(Settings::General.new,
              url: admin_settings_general_settings_path,
              html: { data: { action: "submit->config#updateConfigurationSettings" } }) do |f| %>
@@ -7,21 +8,73 @@
       <fieldset class="grid gap-4">
 
         <div class="crayons-field">
-          <%= admin_config_label :stripe_api_key, "Stripe API key" %>
-          <%= admin_config_description Constants::Settings::General.details[:stripe_api_key][:description] %>
-          <%= f.text_field :stripe_api_key,
-                           class: "crayons-textfield",
-                           value: Settings::General.stripe_api_key,
-                           placeholder: Constants::Settings::General.details[:stripe_api_key][:placeholder] %>
+          <%= admin_config_label :payment_provider, "Payment provider" %>
+          <%= admin_config_description Constants::Settings::General.details[:payment_provider][:description] %>
+          <%= f.select :payment_provider,
+                       Settings::General::PAYMENT_PROVIDERS.map { |provider| [provider.titleize, provider] },
+                       {},
+                       class: "crayons-select",
+                       data: { monetization_provider_select: true } %>
         </div>
 
-        <div class="crayons-field">
-          <%= admin_config_label :stripe_publishable_key %>
-          <%= admin_config_description Constants::Settings::General.details[:stripe_publishable_key][:description] %>
-          <%= f.text_field :stripe_publishable_key,
-                           class: "crayons-textfield",
-                           value: Settings::General.stripe_publishable_key,
-                           placeholder: Constants::Settings::General.details[:stripe_publishable_key][:placeholder] %>
+        <div class="grid gap-4 <%= 'hidden' if Settings::General.payment_provider == 'monobank' %>"
+             data-monetization-provider-fields="stripe">
+          <div class="crayons-field">
+            <%= admin_config_label :stripe_api_key, "Stripe API key" %>
+            <%= admin_config_description Constants::Settings::General.details[:stripe_api_key][:description] %>
+            <%= f.text_field :stripe_api_key,
+                             class: "crayons-textfield",
+                             value: Settings::General.stripe_api_key,
+                             placeholder: Constants::Settings::General.details[:stripe_api_key][:placeholder] %>
+          </div>
+
+          <div class="crayons-field">
+            <%= admin_config_label :stripe_publishable_key %>
+            <%= admin_config_description Constants::Settings::General.details[:stripe_publishable_key][:description] %>
+            <%= f.text_field :stripe_publishable_key,
+                             class: "crayons-textfield",
+                             value: Settings::General.stripe_publishable_key,
+                             placeholder: Constants::Settings::General.details[:stripe_publishable_key][:placeholder] %>
+          </div>
+        </div>
+
+        <div class="grid gap-4 <%= 'hidden' unless Settings::General.payment_provider == 'monobank' %>"
+             data-monetization-provider-fields="monobank">
+          <div class="crayons-field">
+            <%= admin_config_label :monobank_api_key, "Monobank API key" %>
+            <%= admin_config_description Constants::Settings::General.details[:monobank_api_key][:description] %>
+            <%= f.text_field :monobank_api_key,
+                             class: "crayons-textfield",
+                             value: Settings::General.monobank_api_key,
+                             placeholder: Constants::Settings::General.details[:monobank_api_key][:placeholder] %>
+          </div>
+
+          <div class="crayons-field">
+            <%= admin_config_label :monobank_publishable_key, "Monobank publishable key" %>
+            <%= admin_config_description Constants::Settings::General.details[:monobank_publishable_key][:description] %>
+            <%= f.text_field :monobank_publishable_key,
+                             class: "crayons-textfield",
+                             value: Settings::General.monobank_publishable_key,
+                             placeholder: Constants::Settings::General.details[:monobank_publishable_key][:placeholder] %>
+          </div>
+
+          <div class="crayons-field">
+            <%= admin_config_label :monobank_base_url, "Monobank base URL" %>
+            <%= admin_config_description Constants::Settings::General.details[:monobank_base_url][:description] %>
+            <%= f.text_field :monobank_base_url,
+                             class: "crayons-textfield",
+                             value: Settings::General.monobank_base_url,
+                             placeholder: Constants::Settings::General.details[:monobank_base_url][:placeholder] %>
+          </div>
+
+          <div class="crayons-field">
+            <%= admin_config_label :monobank_webhook_secret, "Monobank webhook secret" %>
+            <%= admin_config_description Constants::Settings::General.details[:monobank_webhook_secret][:description] %>
+            <%= f.text_field :monobank_webhook_secret,
+                             class: "crayons-textfield",
+                             value: Settings::General.monobank_webhook_secret,
+                             placeholder: Constants::Settings::General.details[:monobank_webhook_secret][:placeholder] %>
+          </div>
         </div>
 
         <% if FeatureFlag.enabled?(Geolocation::FEATURE_FLAG) %>

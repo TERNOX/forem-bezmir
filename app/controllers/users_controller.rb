@@ -315,10 +315,10 @@ class UsersController < ApplicationController
   end
 
   def handle_billing_tab
-    stripe_code = current_user.stripe_id_code
-    return if stripe_code == "special"
+    code = customer_identifier_for(current_user)
+    return if code == "special"
 
-    @customer = Payments::Customer.get(stripe_code) if stripe_code.present?
+    @customer = Payments::Customer.get(code) if code.present?
   end
 
   def handle_response_templates_tab
@@ -357,6 +357,15 @@ class UsersController < ApplicationController
 
   def password_params
     params.permit(:current_password, :password, :password_confirmation)
+  end
+
+  def payment_gateway
+    @payment_gateway ||= Payments::Gateway.build
+  end
+
+  def customer_identifier_for(user)
+    attribute = payment_gateway.is_a?(Payments::MonobankGateway) ? :monobank_customer_id : :stripe_id_code
+    user.public_send(attribute)
   end
 
   def sidebar_suggestions

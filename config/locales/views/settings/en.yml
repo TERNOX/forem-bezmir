@@ -51,6 +51,14 @@ en:
         make: Make primary
         primary: primary
         remove: Remove card
+        monobank_description: Add a new payment card using the Monobank gateway.
+        card_number: Card number
+        card_exp_month: Expiration month (MM)
+        card_exp_year: Expiration year (YYYY)
+        card_cvc: Security code (CVC)
+        monobank_error: Unable to tokenize this card. Please verify the details and try again.
+        monobank_incomplete: Please complete every card field before submitting.
+        submitting: Submitting...
       characters: "Available characters used: "
       complete:
         heading: Confirm your email to complete your profile.

@@ -1,6 +1,8 @@
 module IncomingWebhooks
   class StripeEventsController < ApplicationController
     skip_before_action :verify_authenticity_token
+    before_action :ensure_stripe_provider
+    before_action :initialize_gateway
 
     STRIPE_ENDPOINT_SECRET = ApplicationConfig["STRIPE_SIGNING_SECRET"]
 
@@ -46,6 +48,18 @@ module IncomingWebhooks
     end
 
     private
+
+    def ensure_stripe_provider
+      head :not_found unless Payments::Gateway.default_provider == :stripe
+    end
+
+    def initialize_gateway
+      payment_gateway
+    end
+
+    def payment_gateway
+      @payment_gateway ||= Payments::Gateway.build(provider: :stripe)
+    end
 
     def handle_checkout_session_completed(invoice)
       # This is the one we're using to verify completion

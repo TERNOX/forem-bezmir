@@ -129,6 +129,10 @@ module Constants
             description: I18n.t("lib.constants.settings.general.news_sitemap_organization_ids.description"),
             placeholder: I18n.t("lib.constants.settings.general.news_sitemap_organization_ids.placeholder")
           },
+          payment_provider: {
+            description: I18n.t("lib.constants.settings.general.payment_provider.description"),
+            placeholder: Settings::General::PAYMENT_PROVIDERS.join(", ")
+          },
           stripe_api_key: {
             description: I18n.t("lib.constants.settings.general.stripe_api.description"),
             placeholder: "sk_live_...."
@@ -136,6 +140,22 @@ module Constants
           stripe_publishable_key: {
             description: I18n.t("lib.constants.settings.general.stripe_key.description"),
             placeholder: "pk_live_...."
+          },
+          monobank_api_key: {
+            description: I18n.t("lib.constants.settings.general.monobank_api.description"),
+            placeholder: "mb_test_...."
+          },
+          monobank_publishable_key: {
+            description: I18n.t("lib.constants.settings.general.monobank_publishable_key.description"),
+            placeholder: "pk_live_...."
+          },
+          monobank_base_url: {
+            description: I18n.t("lib.constants.settings.general.monobank_base_url.description"),
+            placeholder: "https://api.monobank.ua"
+          },
+          monobank_webhook_secret: {
+            description: I18n.t("lib.constants.settings.general.monobank_webhook_secret.description"),
+            placeholder: "supersecret"
           },
           suggested_tags: {
             description: I18n.t("lib.constants.settings.general.tags.description"),

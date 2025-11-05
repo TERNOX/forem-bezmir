@@ -4,6 +4,16 @@ uk:
     constants:
       settings:
         general:
+          payment_provider:
+            description: Назва платіжного провайдера (наприклад, stripe або monobank)
+          monobank_api:
+            description: Секретний API-ключ Monobank для обробки платежів
+          monobank_publishable_key:
+            description: Публічний ключ Monobank для клієнтських сценаріїв оплати
+          monobank_base_url:
+            description: Базова адреса для запитів до API Monobank
+          monobank_webhook_secret:
+            description: Секрет для валідації вебхуків Monobank
           enable_video_upload:
             description: Увімкніть, щоб дозволити членам спільноти завантажувати відео на Forem
           video_upload_max_file_size_mb:
