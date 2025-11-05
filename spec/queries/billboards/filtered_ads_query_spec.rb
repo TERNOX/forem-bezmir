@@ -123,6 +123,28 @@ RSpec.describe Billboards::FilteredAdsQuery, type: :query do
     end
   end
 
+  context "when billboards target organizations" do
+    let(:organization) { create(:organization) }
+    let(:other_org) { create(:organization) }
+    let!(:targeted) { create_billboard target_organization_ids: [organization.id] }
+    let!(:other_targeted) { create_billboard target_organization_ids: [other_org.id] }
+    let!(:untargeted) { create_billboard target_organization_ids: [] }
+
+    it "includes billboards whose targets include the organization" do
+      filtered = filter_billboards organization_id: organization.id
+
+      expect(filtered).to include(targeted, untargeted)
+      expect(filtered).not_to include(other_targeted)
+    end
+
+    it "excludes targeted billboards when the context has no organization" do
+      filtered = filter_billboards organization_id: nil
+
+      expect(filtered).to include(untargeted)
+      expect(filtered).not_to include(targeted, other_targeted)
+    end
+  end
+
   context "when considering audience segmentation" do
     let!(:in_segment) { create(:user) }
     let!(:audience_segment) { create(:audience_segment, type_of: :no_posts_yet) }
