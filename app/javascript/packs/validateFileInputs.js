@@ -74,12 +74,12 @@ function handleFileSizeError(fileSizeErrorHandler, fileSizeMb, maxFileSizeMb) {
   if (fileSizeErrorHandler) {
     fileSizeErrorHandler();
   } else {
-    let errorMessage = `File size too large (${fileSizeMb} MB).`;
+    let errorMessage = `Файл занаднто важкий (${fileSizeMb} мбайт).`;
 
     // If a user uploads a file type that we haven't defined a max size limit for then maxFileSizeMb
     // could be NaN
     if (maxFileSizeMb >= 0) {
-      errorMessage += ` The limit is ${maxFileSizeMb} MB.`;
+      errorMessage += ` Ліміт - ${maxFileSizeMb} мбайт.`;
     }
 
     addErrorMessage(errorMessage);

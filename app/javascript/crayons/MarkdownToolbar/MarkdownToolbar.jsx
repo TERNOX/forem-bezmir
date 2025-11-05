@@ -440,7 +440,7 @@ export const MarkdownToolbar = ({
               setStoredCursorPosition({ selectionStart, selectionEnd });
             },
             tooltip: smallScreen ? null : (
-              <span aria-hidden="true">Завантажити відео</span>
+              <span aria-hidden="true">Завантажити відео (максимум 50 МБ)</span>
             ),
             key: 'video-btn',
             className: 'toolbar-btn formatter-btn mr-1',
