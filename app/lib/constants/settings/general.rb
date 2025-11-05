@@ -1,6 +1,11 @@
 module Constants
   module Settings
     module General
+      PAYMENT_PROVIDERS = if defined?(::Settings::General::PAYMENT_PROVIDERS)
+                            ::Settings::General::PAYMENT_PROVIDERS
+                          else
+                            %w[stripe monobank].freeze
+                          end
       IMAGE_PLACEHOLDER = "https://url/image.png".freeze
 
       def self.details
@@ -131,7 +136,7 @@ module Constants
           },
           payment_provider: {
             description: I18n.t("lib.constants.settings.general.payment_provider.description"),
-            placeholder: Settings::General::PAYMENT_PROVIDERS.join(", ")
+            placeholder: PAYMENT_PROVIDERS.join(", ")
           },
           stripe_api_key: {
             description: I18n.t("lib.constants.settings.general.stripe_api.description"),
