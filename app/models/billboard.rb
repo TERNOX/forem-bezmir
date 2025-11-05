@@ -80,9 +80,11 @@ class Billboard < ApplicationRecord
            :valid_manual_audience_segment,
            :validate_tag,
            :validate_geolocations,
-           :validate_expiration_approval
+           :validate_expiration_approval,
+           :validate_target_organization_ids
 
   before_save :process_markdown
+  before_save :cache_tag_list
   before_save :update_content_updated_at_if_needed
   after_save :generate_billboard_name
   after_save :refresh_audience_segment, if: :should_refresh_audience_segment?
@@ -289,6 +291,13 @@ class Billboard < ApplicationRecord
     errors.add(:approved, "cannot be set to true if billboard has expired")
   end
 
+  def validate_target_organization_ids
+    ids = Array(target_organization_ids)
+    return if ids.all? { |id| id.is_a?(Integer) && id.positive? }
+
+    errors.add(:target_organization_ids, "must contain positive integer IDs")
+  end
+
   def audience_segment_type
     @audience_segment_type ||= audience_segment&.type_of
   end
@@ -306,7 +315,8 @@ class Billboard < ApplicationRecord
       "tag_list" => cached_tag_list,
       "exclude_article_ids" => exclude_article_ids.join(","),
       "exclude_survey_ids" => exclude_survey_ids.join(","),
-      "target_geolocations" => target_geolocations.map(&:to_iso3166)
+      "target_geolocations" => target_geolocations.map(&:to_iso3166),
+      "target_organization_ids" => target_organization_ids.join(",")
     }
     super(options.merge(except: %i[tags tag_list target_geolocations])).merge(overrides)
   end
@@ -318,6 +328,10 @@ class Billboard < ApplicationRecord
     adjusted_input = input.is_a?(String) ? input.split(",") : input
     adjusted_input = adjusted_input&.filter_map { |value| value.presence&.to_i }
     write_attribute :exclude_article_ids, (adjusted_input || [])
+  end
+
+  def target_organization_ids=(input)
+    write_attribute :target_organization_ids, parse_integer_array(input)
   end
 
   def preferred_article_ids=(input)
@@ -413,6 +427,10 @@ class Billboard < ApplicationRecord
 
   private
 
+  def cache_tag_list
+    self.cached_tag_list = tag_list.to_a.join(", ")
+  end
+
   def update_content_updated_at_if_needed
     # Only update content_updated_at when content-related fields change
     content_fields = %w[body_markdown name placement_area color template render_mode]
@@ -488,5 +506,26 @@ class Billboard < ApplicationRecord
     return if audience_segment_type != "manual"
 
     errors.add(:audience_segment_type) if audience_segment.blank?
+  end
+
+  def parse_integer_array(input)
+    values = case input
+             when String
+               input.split(",")
+             when Array
+               input
+             else
+               []
+             end
+
+    values
+      .filter_map do |value|
+        stripped = value.to_s.strip
+        next if stripped.blank?
+
+        number = Integer(stripped, exception: false)
+        number if number&.positive?
+      end
+      .uniq
   end
 end

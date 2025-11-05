@@ -33,6 +33,7 @@ module Billboards
     def call
       @filtered_billboards = approved_and_published_ads
       @filtered_billboards = placement_area_ads
+      @filtered_billboards = organization_targeted_ads
       @filtered_billboards = included_subforem_ads # if @subforem_id.present?
       @filtered_billboards = browser_context_ads if @user_agent.present?
       @filtered_billboards = page_ads if @page_id.present?
@@ -95,6 +96,15 @@ module Billboards
 
     def placement_area_ads
       @filtered_billboards.where(placement_area: @area)
+    end
+
+    def organization_targeted_ads
+      if @organization_id.present?
+        @filtered_billboards.where("cardinality(target_organization_ids) = 0 OR :organization_id = ANY(target_organization_ids)",
+                                   organization_id: @organization_id)
+      else
+        @filtered_billboards.where("cardinality(target_organization_ids) = 0")
+      end
     end
 
     def browser_context_ads

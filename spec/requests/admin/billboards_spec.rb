@@ -76,6 +76,21 @@ RSpec.describe "/admin/customization/billboards" do
         expect(Billboard.last.creator_id).to eq(super_admin.id)
       end
 
+      it "saves targeted tags" do
+        post admin_billboards_path, params: params.merge(tag_list: "ruby, rails ,ruby")
+        billboard = Billboard.last
+        expect(billboard.tag_list).to match_array(%w[ruby rails])
+        expect(billboard.cached_tag_list).to eq("ruby, rails")
+      end
+
+      it "persists organization targeting" do
+        target_org = create(:organization)
+
+        post admin_billboards_path, params: params.merge(target_organization_ids: "#{target_org.id}, #{target_org.id}")
+
+        expect(Billboard.last.target_organization_ids).to eq([target_org.id])
+      end
+
       it "fails to create a new billboard with invalid target geolocations" do
         expect do
           post admin_billboards_path, params: params.merge(target_geolocations: "US-UM, CA-UH")
@@ -106,6 +121,22 @@ RSpec.describe "/admin/customization/billboards" do
             put admin_billboard_path(billboard.id), params: params
           end.to change { billboard.reload.priority }.from(false).to(true)
         end
+      end
+
+      it "clears targeted tags when blank" do
+        billboard.update!(tag_list: %w[ruby rails])
+
+        put admin_billboard_path(billboard.id), params: params.merge(tag_list: " ")
+
+        billboard.reload
+        expect(billboard.tag_list).to be_empty
+        expect(billboard.cached_tag_list).to eq("")
+      end
+
+      it "updates cached targeted tags" do
+        put admin_billboard_path(billboard.id), params: params.merge(tag_list: "go, ruby, go")
+
+        expect(billboard.reload.cached_tag_list).to eq("go, ruby")
       end
 
       it "redirects back to edit path" do

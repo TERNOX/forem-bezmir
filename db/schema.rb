@@ -557,6 +557,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_11_05_154309) do
     t.float "success_rate", default: 0.0
     t.ltree "target_geolocations", default: [], array: true
     t.string "target_role_names", default: [], array: true
+    t.integer "target_organization_ids", default: [], null: false, array: true
     t.integer "template", default: 0
     t.integer "type_of", default: 0, null: false
     t.datetime "updated_at", precision: nil, null: false
@@ -572,6 +573,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_11_05_154309) do
     t.index ["prefer_paired_with_billboard_id"], name: "index_display_ads_on_prefer_paired_with_billboard_id"
     t.index ["preferred_article_ids"], name: "index_display_ads_on_preferred_article_ids", using: :gin
     t.index ["target_geolocations"], name: "gist_index_display_ads_on_target_geolocations", using: :gist
+    t.index ["target_organization_ids"], name: "index_display_ads_on_target_organization_ids", using: :gin
     t.index ["target_role_names"], name: "index_display_ads_on_target_role_names", using: :gin
   end
 

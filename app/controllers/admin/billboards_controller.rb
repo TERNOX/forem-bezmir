@@ -63,15 +63,42 @@ module Admin
     private
 
     def billboard_params
-      params.permit(:organization_id, :body_markdown, :placement_area, :target_geolocations,
-                    :published, :approved, :name, :display_to, :tag_list, :type_of, :color,
-                    :exclude_article_ids, :audience_segment_id, :priority, :browser_context,
-                    :exclude_role_names, :target_role_names, :include_subforem_ids,
-                    :render_mode, :template, :custom_display_label, :requires_cookies, :expires_at)
+      permitted = params.permit(:organization_id, :body_markdown, :placement_area, :target_geolocations,
+                                :published, :approved, :name, :display_to, :tag_list, :type_of, :color,
+                                :exclude_article_ids, :audience_segment_id, :priority, :browser_context,
+                                :exclude_role_names, :target_role_names, :include_subforem_ids,
+                                :render_mode, :template, :custom_display_label, :requires_cookies, :expires_at,
+                                :target_organization_ids)
+
+      if permitted.key?(:tag_list)
+        permitted[:tag_list] = sanitize_tag_list(permitted[:tag_list])
+      end
+
+      if permitted.key?(:target_organization_ids)
+        permitted[:target_organization_ids] = sanitize_integer_list(permitted[:target_organization_ids])
+      end
+
+      permitted
     end
 
     def authorize_admin
       authorize Billboard, :access?, policy_class: InternalPolicy
+    end
+
+    def sanitize_tag_list(value)
+      return [] if value.blank?
+
+      Array(value).flat_map do |tags|
+        tags.to_s.split(",")
+      end.map(&:strip).reject(&:blank?).uniq
+    end
+
+    def sanitize_integer_list(value)
+      Array(value.is_a?(String) ? value.split(",") : value)
+        .map { |candidate| candidate.to_s.strip }
+        .reject(&:blank?)
+        .filter_map { |candidate| Integer(candidate, exception: false) }
+        .select(&:positive?).uniq
     end
   end
 end

@@ -71,12 +71,18 @@
 
     <div class="crayons-field hidden">
       <%= label_tag :tag_list, "Tag List:", class: "crayons-field__label" %>
-      <%= text_field_tag :tag_list, @billboard.tag_list.to_s, class: "crayons-textfield js-tags-textfield", autocomplete: "off" %>
+      <%= text_field_tag :tag_list, @billboard.cached_tag_list.to_s, class: "crayons-textfield js-tags-textfield", autocomplete: "off" %>
     </div>
 
     <div class="crayons-field hidden">
       <%= label_tag :exclude_article_ids, "Exclude Article IDs:", class: "crayons-field__label" %>
       <%= text_field_tag :exclude_article_ids, @billboard.exclude_article_ids.join(", "), class: "crayons-textfield js-exclude-ids-textfield", autocomplete: "off" %>
+    </div>
+
+    <div class="crayons-field">
+      <%= label_tag :target_organization_ids, "Target Organization ID(s):", class: "crayons-field__label" %>
+      <%= text_field_tag :target_organization_ids, @billboard.target_organization_ids.join(", "), class: "crayons-textfield", placeholder: "e.g. 42, 1337", autocomplete: "off" %>
+      <p class="crayons-field__description">Billboard will only appear on articles that belong to these organization IDs. Leave blank to show it everywhere.</p>
     </div>
 
     <div class="crayons-field">
