@@ -13,6 +13,16 @@ const isModifierClick = (event) =>
 
 const sanitizeText = (value = '') => value.replace(/\s+/g, ' ').trim();
 
+const DEFAULT_IMAGE_CAPTIONS = ['image description', 'опис картинки'];
+
+const getDisplayableText = (value = '') => {
+  const sanitized = sanitizeText(value);
+  if (!sanitized) {
+    return '';
+  }
+  return DEFAULT_IMAGE_CAPTIONS.includes(sanitized.toLowerCase()) ? '' : sanitized;
+};
+
 const getFigureCaption = (link) => {
   const figure = link.closest('figure');
   if (!figure) {
@@ -31,7 +41,7 @@ const createItemFromLink = (link) => {
   const altText = sanitizeText(
     link.dataset.lightboxAlt || image?.dataset?.lightboxAlt || image?.getAttribute('alt') || '',
   );
-  const captionText = sanitizeText(
+  const captionText = getDisplayableText(
     link.dataset.lightboxCaption ||
       image?.dataset?.lightboxCaption ||
       getFigureCaption(link) ||
@@ -96,7 +106,7 @@ const buildGallery = (galleryElement, galleryIndex) => {
     const thumbnailImage = document.createElement('img');
     thumbnailImage.loading = 'lazy';
     thumbnailImage.src = item.displaySrc;
-    thumbnailImage.alt = item.alt || '';
+    thumbnailImage.alt = getDisplayableText(item.alt) || '';
     thumbnailButton.appendChild(thumbnailImage);
 
     thumbnailButton.addEventListener('click', () => {
@@ -113,7 +123,7 @@ const buildGallery = (galleryElement, galleryIndex) => {
   thumbnailButtons.forEach((button) => thumbnailsWrapper.appendChild(button));
 
   const updateMainButtonLabel = (item) => {
-    const description = item.caption || item.alt;
+    const description = getDisplayableText(item.caption) || getDisplayableText(item.alt);
     const label = description ? `Відкрити зображення у лайтбоксі: ${description}` : 'Відкрити зображення у лайтбоксі';
     mainButton.setAttribute('aria-label', label);
   };
@@ -125,7 +135,7 @@ const buildGallery = (galleryElement, galleryIndex) => {
     activeIndex = index;
     const item = items[index];
     mainImage.src = item.displaySrc;
-    mainImage.alt = item.alt || '';
+    mainImage.alt = getDisplayableText(item.alt) || item.alt || '';
     mainCaption.textContent = item.caption || '';
     mainCaption.hidden = !item.caption;
     mainButton.dataset.lightboxIndex = String(index);
@@ -267,7 +277,7 @@ export const initializeArticleLightbox = () => {
       overlayElements.container.classList.remove('is-loading');
     };
     overlayElements.image.src = item.src;
-    overlayElements.image.alt = item.alt || '';
+    overlayElements.image.alt = getDisplayableText(item.alt) || item.alt || '';
     overlayElements.caption.textContent = item.caption || '';
     overlayElements.caption.hidden = !item.caption;
     if (overlayElements.image.complete && overlayElements.image.naturalWidth > 0) {

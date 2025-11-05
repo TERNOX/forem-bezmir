@@ -17,6 +17,7 @@ module Html
     RAW_TAG = "{----% raw %----}".freeze
     END_RAW_TAG = "{----% endraw %----}".freeze
     MARKDOWN_VIDEO_PATTERN = /\.(mp4|webm|mov|m4v)\z/i.freeze
+    DEFAULT_IMAGE_CAPTIONS = ["Image description", "Опис картинки"].freeze
 
     attr_accessor :html
     private :html=
@@ -123,6 +124,30 @@ module Html
       end
 
       @html = doc.to_html
+
+      self
+    end
+
+    def add_figcaptions_to_images
+      return self if @html.blank?
+
+      fragment = Nokogiri::HTML.fragment(@html)
+
+      fragment.css("a.article-body-image-wrapper > img").each do |image|
+        caption_text = sanitized_caption_text(image)
+        next if caption_text.blank?
+
+        link = image.parent
+        figure = link.ancestors("figure").first || build_figure_for(link)
+        next unless figure
+        next if figure.at_css("figcaption")
+
+        figcaption = Nokogiri::XML::Node.new("figcaption", fragment.document)
+        figcaption.content = caption_text
+        figure.add_child(figcaption)
+      end
+
+      @html = fragment.to_html
 
       self
     end
@@ -354,6 +379,43 @@ module Html
 
     def allowed_image_host?(src)
       ImageUri.new(src).allowed?
+    end
+
+    def sanitized_caption_text(image)
+      raw_text = image["data-lightbox-caption"].presence || image["alt"].presence
+      return "" if raw_text.blank?
+
+      sanitized = ActionController::Base.helpers.strip_tags(raw_text.to_s).squish
+      return "" if sanitized.blank?
+      return "" if default_caption?(sanitized)
+
+      sanitized
+    end
+
+    def default_caption?(text)
+      DEFAULT_IMAGE_CAPTIONS.any? { |value| value.casecmp?(text) }
+    end
+
+    def build_figure_for(link)
+      return if link.nil?
+
+      figure = Nokogiri::XML::Node.new("figure", link.document)
+      parent = link.parent
+
+      if parent&.name == "p"
+        significant_children = parent.children.reject { |child| blank?(child) }
+
+        if significant_children.one? && significant_children.first == link
+          parent.replace(figure)
+        else
+          link.replace(figure)
+        end
+      else
+        link.replace(figure)
+      end
+
+      figure.add_child(link)
+      figure
     end
 
     def user_link_if_exists(mention)

@@ -105,6 +105,40 @@ RSpec.describe Html::Parser, type: :service do
     end
   end
 
+  describe "#add_figcaptions_to_images" do
+    context "when html is nil" do
+      it "doesn't raise an error" do
+        expect { described_class.new(nil).add_figcaptions_to_images.html }.not_to raise_error
+      end
+    end
+
+    it "wraps images with figures and adds figcaptions when alt text is present" do
+      html = <<~HTML
+        <p><a href="https://image.com/image.jpg" class="article-body-image-wrapper"><img src="https://image.com/image.jpg" alt="Beautiful landscape"></a></p>
+      HTML
+      parsed_html = Nokogiri::HTML.fragment(described_class.new(html).add_figcaptions_to_images.html)
+      figure = parsed_html.at_css("figure")
+      expect(figure).to be_present
+      expect(figure.at_css("figcaption").text).to eq("Beautiful landscape")
+    end
+
+    it "does not add figcaptions for default placeholder alt text" do
+      html = <<~HTML
+        <p><a href="https://image.com/image.jpg" class="article-body-image-wrapper"><img src="https://image.com/image.jpg" alt="Image description"></a></p>
+      HTML
+      parsed_html = Nokogiri::HTML.fragment(described_class.new(html).add_figcaptions_to_images.html)
+      expect(parsed_html.at_css("figcaption")).to be_nil
+    end
+
+    it "keeps existing figcaptions intact" do
+      html = <<~HTML
+        <figure><a href="https://image.com/image.jpg" class="article-body-image-wrapper"><img src="https://image.com/image.jpg" alt="Existing alt"></a><figcaption>Custom caption</figcaption></figure>
+      HTML
+      parsed_html = Nokogiri::HTML.fragment(described_class.new(html).add_figcaptions_to_images.html)
+      expect(parsed_html.css("figcaption").map(&:text)).to eq(["Custom caption"])
+    end
+  end
+
   describe "#add_control_class_to_codeblock" do
     context "when html is nil" do
       it "doesn't raise an error" do
