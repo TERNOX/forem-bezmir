@@ -84,6 +84,7 @@ class Billboard < ApplicationRecord
            :validate_target_organization_ids
 
   before_save :process_markdown
+  before_save :cache_tag_list
   before_save :update_content_updated_at_if_needed
   after_save :generate_billboard_name
   after_save :refresh_audience_segment, if: :should_refresh_audience_segment?
@@ -425,6 +426,10 @@ class Billboard < ApplicationRecord
   end
 
   private
+
+  def cache_tag_list
+    self.cached_tag_list = tag_list.to_a.join(", ")
+  end
 
   def update_content_updated_at_if_needed
     # Only update content_updated_at when content-related fields change

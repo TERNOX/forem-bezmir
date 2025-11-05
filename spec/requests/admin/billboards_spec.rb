@@ -78,7 +78,9 @@ RSpec.describe "/admin/customization/billboards" do
 
       it "saves targeted tags" do
         post admin_billboards_path, params: params.merge(tag_list: "ruby, rails ,ruby")
-        expect(Billboard.last.tag_list).to match_array(%w[ruby rails])
+        billboard = Billboard.last
+        expect(billboard.tag_list).to match_array(%w[ruby rails])
+        expect(billboard.cached_tag_list).to eq("ruby, rails")
       end
 
       it "persists organization targeting" do
@@ -126,7 +128,15 @@ RSpec.describe "/admin/customization/billboards" do
 
         put admin_billboard_path(billboard.id), params: params.merge(tag_list: " ")
 
-        expect(billboard.reload.tag_list).to be_empty
+        billboard.reload
+        expect(billboard.tag_list).to be_empty
+        expect(billboard.cached_tag_list).to eq("")
+      end
+
+      it "updates cached targeted tags" do
+        put admin_billboard_path(billboard.id), params: params.merge(tag_list: "go, ruby, go")
+
+        expect(billboard.reload.cached_tag_list).to eq("go, ruby")
       end
 
       it "redirects back to edit path" do
