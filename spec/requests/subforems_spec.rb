@@ -729,6 +729,7 @@ RSpec.describe "Subforems", type: :request do
         expect(link.subforem_id).to eq(subforem.id)
         expect(link.name).to eq("Image Link")
         expect(link.read_attribute(:image)).to be_present
+        expect(link.image.url).to be_present
       end
 
       it "creates navigation link with default icon when neither icon nor image is provided" do
@@ -896,6 +897,7 @@ RSpec.describe "Subforems", type: :request do
         
         navigation_link.reload
         expect(navigation_link.read_attribute(:image)).to be_present
+        expect(navigation_link.image.url).to be_present
       end
     end
   end
