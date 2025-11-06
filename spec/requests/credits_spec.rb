@@ -54,11 +54,14 @@ RSpec.describe "Credits" do
     end
 
     before do
+      Payments::Gateway.reset!
+      allow(Settings::General).to receive(:payment_provider).and_return("stripe")
       StripeMock.start
       sign_in user
     end
 
     after do
+      Payments::Gateway.reset!
       StripeMock.stop
     end
 

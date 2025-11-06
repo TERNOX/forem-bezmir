@@ -1,6 +1,6 @@
 class StripeActiveCardsController < ApplicationController
   before_action :authenticate_user!
-  before_action :initialize_stripe
+  before_action :ensure_cards_supported
 
   AUDIT_LOG_CATEGORY = "user.credit_card.edit".freeze
   private_constant :AUDIT_LOG_CATEGORY
@@ -75,15 +75,20 @@ class StripeActiveCardsController < ApplicationController
   private
 
   def find_customer
-    Payments::Customer.get(current_user.stripe_id_code)
+    identifier = customer_identifier_for(current_user)
+    raise Payments::InvalidRequestError, I18n.t("services.payments.select_payment_method") if identifier.blank?
+
+    Payments::Customer.get(identifier)
   end
 
   def find_or_create_customer
-    if current_user.stripe_id_code.present?
+    identifier = customer_identifier_for(current_user)
+
+    if identifier.present?
       find_customer
     else
       Payments::Customer.create(email: current_user.email).tap do |customer|
-        current_user.update(stripe_id_code: customer.id)
+        current_user.update(customer_id_attribute => customer.id)
       end
     end
   end
@@ -104,5 +109,24 @@ class StripeActiveCardsController < ApplicationController
         user_action: user_action
       },
     )
+  end
+
+  def ensure_cards_supported
+    return if payment_gateway.supports_cards?
+
+    flash[:error] = I18n.t("services.payments.select_payment_method")
+    redirect_to user_settings_path(:billing)
+  end
+
+  def payment_gateway
+    @payment_gateway ||= Payments::Gateway.build
+  end
+
+  def customer_id_attribute
+    @customer_id_attribute ||= payment_gateway.is_a?(Payments::MonobankGateway) ? :monobank_customer_id : :stripe_id_code
+  end
+
+  def customer_identifier_for(user)
+    user.public_send(customer_id_attribute)
   end
 end

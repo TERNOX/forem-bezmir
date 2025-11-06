@@ -1,4 +1,5 @@
 <% title t("views.credits.new.meta.title") %>
+<% provider = Settings::General.payment_provider.to_s.presence || "stripe" %>
 
 <div class="credits-container">
   <div class="credits-banner">
@@ -22,7 +23,9 @@
     </div>
   <% end %>
 
-  <script src="https://js.stripe.com/v3/"></script>
+  <% if provider == "stripe" %>
+    <script src="https://js.stripe.com/v3/"></script>
+  <% end %>
 
   <div style="margin-top: 30px; text-align: center">
     <%= render "pricing" %>
@@ -49,7 +52,18 @@
         </p>
       </div>
     </details>
-    <%= form_for(@credit) do |f| %>
+    <% form_html = {} %>
+    <% if provider == "monobank" %>
+      <% form_html[:data] = {
+           monobank_credit_form: true,
+           monobank_token_endpoint: monobank_token_path,
+           monobank_error_message: t("views.credits.new.form.method.monobank_error"),
+           monobank_incomplete_message: t("views.credits.new.form.method.monobank_incomplete"),
+           monobank_submit_label: t("views.credits.new.form.submit"),
+           monobank_submitting_label: t("views.credits.new.form.submitting")
+         } %>
+    <% end %>
+    <%= form_for(@credit, html: form_html) do |f| %>
       <label for="amount-input" class="main-form-label">
         <%= t("views.credits.new.form.amount.label") %>
       </label>
@@ -69,28 +83,95 @@
       <label for="card-element" class="main-form-label">
         <%= t("views.credits.new.form.method.label") %>
       </label>
-      <% if @customer %>
-        <div id="cards-wrapper">
-          <% @customer.sources.each do |source| %>
-            <div class="existing-card">
-            <input type="radio" <%= "checked" if source.id == @customer.default_source %>
-              name="selected_card" value="<%= source.id %>" id="existing-card-<%= source.id %>" />
-            <label for="existing-card-<%= source.id %>">
-              <span class="credit-card-component credit-card-component--bold"><%= source.brand %></span>
-              <span class="credit-card-component"><%= t("views.credits.new.form.method.number", last: source.last4) %></span>
-              <span class="credit-card-component"><%= t("views.credits.new.form.method.exp", mm: source.exp_month, yy: source.exp_year.to_s.last(2)) %></span>
-            </label>
-            </div>
+      <% if provider == "monobank" %>
+        <div id="cards-wrapper" data-monobank-cards-wrapper>
+          <% if @customer %>
+            <% @customer.sources.each do |source| %>
+              <div class="existing-card">
+                <input type="radio"
+                       <%= "checked" if source.id == @customer.default_source %>
+                       name="selected_card"
+                       value="<%= source.id %>"
+                       id="existing-card-<%= source.id %>"
+                       data-monobank-existing-card />
+                <label for="existing-card-<%= source.id %>">
+                  <span class="credit-card-component credit-card-component--bold"><%= source.brand %></span>
+                  <span class="credit-card-component"><%= t("views.credits.new.form.method.number", last: source.last4) %></span>
+                  <span class="credit-card-component"><%= t("views.credits.new.form.method.exp", mm: source.exp_month, yy: source.exp_year.to_s.last(2)) %></span>
+                </label>
+              </div>
+            <% end %>
           <% end %>
-          <button id="add-new-card"><%= t("views.credits.new.form.method.add") %></button>
+          <button id="add-new-card" data-monobank-add-card><%= t("views.credits.new.form.method.add") %></button>
         </div>
+        <div id="monobank-card-fields"
+             class="<%= 'hidden' if @customer&.sources&.any? %>"
+             data-monobank-card-fields>
+          <div class="crayons-field">
+            <label class="crayons-field__label" for="purchase-monobank-card-number"><%= t("views.settings.billing.card_number") %></label>
+            <input class="crayons-textfield"
+                   id="purchase-monobank-card-number"
+                   name="card[number]"
+                   data-monobank-card-number
+                   autocomplete="off"
+                   required />
+          </div>
+          <div class="crayons-field grid grid-cols-2 gap-4">
+            <div>
+              <label class="crayons-field__label" for="purchase-monobank-card-exp-month"><%= t("views.settings.billing.card_exp_month") %></label>
+              <input class="crayons-textfield"
+                     id="purchase-monobank-card-exp-month"
+                     name="card[exp_month]"
+                     data-monobank-card-exp-month
+                     autocomplete="off"
+                     required />
+            </div>
+            <div>
+              <label class="crayons-field__label" for="purchase-monobank-card-exp-year"><%= t("views.settings.billing.card_exp_year") %></label>
+              <input class="crayons-textfield"
+                     id="purchase-monobank-card-exp-year"
+                     name="card[exp_year]"
+                     data-monobank-card-exp-year
+                     autocomplete="off"
+                     required />
+            </div>
+          </div>
+          <div class="crayons-field">
+            <label class="crayons-field__label" for="purchase-monobank-card-cvv"><%= t("views.settings.billing.card_cvc") %></label>
+            <input class="crayons-textfield"
+                   id="purchase-monobank-card-cvv"
+                   name="card[cvv]"
+                   data-monobank-card-cvv
+                   autocomplete="off"
+                   required />
+          </div>
+        </div>
+        <%= hidden_field_tag :payment_token, "", id: "monobank-payment-token" %>
+        <div id="card-errors" role="alert" data-monobank-error></div>
       <% else %>
-        <div id="card-element">
-          <%# A Stripe Element will be inserted here. %>
-        </div>
+        <% if @customer %>
+          <div id="cards-wrapper">
+            <% @customer.sources.each do |source| %>
+              <div class="existing-card">
+              <input type="radio" <%= "checked" if source.id == @customer.default_source %>
+                name="selected_card" value="<%= source.id %>" id="existing-card-<%= source.id %>" />
+              <label for="existing-card-<%= source.id %>">
+                <span class="credit-card-component credit-card-component--bold"><%= source.brand %></span>
+                <span class="credit-card-component"><%= t("views.credits.new.form.method.number", last: source.last4) %></span>
+                <span class="credit-card-component"><%= t("views.credits.new.form.method.exp", mm: source.exp_month, yy: source.exp_year.to_s.last(2)) %></span>
+              </label>
+              </div>
+            <% end %>
+            <button id="add-new-card"><%= t("views.credits.new.form.method.add") %></button>
+          </div>
+        <% else %>
+          <div id="card-element">
+            <%# A Stripe Element will be inserted here. %>
+          </div>
+        <% end %>
+        <%# Used to display form errors. %>
+        <div id="card-errors" role="alert"></div>
       <% end %>
-      <%# Used to display form errors. %>
-      <div id="card-errors" role="alert"></div>
       </div>
       <button id="add-credit-card-button" class="credit-card-button"><%= t("views.credits.new.form.submit") %></button>
       <% if @purchaser.is_a? Organization %>
@@ -99,6 +180,7 @@
     <% end %>
   </div>
 </div>
+  <% if provider == "stripe" %>
   <script>
     function changeSubmitButton(opts) {
       var button = document.getElementById('add-credit-card-button');
@@ -256,3 +338,6 @@
     }
 
   </script>
+  <% else %>
+    <%= javascript_include_tag "credits/monobankCheckout", defer: true %>
+  <% end %>
