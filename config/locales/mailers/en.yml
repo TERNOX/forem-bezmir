@@ -23,7 +23,7 @@ en:
       account_deleted: "%{community} — підтвердження видалення акаунта"
       deletion_requested: "%{community} — запит на видалення акаунта"
       trusted: Вітаємо! Тепер Ви — «довірений» користувач %{community}!
-      base_subscriber: Вітаємо! Тепер Ви підписані на DEV++
+      base_subscriber: Congrats! You're now subscribed to %{subscription_name}
       moderator: "Вітаємо! Тепер Ви модеруєте тег #%{tag_name}"
       subforem_moderator: "Вітаємо! Тепер Ви модеруєте %{subforem_name}"
       new_follower: щойно підписався(лась) на Вас у %{community}

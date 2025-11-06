@@ -54,8 +54,8 @@
     </li>
     <% if FeatureFlag.enabled?("subscriber_icon") %>
       <li class="task-card-action">
-        <a class="task-card-link" href="/++">
-          <p><%= t("views.onboardings.join_subscription_html") %></p>
+        <a class="task-card-link" href="<%= subscription_landing_page_url %>">
+          <p><%= t("views.onboardings.join_subscription_html", subscription_name: subscription_product_name) %></p>
           <svg width="8" height="14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.172 7L.222 2.05 1.636.636 8 7l-6.364 6.364L.222 11.95 5.172 7z" fill="#fff" /></svg>
         </a>
       </li>

@@ -68,7 +68,7 @@
         <% end %>
         data-side-nav-visible="<%= Subforem.cached_discoverable_ids.size > 1 %>"
         data-community-name="<%= j(community_name) %>"
-        data-subscription-icon="<%= asset_path("subscription-icon.png") %>"
+        data-subscription-icon="<%= j(subscription_icon_url) %>"
         data-locale="<%= j(I18n.locale) %>"
         data-honeybadger-key="<%= j(ApplicationConfig["HONEYBADGER_JS_API_KEY"]) %>"
         data-deployed-at="<%= j(ForemInstance.deployed_at) %>"

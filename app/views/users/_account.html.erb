@@ -30,7 +30,7 @@
   <% if @user.base_subscriber? && @user.stripe_id_code.present? %>
     <div class="crayons-card crayons-card--content-rows">
       <h3 class="crayons-subtitle-2">
-        DEV++ Subscription
+        <%= subscription_product_name %> Subscription
       </h3>
       <div>
         <a href="<%= edit_stripe_subscription_path("me") %>" class="crayons-btn crayon-btn--secondary" data-no-instant>
@@ -41,7 +41,7 @@
   <% elsif @user.base_subscriber? %>
     <div class="crayons-card crayons-card--content-rows">
       <h3 class="crayons-subtitle-2">
-        Cancel DEV++ Subscription
+        Cancel <%= subscription_product_name %> Subscription
       </h3>
 
       <%= form_with(url: stripe_subscription_path("me"), method: :delete) do |f| %>
