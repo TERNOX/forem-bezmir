@@ -4,11 +4,14 @@ RSpec.describe Payments::Customer, type: :service do
   let(:customer) { Stripe::Customer.create }
 
   before do
+    Payments::Gateway.reset!
+    allow(Settings::General).to receive(:payment_provider).and_return("stripe")
     StripeMock.start
   end
 
   after do
     StripeMock.stop
+    Payments::Gateway.reset!
   end
 
   describe ".get" do

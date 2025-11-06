@@ -17,9 +17,13 @@ RSpec.describe "IncomingWebhooks::StripeEventsController" do
   end
 
   before do
+    Payments::Gateway.reset!
+    allow(Settings::General).to receive(:payment_provider).and_return("stripe")
     allow(Settings::General).to receive(:stripe_api_key).and_return(stripe_endpoint_secret)
     allow(NotifyMailer).to receive_message_chain(:with, :base_subscriber_role_email, :deliver_now)
   end
+
+  after { Payments::Gateway.reset! }
 
   describe "POST /incoming_webhooks/stripe_events" do
     let(:stripe_signature) { "test_signature" }
@@ -30,6 +34,18 @@ RSpec.describe "IncomingWebhooks::StripeEventsController" do
         post "/incoming_webhooks/stripe_events", params: payload, headers: headers
         expect(response).to have_http_status(:ok)
         expect(response.body).to include("status")
+      end
+    end
+
+    context "when stripe is not the configured provider" do
+      let(:payload) { { type: "checkout.session.completed", data: { object: {} } }.to_json }
+      let(:stripe_signature) { "test_signature" }
+
+      before { allow(Settings::General).to receive(:payment_provider).and_return("monobank") }
+
+      it "returns not found" do
+        post "/incoming_webhooks/stripe_events", params: payload, headers: headers
+        expect(response).to have_http_status(:not_found)
       end
     end
 

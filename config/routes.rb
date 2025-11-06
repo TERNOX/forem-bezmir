@@ -110,6 +110,7 @@ Rails.application.routes.draw do
       get "/mailchimp/:secret/unsubscribe", to: "mailchimp_unsubscribes#index", as: :mailchimp_unsubscribe_check
       post "/mailchimp/:secret/unsubscribe", to: "mailchimp_unsubscribes#create", as: :mailchimp_unsubscribe
       resources :stripe_events, only: [:create]
+      resources :monobank_events, only: [:create]
     end
 
     resources :magic_links, only: %i[show create new]
@@ -164,6 +165,7 @@ Rails.application.routes.draw do
       end
     end
     get "/projects", to: "projects#index"
+    post "/monobank/token", to: "monobank_tokens#create"
     resources :stripe_active_cards, only: %i[create update destroy]
     resources :stripe_subscriptions, only: %i[new edit destroy]
     resources :github_repos, only: %i[index] do

@@ -46,12 +46,12 @@ module Payments
 
     def payment_method_provided?
       # we expect at least one of :stripe_token or :selected_card to process
-      purchase_options.slice(:stripe_token, :selected_card).compact_blank.present?
+      purchase_options.slice(:stripe_token, :payment_token, :selected_card).compact_blank.present?
     end
 
     def process_purchase
       customer = find_or_create_customer
-      update_user_stripe_info(customer)
+      update_user_payment_info(customer)
       card = find_or_create_card(customer)
       create_charge(customer, card)
       self.success = true
@@ -60,23 +60,29 @@ module Payments
     end
 
     def find_or_create_customer
-      if user.stripe_id_code
-        Payments::Customer.get(user.stripe_id_code)
+      identifier = customer_identifier_for(user)
+      if identifier
+        Payments::Customer.get(identifier)
       else
         Payments::Customer.create(email: user.email)
       end
     end
 
     def find_or_create_card(customer)
-      if purchase_options[:stripe_token]
-        Payments::Customer.create_source(customer.id, purchase_options[:stripe_token])
+      token = purchase_options[:stripe_token] || purchase_options[:payment_token]
+
+      if token
+        Payments::Customer.create_source(customer.id, token)
       else
         Payments::Customer.get_source(customer, purchase_options[:selected_card])
       end
     end
 
-    def update_user_stripe_info(customer)
-      user.update_column(:stripe_id_code, customer.id) if user.stripe_id_code.nil?
+    def update_user_payment_info(customer)
+      attribute = customer_id_attribute
+      return unless attribute
+
+      user.update_column(attribute, customer.id) if user.public_send(attribute).nil?
     end
 
     def create_charge(customer, card)
@@ -129,6 +135,19 @@ module Payments
       else
         prices[:xlarge]
       end
+    end
+
+    def payment_gateway
+      @payment_gateway ||= Payments::Gateway.build
+    end
+
+    def customer_id_attribute
+      payment_gateway.is_a?(Payments::MonobankGateway) ? :monobank_customer_id : :stripe_id_code
+    end
+
+    def customer_identifier_for(user)
+      attribute = customer_id_attribute
+      attribute ? user.public_send(attribute) : nil
     end
   end
 end

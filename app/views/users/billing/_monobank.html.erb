@@ -1,0 +1,78 @@
+<div class="crayons-card crayons-card--content-rows" data-monobank-billing>
+  <h2 class="crayons-subtitle-1">
+    <%= t("views.settings.billing.heading") %>
+  </h2>
+
+  <% if flash[:error].present? %>
+    <div class="crayons-card crayons-card--secondary crayons-notice crayons-notice--danger" role="alert">
+      <p><%= flash[:error] %></p>
+    </div>
+  <% end %>
+
+  <% if customer&.sources&.any? %>
+    <div class="billing-history-header"><%= t("views.settings.billing.cards") %></div>
+    <% customer.sources.each do |source| %>
+      <div class="billing-item">
+        <p><%= t("views.settings.billing.number", brand: source.brand, last: source.last4) %></p>
+        <p class="billing-item-detail"><%= t("views.settings.billing.exp", month: source.exp_month, year: source.exp_year) %></p>
+        <% if source.id == customer.default_source %>
+          <p class="billing-item-detail billing-item-green"><%= t("views.settings.billing.primary") %></p>
+          <%= form_tag "/stripe_active_cards/#{source.id}", method: :delete do %>
+            <button class="crayons-btn crayons-btn--danger"><%= t("views.settings.billing.remove") %></button>
+          <% end %>
+        <% else %>
+          <%= form_tag "/stripe_active_cards/#{source.id}", method: :patch do %>
+            <button class="crayons-btn crayons-btn--secondary"><%= t("views.settings.billing.make") %></button>
+          <% end %>
+          <%= form_tag "/stripe_active_cards/#{source.id}", method: :delete do %>
+            <button class="crayons-btn crayons-btn--danger"><%= t("views.settings.billing.remove") %></button>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+
+  <%= form_tag stripe_active_cards_path,
+               id: "monobank-credit-card-form",
+               method: :post,
+               data: {
+                 monobank_card_form: true,
+                 monobank_token_endpoint: monobank_token_path,
+                 monobank_target_field: "stripe_token",
+                 monobank_error_message: t("views.settings.billing.monobank_error"),
+                 monobank_incomplete_message: t("views.settings.billing.monobank_incomplete"),
+                 monobank_success_label: t("views.settings.billing.add"),
+                 monobank_submitting_label: t("views.settings.billing.submitting")
+               } do %>
+    <div class="crayons-field">
+      <p class="crayons-field__description">
+        <%= t("views.settings.billing.monobank_description") %>
+      </p>
+    </div>
+    <div class="grid gap-4" data-monobank-card-fields>
+      <div class="crayons-field">
+        <label class="crayons-field__label" for="monobank-card-number"><%= t("views.settings.billing.card_number") %></label>
+        <input class="crayons-textfield" id="monobank-card-number" name="card[number]" data-monobank-card-number required autocomplete="off" />
+      </div>
+      <div class="crayons-field grid grid-cols-2 gap-4">
+        <div>
+          <label class="crayons-field__label" for="monobank-card-exp-month"><%= t("views.settings.billing.card_exp_month") %></label>
+          <input class="crayons-textfield" id="monobank-card-exp-month" name="card[exp_month]" data-monobank-card-exp-month required autocomplete="off" />
+        </div>
+        <div>
+          <label class="crayons-field__label" for="monobank-card-exp-year"><%= t("views.settings.billing.card_exp_year") %></label>
+          <input class="crayons-textfield" id="monobank-card-exp-year" name="card[exp_year]" data-monobank-card-exp-year required autocomplete="off" />
+        </div>
+      </div>
+      <div class="crayons-field">
+        <label class="crayons-field__label" for="monobank-card-cvv"><%= t("views.settings.billing.card_cvc") %></label>
+        <input class="crayons-textfield" id="monobank-card-cvv" name="card[cvv]" data-monobank-card-cvv required autocomplete="off" />
+      </div>
+    </div>
+    <div class="crayons-field__description text-danger" data-monobank-error></div>
+    <button class="crayons-btn credit-card-button" data-monobank-submit>
+      <%= t("views.settings.billing.add") %>
+    </button>
+  <% end %>
+</div>
+<%= javascript_include_tag "settings/monobankBilling", defer: true %>

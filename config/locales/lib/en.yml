@@ -177,6 +177,16 @@ en:
             description: 'Secret Stripe key for receiving payments. See: https://stripe.com/docs/keys'
           stripe_key:
             description: 'Public Stripe key for receiving payments. See: https://stripe.com/docs/keys'
+          payment_provider:
+            description: 'Name of the payment gateway to use (e.g., stripe or monobank).'
+          monobank_api:
+            description: 'Secret Monobank API key for handling payments.'
+          monobank_publishable_key:
+            description: 'Public Monobank key used by client-side payment flows.'
+          monobank_base_url:
+            description: 'Base URL for Monobank API requests.'
+          monobank_webhook_secret:
+            description: 'Webhook signing secret for validating Monobank callbacks.'
           tags:
             description: Determines which tags are suggested to new users during onboarding (comma separated, letters only)
             placeholder: 'List of valid tags: comma separated, letters only e.g. beginners,javascript,ruby,swift,kotlin'
