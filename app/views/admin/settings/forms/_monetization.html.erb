@@ -7,15 +7,18 @@
     <div class="p-6 pt-0">
       <fieldset class="grid gap-4">
 
-        <div class="crayons-field">
-          <%= admin_config_label :payment_provider, "Payment provider" %>
-          <%= admin_config_description Constants::Settings::General.details[:payment_provider][:description] %>
-          <%= f.select :payment_provider,
-                       Settings::General::PAYMENT_PROVIDERS.map { |provider| [provider.titleize, provider] },
-                       {},
-                       class: "crayons-select",
-                       data: { monetization_provider_select: true } %>
-        </div>
+          <div class="crayons-field">
+            <%= admin_config_label :payment_provider, "Payment provider" %>
+            <%= admin_config_description Constants::Settings::General.details[:payment_provider][:description] %>
+            <%= f.select :payment_provider,
+                         options_for_select(
+                           Settings::General::PAYMENT_PROVIDERS.map { |provider| [provider.titleize, provider] },
+                           Settings::General.payment_provider
+                         ),
+                         {},
+                         class: "crayons-select",
+                         data: { monetization_provider_select: true } %>
+          </div>
 
         <div class="grid gap-4 <%= 'hidden' if Settings::General.payment_provider == 'monobank' %>"
              data-monetization-provider-fields="stripe">
