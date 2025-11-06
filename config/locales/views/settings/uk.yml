@@ -50,6 +50,14 @@ uk:
         make: Зробити основною
         primary: основна
         remove: Видалити картку
+        monobank_description: Додайте нову картку через платіжний шлюз Monobank.
+        card_number: Номер картки
+        card_exp_month: Місяць дії (MM)
+        card_exp_year: Рік дії (YYYY)
+        card_cvc: Захисний код (CVC)
+        monobank_error: Не вдалося токенізувати цю картку. Перевірте дані й спробуйте ще раз.
+        monobank_incomplete: Будь ласка, заповніть усі поля картки перед відправленням.
+        submitting: Відправляємо...
       characters: "Використано символів: "
       complete:
         heading: Підтвердьте електронну пошту, щоб завершити профіль.

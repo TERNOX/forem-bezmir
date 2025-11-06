@@ -31,6 +31,8 @@ en:
             number: "**** **** **** %{last}"
             exp: "%{mm}/%{yy}"
             add: Add New Card
+            monobank_error: Unable to tokenize this card. Please verify the details and try again.
+            monobank_incomplete: Please fill in every card field before submitting.
           submit: Complete Purchase
           submitting: Submitting...
           note_org: "*All org admins have access to credits owned by organization"

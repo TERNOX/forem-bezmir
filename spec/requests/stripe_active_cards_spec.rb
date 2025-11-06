@@ -6,12 +6,17 @@ RSpec.describe "StripeActiveCards" do
   let(:card_token) { stripe_helper.generate_card_token }
 
   before do
+    Payments::Gateway.reset!
+    allow(Settings::General).to receive(:payment_provider).and_return("stripe")
     StripeMock.start
 
     sign_in user
   end
 
-  after { StripeMock.stop }
+  after do
+    StripeMock.stop
+    Payments::Gateway.reset!
+  end
 
   def create_user_with_card(user, source)
     customer = Payments::Customer.create(

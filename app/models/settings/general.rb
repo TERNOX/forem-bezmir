@@ -80,9 +80,19 @@ module Settings
       tag: nil
     }
 
+    PAYMENT_PROVIDERS = %w[stripe monobank].freeze
+
     # Monetization
+    setting :payment_provider,
+            type: :string,
+            default: "stripe",
+            validates: { inclusion: { in: PAYMENT_PROVIDERS } }
     setting :stripe_api_key, type: :string, default: ApplicationConfig["STRIPE_SECRET_KEY"]
     setting :stripe_publishable_key, type: :string, default: ApplicationConfig["STRIPE_PUBLISHABLE_KEY"]
+    setting :monobank_api_key, type: :string, default: ApplicationConfig["MONOBANK_API_KEY"]
+    setting :monobank_publishable_key, type: :string, default: ApplicationConfig["MONOBANK_PUBLISHABLE_KEY"]
+    setting :monobank_base_url, type: :string, default: ApplicationConfig["MONOBANK_BASE_URL"]
+    setting :monobank_webhook_secret, type: :string, default: ApplicationConfig["MONOBANK_WEBHOOK_SECRET"]
     # Billboard-related. Not sure this is the best place for it, but it's a start.
     setting :billboard_enabled_countries, type: :hash, default: Geolocation::DEFAULT_ENABLED_COUNTRIES, validates: {
       enabled_countries_hash: true

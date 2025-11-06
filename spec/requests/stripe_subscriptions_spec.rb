@@ -11,6 +11,13 @@ RSpec.describe "StripeSubscriptions" do
   let(:session_url) { "https://checkout.stripe.com/pay/test_session_id" }
   let(:portal_session_url) { "https://billing.stripe.com/session/test_portal_session_id" }
 
+  before do
+    Payments::Gateway.reset!
+    allow(Settings::General).to receive(:payment_provider).and_return("stripe")
+  end
+
+  after { Payments::Gateway.reset! }
+
   describe "GET /stripe_subscriptions/new" do
     before do
       ENV["STRIPE_BASE_ITEM_CODE"] = "default_code"
