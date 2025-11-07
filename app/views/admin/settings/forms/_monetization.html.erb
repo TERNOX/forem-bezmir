@@ -24,6 +24,33 @@
                            placeholder: Constants::Settings::General.details[:stripe_publishable_key][:placeholder] %>
         </div>
 
+        <div class="crayons-field">
+          <%= admin_config_label :subscription_product_name, "Subscription name" %>
+          <%= admin_config_description Constants::Settings::General.details[:subscription_product_name][:description] %>
+          <%= f.text_field :subscription_product_name,
+                           class: "crayons-textfield",
+                           value: Settings::General.subscription_product_name,
+                           placeholder: Constants::Settings::General.details[:subscription_product_name][:placeholder] %>
+        </div>
+
+        <div class="crayons-field">
+          <%= admin_config_label :subscription_landing_page_url, "Subscription link" %>
+          <%= admin_config_description Constants::Settings::General.details[:subscription_landing_page_url][:description] %>
+          <%= f.text_field :subscription_landing_page_url,
+                           class: "crayons-textfield",
+                           value: Settings::General.subscription_landing_page_url,
+                           placeholder: Constants::Settings::General.details[:subscription_landing_page_url][:placeholder] %>
+        </div>
+
+        <div class="crayons-field">
+          <%= admin_config_label :subscriber_icon_url, "Subscriber icon URL" %>
+          <%= admin_config_description Constants::Settings::General.details[:subscriber_icon_url][:description] %>
+          <%= f.text_field :subscriber_icon_url,
+                           class: "crayons-textfield",
+                           value: Settings::General.subscriber_icon_url,
+                           placeholder: Constants::Settings::General.details[:subscriber_icon_url][:placeholder] %>
+        </div>
+
         <% if FeatureFlag.enabled?(Geolocation::FEATURE_FLAG) %>
           <div class="crayons-field">
             <%= admin_config_label :billboard_enabled_countries %>

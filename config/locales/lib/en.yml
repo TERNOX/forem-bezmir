@@ -177,6 +177,13 @@ en:
             description: 'Secret Stripe key for receiving payments. See: https://stripe.com/docs/keys'
           stripe_key:
             description: 'Public Stripe key for receiving payments. See: https://stripe.com/docs/keys'
+          subscription_product_name:
+            description: Name of your paid subscription offering as it should appear to members
+          subscription_landing_page_url:
+            description: URL where members can learn more or manage the paid subscription
+            placeholder: /++
+          subscriber_icon_url:
+            description: Image URL used for highlighting subscribers next to their names
           tags:
             description: Determines which tags are suggested to new users during onboarding (comma separated, letters only)
             placeholder: 'List of valid tags: comma separated, letters only e.g. beginners,javascript,ruby,swift,kotlin'
