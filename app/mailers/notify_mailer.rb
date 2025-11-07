@@ -162,9 +162,12 @@ class NotifyMailer < ApplicationMailer
 
   def base_subscriber_role_email
     @user = params[:user]
+    @subscription_product_name = SubscriptionSettings.product_name
+    @subscription_landing_page_url = SubscriptionSettings.landing_page_url
 
     subject = I18n.t("mailers.notify_mailer.base_subscriber",
-                     community: Settings::Community.community_name(subforem_id: @subforem_id))
+                     community: Settings::Community.community_name(subforem_id: @subforem_id),
+                     subscription_name: @subscription_product_name)
     mail(to: @user.email, subject: subject)
   end
 

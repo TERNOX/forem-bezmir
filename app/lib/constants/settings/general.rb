@@ -137,6 +137,18 @@ module Constants
             description: I18n.t("lib.constants.settings.general.stripe_key.description"),
             placeholder: "pk_live_...."
           },
+          subscription_product_name: {
+            description: I18n.t("lib.constants.settings.general.subscription_product_name.description"),
+            placeholder: "DEV++"
+          },
+          subscription_landing_page_url: {
+            description: I18n.t("lib.constants.settings.general.subscription_landing_page_url.description"),
+            placeholder: "/++"
+          },
+          subscriber_icon_url: {
+            description: I18n.t("lib.constants.settings.general.subscriber_icon_url.description"),
+            placeholder: IMAGE_PLACEHOLDER
+          },
           suggested_tags: {
             description: I18n.t("lib.constants.settings.general.tags.description"),
             placeholder: I18n.t("lib.constants.settings.general.tags.placeholder")

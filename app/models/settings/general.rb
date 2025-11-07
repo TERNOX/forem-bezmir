@@ -83,6 +83,12 @@ module Settings
     # Monetization
     setting :stripe_api_key, type: :string, default: ApplicationConfig["STRIPE_SECRET_KEY"]
     setting :stripe_publishable_key, type: :string, default: ApplicationConfig["STRIPE_PUBLISHABLE_KEY"]
+    setting :subscription_product_name, type: :string, default: "DEV++"
+    setting :subscription_landing_page_url, type: :string, default: "/++"
+    setting :subscriber_icon_url,
+            type: :string,
+            default: proc { URL.local_image("subscription-icon.png") },
+            validates: { url: true }
     # Billboard-related. Not sure this is the best place for it, but it's a start.
     setting :billboard_enabled_countries, type: :hash, default: Geolocation::DEFAULT_ENABLED_COUNTRIES, validates: {
       enabled_countries_hash: true

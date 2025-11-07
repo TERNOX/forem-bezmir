@@ -488,7 +488,7 @@ RSpec.describe NotifyMailer do
     include_examples "#renders_proper_email_headers"
 
     it "renders proper subject" do
-      expected_subject = "Congrats! You're now subscribed to DEV++"
+      expected_subject = "Congrats! You're now subscribed to #{SubscriptionSettings.product_name}"
       expect(email.subject).to eq(expected_subject)
     end
 
