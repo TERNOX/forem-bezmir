@@ -229,13 +229,29 @@ module ApplicationHelper
   def subscription_icon(user, modifier = nil)
     return unless user.respond_to?(:cached_base_subscriber?)
     return unless FeatureFlag.enabled?("subscriber_icon") && user.cached_base_subscriber?
-    return image_tag("subscription-icon.png", class: "subscription-icon") if modifier == "no_link"
 
-    link_to image_tag("subscription-icon.png",
-                      alt: "Subscriber",
-                      class: "subscription-icon"),
-            "/++",
-            style: "display: inline;"
+    icon_tag = image_tag(subscription_icon_url,
+                         alt: subscription_product_name,
+                         class: "subscription-icon")
+
+    return icon_tag if modifier == "no_link"
+
+    landing_page = subscription_landing_page_url
+    return icon_tag if landing_page.blank?
+
+    link_to icon_tag, landing_page, style: "display: inline;"
+  end
+
+  def subscription_product_name
+    SubscriptionSettings.product_name
+  end
+
+  def subscription_landing_page_url
+    SubscriptionSettings.landing_page_path
+  end
+
+  def subscription_icon_url
+    SubscriptionSettings.icon_url
   end
 
   def user_colors_style(user)
