@@ -188,8 +188,10 @@ module Admin
         intro_markdown: ::Settings::General.top_articles_digest_intro_markdown,
         frequency: ::Settings::General.top_articles_digest_frequency,
         article_limit: ::Settings::General.top_articles_digest_article_limit,
+        minimum_score: ::Settings::General.top_articles_digest_minimum_score,
         badge_slug: ::Settings::General.top_articles_badge_slug,
         excluded_organization_ids: Array(::Settings::General.top_articles_digest_excluded_organization_ids).join(", "),
+        excluded_tags: ::Settings::General.top_articles_digest_excluded_tags.join(", "),
         next_run_hour: next_run_hour,
       }
     end
@@ -205,10 +207,12 @@ module Admin
       ::Settings::General.set_top_articles_digest_intro_markdown(permitted[:intro_markdown])
       ::Settings::General.set_top_articles_digest_frequency(permitted[:frequency])
       ::Settings::General.set_top_articles_digest_article_limit(permitted[:article_limit].presence)
+      ::Settings::General.set_top_articles_digest_minimum_score(permitted[:minimum_score].presence)
       ::Settings::General.set_top_articles_badge_slug(permitted[:badge_slug])
       ::Settings::General.set_top_articles_digest_excluded_organization_ids(
         parse_id_list(permitted[:excluded_organization_ids])
       )
+      ::Settings::General.set_top_articles_digest_excluded_tags(permitted[:excluded_tags])
 
       if permitted[:next_run_hour].present?
         override_digest_next_run!(permitted[:next_run_hour])
@@ -296,8 +300,10 @@ module Admin
         :intro_markdown,
         :frequency,
         :article_limit,
+        :minimum_score,
         :badge_slug,
         :excluded_organization_ids,
+        :excluded_tags,
         :next_run_hour,
       )
     end

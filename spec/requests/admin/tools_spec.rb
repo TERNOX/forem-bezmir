@@ -171,14 +171,18 @@ RSpec.describe "/admin/advanced/tools" do
             intro_markdown: "",
             frequency: "weekly",
             article_limit: "5",
+            minimum_score: "10",
             badge_slug: "top-7",
             excluded_organization_ids: "",
+            excluded_tags: "news, videos",
           },
         }
       end
 
       expect(Settings::General.top_articles_digest_bot_api_key).to eq("secret")
       expect(Settings::General.top_articles_digest_next_run_at).to eq(next_run_at)
+      expect(Settings::General.top_articles_digest_minimum_score).to eq(10)
+      expect(Settings::General.top_articles_digest_excluded_tags).to match_array(%w[news videos])
     end
 
     it "overrides the next run when an hour is selected" do
@@ -197,8 +201,10 @@ RSpec.describe "/admin/advanced/tools" do
             intro_markdown: "",
             frequency: "weekly",
             article_limit: "5",
+            minimum_score: "0",
             badge_slug: "top-7",
             excluded_organization_ids: "",
+            excluded_tags: "",
             next_run_hour: "16",
           },
         }
@@ -224,8 +230,10 @@ RSpec.describe "/admin/advanced/tools" do
             intro_markdown: "",
             frequency: "weekly",
             article_limit: "5",
+            minimum_score: "0",
             badge_slug: "top-7",
             excluded_organization_ids: "",
+            excluded_tags: "",
             next_run_hour: "invalid",
           },
         }
