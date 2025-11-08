@@ -112,38 +112,6 @@
 </div>
 
 <div class="crayons-card p-6 mb-6">
-  <h2 class="crayons-subtitle-1 mb-4"><%= t("views.admin.tools.top_seven.heading") %></h2>
-  <p class="mb-6"><%= t("views.admin.tools.top_seven.description_html") %></p>
-
-  <% if @top_seven_selections.any? %>
-    <% @top_seven_selections.each do |selection| %>
-      <section class="mb-6">
-        <h3 class="crayons-subtitle-2 mb-2"><%= selection.week_label %></h3>
-
-        <ol class="pl-6 list-decimal mb-4">
-          <% selection.article_ids.each do |article_id| %>
-            <% article = @top_seven_articles_by_id[article_id] %>
-            <% next unless article %>
-
-            <li class="mb-1">
-              <%= link_to article.title, article.path, class: "c-link" %>
-            </li>
-          <% end %>
-        </ol>
-
-        <% urls = selection.article_ids.filter_map do |article_id|
-             article = @top_seven_articles_by_id[article_id]
-             article ? app_url(article.path) : nil
-           end.join("\n") %>
-        <%= text_area_tag "weekly_top_seven_#{selection.week_of}", urls, class: "crayons-textfield w-100", rows: 4, readonly: true %>
-      </section>
-    <% end %>
-  <% else %>
-    <p class="color-base-70"><%= t("views.admin.tools.top_seven.empty_state") %></p>
-  <% end %>
-
-  <hr class="my-6" />
-
   <section>
     <h3 class="crayons-subtitle-2 mb-2"><%= t("views.admin.tools.top_articles_digest.heading") %></h3>
     <p class="mb-6"><%= t("views.admin.tools.top_articles_digest.description_html") %></p>
