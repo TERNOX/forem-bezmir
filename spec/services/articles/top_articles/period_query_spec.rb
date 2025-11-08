@@ -8,6 +8,8 @@ RSpec.describe Articles::TopArticles::PeriodQuery, type: :service do
 
     before do
       allow(Settings::General).to receive(:top_articles_digest_excluded_organization_ids).and_return([])
+      allow(Settings::General).to receive(:top_articles_digest_minimum_score).and_return(0)
+      allow(Settings::General).to receive(:top_articles_digest_excluded_tags).and_return([])
     end
 
     it "prioritizes articles with higher score before reaction count" do
@@ -117,6 +119,35 @@ RSpec.describe Articles::TopArticles::PeriodQuery, type: :service do
       result = described_class.call(start_time: start_time, end_time: end_time, limit: 5)
 
       expect(result).to eq([in_period_article.id])
+    end
+
+    it "excludes articles below the configured minimum score" do
+      allow(Settings::General).to receive(:top_articles_digest_minimum_score).and_return(25)
+
+      high_score_article = create(:article, score: 30, published_at: in_period_published_at)
+      low_score_article = create(:article, score: 20, published_at: in_period_published_at)
+
+      create(:reaction, reactable: high_score_article, category: "like", created_at: start_time + 1.day)
+      create(:reaction, reactable: low_score_article, category: "like", created_at: start_time + 1.day)
+
+      result = described_class.call(start_time: start_time, end_time: end_time, limit: 5)
+
+      expect(result).to eq([high_score_article.id])
+    end
+
+    it "excludes articles tagged with configured tags" do
+      allow(Settings::General).to receive(:top_articles_digest_excluded_tags).and_return(["news"])
+
+      excluded_tag = create(:tag, name: "news")
+      kept_article = create(:article, tag_list: "updates", published_at: in_period_published_at)
+      skipped_article = create(:article, tag_list: excluded_tag.name, published_at: in_period_published_at)
+
+      create(:reaction, reactable: kept_article, category: "like", created_at: start_time + 1.day)
+      create(:reaction, reactable: skipped_article, category: "like", created_at: start_time + 1.day)
+
+      result = described_class.call(start_time: start_time, end_time: end_time, limit: 5)
+
+      expect(result).to eq([kept_article.id])
     end
   end
 end

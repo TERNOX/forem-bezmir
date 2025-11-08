@@ -241,6 +241,18 @@
         </div>
 
         <div class="crayons-field">
+          <%= label_tag "top_articles_digest_minimum_score", t("views.admin.tools.top_articles_digest.form.minimum_score"), class: "crayons-field__label" %>
+          <%= number_field_tag "top_articles_digest[minimum_score]", @top_articles_digest_settings[:minimum_score], class: "crayons-textfield", min: 0 %>
+          <p class="crayons-field__description"><%= t("views.admin.tools.top_articles_digest.form.minimum_score_help") %></p>
+        </div>
+
+        <div class="crayons-field">
+          <%= label_tag "top_articles_digest_excluded_tags", t("views.admin.tools.top_articles_digest.form.excluded_tags"), class: "crayons-field__label" %>
+          <%= text_field_tag "top_articles_digest[excluded_tags]", @top_articles_digest_settings[:excluded_tags], class: "crayons-textfield" %>
+          <p class="crayons-field__description"><%= t("views.admin.tools.top_articles_digest.form.excluded_tags_help") %></p>
+        </div>
+
+        <div class="crayons-field">
           <%= label_tag "top_articles_digest_badge_slug", t("views.admin.tools.top_articles_digest.form.badge_slug"), class: "crayons-field__label" %>
           <%= text_field_tag "top_articles_digest[badge_slug]", @top_articles_digest_settings[:badge_slug], class: "crayons-textfield" %>
         </div>
