@@ -100,9 +100,11 @@ body {
   a {
     border-bottom: 1px solid var(--base-20);
     color: var(--link-branded-color);
+	transition: .3s ease;
 
     &:hover {
       color: var(--link-branded-color-hover);
+	  border-bottom: 1px solid currentColor;
     }
   }
 
