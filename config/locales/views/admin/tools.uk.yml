@@ -66,6 +66,10 @@ uk:
               weekly: Weekly (previous week)
               monthly: Monthly (previous month)
             article_limit: Number of articles to include
+            minimum_score: Мінімальний рейтинг статті
+            minimum_score_help: "Матеріали з меншим рейтингом не потрапляють до добірки."
+            excluded_tags: Заборонені теги
+            excluded_tags_help: "Вкажіть теги через кому (наприклад: news, videos). Пости з будь-яким із них буде пропущено."
             badge_slug: Badge slug to reward the authors
             next_run_hour: Налаштувати годину наступного запуску (Europe/Kyiv)
             next_run_hour_help: "За потреби заплануйте наступний дайджест на найближчу появу цієї години за київським часом. Залиште порожнім, щоб зберегти розклад."
