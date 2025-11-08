@@ -149,5 +149,22 @@ RSpec.describe Articles::TopArticles::PeriodQuery, type: :service do
 
       expect(result).to eq([kept_article.id])
     end
+
+    it "parses excluded tags stored as serialized strings" do
+      allow(Settings::General)
+        .to receive(:top_articles_digest_excluded_tags)
+        .and_return('["українські-новини"]')
+
+      excluded_tag = create(:tag, name: "українські-новини")
+      kept_article = create(:article, tag_list: "інтерв'ю", published_at: in_period_published_at)
+      skipped_article = create(:article, tag_list: excluded_tag.name, published_at: in_period_published_at)
+
+      create(:reaction, reactable: kept_article, category: "like", created_at: start_time + 1.day)
+      create(:reaction, reactable: skipped_article, category: "like", created_at: start_time + 1.day)
+
+      result = described_class.call(start_time: start_time, end_time: end_time, limit: 5)
+
+      expect(result).to eq([kept_article.id])
+    end
   end
 end

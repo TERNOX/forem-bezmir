@@ -73,6 +73,7 @@ module Articles
 
         taggings = ActsAsTaggableOn::Tagging
           .where(taggable_type: "Article", tag_id: ids)
+          .where.not(taggable_id: nil)
           .select(:taggable_id)
 
         Article.arel_table[:id].not_in(taggings)
@@ -135,7 +136,11 @@ module Articles
       end
 
       def excluded_tags
-        ::Settings::General.top_articles_digest_excluded_tags
+        raw = ::Settings::General.top_articles_digest_excluded_tags
+
+        Array(raw).flat_map do |value|
+          value.to_s.split(/[\n,;]+/)
+        end.map { |segment| segment.to_s.strip }.reject(&:blank?).uniq
       rescue NameError
         []
       end
