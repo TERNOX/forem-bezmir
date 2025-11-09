@@ -5,19 +5,19 @@ module Spam
   # without reacting to other authors, indicating coordinated behavior.
   class ReactionRingDetector
     # Minimum number of article reactions in the past 3 months to trigger analysis
-    MIN_REACTIONS_THRESHOLD = 50
+    MIN_REACTIONS_THRESHOLD = 80
 
     # Minimum number of users in a potential ring
-    MIN_RING_SIZE = 3
+    MIN_RING_SIZE = 4
 
     # Minimum percentage of reactions that must be to the same authors to be suspicious
-    MIN_AUTHOR_CONCENTRATION = 0.8
+    MIN_AUTHOR_CONCENTRATION = 0.9
 
     # Minimum number of shared authors between ring members
-    MIN_SHARED_AUTHORS = 2
+    MIN_SHARED_AUTHORS = 3
 
     # Maximum percentage of self-reactions allowed (users reacting to their own articles)
-    MAX_SELF_REACTION_PERCENTAGE = 0.3
+    MAX_SELF_REACTION_PERCENTAGE = 0.35
 
     def initialize(user_id)
       @user_id = user_id
