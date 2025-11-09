@@ -24,7 +24,7 @@
       </a>
     </div><% end %>
   <% if article.organization %>
-  <a href='<%= article.organization.path %>' class='ltag__link__link'>
+  <a href='<%= article.organization.path %>' class='ltag__link__link' style="border: 0px;">
     <div class='ltag__link__org__pic'>
       <img src='<%= article.organization.profile_image_url_for(length: 150) %>' alt='<%= article.organization.name.to_s %>'>
       <div class='ltag__link__user__pic'>
@@ -32,7 +32,7 @@
       </div>
     </div>
   </a>
-  <a href='<%= URL.article(article) %>' class='ltag__link__link'>
+  <a href='<%= URL.article(article) %>' class='ltag__link__link' style="border: 0px;">
     <div class='ltag__link__content'>
       <h2><%= title %></h2>
       <h3><%= article.user.name %><%= t("views.articles.for_org_html", org: article.organization.name, start: "", end: "") %> ・ <%= article.readable_publish_date %></h3>
@@ -44,12 +44,12 @@
     </div>
   </a>
   <% else %>
-  <a href='<%= article.user.path %>' class='ltag__link__link'>
+  <a href='<%= article.user.path %>' class='ltag__link__link' style="border: 0px;">
     <div class='ltag__link__pic'>
       <img src='<%= article.user.profile_image_url_for(length: 150) %>' alt='<%= article.user.username.to_s %>'>
     </div>
   </a>
-  <a href='<%= URL.article(article) %>' class='ltag__link__link'>
+  <a href='<%= URL.article(article) %>' class='ltag__link__link' style="border: 0px;">
     <div class='ltag__link__content'>
       <h2><%= title %></h2>
       <h3><%= article.user.name %> ・ <%= article.readable_publish_date %></h3>
