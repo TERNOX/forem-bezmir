@@ -35,6 +35,8 @@ module Homepage
       :reading_time,
       :title,
       :user_id,
+      :video,
+      :video_source_url,
       :public_reaction_categories,
     )
 

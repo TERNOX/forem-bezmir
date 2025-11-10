@@ -89,7 +89,9 @@ export const Video = ({ article }) => {
     );
   }
 
-  if (!article.video) {
+  const inlineVideoSrc = article.video_source_url || article.video;
+
+  if (!inlineVideoSrc) {
     return null;
   }
 
@@ -99,7 +101,7 @@ export const Video = ({ article }) => {
       className="crayons-story__video crayons-story__video--inline-player"
     >
       <video
-        src={article.video}
+        src={inlineVideoSrc}
         className="crayons-story__video__media"
         aria-hidden="true"
         muted

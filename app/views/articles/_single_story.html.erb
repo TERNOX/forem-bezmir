@@ -15,7 +15,8 @@
     </div>
   <% end %>
 
-  <% if story.video.present? && !youtube_embed_url?(story.video) %>
+  <% inline_video_src = story.video_source_url.presence || story.video %>
+  <% if inline_video_src.present? && !youtube_embed_url?(story.video) %>
     <% if story.video_thumbnail_url.present? %>
       <a href="<%= URL.article(story) %>" class="crayons-story__video" style="background-image:url(<%= story.cloudinary_video_url %>)">
         <span class="crayons-story__video__time">
@@ -25,7 +26,7 @@
     <% else %>
       <a href="<%= URL.article(story) %>" class="crayons-story__video crayons-story__video--inline-player">
         <video
-          src="<%= story.video %>"
+          src="<%= inline_video_src %>"
           class="crayons-story__video__media"
           aria-hidden="true"
           muted

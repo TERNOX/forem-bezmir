@@ -393,6 +393,20 @@ function buildArticleHTML(article, currentUserId = null) {
     }
 
     var videoHTML = '';
+    var inlineVideoSrc = '';
+    if (article.video_source_url && article.video_source_url.length > 0) {
+      inlineVideoSrc = article.video_source_url;
+    } else if (article.video && article.video.length > 0) {
+      var loweredVideo = article.video.toLowerCase();
+      var isYouTube =
+        loweredVideo.includes('youtube.com/embed') ||
+        loweredVideo.includes('youtube-nocookie.com/embed');
+
+      if (!isYouTube) {
+        inlineVideoSrc = article.video;
+      }
+    }
+
     if (article.cloudinary_video_url) {
       videoHTML =
         '<a href="' +
@@ -402,13 +416,13 @@ function buildArticleHTML(article, currentUserId = null) {
         ')"><div class="crayons-story__video__time">' +
         (article.video_duration_string || article.video_duration_in_minutes) +
         '</div></a>';
-    } else if (article.video && article.video.length > 0) {
+    } else if (inlineVideoSrc && inlineVideoSrc.length > 0) {
       videoHTML =
         '<a href="' +
         article.path +
         '" class="crayons-story__video crayons-story__video--inline-player">' +
         '<video src="' +
-        article.video +
+        inlineVideoSrc +
         '" class="crayons-story__video__media" aria-hidden="true" muted playsinline preload="metadata"></video>' +
         '<div class="crayons-story__video__time">' +
         (article.video_duration_string || article.video_duration_in_minutes) +
