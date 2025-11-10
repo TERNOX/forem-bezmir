@@ -142,7 +142,7 @@ export const Options = ({
         id="post-options-btn"
         icon={CogIcon}
         title="Параметри допису"
-        aria-label="Post options"
+        aria-label="Параметри допису"
         disabled={previewLoading}
       />
       <Dropdown
@@ -151,7 +151,7 @@ export const Options = ({
         dropdownContentCloseButtonId="post-options-done-btn"
         className="reverse left-2 s:left-0 right-2 s:left-auto p-4"
       >
-        <h3 className="mb-6">Post options</h3>
+        <h3 className="mb-6">Параметри допису</h3>
         <div className="crayons-field mb-6">
           <label htmlFor="canonicalUrl" className="crayons-field__label">
             Канонічний URL
