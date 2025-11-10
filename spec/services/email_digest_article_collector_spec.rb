@@ -37,6 +37,15 @@ RSpec.describe EmailDigestArticleCollector, type: :service do
         articles = described_class.new(user).articles_to_send
         expect(articles).to be_empty
       end
+
+      it "includes articles without a subforem when none are assigned" do
+        create_list(:article, 3, public_reactions_count: 40, featured: true, score: 40, subforem: nil)
+
+        articles = described_class.new(user).articles_to_send
+
+        expect(articles.length).to eq(3)
+        expect(articles.all? { |article| article.subforem_id.nil? }).to be true
+      end
     end
 
     context "when the user has no follows, but does have a few pageviews" do

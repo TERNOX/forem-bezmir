@@ -30,7 +30,7 @@ class EmailDigestArticleCollector
                      .where("score > ?", 8)
 
                    # Only filter by subforem if we're not skipping subforem filtering
-                   articles_query = articles_query.where(subforem_id: @subforem_ids) unless @skip_subforem_filtering
+                   articles_query = articles_query.where(subforem_id: subforem_filter_values(@subforem_ids)) unless @skip_subforem_filtering
 
                    articles_query.order(order).limit(RESULTS_COUNT)
                  else
@@ -63,7 +63,7 @@ class EmailDigestArticleCollector
                        .where(email_digest_eligible: true)
                        .not_authored_by(@user.id)
                        .where("score > ?", 11)
-                       .where(subforem_id: @subforem_ids)
+                       .where(subforem_id: subforem_filter_values(@subforem_ids))
                        .order(order)
                        .limit(RESULTS_COUNT)
                        .merge(Article.featured.or(Article.cached_tagged_with_any(tags)))
@@ -88,13 +88,15 @@ class EmailDigestArticleCollector
             fallback_subforem_ids << default_subforem_id
           end
 
+          fallback_subforem_ids << nil unless fallback_subforem_ids.include?(nil)
+
           articles_query = Article.select(:title, :description, :path, :cached_user, :cached_tag_list, :subforem_id)
             .published
             .full_posts
             .where("published_at > ?", cutoff_date)
             .where(email_digest_eligible: true)
             .where("score > ?", 11)
-            .where(subforem_id: fallback_subforem_ids)
+            .where(subforem_id: subforem_filter_values(fallback_subforem_ids))
         end
 
         articles = articles_query.not_authored_by(@user.id)
@@ -173,6 +175,10 @@ class EmailDigestArticleCollector
         @skip_subforem_filtering = true
       end
     end
+  end
+
+  def subforem_filter_values(subforem_ids)
+    (Array(subforem_ids) + [nil]).uniq
   end
 
   def recent_tracked_click?
