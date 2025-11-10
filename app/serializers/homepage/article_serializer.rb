@@ -36,9 +36,16 @@ module Homepage
       :title,
       :user_id,
       :video,
-      :video_source_url,
       :public_reaction_categories,
     )
+
+    attribute :video_source_url do |article|
+      if article.video_source_url.present?
+        article.video_source_url
+      elsif article.video.present? && article.video.match?(%r{\.(mp4|webm|mov|m4v|qt|m3u8)(?:$|[?#])}i)
+        article.video
+      end
+    end
 
     # return displayed_comments_count (excluding low score comments) if it was calculated earlier
     attribute :comments_count, (lambda do |article|

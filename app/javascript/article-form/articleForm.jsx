@@ -17,6 +17,33 @@ import {
 } from '@utilities/markdown/markdownLintCustomRules';
 import { getOSKeyboardModifierKeyString } from '@utilities/runtime';
 
+const VIDEO_FILE_EXTENSION_PATTERN = /\.(mp4|webm|mov|m4v|qt|m3u8)(?:$|[?#])/i;
+
+const deriveInitialVideoSourceUrl = (article) => {
+  if (article.video_source_url) {
+    return article.video_source_url;
+  }
+
+  const { video } = article;
+
+  if (!video) {
+    return '';
+  }
+
+  try {
+    const { pathname } = new URL(video, 'https://example.com');
+    if (VIDEO_FILE_EXTENSION_PATTERN.test(pathname)) {
+      return video;
+    }
+  } catch {
+    if (VIDEO_FILE_EXTENSION_PATTERN.test(video)) {
+      return video;
+    }
+  }
+
+  return '';
+};
+
 /* global activateRunkitTags */
 
 /*
@@ -142,7 +169,7 @@ export class ArticleForm extends Component {
       editing: this.article.id !== null, // eslint-disable-line react/no-unused-state
       mainImage: this.article.main_image || null,
       video: this.article.video || '',
-      videoSourceUrl: this.article.video_source_url || '',
+      videoSourceUrl: deriveInitialVideoSourceUrl(this.article),
       videoThumbnailUrl: this.article.video_thumbnail_url || '',
       organizations,
       organizationId: this.article.organization_id,
@@ -389,7 +416,7 @@ export class ArticleForm extends Component {
       editing: this.article.id !== null, // eslint-disable-line react/no-unused-state
       mainImage: this.article.main_image || null,
       video: this.article.video || '',
-      videoSourceUrl: this.article.video_source_url || '',
+      videoSourceUrl: deriveInitialVideoSourceUrl(this.article),
       videoThumbnailUrl: this.article.video_thumbnail_url || '',
       errors: null,
       edited: false,

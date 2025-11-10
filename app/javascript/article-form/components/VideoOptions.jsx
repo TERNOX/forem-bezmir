@@ -32,7 +32,7 @@ export const VideoOptions = ({
         return;
       }
       onConfigValueChange('video', link);
-      onConfigValueChange('videoSourceUrl', '');
+      onConfigValueChange('videoSourceUrl', link);
       onConfigValueChange('videoThumbnailUrl', '');
     },
     [onConfigValueChange],
