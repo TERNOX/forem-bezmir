@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { Dropdown, ButtonNew as Button } from '@crayons';
 import VideoIcon from '@images/video-camera.svg';
 import { VideoUploader } from './VideoUploader';
+import { closeDropdown } from '@utilities/dropdownUtils';
 
 export const VideoOptions = ({
   passedData: { video = '', videoSourceUrl = '' },
@@ -12,6 +13,8 @@ export const VideoOptions = ({
   previewLoading,
 }) => {
   const videoCoverInputId = 'video-cover-upload-input';
+  const videoOptionsTriggerId = 'video-options-btn';
+  const videoOptionsDropdownId = 'video-options-dropdown';
   const handleVideoSourceInput = useCallback(
     (event) => {
       onConfigChange(event);
@@ -48,10 +51,20 @@ export const VideoOptions = ({
     onConfigValueChange('videoThumbnailUrl', '');
   }, [onConfigValueChange]);
 
+  const handleDoneClick = useCallback(() => {
+    closeDropdown({
+      triggerElementId: videoOptionsTriggerId,
+      dropdownContentId: videoOptionsDropdownId,
+    });
+    if (typeof document !== 'undefined') {
+      document.getElementById(videoOptionsTriggerId)?.focus();
+    }
+  }, [videoOptionsDropdownId, videoOptionsTriggerId]);
+
   return (
     <div className="s:relative">
       <Button
-        id="video-options-btn"
+        id={videoOptionsTriggerId}
         icon={VideoIcon}
         title="Налаштування відео"
         aria-label="Video options"
@@ -60,8 +73,8 @@ export const VideoOptions = ({
         Відео-допис
       </Button>
       <Dropdown
-        triggerButtonId="video-options-btn"
-        dropdownContentId="video-options-dropdown"
+        triggerButtonId={videoOptionsTriggerId}
+        dropdownContentId={videoOptionsDropdownId}
         dropdownContentCloseButtonId="video-options-done-btn"
         className="reverse left-2 s:left-0 right-2 s:left-auto p-4"
       >
@@ -129,6 +142,7 @@ export const VideoOptions = ({
           data-content="exit"
           variant="secondary"
           type="button"
+          onClick={handleDoneClick}
         >
           Готово
         </Button>

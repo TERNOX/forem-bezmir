@@ -1,5 +1,45 @@
 /* global timeAgo, filterXSS */
 
+function isYoutubeEmbed(url) {
+  if (!url) {
+    return false;
+  }
+
+  var loweredUrl = url.toLowerCase();
+  return (
+    loweredUrl.includes('youtube.com/embed') ||
+    loweredUrl.includes('youtube-nocookie.com/embed')
+  );
+}
+
+function isHlsManifest(url) {
+  if (!url) {
+    return false;
+  }
+
+  try {
+    return new URL(url).pathname.toLowerCase().endsWith('.m3u8');
+  } catch (error) {
+    return url.toLowerCase().includes('.m3u8');
+  }
+}
+
+function selectInlineVideoSrc(article) {
+  var sources = [article.video, article.video_source_url];
+
+  for (var i = 0; i < sources.length; i += 1) {
+    var source = sources[i];
+
+    if (!source || isHlsManifest(source) || isYoutubeEmbed(source)) {
+      continue;
+    }
+
+    return source;
+  }
+
+  return '';
+}
+
 /* eslint-disable no-multi-str */
 
 function buildArticleHTML(article, currentUserId = null) {
@@ -393,19 +433,7 @@ function buildArticleHTML(article, currentUserId = null) {
     }
 
     var videoHTML = '';
-    var inlineVideoSrc = '';
-    if (article.video_source_url && article.video_source_url.length > 0) {
-      inlineVideoSrc = article.video_source_url;
-    } else if (article.video && article.video.length > 0) {
-      var loweredVideo = article.video.toLowerCase();
-      var isYouTube =
-        loweredVideo.includes('youtube.com/embed') ||
-        loweredVideo.includes('youtube-nocookie.com/embed');
-
-      if (!isYouTube) {
-        inlineVideoSrc = article.video;
-      }
-    }
+    var inlineVideoSrc = selectInlineVideoSrc(article);
 
     if (article.cloudinary_video_url) {
       videoHTML =

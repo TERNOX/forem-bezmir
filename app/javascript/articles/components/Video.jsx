@@ -45,6 +45,32 @@ const normalizeYouTubeEmbedUrl = (url) => {
 const renderDuration = (article) =>
   article.video_duration_string || article.video_duration_in_minutes;
 
+const isHlsManifest = (url) => {
+  if (!url) {
+    return false;
+  }
+
+  try {
+    return new URL(url).pathname.toLowerCase().endsWith('.m3u8');
+  } catch {
+    return url.toLowerCase().includes('.m3u8');
+  }
+};
+
+const selectInlineVideoSource = (article) => {
+  const candidates = [article.video, article.video_source_url];
+
+  for (const candidate of candidates) {
+    if (!candidate || isHlsManifest(candidate)) {
+      continue;
+    }
+
+    return candidate;
+  }
+
+  return null;
+};
+
 export const Video = ({ article }) => {
   if (isYouTubeEmbed(article.video)) {
     // Force 16:9 aspect ratio for YouTube videos
@@ -89,7 +115,7 @@ export const Video = ({ article }) => {
     );
   }
 
-  const inlineVideoSrc = article.video_source_url || article.video;
+  const inlineVideoSrc = selectInlineVideoSource(article);
 
   if (!inlineVideoSrc) {
     return null;
