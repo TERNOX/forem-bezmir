@@ -16,6 +16,7 @@ export const VideoUploader = ({
 }) => {
   const [uploading, setUploading] = useState(false);
   const { limitMb: maxFileSize } = useMemo(() => getVideoConfig(), []);
+  const { disabled: buttonDisabled, ...restButtonProps } = buttonProps;
 
   const handleError = (error) => {
     const message = error?.message || error;
@@ -31,7 +32,7 @@ export const VideoUploader = ({
     setUploading(false);
     const link = response.links[0];
     const markdown = (response.markdown || `![](${link})`).trim();
-    onVideoUploadSuccess?.(`${markdown}\n`);
+    onVideoUploadSuccess?.(`${markdown}\n`, link, response);
   };
 
   const uploadVideo = (files) => {
@@ -61,14 +62,14 @@ export const VideoUploader = ({
         onChange={(event) => uploadVideo(event.target.files)}
       />
       <Button
-        {...buttonProps}
+        {...restButtonProps}
         icon={uploading ? Spinner : VideoIcon}
         aria-label={`Завантажити відео (max ${maxFileSize} MB)`}
         onClick={(event) => {
-          buttonProps.onClick?.(event);
+          restButtonProps.onClick?.(event);
           document.getElementById('video-upload-field').click();
         }}
-        disabled={uploading}
+        disabled={uploading || buttonDisabled}
       />
     </span>
   );

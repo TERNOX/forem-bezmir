@@ -68,10 +68,12 @@ export class ArticleForm extends Component {
     schedulingEnabled: PropTypes.bool.isRequired,
     coverImageHeight: PropTypes.string.isRequired,
     coverImageCrop: PropTypes.string.isRequired,
+    videoUploadEnabled: PropTypes.bool,
   };
 
   static defaultProps = {
     organizations: '[]',
+    videoUploadEnabled: false,
   };
 
   constructor(props) {
@@ -139,6 +141,9 @@ export class ArticleForm extends Component {
       submitting: false,
       editing: this.article.id !== null, // eslint-disable-line react/no-unused-state
       mainImage: this.article.main_image || null,
+      video: this.article.video || '',
+      videoSourceUrl: this.article.video_source_url || '',
+      videoThumbnailUrl: this.article.video_thumbnail_url || '',
       organizations,
       organizationId: this.article.organization_id,
       errors: null,
@@ -300,6 +305,11 @@ export class ArticleForm extends Component {
     this.setState(newState);
   };
 
+  handleConfigValueChange = (name, value) => {
+    this.toggleEdit();
+    this.setState({ [name]: value });
+  };
+
   handleMainImageUrlChange = (payload) => {
     this.setState({
       mainImage: payload.links[0],
@@ -378,6 +388,9 @@ export class ArticleForm extends Component {
       submitting: false,
       editing: this.article.id !== null, // eslint-disable-line react/no-unused-state
       mainImage: this.article.main_image || null,
+      video: this.article.video || '',
+      videoSourceUrl: this.article.video_source_url || '',
+      videoThumbnailUrl: this.article.video_thumbnail_url || '',
       errors: null,
       edited: false,
       helpFor: null,
@@ -552,8 +565,10 @@ export class ArticleForm extends Component {
           edited={edited}
           passedData={this.state}
           onConfigChange={this.handleConfigChange}
+          onConfigValueChange={this.handleConfigValueChange}
           submitting={submitting}
           previewLoading={previewLoading}
+          videoUploadEnabled={this.props.videoUploadEnabled}
           switchHelpContext={this.switchHelpContext}
         />
 

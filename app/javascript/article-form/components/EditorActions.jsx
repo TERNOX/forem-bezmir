@@ -2,6 +2,7 @@ import { h } from 'preact';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import { Options } from './Options';
+import { VideoOptions } from './VideoOptions';
 import { ButtonNew as Button } from '@crayons';
 import { locale } from '@utilities/locale';
 
@@ -17,9 +18,11 @@ export const EditorActions = ({
   version,
   passedData,
   onConfigChange,
+  onConfigValueChange,
   submitting,
   previewLoading,
   switchHelpContext,
+  videoUploadEnabled,
 }) => {
   const isVersion1 = version === 'v1';
   const isVersion2 = version === 'v2';
@@ -89,14 +92,24 @@ export const EditorActions = ({
       )}
 
       {isVersion2 && (
-        <Options
-          passedData={passedData}
-          schedulingEnabled={schedulingEnabled}
-          onConfigChange={onConfigChange}
-          onSaveDraft={onSaveDraft}
-          previewLoading={previewLoading}
-          onFocus={(event) => switchHelpContext(event, 'editor-actions')}
-        />
+        <div className="flex items-center gap-2">
+          <Options
+            passedData={passedData}
+            schedulingEnabled={schedulingEnabled}
+            onConfigChange={onConfigChange}
+            onSaveDraft={onSaveDraft}
+            previewLoading={previewLoading}
+            onFocus={(event) => switchHelpContext(event, 'editor-actions')}
+          />
+          {videoUploadEnabled && (
+            <VideoOptions
+              passedData={passedData}
+              onConfigChange={onConfigChange}
+              onConfigValueChange={onConfigValueChange}
+              previewLoading={previewLoading}
+            />
+          )}
+        </div>
       )}
 
       {edited && (
@@ -125,8 +138,14 @@ EditorActions.propTypes = {
   onClearChanges: PropTypes.func.isRequired,
   passedData: PropTypes.object.isRequired,
   onConfigChange: PropTypes.func.isRequired,
+  onConfigValueChange: PropTypes.func.isRequired,
   submitting: PropTypes.bool.isRequired,
   previewLoading: PropTypes.bool.isRequired,
+  videoUploadEnabled: PropTypes.bool,
+};
+
+EditorActions.defaultProps = {
+  videoUploadEnabled: false,
 };
 
 EditorActions.displayName = 'EditorActions';
