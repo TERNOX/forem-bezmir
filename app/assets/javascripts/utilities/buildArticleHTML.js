@@ -402,6 +402,17 @@ function buildArticleHTML(article, currentUserId = null) {
         ')"><div class="crayons-story__video__time">' +
         (article.video_duration_string || article.video_duration_in_minutes) +
         '</div></a>';
+    } else if (article.video && article.video.length > 0) {
+      videoHTML =
+        '<a href="' +
+        article.path +
+        '" class="crayons-story__video crayons-story__video--inline-player">' +
+        '<video src="' +
+        article.video +
+        '" class="crayons-story__video__media" aria-hidden="true" muted playsinline preload="metadata"></video>' +
+        '<div class="crayons-story__video__time">' +
+        (article.video_duration_string || article.video_duration_in_minutes) +
+        '</div></a>';
     }
 
     var articleTitle = filterXSS(

@@ -42,6 +42,9 @@ const normalizeYouTubeEmbedUrl = (url) => {
   }
 };
 
+const renderDuration = (article) =>
+  article.video_duration_string || article.video_duration_in_minutes;
+
 export const Video = ({ article }) => {
   if (isYouTubeEmbed(article.video)) {
     // Force 16:9 aspect ratio for YouTube videos
@@ -72,14 +75,39 @@ export const Video = ({ article }) => {
       </div>
     );
   }
+  if (article.cloudinary_video_url) {
+    return (
+      <a
+        href={article.url}
+        className="crayons-story__video"
+        style={`background-image:url(${article.cloudinary_video_url})`}
+      >
+        <span title="Video duration" className="crayons-story__video__time">
+          {renderDuration(article)}
+        </span>
+      </a>
+    );
+  }
+
+  if (!article.video) {
+    return null;
+  }
+
   return (
     <a
       href={article.url}
-      className="crayons-story__video"
-      style={`background-image:url(${article.cloudinary_video_url})`}
+      className="crayons-story__video crayons-story__video--inline-player"
     >
+      <video
+        src={article.video}
+        className="crayons-story__video__media"
+        aria-hidden="true"
+        muted
+        playsInline
+        preload="metadata"
+      />
       <span title="Video duration" className="crayons-story__video__time">
-        {article.video_duration_in_minutes}
+        {renderDuration(article)}
       </span>
     </a>
   );

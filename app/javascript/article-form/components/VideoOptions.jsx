@@ -18,6 +18,7 @@ export const VideoOptions = ({
       if (video) {
         onConfigValueChange('video', '');
       }
+      onConfigValueChange('videoThumbnailUrl', '');
     },
     [onConfigChange, onConfigValueChange, video],
   );
@@ -29,12 +30,14 @@ export const VideoOptions = ({
       }
       onConfigValueChange('video', link);
       onConfigValueChange('videoSourceUrl', '');
+      onConfigValueChange('videoThumbnailUrl', '');
     },
     [onConfigValueChange],
   );
 
   const handleVideoUploadStart = useCallback(() => {
     onConfigValueChange('videoSourceUrl', '');
+    onConfigValueChange('videoThumbnailUrl', '');
   }, [onConfigValueChange]);
 
   const handleVideoUploadError = useCallback(() => {}, []);
@@ -42,6 +45,7 @@ export const VideoOptions = ({
   const clearVideoSelection = useCallback(() => {
     onConfigValueChange('video', '');
     onConfigValueChange('videoSourceUrl', '');
+    onConfigValueChange('videoThumbnailUrl', '');
   }, [onConfigValueChange]);
 
   return (
