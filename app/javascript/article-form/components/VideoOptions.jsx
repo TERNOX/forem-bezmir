@@ -11,6 +11,7 @@ export const VideoOptions = ({
   onConfigValueChange,
   previewLoading,
 }) => {
+  const videoCoverInputId = 'video-cover-upload-input';
   const handleVideoSourceInput = useCallback(
     (event) => {
       onConfigChange(event);
@@ -82,7 +83,7 @@ export const VideoOptions = ({
           />
         </div>
         <div className="crayons-field mb-6">
-          <label htmlFor="video-cover-upload" className="crayons-field__label">
+          <label htmlFor={videoCoverInputId} className="crayons-field__label">
             Завантажити відео-обкладинку
           </label>
           <p className="crayons-field__description">
@@ -92,6 +93,7 @@ export const VideoOptions = ({
             onVideoUploadStart={handleVideoUploadStart}
             onVideoUploadSuccess={handleVideoUploadSuccess}
             onVideoUploadError={handleVideoUploadError}
+            inputId={videoCoverInputId}
             buttonProps={{
               id: 'video-cover-upload',
               className: 'w-100',

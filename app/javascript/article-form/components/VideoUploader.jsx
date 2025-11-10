@@ -1,5 +1,5 @@
 import { h } from 'preact';
-import { useMemo, useState } from 'preact/hooks';
+import { useMemo, useRef, useState } from 'preact/hooks';
 import PropTypes from 'prop-types';
 import { generateVideoUpload } from '../actions';
 import { validateFileInputs } from '../../packs/validateFileInputs';
@@ -10,6 +10,7 @@ import VideoIcon from '@images/video-camera.svg';
 
 export const VideoUploader = ({
   buttonProps = {},
+  inputId,
   onVideoUploadStart,
   onVideoUploadSuccess,
   onVideoUploadError,
@@ -17,6 +18,11 @@ export const VideoUploader = ({
   const [uploading, setUploading] = useState(false);
   const { limitMb: maxFileSize } = useMemo(() => getVideoConfig(), []);
   const { disabled: buttonDisabled, ...restButtonProps } = buttonProps;
+  const inputRef = useRef(null);
+  const generatedInputId = useMemo(
+    () => inputId || `video-upload-field-${Math.random().toString(36).slice(2)}`,
+    [inputId],
+  );
 
   const handleError = (error) => {
     const message = error?.message || error;
@@ -53,13 +59,17 @@ export const VideoUploader = ({
   return (
     <span className="video-uploader">
       <input
+        ref={inputRef}
         type="file"
-        id="video-upload-field"
+        id={generatedInputId}
         className="screen-reader-only"
         accept="video/mp4,video/webm,video/quicktime"
         data-permitted-file-types='["video"]'
         data-max-file-size-mb={maxFileSize}
-        onChange={(event) => uploadVideo(event.target.files)}
+        onChange={(event) => {
+          uploadVideo(event.target.files);
+          event.target.value = '';
+        }}
       />
       <Button
         {...restButtonProps}
@@ -67,7 +77,7 @@ export const VideoUploader = ({
         aria-label={`Завантажити відео (max ${maxFileSize} MB)`}
         onClick={(event) => {
           restButtonProps.onClick?.(event);
-          document.getElementById('video-upload-field').click();
+          inputRef.current?.click();
         }}
         disabled={uploading || buttonDisabled}
       />
@@ -77,6 +87,7 @@ export const VideoUploader = ({
 
 VideoUploader.propTypes = {
   buttonProps: PropTypes.object,
+  inputId: PropTypes.string,
   onVideoUploadStart: PropTypes.func,
   onVideoUploadSuccess: PropTypes.func,
   onVideoUploadError: PropTypes.func,
