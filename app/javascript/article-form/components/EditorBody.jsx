@@ -30,10 +30,19 @@ export const EditorBody = ({
   const textAreaRef = useRef(null);
   const [mode, setMode] = useState('markdown');
   const [wysiwygEditor, setWysiwygEditor] = useState(null);
+  const [markdownValue, setMarkdownValue] = useState(defaultValue);
   const videoEnabled = useMemo(() => {
     const main = typeof document !== 'undefined' ? document.getElementById('main-content') : null;
     return (main?.dataset?.videoEnabled || 'false') === 'true';
   }, []);
+
+  useEffect(() => {
+    setMarkdownValue(defaultValue);
+
+    if (textAreaRef.current && textAreaRef.current.value !== defaultValue) {
+      textAreaRef.current.value = defaultValue;
+    }
+  }, [defaultValue]);
 
   useEffect(() => {
     if (version !== 'v2' || typeof window === 'undefined') {
@@ -190,7 +199,13 @@ export const EditorBody = ({
         return;
       }
 
+      if (nextMode === 'wysiwyg') {
+        const currentMarkdown = textAreaRef.current?.value ?? markdownValue;
+        setMarkdownValue(currentMarkdown);
+      }
+
       setMode(nextMode);
+
       if (nextMode === 'markdown' && textAreaRef.current) {
         textAreaRef.current.focus();
       }
@@ -199,14 +214,23 @@ export const EditorBody = ({
         wysiwygEditor.chain().focus().run();
       }
     },
-    [isWysiwygEnabled, wysiwygEditor],
+    [isWysiwygEnabled, markdownValue, wysiwygEditor],
   );
 
   const handleWysiwygMarkdownChange = useCallback(
     (markdown) => {
+      setMarkdownValue(markdown);
       updateTextareaValue(markdown);
     },
     [updateTextareaValue],
+  );
+
+  const handleTextareaChange = useCallback(
+    (event) => {
+      setMarkdownValue(event.target.value);
+      onChange(event);
+    },
+    [onChange],
   );
 
   return (
@@ -233,7 +257,7 @@ export const EditorBody = ({
       />
       {isWysiwygActive && (
         <WysiwygEditor
-          markdown={defaultValue}
+          markdown={markdownValue}
           onMarkdownChange={handleWysiwygMarkdownChange}
           onEditorReady={setWysiwygEditor}
           switchHelpContext={switchHelpContext}
@@ -250,7 +274,7 @@ export const EditorBody = ({
           )
         }
         autoResize
-        onChange={onChange}
+        onChange={handleTextareaChange}
         onFocus={switchHelpContext}
         aria-label="Post Content"
         name="body_markdown"
