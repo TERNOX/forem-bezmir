@@ -1,6 +1,6 @@
 import { h } from 'preact';
 import PropTypes from 'prop-types';
-import { useEffect, useMemo } from 'preact/hooks';
+import { useEffect, useMemo, useRef } from 'preact/hooks';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
@@ -17,6 +17,9 @@ export const WysiwygEditor = ({
 }) => {
   const placeholder = useMemo(() => locale('core.editor_body_placeholder'), []);
 
+  const skipNextUpdateRef = useRef(true);
+  const lastAppliedMarkdownRef = useRef(markdown || '');
+
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -25,9 +28,16 @@ export const WysiwygEditor = ({
       Placeholder.configure({ placeholder }),
       Markdown.configure({ html: true }),
     ],
-    content: '',
+    content: markdown || '',
     onUpdate({ editor: instance }) {
       const nextMarkdown = instance.storage.markdown.getMarkdown();
+      if (skipNextUpdateRef.current && nextMarkdown === lastAppliedMarkdownRef.current) {
+        skipNextUpdateRef.current = false;
+        return;
+      }
+
+      skipNextUpdateRef.current = false;
+      lastAppliedMarkdownRef.current = nextMarkdown;
       onMarkdownChange(nextMarkdown);
     },
   });
@@ -49,12 +59,17 @@ export const WysiwygEditor = ({
       return;
     }
 
-    const currentMarkdown = editor.storage.markdown.getMarkdown();
     const nextValue = markdown || '';
+    const currentMarkdown = editor.storage.markdown.getMarkdown();
 
     if (currentMarkdown !== nextValue) {
+      skipNextUpdateRef.current = true;
+      lastAppliedMarkdownRef.current = nextValue;
       editor.commands.setMarkdown(nextValue);
+      return;
     }
+
+    lastAppliedMarkdownRef.current = currentMarkdown;
   }, [editor, markdown]);
 
   if (!editor) {
