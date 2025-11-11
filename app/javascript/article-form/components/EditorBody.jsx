@@ -1,7 +1,6 @@
 import { h } from 'preact';
 import PropTypes from 'prop-types';
-import { useLayoutEffect, useMemo, useRef } from 'preact/hooks';
-import { locale } from '@utilities/locale';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { Toolbar } from './Toolbar';
 import { handleImagePasted } from './pasteImageHelpers';
 import {
@@ -9,11 +8,18 @@ import {
   handleImageUploading,
   handleImageUploadFailure,
 } from './imageUploadHelpers';
-import { handleImageDrop, onDragOver, onDragExit } from './dragAndDropHelpers';
-import { usePasteImage } from '@utilities/pasteImage';
-import { useDragAndDrop } from '@utilities/dragAndDrop';
-import { fetchSearch } from '@utilities/search';
+import {
+  handleImageDrop,
+  onDragOver,
+  onDragExit,
+  handleImageFailure as handleImageFailureMessage,
+} from './dragAndDropHelpers';
+import { WysiwygEditor } from './WysiwygEditor';
 import { AutocompleteTriggerTextArea } from '@crayons/AutocompleteTriggerTextArea';
+import { useDragAndDrop } from '@utilities/dragAndDrop';
+import { locale } from '@utilities/locale';
+import { usePasteImage } from '@utilities/pasteImage';
+import { fetchSearch } from '@utilities/search';
 
 export const EditorBody = ({
   onChange,
@@ -22,23 +28,119 @@ export const EditorBody = ({
   version,
 }) => {
   const textAreaRef = useRef(null);
+  const [mode, setMode] = useState('markdown');
+  const [wysiwygEditor, setWysiwygEditor] = useState(null);
   const videoEnabled = useMemo(() => {
     const main = typeof document !== 'undefined' ? document.getElementById('main-content') : null;
     return (main?.dataset?.videoEnabled || 'false') === 'true';
   }, []);
 
+  useEffect(() => {
+    if (version !== 'v2' || typeof window === 'undefined') {
+      return;
+    }
+
+    const storedMode = window.localStorage.getItem('editor-v2-mode');
+    if (storedMode === 'wysiwyg' || storedMode === 'markdown') {
+      setMode(storedMode);
+    }
+  }, [version]);
+
+  useEffect(() => {
+    if (version !== 'v2' || typeof window === 'undefined') {
+      return;
+    }
+
+    window.localStorage.setItem('editor-v2-mode', mode);
+  }, [mode, version]);
+
+  const isWysiwygEnabled = version === 'v2';
+  const isWysiwygActive = isWysiwygEnabled && mode === 'wysiwyg';
+
+  const updateTextareaValue = useCallback(
+    (markdown) => {
+      if (!textAreaRef.current) {
+        return;
+      }
+
+      if (textAreaRef.current.value === markdown) {
+        return;
+      }
+
+      textAreaRef.current.value = markdown;
+      const inputEvent = new Event('input', { bubbles: true });
+      textAreaRef.current.dispatchEvent(inputEvent);
+    },
+    [],
+  );
+
+  const insertMarkdownIntoEditor = useCallback(
+    (markdown) => {
+      if (!wysiwygEditor) {
+        return;
+      }
+
+      const trimmedMarkdown = (markdown || '').trim();
+      if (!trimmedMarkdown) {
+        return;
+      }
+
+      const imageMatch = trimmedMarkdown.match(/^!\[(.*?)\]\((.*?)(?: "(.*?)")?\)$/);
+
+      if (imageMatch) {
+        const [, alt = '', src = '', title] = imageMatch;
+        const attributes = { src, alt };
+        if (title) {
+          attributes.title = title;
+        }
+        wysiwygEditor.chain().focus().setImage(attributes).run();
+        return;
+      }
+
+      wysiwygEditor.chain().focus().insertContent(trimmedMarkdown).run();
+    },
+    [wysiwygEditor],
+  );
+
   const imageHandlers = useMemo(
-    () => ({
-      uploading: handleImageUploading(textAreaRef),
-      success: handleImageUploadSuccess(textAreaRef),
-      failure: handleImageUploadFailure(textAreaRef),
-    }),
-    [textAreaRef],
+    () => {
+      if (isWysiwygActive && wysiwygEditor) {
+        return {
+          uploading: () => wysiwygEditor.chain().focus().run(),
+          success: (response) => {
+            const { markdown, links = [] } = response;
+            const fallbackMarkdown = `![Image description](${links[0] || ''})`;
+            insertMarkdownIntoEditor((markdown || fallbackMarkdown).trim());
+          },
+          failure: handleImageFailureMessage,
+        };
+      }
+
+      return {
+        uploading: handleImageUploading(textAreaRef),
+        success: handleImageUploadSuccess(textAreaRef),
+        failure: handleImageUploadFailure(textAreaRef),
+      };
+    },
+    [insertMarkdownIntoEditor, isWysiwygActive, textAreaRef, wysiwygEditor],
   );
 
   const videoHandlers = useMemo(() => {
     if (!videoEnabled) {
       return { enabled: false };
+    }
+
+    if (isWysiwygActive && wysiwygEditor) {
+      return {
+        enabled: true,
+        uploading: () => wysiwygEditor.chain().focus().run(),
+        success: (response) => {
+          const { markdown, links = [] } = response;
+          const fallbackMarkdown = `![](${links[0] || ''})`;
+          insertMarkdownIntoEditor((markdown || fallbackMarkdown).trim());
+        },
+        failure: handleImageFailureMessage,
+      };
     }
 
     return {
@@ -47,9 +149,9 @@ export const EditorBody = ({
       success: handleImageUploadSuccess(textAreaRef, 'video'),
       failure: handleImageUploadFailure(textAreaRef, 'video'),
     };
-  }, [textAreaRef, videoEnabled]);
+  }, [insertMarkdownIntoEditor, isWysiwygActive, textAreaRef, videoEnabled, wysiwygEditor]);
 
-  const { setElement } = useDragAndDrop({
+  const { setElement: setDragElement } = useDragAndDrop({
     onDrop: handleImageDrop(
       imageHandlers.uploading,
       imageHandlers.success,
@@ -70,18 +172,73 @@ export const EditorBody = ({
   });
 
   useLayoutEffect(() => {
+    if (isWysiwygActive && wysiwygEditor) {
+      setDragElement(wysiwygEditor.view.dom);
+      setPasteElement(wysiwygEditor.view.dom);
+      return;
+    }
+
     if (textAreaRef.current) {
-      setElement(textAreaRef.current);
+      setDragElement(textAreaRef.current);
       setPasteElement(textAreaRef.current);
     }
-  });
+  }, [isWysiwygActive, setDragElement, setPasteElement, wysiwygEditor]);
+
+  const handleModeChange = useCallback(
+    (nextMode) => {
+      if (!isWysiwygEnabled) {
+        return;
+      }
+
+      setMode(nextMode);
+      if (nextMode === 'markdown' && textAreaRef.current) {
+        textAreaRef.current.focus();
+      }
+
+      if (nextMode === 'wysiwyg' && wysiwygEditor) {
+        wysiwygEditor.chain().focus().run();
+      }
+    },
+    [isWysiwygEnabled, wysiwygEditor],
+  );
+
+  const handleWysiwygMarkdownChange = useCallback(
+    (markdown) => {
+      updateTextareaValue(markdown);
+    },
+    [updateTextareaValue],
+  );
 
   return (
     <div
       data-testid="article-form__body"
       className="crayons-article-form__body drop-area text-padding"
     >
-      <Toolbar version={version} textAreaId="article_body_markdown" />
+      <Toolbar
+        version={version}
+        textAreaId="article_body_markdown"
+        mode={mode}
+        onModeChange={handleModeChange}
+        wysiwygEnabled={isWysiwygEnabled}
+        wysiwygToolbarProps={{
+          editor: wysiwygEditor,
+          onImageUploadStart: () => wysiwygEditor?.chain().focus().run(),
+          onImageUploadSuccess: insertMarkdownIntoEditor,
+          onImageUploadError: () => {},
+          onVideoUploadStart: () => wysiwygEditor?.chain().focus().run(),
+          onVideoUploadSuccess: insertMarkdownIntoEditor,
+          onVideoUploadError: () => {},
+          videoEnabled,
+        }}
+      />
+      {isWysiwygActive && (
+        <WysiwygEditor
+          markdown={defaultValue}
+          onMarkdownChange={handleWysiwygMarkdownChange}
+          onEditorReady={setWysiwygEditor}
+          switchHelpContext={switchHelpContext}
+        />
+      )}
       <AutocompleteTriggerTextArea
         triggerCharacter="@"
         maxSuggestions={6}
@@ -101,6 +258,8 @@ export const EditorBody = ({
         defaultValue={defaultValue}
         placeholder={locale('core.editor_body_placeholder')}
         className="crayons-textfield crayons-textfield--ghost crayons-article-form__body__field ff-monospace fs-l h-100"
+        aria-hidden={isWysiwygActive}
+        style={isWysiwygActive ? { display: 'none' } : undefined}
       />
     </div>
   );
