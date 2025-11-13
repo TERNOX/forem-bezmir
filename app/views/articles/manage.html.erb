@@ -3,15 +3,15 @@
   <!-- Sidebar Navigation -->
   <aside class="manage-sidebar crayons-card" id="manage-sidebar">
     <nav class="manage-sidebar-nav">
-      <h3 class="manage-sidebar-title">Sections</h3>
+      <h3 class="manage-sidebar-title">Розділи</h3>
         <ul class="manage-sidebar-list">
-        <li><a href="#section-overview" class="manage-sidebar-link" data-section="section-overview">Overview</a></li>
-        <li><a href="#section-stats" class="manage-sidebar-link" data-section="section-stats">Statistics</a></li>
-        <li><a href="#section-edit" class="manage-sidebar-link" data-section="section-edit">Edit Post</a></li>
-        <li><a href="#section-pin" class="manage-sidebar-link" data-section="section-pin">Pin to Profile</a></li>
-        <li><a href="#section-discussion" class="manage-sidebar-link" data-section="section-discussion">Discussion Lock</a></li>
-        <li><a href="#section-delete" class="manage-sidebar-link" data-section="section-delete">Delete Post</a></li>
-        <li><a href="#section-tips" class="manage-sidebar-link" data-section="section-tips">Tips</a></li>
+        <li><a href="#section-overview" class="manage-sidebar-link" data-section="section-overview">Огляд</a></li>
+        <li><a href="#section-stats" class="manage-sidebar-link" data-section="section-stats">Статистика</a></li>
+        <li><a href="#section-edit" class="manage-sidebar-link" data-section="section-edit">Редагувати публікацію</a></li>
+        <li><a href="#section-pin" class="manage-sidebar-link" data-section="section-pin">Закріпити у профілі</a></li>
+        <li><a href="#section-discussion" class="manage-sidebar-link" data-section="section-discussion">Закрити коментарі</a></li>
+        <li><a href="#section-delete" class="manage-sidebar-link" data-section="section-delete">Видалити публікацію</a></li>
+        <li><a href="#section-tips" class="manage-sidebar-link" data-section="section-tips">Поради</a></li>
       </ul>
     </nav>
   </aside>
@@ -36,14 +36,14 @@
 
     <!-- Post Overview -->
     <div class="crayons-card p-6 mb-4" id="section-overview">
-      <h2 class="crayons-title mb-4">Post Overview</h2>
+      <h2 class="crayons-title mb-4">Огляд публікації</h2>
       
       <div class="mb-4">
         <% if @article.organization_id %>
           <span class="crayons-tag"><%= @article.organization&.name %></span>
         <% end %>
         <% if @article.collection_id %>
-          <span class="crayons-tag">Series: <%= @article.series %></span>
+          <span class="crayons-tag">Серія: <%= @article.series %></span>
         <% end %>
       </div>
 
@@ -51,9 +51,9 @@
       
       <% if @article.published %>
         <div class="color-base-60 mb-3">
-          Published <%= tag.time(@article.readable_publish_date, datetime: @article.published_timestamp) %>
+          Опубліковано <%= tag.time(@article.readable_publish_date, datetime: @article.published_timestamp) %>
           <% if @article.edited? %>
-            · Edited <%= tag.time(@article.readable_edit_date, datetime: @article.edited_at.utc.iso8601) %>
+            · Відредаговано <%= tag.time(@article.readable_edit_date, datetime: @article.edited_at.utc.iso8601) %>
           <% end %>
         </div>
 
@@ -66,20 +66,20 @@
         <% end %>
       <% else %>
         <div class="crayons-notice crayons-notice--warning mb-3">
-          <strong>Draft</strong> - This post is not published yet.
+          <strong>Чернетка</strong> — Ця публікація ще не опублікована.
         </div>
       <% end %>
 
       <% if @organization && @user.org_admin?(@organization) %>
         <div class="crayons-card p-4 mt-4" style="background: var(--card-secondary-bg);">
-          <h4 class="mb-2 fw-bold">Organization Admin: Change Author</h4>
+          <h4 class="mb-2 fw-bold">Адмін організації: змінити автора</h4>
           <%= form_for(@article) do |f| %>
             <%= f.hidden_field :from_dashboard, value: 1 %>
             <input type="hidden" name="destination" value="/dashboard/organization/<%= @organization.id %>" />
             <div class="flex items-center gap-3">
-              <label class="mb-0">Author:</label>
+              <label class="mb-0">Автор:</label>
               <%= f.select(:user_id, options_for_select(@organization.users.pluck(:name, :id), @article.user_id), {}, class: "crayons-select") %>
-              <%= f.submit "Update Author", class: "crayons-btn crayons-btn--secondary" %>
+              <%= f.submit "Оновити автора", class: "crayons-btn crayons-btn--secondary" %>
             </div>
           <% end %>
         </div>
@@ -90,23 +90,23 @@
     <% if @article.published %>
       <div class="crayons-card p-6 mb-4" id="section-stats">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="crayons-title mb-0">Statistics</h2>
-          <a href="<%= @article.path %>/stats" data-no-instant class="crayons-btn crayons-btn--outlined">View Detailed Stats</a>
+          <h2 class="crayons-title mb-0">Статистика</h2>
+          <a href="<%= @article.path %>/stats" data-no-instant class="crayons-btn crayons-btn--outlined">Переглянути детальну статистику</a>
         </div>
         
         <div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
           <div class="crayons-card p-4" style="background: var(--card-secondary-bg);">
-            <div class="color-base-60 fs-s mb-1">Page Views</div>
+            <div class="color-base-60 fs-s mb-1">Перегляди сторінки</div>
             <div class="fs-3xl fw-bold"><%= number_with_delimiter(@article.page_views_count) %></div>
           </div>
           
           <div class="crayons-card p-4" style="background: var(--card-secondary-bg);">
-            <div class="color-base-60 fs-s mb-1">Reactions</div>
+            <div class="color-base-60 fs-s mb-1">Реакції</div>
             <div class="fs-3xl fw-bold"><%= number_with_delimiter(@article.public_reactions_count) %></div>
           </div>
           
           <div class="crayons-card p-4" style="background: var(--card-secondary-bg);">
-            <div class="color-base-60 fs-s mb-1">Comments</div>
+            <div class="color-base-60 fs-s mb-1">Коментарі</div>
             <div class="fs-3xl fw-bold"><%= number_with_delimiter(@article.comments_count) %></div>
           </div>
         </div>
@@ -115,33 +115,33 @@
 
     <!-- Edit Post -->
     <div class="crayons-card p-6 mb-4" id="section-edit">
-      <h2 class="crayons-title mb-2">Edit Post</h2>
+      <h2 class="crayons-title mb-2">Редагувати публікацію</h2>
       <p class="color-base-70 mb-4">
-        Make changes to your post content, title, tags, or cover image.
+        Внесіть зміни до вмісту, заголовка, тегів або обкладинки вашої публікації.
       </p>
-      <a href="<%= @article.path %>/edit" class="crayons-btn">Edit Post</a>
+      <a href="<%= @article.path %>/edit" class="crayons-btn">Редагувати</a>
     </div>
 
     <!-- Pin to Profile -->
     <div class="crayons-card p-6 mb-4" id="section-pin">
-      <h2 class="crayons-title mb-2">Pin to Profile</h2>
+      <h2 class="crayons-title mb-2">Закріпити у профілі</h2>
       <p class="color-base-70 mb-4">
-        Pinning a post to your profile makes it appear at the top of your profile page. You can pin up to 5 posts to highlight your best work.
+        Закріплена публікація відображатиметься у верхній частині вашого профілю. Ви можете закріпити до 5 публікацій, щоб показати свої найкращі роботи.
       </p>
       <% if @article.profile_pins.any? %>
         <%= form_for(@article.profile_pins.first, html: { class: "mb-3" }) do |f| %>
           <button type="submit" class="crayons-btn crayons-btn--outlined" style="width: auto;">
-            Unpin from Profile
+            Відкріпити з профілю
           </button>
         <% end %>
         <p class="color-base-60 fs-s">
-          This post is currently pinned to your profile.
+          Ця публікація наразі закріплена у вашому профілі.
         </p>
       <% else %>
         <%= form_for(ProfilePin.new) do |f| %>
           <%= f.hidden_field :pinnable_id, value: @article.id %>
           <button type="submit" class="crayons-btn" style="width: auto;">
-            Pin to Profile
+            Закріпити у профілі
           </button>
         <% end %>
       <% end %>
@@ -149,45 +149,27 @@
 
     <!-- Discussion Lock -->
     <div class="crayons-card p-6 mb-4" id="section-discussion">
-      <h2 class="crayons-title mb-2">Discussion Lock</h2>
+      <h2 class="crayons-title mb-2">Закрити коментарі</h2>
       <p class="color-base-70 mb-4">
-        Locking the discussion prevents new comments from being posted. Existing comments will remain visible. This is useful if you want to close the conversation on your article.
+        Закриття коментарів не дозволяє залишати нові повідомлення. Існуючі коментарі залишаться видимими. Це зручно, якщо ви хочете завершити обговорення під статтею.
       </p>
       <% if @discussion_lock %>
         <a href="<%= @article.path %>/discussion_unlock_confirm" data-no-instant class="crayons-btn crayons-btn--outlined">
           <%= crayons_icon_tag("unlock", class: "mr-1") %>
-          Unlock Discussion
+          Відкрити коментарі
         </a>
         <p class="color-base-60 mt-2 fs-s">
           <%= crayons_icon_tag("lock", class: "mr-1") %>
-          Discussion is currently locked. No new comments can be posted.
+          Коментарі наразі закриті. Нові залишити не можна.
         </p>
       <% else %>
         <a href="<%= @article.path %>/discussion_lock_confirm" data-no-instant class="crayons-btn">
           <%= crayons_icon_tag("lock", class: "mr-1") %>
-          Lock Discussion
+          Закрити коментарі
         </a>
       <% end %>
     </div>
 
-    <!-- Delete Post -->
-    <div class="crayons-card p-6 mb-4" id="section-delete">
-      <h2 class="crayons-title mb-2">Delete Post</h2>
-      
-      <div class="crayons-notice crayons-notice--warning mb-4">
-        <strong>Recommendation:</strong> Instead of deleting, consider unpublishing your post. This keeps your content and its history while removing it from public view. You can always republish it later.
-      </div>
-      
-      <p class="color-base-70 mb-4">
-        <strong>Warning:</strong> Deleting your post is permanent and cannot be undone. All comments, reactions, and statistics will be lost.
-      </p>
-      
-      <div>
-        <a href="<%= @article.path %>/delete_confirm" data-no-instant class="crayons-btn crayons-btn--danger">
-          Delete Post
-        </a>
-      </div>
-    </div>
 
     <!-- Tips for Promotion -->
     <div class="crayons-card p-6" id="section-tips" style="margin-bottom: 140px">
@@ -206,65 +188,3 @@
     </div>
   </div>
 </main>
-
-<script>
-(function() {
-  'use strict';
-
-  // Smooth scroll to section
-  function scrollToSection(sectionId) {
-    const section = document.getElementById(sectionId);
-    if (section) {
-      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }
-
-  // Update active link based on scroll position
-  function updateActiveLink() {
-    const sections = document.querySelectorAll('[id^="section-"]');
-    const links = document.querySelectorAll('.manage-sidebar-link');
-    
-    let currentSection = '';
-    const scrollPosition = window.scrollY + 100; // Offset for better UX
-    
-    sections.forEach(section => {
-      const sectionTop = section.offsetTop;
-      const sectionHeight = section.offsetHeight;
-      
-      if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
-        currentSection = section.id;
-      }
-    });
-    
-    links.forEach(link => {
-      link.classList.remove('active');
-      if (link.dataset.section === currentSection) {
-        link.classList.add('active');
-      }
-    });
-  }
-
-  // Handle sidebar link clicks
-  document.addEventListener('DOMContentLoaded', function() {
-    const sidebarLinks = document.querySelectorAll('.manage-sidebar-link');
-    
-    sidebarLinks.forEach(link => {
-      link.addEventListener('click', function(e) {
-        e.preventDefault();
-        const sectionId = this.dataset.section;
-        scrollToSection(sectionId);
-        
-        // Update active state immediately
-        sidebarLinks.forEach(l => l.classList.remove('active'));
-        this.classList.add('active');
-      });
-    });
-    
-    // Update active link on scroll
-    window.addEventListener('scroll', updateActiveLink);
-    
-    // Set initial active state
-    updateActiveLink();
-  });
-})();
-</script>

@@ -238,13 +238,13 @@ function showErrorsOnCharts() {
   const target = ['reactions-chart', 'comments-chart', 'readers-chart'];
   target.forEach((id) => {
     const el = document.getElementById(id);
-    el.outerHTML = `<p class="m-5" id="${id}">Failed to fetch chart data. If this error persists for a minute, you can try to disable adblock etc. on this page or site.</p>`;
+    el.outerHTML = `<p class="m-5" id="${id}">Інформація відсутня..</p>`;
   });
 }
 
 function showErrorsOnReferrers() {
   document.getElementById('referrers-container').outerHTML =
-    '<p class="m-5" id="referrers-container">Failed to fetch referrer data. If this error persists for a minute, you can try to disable adblock etc. on this page or site.</p>';
+    '<p class="m-5" id="referrers-container">Інформація відсутня.</p>';
 }
 
 function callAnalyticsAPI(date, timeRangeLabel, { organizationId, articleId }) {
