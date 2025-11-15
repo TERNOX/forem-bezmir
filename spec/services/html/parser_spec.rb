@@ -105,6 +105,36 @@ RSpec.describe Html::Parser, type: :service do
     end
   end
 
+  describe "#wrap_spoilers" do
+    it "wraps spoiler markers with an accessible span" do
+      html = "<p>Intro <!--spoiler-->hidden<!--endspoiler--> text</p>"
+      fragment = Nokogiri::HTML.fragment(described_class.new(html).wrap_spoilers.html)
+      spoiler = fragment.at_css('[data-spoiler]')
+
+      expect(spoiler).to be_present
+      expect(spoiler['tabindex']).to eq('0')
+      expect(spoiler['aria-label']).to eq('Spoiler content. Focus to reveal.')
+      expect(spoiler['data-spoiler-label']).to eq('Spoiler')
+      expect(spoiler.inner_html).to eq('hidden')
+    end
+
+    it "preserves nested markup inside spoiler blocks" do
+      html = "<p><!--spoiler--><strong>secret</strong><!--endspoiler--></p>"
+      parsed_html = described_class.new(html).wrap_spoilers.html
+
+      expect(parsed_html).to include(
+        '<span data-spoiler="true" data-spoiler-label="Spoiler" tabindex="0" aria-label="Spoiler content. Focus to reveal."><strong>secret</strong></span>',
+      )
+    end
+
+    it "leaves unmatched spoiler markers untouched" do
+      html = "<p><!--spoiler-->open spoiler"
+      parsed_html = described_class.new(html).wrap_spoilers.html
+
+      expect(parsed_html).to include('<!--spoiler-->open spoiler')
+    end
+  end
+
   describe "#add_figcaptions_to_images" do
     context "when html is nil" do
       it "doesn't raise an error" do

@@ -267,6 +267,50 @@ body {
     }
   }
 
+  [data-spoiler] {
+    position: relative;
+    display: inline-block;
+    padding: 0 0.25em;
+    color: transparent;
+    background-color: var(--base-40, rgba(0, 0, 0, 0.12));
+    border-radius: var(--radius-s, var(--radius));
+    cursor: pointer;
+    transition: color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+    outline: none;
+  }
+
+  [data-spoiler] * {
+    color: inherit;
+  }
+
+  [data-spoiler]::after {
+    content: attr(data-spoiler-label);
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--base-90, #111);
+    font-size: 0.8em;
+    font-weight: var(--fw-medium, 600);
+    letter-spacing: 0.02em;
+    pointer-events: none;
+  }
+
+  [data-spoiler]:hover,
+  [data-spoiler]:focus,
+  [data-spoiler]:focus-visible {
+    color: inherit;
+    background-color: transparent;
+    box-shadow: 0 0 0 2px var(--base-30, rgba(0, 0, 0, 0.2));
+  }
+
+  [data-spoiler]:hover::after,
+  [data-spoiler]:focus::after,
+  [data-spoiler]:focus-visible::after {
+    content: '';
+  }
+
   .tweet-embed {
     display: block;
     margin: var(--content-rhythm) auto !important;

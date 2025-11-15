@@ -15,7 +15,7 @@ RSpec.describe MarkdownProcessor::Fixer::FixForComment, type: :service do
 
   describe "defining constants" do
     it "defines METHODS" do
-      methods = %i[underscores_in_usernames]
+      methods = %i[underscores_in_usernames replace_spoiler_delimiters]
       expect(described_class::METHODS).to eq methods
     end
   end

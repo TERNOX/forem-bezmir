@@ -13,6 +13,10 @@ module MarkdownProcessor
       # Match @_username_ that is not preceded by backtick
       USERNAME_WITH_UNDERSCORE_REGEXP = /(?<!`)@_\w+_/
 
+      SPOILER_DELIMITER = "!!".freeze
+      SPOILER_START_MARKER = "<!--spoiler-->".freeze
+      SPOILER_END_MARKER = "<!--endspoiler-->".freeze
+
       def self.call(markdown)
         return unless markdown
 
@@ -45,6 +49,58 @@ module MarkdownProcessor
         markdown.gsub(/\ntags:.*\n/) do |tags|
           tags.split(" #").join(",").delete("#").gsub(":,", ": ")
         end
+      end
+
+      def self.replace_spoiler_delimiters(markdown)
+        return markdown unless markdown&.include?(SPOILER_DELIMITER)
+
+        traverser = MarkdownProcessor::Traverser.new(markdown)
+        replacements = []
+        open_marker = false
+        result = +""
+
+        traverser.each do |line|
+          if traverser.in_codeblock?
+            result << line
+            next
+          end
+
+          processed_line = +""
+          index = 0
+
+          while (match_index = line.index(SPOILER_DELIMITER, index))
+            processed_line << line[index...match_index]
+
+            if open_marker
+              processed_line << SPOILER_END_MARKER
+              replacements << {
+                type: :close,
+                position: result.length + processed_line.length - SPOILER_END_MARKER.length,
+              }
+            else
+              processed_line << SPOILER_START_MARKER
+              replacements << {
+                type: :open,
+                position: result.length + processed_line.length - SPOILER_START_MARKER.length,
+              }
+            end
+
+            open_marker = !open_marker
+            index = match_index + SPOILER_DELIMITER.length
+          end
+
+          processed_line << line[index..] if index < line.length
+          result << processed_line
+        end
+
+        if open_marker
+          last_open = replacements.reverse.find { |entry| entry[:type] == :open }
+          if last_open
+            result[last_open[:position], SPOILER_START_MARKER.length] = SPOILER_DELIMITER
+          end
+        end
+
+        replacements.empty? ? markdown : result
       end
 
       def self.underscores_in_usernames(markdown)

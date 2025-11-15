@@ -156,6 +156,22 @@ RSpec.describe MarkdownProcessor::Parser, type: :service do
     expect(test).to eq("#{code_span}\n\n")
   end
 
+  it "renders spoiler syntax inside accessible containers" do
+    html = generate_and_parse_markdown("This has !!secret!! content.")
+
+    expect(html).to include(
+      '<span data-spoiler="true" data-spoiler-label="Spoiler" tabindex="0" aria-label="Spoiler content. Focus to reveal.">secret</span>',
+    )
+  end
+
+  it "retains markdown formatting inside spoilers" do
+    html = generate_and_parse_markdown("!!**bold**!!")
+
+    expect(html).to include(
+      '<span data-spoiler="true" data-spoiler-label="Spoiler" tabindex="0" aria-label="Spoiler content. Focus to reveal."><strong>bold</strong></span>',
+    )
+  end
+
   it "converts code tag to triple backticks" do
     content = "<code>\n this is some random code \n</code>"
     code_block_object = described_class.new(content)

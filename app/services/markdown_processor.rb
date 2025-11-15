@@ -64,23 +64,24 @@ module MarkdownProcessor
   # A container module for the allowed attributes in various rendering
   # contexts.
   module AllowedAttributes
-    FEED = %w[allow allowfullscreen alt class colspan data-conversation data-lang em height href id
-              ref referrerpolicy rel rowspan size span src start strong title value width].freeze
+    FEED = %w[allow allowfullscreen alt aria-label class colspan data-conversation data-lang data-spoiler
+              data-spoiler-label em height href id ref referrerpolicy rel rowspan size span src start strong
+              tabindex title value width].freeze
 
-    PODCAST_SHOW = %w[alt class colspan data-conversation data-lang em height href id ref
-                      rel rowspan size span src start strong title value width].freeze
+    PODCAST_SHOW = %w[alt aria-label class colspan data-conversation data-lang data-spoiler data-spoiler-label em height href id
+                      ref rel rowspan size span src start strong tabindex title value width].freeze
 
-    BILLBOARD = %w[alt class height href src width].freeze
+    BILLBOARD = %w[alt aria-label class data-spoiler data-spoiler-label height href src tabindex width].freeze
 
-    RENDERED_MARKDOWN_SCRUBBER = %w[allow allowfullscreen alt autoplay colspan controls data-conversation
-                                    data-lang data-gif-video data-no-instant data-url href id loop muted
-                                    name playsinline preload poster ref referrerpolicy rel rowspan span
-                                    src start title type value].freeze
+    RENDERED_MARKDOWN_SCRUBBER = %w[allow allowfullscreen alt aria-label autoplay colspan controls data-conversation
+                                    data-lang data-gif-video data-no-instant data-spoiler data-spoiler-label data-url href id
+                                    loop muted name playsinline preload poster ref referrerpolicy rel rowspan span src start tabindex
+                                    title type value].freeze
 
-    MARKDOWN_PROCESSOR = %w[alt href src].freeze
+    MARKDOWN_PROCESSOR = %w[alt aria-label data-spoiler data-spoiler-label href src tabindex].freeze
 
-    BADGE_ACHIEVEMENT_CONTEXT_MESSAGE = %w[href name].freeze
+    BADGE_ACHIEVEMENT_CONTEXT_MESSAGE = %w[aria-label data-spoiler data-spoiler-label href name tabindex].freeze
 
-    EMAIL_COMMENT = %w[href].freeze
+    EMAIL_COMMENT = %w[aria-label data-spoiler data-spoiler-label href tabindex].freeze
   end
 end

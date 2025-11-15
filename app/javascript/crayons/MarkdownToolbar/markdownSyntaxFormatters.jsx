@@ -14,6 +14,7 @@ import OrderedListIcon from '@images/list-ordered.svg';
 import UnorderedListIcon from '@images/list-unordered.svg';
 import HeadingIcon from '@images/heading.svg';
 import QuoteIcon from '@images/quote.svg';
+import SpoilerIcon from '@images/spoiler.svg';
 import CodeIcon from '@images/code.svg';
 import CodeBlockIcon from '@images/codeblock.svg';
 import EmbedIcon from '@images/lightning.svg';
@@ -679,6 +680,18 @@ export const markdownSyntaxFormatters = {
         newCursorEnd: selectionEnd + cursorOffset,
       };
     },
+  },
+  spoiler: {
+    icon: () => <Icon src={SpoilerIcon} />,
+    label: 'Spoiler',
+    getFormatting: ({ selectionStart, selectionEnd, value }) =>
+      undoOrAddFormattingForInlineSyntax({
+        selectionStart,
+        selectionEnd,
+        value,
+        prefix: '!!',
+        suffix: '!!',
+      }),
   },
   quote: {
     icon: () => <Icon src={QuoteIcon} />,

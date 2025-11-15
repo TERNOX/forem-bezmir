@@ -5,6 +5,7 @@ module MarkdownProcessor
         add_quotes_to_title
         add_quotes_to_description
         underscores_in_usernames
+        replace_spoiler_delimiters
       ].freeze
     end
   end

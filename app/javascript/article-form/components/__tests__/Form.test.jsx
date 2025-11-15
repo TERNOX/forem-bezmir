@@ -229,6 +229,10 @@ describe('<Form />', () => {
       expect(textArea.value).toEqual('## \n');
       userEvent.clear(textArea);
 
+      getByRole('button', { name: 'Spoiler' }).click();
+      expect(textArea.value).toEqual('!!!!');
+      userEvent.clear(textArea);
+
       getByRole('button', { name: 'Quote' }).click();
       expect(textArea.value).toEqual('> \n');
       userEvent.clear(textArea);

@@ -8,6 +8,7 @@ module MarkdownProcessor
         convert_new_lines
         split_tags
         underscores_in_usernames
+        replace_spoiler_delimiters
       ].freeze
     end
   end

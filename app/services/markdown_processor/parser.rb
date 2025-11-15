@@ -177,6 +177,7 @@ module MarkdownProcessor
         .escape_colon_emojis_in_codeblock
         .unescape_raw_tag_in_codeblocks
         .wrap_all_figures_with_tags
+        .wrap_spoilers
         .wrap_mentions_with_links
         .html
     end

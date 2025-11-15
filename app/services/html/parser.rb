@@ -18,6 +18,10 @@ module Html
     END_RAW_TAG = "{----% endraw %----}".freeze
     MARKDOWN_VIDEO_PATTERN = /\.(mp4|webm|mov|m4v)\z/i.freeze
     DEFAULT_IMAGE_CAPTIONS = ["Image description", "Опис картинки"].freeze
+    SPOILER_START_COMMENT = "spoiler".freeze
+    SPOILER_END_COMMENT = "endspoiler".freeze
+    SPOILER_VISUAL_LABEL = "Spoiler".freeze
+    SPOILER_ARIA_LABEL = "Spoiler content. Focus to reveal.".freeze
 
     attr_accessor :html
     private :html=
@@ -293,6 +297,14 @@ module Html
       self
     end
 
+    def wrap_spoilers
+      fragment = Nokogiri::HTML.fragment(@html)
+      wrap_spoiler_comments(fragment)
+      @html = fragment.to_html
+
+      self
+    end
+
     def wrap_mentions_with_links
       html_doc = Nokogiri::HTML(@html)
 
@@ -416,6 +428,68 @@ module Html
 
       figure.add_child(link)
       figure
+    end
+
+    def wrap_spoiler_comments(node)
+      return unless node
+
+      child = node.children.first
+
+      while child
+        next_child = child.next
+
+        if child.comment? && spoiler_comment_type(child) == :start
+          start_comment = child
+          sibling = start_comment.next
+          nodes_to_wrap = []
+          closing_comment = nil
+
+          while sibling
+            next_sibling = sibling.next
+
+            if sibling.comment? && spoiler_comment_type(sibling) == :end
+              closing_comment = sibling
+              break
+            else
+              nodes_to_wrap << sibling
+            end
+
+            sibling = next_sibling
+          end
+
+          if closing_comment
+            span = node.document.create_element("span")
+            span["data-spoiler"] = "true"
+            span["data-spoiler-label"] = SPOILER_VISUAL_LABEL
+            span["tabindex"] = "0"
+            span["aria-label"] = SPOILER_ARIA_LABEL
+
+            insertion_point = nodes_to_wrap.first || closing_comment
+            node.insert_before(span, insertion_point)
+            nodes_to_wrap.each { |wrap_node| span.add_child(wrap_node) }
+
+            start_comment.remove
+            closing_comment.remove
+
+            wrap_spoiler_comments(span)
+            next_child = span.next
+          else
+            next_child = start_comment.next
+          end
+        elsif child.element? && !%w[code pre].include?(child.name)
+          wrap_spoiler_comments(child)
+        end
+
+        child = next_child
+      end
+    end
+
+    def spoiler_comment_type(node)
+      return unless node.comment?
+
+      text = node.text.to_s.strip
+      return :start if text == SPOILER_START_COMMENT
+      return :end if text == SPOILER_END_COMMENT
     end
 
     def user_link_if_exists(mention)
