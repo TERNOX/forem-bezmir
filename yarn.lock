@@ -22533,16 +22533,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/extension-markdown@npm:^2.2.4":
-  version: 2.2.4
-  resolution: "@tiptap/extension-markdown@npm:2.2.4"
-  dependencies:
-    "@tiptap/core": "npm:^2.2.4"
-    "@tiptap/pm": "npm:2.2.4"
-  checksum: 10c0/00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-  languageName: node
-  linkType: hard
-
 "@tiptap/extension-placeholder@npm:^2.2.4":
   version: 2.2.4
   resolution: "@tiptap/extension-placeholder@npm:2.2.4"
