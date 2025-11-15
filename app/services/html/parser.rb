@@ -20,6 +20,8 @@ module Html
     DEFAULT_IMAGE_CAPTIONS = ["Image description", "Опис картинки"].freeze
     SPOILER_START_COMMENT = "spoiler".freeze
     SPOILER_END_COMMENT = "endspoiler".freeze
+    SPOILER_START_LITERAL = "<!--#{SPOILER_START_COMMENT}-->".freeze
+    SPOILER_END_LITERAL = "<!--#{SPOILER_END_COMMENT}-->".freeze
     SPOILER_VISUAL_LABEL = "Spoiler".freeze
     SPOILER_ARIA_LABEL = "Spoiler content. Focus to reveal.".freeze
 
@@ -436,18 +438,24 @@ module Html
       child = node.children.first
 
       while child
+        if child.text? && text_contains_spoiler_marker?(child.text)
+          replacement = split_text_node_by_spoiler_marker(child)
+          child = replacement || child.next
+          next
+        end
+
         next_child = child.next
 
-        if child.comment? && spoiler_comment_type(child) == :start
-          start_comment = child
-          sibling = start_comment.next
+        if spoiler_marker_type(child) == :start
+          start_marker = child
+          sibling = start_marker.next
           nodes_to_wrap = []
           closing_comment = nil
 
           while sibling
             next_sibling = sibling.next
 
-            if sibling.comment? && spoiler_comment_type(sibling) == :end
+            if spoiler_marker_type(sibling) == :end
               closing_comment = sibling
               break
             else
@@ -468,13 +476,13 @@ module Html
             node.insert_before(span, insertion_point)
             nodes_to_wrap.each { |wrap_node| span.add_child(wrap_node) }
 
-            start_comment.remove
+            start_marker.remove
             closing_comment.remove
 
             wrap_spoiler_comments(span)
             next_child = span.next
           else
-            next_child = start_comment.next
+            next_child = start_marker.next
           end
         elsif child.element? && !%w[code pre].include?(child.name)
           wrap_spoiler_comments(child)
@@ -484,12 +492,65 @@ module Html
       end
     end
 
-    def spoiler_comment_type(node)
-      return unless node.comment?
+    def spoiler_marker_type(node)
+      return unless node
 
-      text = node.text.to_s.strip
-      return :start if text == SPOILER_START_COMMENT
-      return :end if text == SPOILER_END_COMMENT
+      if node.comment?
+        text = node.text.to_s.strip
+        return :start if text == SPOILER_START_COMMENT
+        return :end if text == SPOILER_END_COMMENT
+      elsif node.text?
+        text = node.text.to_s.strip
+        return :start if text == SPOILER_START_LITERAL
+        return :end if text == SPOILER_END_LITERAL
+      end
+    end
+
+    def text_contains_spoiler_marker?(text)
+      text.include?(SPOILER_START_LITERAL) || text.include?(SPOILER_END_LITERAL)
+    end
+
+    def split_text_node_by_spoiler_marker(text_node)
+      content = text_node.text.to_s
+      return unless text_contains_spoiler_marker?(content)
+
+      nodes_to_insert = []
+
+      while content.present?
+        start_index = content.index(SPOILER_START_LITERAL)
+        end_index = content.index(SPOILER_END_LITERAL)
+        marker_type, marker_index = next_marker_from(start_index, end_index)
+
+        if marker_index.nil?
+          nodes_to_insert << text_node.document.create_text_node(content)
+          break
+        end
+
+        if marker_index.positive?
+          nodes_to_insert << text_node.document.create_text_node(content[0...marker_index])
+        end
+
+        marker_comment = text_node.document.create_comment(marker_type == :start ? SPOILER_START_COMMENT : SPOILER_END_COMMENT)
+        nodes_to_insert << marker_comment
+
+        marker_length = marker_type == :start ? SPOILER_START_LITERAL.length : SPOILER_END_LITERAL.length
+        content = content[(marker_index + marker_length)..]
+      end
+
+      nodes_to_insert.reject! { |n| n.text? && n.text.empty? }
+
+      nodes_to_insert.each { |new_node| text_node.add_previous_sibling(new_node) }
+      text_node.remove
+
+      nodes_to_insert.first
+    end
+
+    def next_marker_from(start_index, end_index)
+      if start_index && (!end_index || start_index < end_index)
+        [:start, start_index]
+      elsif end_index
+        [:end, end_index]
+      end
     end
 
     def user_link_if_exists(mention)
