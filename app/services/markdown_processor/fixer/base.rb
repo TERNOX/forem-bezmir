@@ -67,8 +67,15 @@ module MarkdownProcessor
 
           processed_line = +""
           index = 0
+          inline_code_ranges = inline_code_ranges_for(line)
 
           while (match_index = line.index(SPOILER_DELIMITER, index))
+            if inside_inline_code?(match_index, inline_code_ranges)
+              processed_line << line[index...(match_index + SPOILER_DELIMITER.length)]
+              index = match_index + SPOILER_DELIMITER.length
+              next
+            end
+
             processed_line << line[index...match_index]
 
             if open_marker
@@ -102,6 +109,38 @@ module MarkdownProcessor
 
         replacements.empty? ? markdown : result
       end
+
+      def self.inline_code_ranges_for(line)
+        ranges = []
+        index = 0
+
+        while index < line.length
+          break unless (backtick_index = line.index('`', index))
+
+          backtick_run = 1
+          while line[backtick_index + backtick_run] == '`'
+            backtick_run += 1
+          end
+
+          closing_index = line.index('`' * backtick_run, backtick_index + backtick_run)
+
+          unless closing_index
+            index = backtick_index + backtick_run
+            next
+          end
+
+          ranges << (backtick_index...(closing_index + backtick_run))
+          index = closing_index + backtick_run
+        end
+
+        ranges
+      end
+
+      def self.inside_inline_code?(position, ranges)
+        ranges.any? { |range| range.cover?(position) }
+      end
+
+      private_class_method :inline_code_ranges_for, :inside_inline_code?
 
       def self.underscores_in_usernames(markdown)
         return markdown unless markdown.match?(USERNAME_WITH_UNDERSCORE_REGEXP)

@@ -143,4 +143,22 @@ RSpec.describe MarkdownProcessor::Fixer::Base, type: :service do
       expect(result).to include("@_no_escape_codeblock", "@_no_escape_code")
     end
   end
+
+  describe "::replace_spoiler_delimiters" do
+    it "ignores spoiler markers inside inline code" do
+      markdown = "Here is code `!! not spoiler !!` to keep"
+
+      result = described_class.replace_spoiler_delimiters(markdown)
+
+      expect(result).to eq(markdown)
+    end
+
+    it "processes spoilers around inline code segments" do
+      markdown = "!!Start `!! stay literal` finish!!"
+
+      result = described_class.replace_spoiler_delimiters(markdown)
+
+      expect(result).to eq("<!--spoiler-->Start `!! stay literal` finish<!--endspoiler-->")
+    end
+  end
 end
