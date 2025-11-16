@@ -439,7 +439,7 @@ module Html
 
       while child
         if child.text? && text_contains_spoiler_marker?(child.text)
-          replacement = split_text_node_by_spoiler_marker(child)
+          replacement = split_text_node_by_spoiler_marker(child, parent: node)
           child = replacement || child.next
           next
         end
@@ -510,11 +510,14 @@ module Html
       text.include?(SPOILER_START_LITERAL) || text.include?(SPOILER_END_LITERAL)
     end
 
-    def split_text_node_by_spoiler_marker(text_node)
+    def split_text_node_by_spoiler_marker(text_node, parent: nil)
       content = text_node.text.to_s
       return unless text_contains_spoiler_marker?(content)
 
       nodes_to_insert = []
+
+      parent ||= text_node.parent
+      return unless parent
 
       while content.present?
         start_index = content.index(SPOILER_START_LITERAL)
@@ -539,7 +542,7 @@ module Html
 
       nodes_to_insert.reject! { |n| n.text? && n.text.empty? }
 
-      nodes_to_insert.each { |new_node| text_node.add_previous_sibling(new_node) }
+      nodes_to_insert.each { |new_node| parent.insert_before(new_node, text_node) }
       text_node.remove
 
       nodes_to_insert.first

@@ -127,6 +127,15 @@ RSpec.describe Html::Parser, type: :service do
       expect(spoiler.inner_html).to eq('hidden')
     end
 
+    it "handles spoiler markers rendered at the fragment root" do
+      html = "&lt;!--spoiler--&gt;root level&lt;!--endspoiler--&gt;"
+      fragment = Nokogiri::HTML.fragment(described_class.new(html).wrap_spoilers.html)
+      spoiler = fragment.at_css('[data-spoiler]')
+
+      expect(spoiler).to be_present
+      expect(spoiler.inner_html).to eq('root level')
+    end
+
     it "preserves nested markup inside spoiler blocks" do
       html = "<p><!--spoiler--><strong>secret</strong><!--endspoiler--></p>"
       parsed_html = described_class.new(html).wrap_spoilers.html
