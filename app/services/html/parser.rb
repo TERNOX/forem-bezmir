@@ -473,7 +473,12 @@ module Html
             span["aria-label"] = SPOILER_ARIA_LABEL
 
             insertion_point = nodes_to_wrap.first || closing_comment
-            node.insert_before(span, insertion_point)
+
+            if insertion_point.parent
+              insertion_point.add_previous_sibling(span)
+            else
+              node.add_child(span)
+            end
             nodes_to_wrap.each { |wrap_node| span.add_child(wrap_node) }
 
             start_marker.remove
