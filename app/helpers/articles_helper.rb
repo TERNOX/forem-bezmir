@@ -1,4 +1,26 @@
 module ArticlesHelper
+  def inline_video_cover_source(article)
+    return if article.blank?
+    return if youtube_embed_url?(article.video)
+
+    [article.video, article.video_source_url].compact.find do |url|
+      next if url.blank?
+      next if hls_manifest?(url)
+
+      true
+    end
+  end
+
+  def hls_manifest?(url)
+    return false if url.blank?
+
+    begin
+      Addressable::URI.parse(url).path&.downcase&.end_with?(".m3u8")
+    rescue StandardError
+      url.to_s.downcase.include?(".m3u8")
+    end
+  end
+
   def should_show_latest_spam_suppression?(stories)
     return false if user_signed_in?
     return false unless stories.size > 1

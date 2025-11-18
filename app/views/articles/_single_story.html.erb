@@ -15,12 +15,29 @@
     </div>
   <% end %>
 
-  <% if story.video.present? && story.video_thumbnail_url.present? && !youtube_embed_url?(story.video) %>
-  <a href="<%= URL.article(story) %>" class="crayons-story__video" style="background-image:url(<%= story.cloudinary_video_url %>)">
-    <span class="crayons-story__video__time">
-      <%= story.video_duration_in_minutes %>
-    </span>
-  </a>
+  <% inline_video_src = inline_video_cover_source(story) %>
+  <% if inline_video_src.present? %>
+    <% if story.video_thumbnail_url.present? %>
+      <a href="<%= URL.article(story) %>" class="crayons-story__video" style="background-image:url(<%= story.cloudinary_video_url %>)">
+        <span class="crayons-story__video__time">
+          <%= story.video_duration_in_minutes %>
+        </span>
+      </a>
+    <% else %>
+      <a href="<%= URL.article(story) %>" class="crayons-story__video crayons-story__video--inline-player">
+        <video
+          src="<%= inline_video_src %>"
+          class="crayons-story__video__media"
+          aria-hidden="true"
+          muted
+          playsinline
+          preload="metadata"
+        ></video>
+        <span class="crayons-story__video__time">
+          <%= story.video_duration_in_minutes %>
+        </span>
+      </a>
+    <% end %>
   <% end %>
 
   <div class="crayons-story__body crayons-story__body-<%= story.type_of %>">

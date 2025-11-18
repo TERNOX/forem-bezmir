@@ -4,3 +4,4 @@ export * from './Header';
 export * from './Help';
 export * from './Preview';
 export * from './VideoUploader';
+export * from './VideoOptions';

@@ -1,5 +1,45 @@
 /* global timeAgo, filterXSS */
 
+function isYoutubeEmbed(url) {
+  if (!url) {
+    return false;
+  }
+
+  var loweredUrl = url.toLowerCase();
+  return (
+    loweredUrl.includes('youtube.com/embed') ||
+    loweredUrl.includes('youtube-nocookie.com/embed')
+  );
+}
+
+function isHlsManifest(url) {
+  if (!url) {
+    return false;
+  }
+
+  try {
+    return new URL(url).pathname.toLowerCase().endsWith('.m3u8');
+  } catch (error) {
+    return url.toLowerCase().includes('.m3u8');
+  }
+}
+
+function selectInlineVideoSrc(article) {
+  var sources = [article.video, article.video_source_url];
+
+  for (var i = 0; i < sources.length; i += 1) {
+    var source = sources[i];
+
+    if (!source || isHlsManifest(source) || isYoutubeEmbed(source)) {
+      continue;
+    }
+
+    return source;
+  }
+
+  return '';
+}
+
 /* eslint-disable no-multi-str */
 
 function buildArticleHTML(article, currentUserId = null) {
@@ -393,6 +433,8 @@ function buildArticleHTML(article, currentUserId = null) {
     }
 
     var videoHTML = '';
+    var inlineVideoSrc = selectInlineVideoSrc(article);
+
     if (article.cloudinary_video_url) {
       videoHTML =
         '<a href="' +
@@ -400,6 +442,17 @@ function buildArticleHTML(article, currentUserId = null) {
         '" class="crayons-story__video" style="background-image:url(' +
         article.cloudinary_video_url +
         ')"><div class="crayons-story__video__time">' +
+        (article.video_duration_string || article.video_duration_in_minutes) +
+        '</div></a>';
+    } else if (inlineVideoSrc && inlineVideoSrc.length > 0) {
+      videoHTML =
+        '<a href="' +
+        article.path +
+        '" class="crayons-story__video crayons-story__video--inline-player">' +
+        '<video src="' +
+        inlineVideoSrc +
+        '" class="crayons-story__video__media" aria-hidden="true" muted playsinline preload="metadata"></video>' +
+        '<div class="crayons-story__video__time">' +
         (article.video_duration_string || article.video_duration_in_minutes) +
         '</div></a>';
     }
