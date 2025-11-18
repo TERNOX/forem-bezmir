@@ -23,6 +23,7 @@ export const Options = ({
     allSeries = [],
     canonicalUrl = '',
     series = '',
+    organizationId = null,
   },
   schedulingEnabled,
   onSaveDraft,
@@ -37,31 +38,61 @@ export const Options = ({
   const editablePublishedAt = !publishedAtWas || wasScheduled;
 
   if (allSeries.length > 0) {
-    const seriesNames = allSeries.map((name, index) => {
+    // Handle both old format (array of strings) and new format (array of objects)
+    const normalizedSeries = allSeries.map((item) => {
+      if (typeof item === 'string') {
+        // Backward compatibility: old format
+        return { slug: item, organization_id: null, organization_name: null, is_personal: true };
+      }
+      return item;
+    });
+
+    // Filter series based on selected organization
+    // Show personal collections when no org is selected, or org collections when org matches
+    const filteredSeries = normalizedSeries.filter((item) => {
+      if (!organizationId || organizationId === '') {
+        // No org selected - show only personal collections
+        return item.is_personal;
+      }
+      // Org selected - show collections for that org OR personal collections
+      return item.is_personal || item.organization_id === parseInt(organizationId, 10);
+    });
+
+    const seriesOptions = filteredSeries.map((item, index) => {
+      let label = item.slug;
+      if (!item.is_personal && item.organization_name) {
+        label = `${item.slug} (${item.organization_name})`;
+      } else if (item.is_personal) {
+        label = `${item.slug} (Personal)`;
+      }
+
       return (
-        <option key={`series-${index}`} value={name}>
-          {name}
+        <option key={`series-${index}`} value={item.slug}>
+          {label}
         </option>
       );
     });
-    existingSeries = (
-      <div className="crayons-field__description">
-        Існуючі серії:
-        <select
-          value=""
-          name="series"
-          className="crayons-select"
-          onInput={onConfigChange}
-          required
-          aria-label="Select one of the existing series"
-        >
-          <option value="" disabled>
-            Обрати...
-          </option>
-          {seriesNames}
-        </select>
-      </div>
-    );
+
+    if (seriesOptions.length > 0) {
+      existingSeries = (
+        <div className="crayons-field__description">
+          Existing series:
+          <select
+            value=""
+            name="series"
+            className="crayons-select"
+            onInput={onConfigChange}
+            required
+            aria-label="Select one of the existing series"
+          >
+            <option value="" disabled>
+              Select...
+            </option>
+            {seriesOptions}
+          </select>
+        </div>
+      );
+    }
   }
 
   if (published) {
@@ -73,7 +104,7 @@ export const Options = ({
             variant="primary"
             onClick={onSaveDraft}
           >
-            До чорнеток
+            Convert to a Draft
           </Button>
         </div>
       );
@@ -82,7 +113,7 @@ export const Options = ({
         <div data-testid="options__danger-zone" className="crayons-field mb-6">
           <div className="crayons-field__label color-accent-danger">Danger Zone</div>
           <Button variant="primary" destructive onClick={onSaveDraft}>
-            Сховати допис
+            Unpublish post
           </Button>
         </div>
       );
@@ -97,7 +128,7 @@ export const Options = ({
     publishedAtField = (
       <div className="crayons-field mb-6">
         <label htmlFor="publishedAtDate" className="crayons-field__label">
-          Запланувати допис
+          Schedule Publication
         </label>
         <input
           aria-label="Schedule publication date"
@@ -129,8 +160,8 @@ export const Options = ({
           placeholder="..."
         />
         <div className="crayons-field__description">
-          Допис буде заплановано і опубліковано у заданий час.
-          Зараз <strong>{localTime}</strong> <strong>{localDate}</strong>.
+          Post will be scheduled using your local time (<strong>{timezone}</strong>).
+          It is currently <strong>{localTime}</strong> on <strong>{localDate}</strong> in your timezone.
         </div>
       </div>
     );
@@ -141,8 +172,8 @@ export const Options = ({
       <Button
         id="post-options-btn"
         icon={CogIcon}
-        title="Параметри допису"
-        aria-label="Параметри допису"
+        title="Post options"
+        aria-label="Post options"
         disabled={previewLoading}
       />
       <Dropdown
@@ -151,13 +182,13 @@ export const Options = ({
         dropdownContentCloseButtonId="post-options-done-btn"
         className="reverse left-2 s:left-0 right-2 s:left-auto p-4"
       >
-        <h3 className="mb-6">Параметри допису</h3>
+        <h3 className="mb-6">Post options</h3>
         <div className="crayons-field mb-6">
           <label htmlFor="canonicalUrl" className="crayons-field__label">
-            Канонічний URL
+            Canonical URL
           </label>
           <p className="crayons-field__description">
-            Змініть мета теґ <code>canonical_url</code>, якщо цей допис спочатку було опубліковано десь у іншому місці (наприклад на вашому особистому сайті). Це дасть зрозуміти пошуковим системам де оригінал статті і перевага буде надаватися вашому сайту.
+            Change meta tag <code>canonical_url</code> if this post was first published elsewhere (like your own blog).
           </p>
           <input
             type="text"
@@ -173,12 +204,10 @@ export const Options = ({
         {publishedAtField}
         <div className="crayons-field mb-6">
           <label htmlFor="series" className="crayons-field__label">
-            Серія
+            Series
           </label>
           <p className="crayons-field__description">
-			Цей допис є частиною дописів у великій серії? Дай цій серії ім'я.
-            (Перелік дописів буде видно у кожному дописі серії)
-
+            Will this post be part of a series? Give the series a unique name. (Series visible once it has multiple posts)
           </p>
           <input
             type="text"
@@ -198,7 +227,7 @@ export const Options = ({
           data-content="exit"
           variant="secondary"
         >
-          Готово
+          Done
         </Button>
       </Dropdown>
     </div>
@@ -215,6 +244,7 @@ Options.propTypes = {
     allSeries: PropTypes.array.isRequired,
     canonicalUrl: PropTypes.string.isRequired,
     series: PropTypes.string.isRequired,
+    organizationId: PropTypes.string,
   }).isRequired,
   schedulingEnabled: PropTypes.bool.isRequired,
   onSaveDraft: PropTypes.func.isRequired,
@@ -222,4 +252,4 @@ Options.propTypes = {
   previewLoading: PropTypes.bool.isRequired,
 };
 
-Options.displayName = 'Налаштування';
+Options.displayName = 'Options';
