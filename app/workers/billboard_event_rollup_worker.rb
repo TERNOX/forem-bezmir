@@ -8,3 +8,6 @@ class BillboardEventRollupWorker
     BillboardEventRollup.rollup month_ago
   end
 end
+
+# Legacy alias for jobs enqueued before the Billboard rename
+DisplayAdEventRollupWorker = BillboardEventRollupWorker
