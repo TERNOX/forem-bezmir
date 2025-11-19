@@ -547,7 +547,13 @@ module Html
 
       nodes_to_insert.reject! { |n| n.text? && n.text.empty? }
 
-      nodes_to_insert.each { |new_node| text_node.add_previous_sibling(new_node) }
+      nodes_to_insert.each do |new_node|
+        if text_node.parent
+          text_node.add_previous_sibling(new_node)
+        else
+          parent.add_child(new_node)
+        end
+      end
       text_node.remove
 
       nodes_to_insert.first
