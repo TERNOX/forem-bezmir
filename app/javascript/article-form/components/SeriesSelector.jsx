@@ -143,7 +143,7 @@ export const SeriesSelector = ({
           */}
           {filteredSeries.length > 0 && (!currentSeries || isCurrentSeriesInExisting) && (
             <div className="series-selector__existing mb-6">
-              <h3 className="crayons-subtitle-3 mb-4">Select an existing series</h3>
+              <h3 className="crayons-subtitle-3 mb-4">Оберіть наявну серію</h3>
               <div className="series-selector__series-grid">
                 {filteredSeries.map((series, index) => {
                   const isSelected = series.slug === currentSeries;
@@ -200,10 +200,10 @@ export const SeriesSelector = ({
                 className="series-selector__create-btn"
                 type="button"
               >
-                Create new series
+                Створити нову серію
               </Button>
               <p className="crayons-field__description mt-2">
-                Give your series a unique name. The series will be visible once it has multiple posts.
+                Дайте серії унікальну назву. Серія стане видимою, коли матиме кілька дописів.
               </p>
             </div>
           )}
@@ -211,7 +211,7 @@ export const SeriesSelector = ({
           {currentSeries && (
             <div className={`series-selector__current ${isCurrentSeriesInExisting ? 'mt-4 pt-4 border-t border-base-10' : ''}`}>
               <p className="crayons-field__description mb-2">
-                <strong>Currently selected:</strong> {currentSeries}
+                <strong>Зараз вибрано:</strong> {currentSeries}
               </p>
               <Button
                 variant="secondary"
@@ -226,18 +226,18 @@ export const SeriesSelector = ({
                   onSelectSeries(clearEvent);
                 }}
               >
-                Remove series
+                Прибрати серію
               </Button>
             </div>
           )}
         </Fragment>
       ) : (
         <div className="series-selector__create-form">
-          <h3 className="crayons-subtitle-3 mb-4">Create a new series</h3>
+          <h3 className="crayons-subtitle-3 mb-4">Створити нову серію</h3>
           <form onSubmit={handleCreateSeries}>
             <div className="crayons-field mb-4">
               <label htmlFor="new-series-name" className="crayons-field__label">
-                Series name
+                Назва серії
               </label>
               <input
                 type="text"
@@ -245,13 +245,13 @@ export const SeriesSelector = ({
                 className="crayons-textfield"
                 value={newSeriesName}
                 onChange={(e) => setNewSeriesName(e.target.value)}
-                placeholder="Enter series name..."
+                placeholder="Введіть назву серії..."
                 required
               />
             </div>
             <div className="flex gap-2">
               <Button variant="primary" type="submit" disabled={!newSeriesName.trim() || isCreating}>
-                {isCreating ? 'Creating...' : 'Create series'}
+                {isCreating ? 'Створюємо...' : 'Створити серію'}
               </Button>
               <Button
                 variant="secondary"
@@ -263,7 +263,7 @@ export const SeriesSelector = ({
                 }}
                 disabled={isCreating}
               >
-                Cancel
+                Скасувати
               </Button>
             </div>
           </form>
@@ -287,4 +287,3 @@ SeriesSelector.propTypes = {
 };
 
 SeriesSelector.displayName = 'SeriesSelector';
-

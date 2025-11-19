@@ -113,7 +113,7 @@ export const SeriesSelectorModal = ({
 
   return (
     <Modal
-      title="Manage Series"
+      title="Керування серіями"
       onClose={onClose}
       size="medium"
       backdropDismissible
@@ -124,7 +124,7 @@ export const SeriesSelectorModal = ({
           <Fragment>
             {filteredSeries.length > 0 && (
               <div className="series-selector-modal__existing">
-                <h3 className="crayons-subtitle-3 mb-4">Select an existing series</h3>
+                <h3 className="crayons-subtitle-3 mb-4">Оберіть наявну серію</h3>
                 <div className="series-selector-modal__series-grid">
                   {filteredSeries.map((series, index) => {
                     const isSelected = series.slug === currentSeries;
@@ -149,7 +149,7 @@ export const SeriesSelectorModal = ({
                           </span>
                           {series.is_personal && (
                             <span className="series-selector-modal__series-badge series-selector-modal__series-badge--personal">
-                              Personal
+                              Особиста
                             </span>
                           )}
                           {!series.is_personal && series.organization_name && (
@@ -172,17 +172,17 @@ export const SeriesSelectorModal = ({
                 onClick={() => setShowCreateForm(true)}
                 className="series-selector-modal__create-btn"
               >
-                Create new series
+                Створити нову серію
               </Button>
               <p className="crayons-field__description mt-2">
-                Give your series a unique name. The series will be visible once it has multiple posts.
+                Дайте серії унікальну назву. Серія стане видимою, коли матиме кілька дописів.
               </p>
             </div>
 
             {currentSeries && (
               <div className="series-selector-modal__current mt-4 pt-4 border-t border-base-10">
                 <p className="crayons-field__description mb-2">
-                  <strong>Currently selected:</strong> {currentSeries}
+                  <strong>Зараз вибрано:</strong> {currentSeries}
                 </p>
                 <Button
                   variant="secondary"
@@ -198,18 +198,18 @@ export const SeriesSelectorModal = ({
                     onClose();
                   }}
                 >
-                  Remove series
+                  Прибрати серію
                 </Button>
               </div>
             )}
           </Fragment>
         ) : (
           <div className="series-selector-modal__create-form">
-            <h3 className="crayons-subtitle-3 mb-4">Create a new series</h3>
+            <h3 className="crayons-subtitle-3 mb-4">Створити нову серію</h3>
             <form onSubmit={handleCreateSeries}>
               <div className="crayons-field mb-4">
                 <label htmlFor="new-series-name" className="crayons-field__label">
-                  Series name
+                  Назва серії
                 </label>
                 <input
                   type="text"
@@ -217,13 +217,13 @@ export const SeriesSelectorModal = ({
                   className="crayons-textfield"
                   value={newSeriesName}
                   onChange={(e) => setNewSeriesName(e.target.value)}
-                  placeholder="Enter series name..."
+                  placeholder="Введіть назву серії..."
                   required
                 />
               </div>
               <div className="flex gap-2">
                 <Button variant="primary" type="submit" disabled={!newSeriesName.trim()}>
-                  Create series
+                  Створити серію
                 </Button>
                 <Button
                   variant="secondary"
@@ -233,7 +233,7 @@ export const SeriesSelectorModal = ({
                     setNewSeriesName('');
                   }}
                 >
-                  Cancel
+                  Скасувати
                 </Button>
               </div>
             </form>
@@ -258,4 +258,3 @@ SeriesSelectorModal.propTypes = {
 };
 
 SeriesSelectorModal.displayName = 'SeriesSelectorModal';
-

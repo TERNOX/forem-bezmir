@@ -52,13 +52,12 @@
   data-site-logo='<%= render "layouts/logo" %>'
   data-cover-image-height="<%= Settings::UserExperience.cover_image_height %>"
   data-cover-image-crop="<%= Settings::UserExperience.cover_image_fit %>"
-
-  data-scheduling-enabled="<%= FeatureFlag.enabled?(:schedule_articles) %>"
+  data-scheduling-enabled="true"
   data-video-enabled="<%= Settings::General.enable_video_upload %>"
   data-video-upload-max="<%= Settings::General.video_upload_max_file_size_mb %>"
   data-video-too-large-message="<%= h t('views.editor.video.too_large_client', size: '%{size}', max: Settings::General.video_upload_max_file_size_mb) %>">
 
-  data-scheduling-enabled="true"
+  
 
   <form class="crayons-article-form crayons-article-form--<%= version %>">
 
