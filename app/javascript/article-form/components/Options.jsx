@@ -80,14 +80,14 @@ export const Options = ({
               onSaveDraft(e);
             }}
           >
-            Convert to a Draft
+            Перетворити на чернетку
           </Button>
         </div>
       );
     } else {
       publishedField = (
         <div data-testid="options__danger-zone" className="crayons-field mb-6">
-          <div className="crayons-field__label color-accent-danger">Danger Zone</div>
+          <div className="crayons-field__label color-accent-danger">Небезпечна зона</div>
           <Button 
             variant="primary" 
             destructive 
@@ -97,7 +97,7 @@ export const Options = ({
               onSaveDraft(e);
             }}
           >
-            Unpublish post
+            Скасувати публікацію
           </Button>
         </div>
       );
@@ -116,15 +116,15 @@ export const Options = ({
     publishedAtField = (
       <div className={`crayons-field mb-6 ${hasSchedule ? 'post-options-scheduling--active' : ''}`}>
         <label htmlFor="publishedAtDate" className="crayons-field__label">
-          Schedule Publication
+          Запланувати публікацію
         </label>
         <p className="crayons-field__description mb-3">
-          Set a date and time to publish your post in the future. Leave empty to publish immediately.
+          Встановіть дату й час для майбутньої публікації. Залиште порожнім, щоб опублікувати одразу.
         </p>
         <div className="flex gap-3 mb-3">
           <div className="flex-1">
             <label htmlFor="publishedAtDate" className="crayons-field__label crayons-field__label--small mb-1">
-              Date
+              Дата
             </label>
             <input
               aria-label="Schedule publication date"
@@ -141,7 +141,7 @@ export const Options = ({
           </div>
           <div className="flex-1">
             <label htmlFor="publishedAtTime" className="crayons-field__label crayons-field__label--small mb-1">
-              Time
+              Час
             </label>
             <input
               aria-label="Schedule publication time"
@@ -159,7 +159,7 @@ export const Options = ({
         {hasSchedule && isFutureSchedule && (
           <div className="py-3 rounded-lg border border-accent-brand bg-accent-brand-bg mb-3">
             <p className="crayons-field__description mb-0">
-              <strong>Post will be published:</strong> {scheduleMoment.format('MMMM D, YYYY [at] h:mm A')}
+              <strong>Допис буде опублікований:</strong> {scheduleMoment.format('MMMM D, YYYY [о] h:mm A')}
             </p>
           </div>
         )}
@@ -170,7 +170,7 @@ export const Options = ({
           id="timezone"
         />
         <div className="crayons-field__description">
-          Using your local timezone: <strong>{timezone}</strong>. Current time: <strong>{localTime}</strong> on <strong>{localDate}</strong>.
+          Використовується ваш локальний часовий пояс: <strong>{timezone}</strong>. Поточний час: <strong>{localTime}</strong> — <strong>{localDate}</strong>.
         </div>
         {hasSchedule && (
           <Button
@@ -198,7 +198,7 @@ export const Options = ({
             }}
             className="mt-2"
           >
-            Clear schedule
+            Очистити розклад
           </Button>
         )}
       </div>
@@ -210,14 +210,14 @@ export const Options = ({
       <Button
         id="post-options-btn"
         icon={CogIcon}
-        title="Advanced Post options"
-        aria-label="Advanced Post options"
+        title="Розширені налаштування допису"
+        aria-label="Розширені налаштування допису"
         disabled={previewLoading}
         onClick={() => setIsOptionsModalOpen(true)}
       />
       {isOptionsModalOpen && (
         <Modal
-          title="Advanced Post Options"
+          title="Розширені налаштування допису"
           onClose={handleModalClose}
           size="large"
           backdropDismissible
@@ -230,10 +230,10 @@ export const Options = ({
             >
               <div className="crayons-field mb-6">
                 <label htmlFor="canonicalUrl" className="crayons-field__label">
-                  Canonical URL
+                  Канонічний URL
                 </label>
                 <p className="crayons-field__description">
-                  Change meta tag <code>canonical_url</code> if this post was first published elsewhere (like your own blog).
+                  Вкажіть посилання на оригінал, якщо публікуєте статтю з іншого місця (наприклад, зі свого блогу).
                 </p>
                 <input
                   type="text"
@@ -253,10 +253,10 @@ export const Options = ({
 
               <div className={`crayons-field mb-6 ${series ? 'post-options-series--active' : ''}`}>
                 <label htmlFor="series" className="crayons-field__label">
-                  Series
+                  Серія
                 </label>
                 <p className="crayons-field__description mb-4">
-                  Organize your posts into a series for better discoverability.
+                  Об’єднайте свої дописи в серію, щоб читачам було легше знаходити пов’язані статті.
                 </p>
                 <SeriesSelector
                   allSeries={allSeries}
@@ -280,7 +280,7 @@ export const Options = ({
                   handleModalClose();
                 }}
               >
-                Done
+                Готово
               </Button>
             </div>
           </div>
@@ -309,4 +309,4 @@ Options.propTypes = {
   externalOpenSignal: PropTypes.number,
 };
 
-Options.displayName = 'Options';
+Options.displayName = 'Налаштування';
