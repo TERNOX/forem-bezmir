@@ -124,7 +124,7 @@
   color: inherit;
   cursor: pointer;
   width: 3rem;
-  height: 3rem;
+  height: 100%;
   border-radius: 999px;
   display: flex;
   align-items: center;
@@ -145,6 +145,8 @@
 @media (max-width: 720px) {
   .image-lightbox__stage {
     grid-template-columns: minmax(0, 1fr);
+	width: 100%;
+	height: 100vh;
   }
 
   .image-lightbox__nav {
