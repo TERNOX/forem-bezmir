@@ -262,7 +262,7 @@ class ApplicationController < ActionController::Base
   end
 
   def internal_navigation?
-    params[:i] == "i"
+    params[:i] == "i" && request.headers["Sec-Fetch-Dest"] != "document"
   end
   helper_method :internal_navigation?
 
