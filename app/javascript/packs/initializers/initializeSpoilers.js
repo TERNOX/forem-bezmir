@@ -33,6 +33,8 @@ function updateLabelVisibility(spoiler) {
   const availableWidth =
     spoiler.clientWidth - (parseSize(style.paddingLeft) + parseSize(style.paddingRight));
 
+  if (availableWidth <= 0) return;
+
   spoiler.dataset.spoilerLabelHidden = labelWidth > availableWidth ? 'true' : 'false';
 }
 

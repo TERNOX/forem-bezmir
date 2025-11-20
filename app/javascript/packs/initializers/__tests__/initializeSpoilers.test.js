@@ -49,4 +49,16 @@ describe('initializeSpoilers', () => {
 
     expect(spoiler.dataset.spoilerLabelHidden).toBe('true');
   });
+
+  it('keeps the label visible when width cannot be measured yet', () => {
+    document.body.innerHTML =
+      '<span data-spoiler="true" data-spoiler-label="Spoiler" aria-expanded="false" style="padding: 2px 4px"></span>';
+    const spoiler = document.querySelector('[data-spoiler]');
+
+    Object.defineProperty(spoiler, 'clientWidth', { value: 0, configurable: true });
+
+    initializeSpoilers();
+
+    expect(spoiler.dataset.spoilerLabelHidden).toBeUndefined();
+  });
 });
