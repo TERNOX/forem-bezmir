@@ -97,6 +97,7 @@ namespace :admin do
     resources :organizations, only: %i[index show destroy] do
       member do
         patch "update_org_credits"
+        patch "update_fully_trusted"
       end
     end
     resources :emails

@@ -43,11 +43,6 @@ fr:
           valid:
             title: Flag marked as valid by admin
             value: Valid
-      subforems:
-        delete_heading: Supprimer le sous-forum
-        delete_warning: Supprimer un sous-forum supprimera son domaine dédié et détachera le contenu associé. Cette action est irréversible.
-        delete_button: Supprimer le sous-forum
-        delete_confirm: "Voulez-vous vraiment supprimer %{domain} ? Cette action est irréversible."
       users:
         heading: Members
         aria_paginate: Paginate users
@@ -464,37 +459,9 @@ fr:
         options:
           delete: Delete organization
           icon: Options
-      settings:
-        emails:
-          next_digest_html: "Le prochain digest périodique est prévu autour du <strong>%{time}</strong> (tous les %{frequency} jours)."
-          last_digest_html: "Dernier digest envoyé %{time}."
-          no_previous_digest_html: "Aucun digest précédent trouvé. La tâche s'exécute tous les %{frequency} jours lorsque du contenu est disponible."
-          test_digest:
-            title: Envoyer un digest de test
-            description: Mettez en file d'attente le digest standard pour un utilisateur donné afin de prévisualiser son expérience.
-            email_label: Email du destinataire
-            placeholder: vous@example.com
-            submit: Envoyer le digest de test
-            status:
-              heading: Statut le plus récent du digest de test
-              empty: Aucun digest de test n'a encore été demandé.
-              labels:
-                status: Statut
-                email: Destinataire
-                updated_at: Dernière mise à jour
-                note: Note de statut
-                details: Notes
-                honeybadger: ID de notification Honeybadger
-                job: ID du job Sidekiq
-              logs:
-                toggle: Voir le journal d'envoi
-                empty: Aucun journal enregistré pour l'instant.
-                levels:
-                  info: INFO
-                  warn: AVERT.
-                  error: ERREUR
-              statuses:
-                queued: En file d'attente pour l'envoi
-                sent: Envoyé avec succès
-                skipped: Ignoré
-                failed: Échec
+        fully_trusted:
+          label: Organisation de confiance totale
+          description: Lorsqu'elle est activée, cette organisation peut ajouter des membres directement sans nécessiter de confirmation. Les membres recevront un e-mail de notification au lieu d'une invitation.
+          enable: Activer la confiance totale
+          disable: Désactiver la confiance totale
+          enabled_notice: Cette organisation est de confiance totale. Les membres peuvent être ajoutés directement sans confirmation.

@@ -43,11 +43,6 @@ en:
           valid:
             title: Flag marked as valid by admin
             value: Valid
-      subforems:
-        delete_heading: Delete subforem
-        delete_warning: Deleting a subforem will remove its dedicated domain and detach associated content. This action cannot be undone.
-        delete_button: Delete subforem
-        delete_confirm: "Are you sure you want to delete %{domain}? This action cannot be undone."
       users:
         heading: Members
         aria_paginate: Paginate users
@@ -174,17 +169,6 @@ en:
           submit: Update email
           success: Email updated successfully.
           error: Failed to update email.
-        update_avatar:
-          heading: Update User Avatar
-          current: Current avatar URL
-          none: No avatar on file
-          new_url: New avatar URL
-          placeholder: https://example.com/avatar.png
-          helper: Leave blank to remove the current avatar. External URLs will be fetched and stored.
-          submit: Update avatar
-          success: Avatar updated successfully.
-          removed: Avatar removed successfully.
-          error: Failed to update avatar.
         export:
           heading: Export %{user}'s data
           desc1_html: Choose between sending the exported data to either your Admin contact email, %{contact}, or to %{user}'s %{user_email} directly.
@@ -373,7 +357,6 @@ en:
           options:
             icon: Options
             update_email: Update User Email
-            update_avatar: Update user avatar
             export: Export data
             merge: Merge users
             unpublish: Unpublished all posts
@@ -489,37 +472,9 @@ en:
         options:
           delete: Delete organization
           icon: Options
-      settings:
-        emails:
-          next_digest_html: "Next periodic digest is expected around <strong>%{time}</strong> (every %{frequency} days)."
-          last_digest_html: "Last digest was sent %{time}."
-          no_previous_digest_html: "No previous digest emails were found. The job runs every %{frequency} days when content is available."
-          test_digest:
-            title: Send a test digest
-            description: Queue the standard digest for a specific user to preview the experience.
-            email_label: Recipient email
-            placeholder: you@example.com
-            submit: Send test digest
-            status:
-              heading: Latest test digest status
-              empty: No test digests have been requested yet.
-              labels:
-                status: Status
-                email: Recipient
-                updated_at: Last updated
-                note: Status note
-                details: Notes
-                honeybadger: Honeybadger notice ID
-                job: Sidekiq job ID
-              logs:
-                toggle: View delivery log
-                empty: No log entries recorded yet.
-                levels:
-                  info: INFO
-                  warn: WARN
-                  error: ERROR
-              statuses:
-                queued: Queued for delivery
-                sent: Sent successfully
-                skipped: Skipped
-                failed: Failed
+        fully_trusted:
+          label: Fully Trusted Organization
+          description: When enabled, this organization can add members directly without requiring confirmation. Members will receive a notification email instead of an invitation.
+          enable: Enable Fully Trusted
+          disable: Disable Fully Trusted
+          enabled_notice: This organization is fully trusted. Members can be added directly without confirmation.
