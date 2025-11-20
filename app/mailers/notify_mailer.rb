@@ -8,13 +8,17 @@ class NotifyMailer < ApplicationMailer
 
   def new_reply_email
     @comment = params[:comment]
+    @user = @comment&.parent_user
+    if @user.nil? || @user.email.blank?
+      Rails.logger.info("NotifyMailer skipped new_reply_email: missing parent user or email for comment ##{@comment&.id}")
+      return
+    end
+
     sanitized_comment = ApplicationController.helpers.sanitize(@comment.processed_html,
                                                                scrubber: CommentEmailScrubber.new)
     @truncated_comment = ApplicationController.helpers.truncate(sanitized_comment, length: 500, separator: " ",
-                                                                                   omission: "...", escape: false)
+                                                                                  omission: "...", escape: false)
 
-    @user = @comment.parent_user
-    return if @user.email.blank?
     return if RateLimitChecker.new.limit_by_email_recipient_address(@user.email)
 
     @unsubscribe = generate_unsubscribe_token(@user.id, :email_comment_notifications)
