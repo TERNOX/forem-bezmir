@@ -160,7 +160,7 @@ RSpec.describe MarkdownProcessor::Parser, type: :service do
     html = generate_and_parse_markdown("This has !!secret!! content.")
 
     expect(html).to include(
-      '<span data-spoiler="true" data-spoiler-label="Spoiler" tabindex="0" aria-label="Spoiler content. Focus to reveal.">secret</span>',
+      '<span data-spoiler="true" data-spoiler-label="Spoiler" data-spoiler-expanded="false" tabindex="0" aria-label="Spoiler content. Click to toggle." aria-expanded="false">secret</span>',
     )
   end
 
@@ -168,7 +168,7 @@ RSpec.describe MarkdownProcessor::Parser, type: :service do
     html = generate_and_parse_markdown("!!**bold**!!")
 
     expect(html).to include(
-      '<span data-spoiler="true" data-spoiler-label="Spoiler" tabindex="0" aria-label="Spoiler content. Focus to reveal."><strong>bold</strong></span>',
+      '<span data-spoiler="true" data-spoiler-label="Spoiler" data-spoiler-expanded="false" tabindex="0" aria-label="Spoiler content. Click to toggle." aria-expanded="false"><strong>bold</strong></span>',
     )
   end
 

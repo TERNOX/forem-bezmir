@@ -23,7 +23,7 @@ module Html
     SPOILER_START_LITERAL = "<!--#{SPOILER_START_COMMENT}-->".freeze
     SPOILER_END_LITERAL = "<!--#{SPOILER_END_COMMENT}-->".freeze
     SPOILER_VISUAL_LABEL = "Spoiler".freeze
-    SPOILER_ARIA_LABEL = "Spoiler content. Focus to reveal.".freeze
+    SPOILER_ARIA_LABEL = "Spoiler content. Click to toggle.".freeze
 
     attr_accessor :html
     private :html=
@@ -469,8 +469,10 @@ module Html
             span = node.document.create_element("span")
             span["data-spoiler"] = "true"
             span["data-spoiler-label"] = SPOILER_VISUAL_LABEL
+            span["data-spoiler-expanded"] = "false"
             span["tabindex"] = "0"
             span["aria-label"] = SPOILER_ARIA_LABEL
+            span["aria-expanded"] = "false"
 
             insertion_point = nodes_to_wrap.first || closing_comment
 

@@ -297,17 +297,24 @@ body {
     pointer-events: none;
   }
 
+  [data-spoiler][data-spoiler-label-hidden='true']::after {
+    content: '';
+  }
+
   [data-spoiler]:hover,
   [data-spoiler]:focus,
   [data-spoiler]:focus-visible {
+    background-color: var(--base-30, rgba(0, 0, 0, 0.16));
+    box-shadow: 0 0 0 2px var(--base-30, rgba(0, 0, 0, 0.2));
+  }
+
+  [data-spoiler][data-spoiler-expanded='true'] {
     color: inherit;
     background-color: transparent;
     box-shadow: 0 0 0 2px var(--base-30, rgba(0, 0, 0, 0.2));
   }
 
-  [data-spoiler]:hover::after,
-  [data-spoiler]:focus::after,
-  [data-spoiler]:focus-visible::after {
+  [data-spoiler][data-spoiler-expanded='true']::after {
     content: '';
   }
 

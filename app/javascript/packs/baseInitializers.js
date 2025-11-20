@@ -10,6 +10,7 @@ import {
   showUserAlertModal,
   showModalAfterError,
 } from '@utilities/showUserAlertModal';
+import { initializeSpoilers } from './initializers/initializeSpoilers';
 
 initializeCommentDate();
 initializeCommentPreview();
@@ -18,6 +19,7 @@ initializeNotifications();
 initializeTimeFixer();
 initializeDateHelpers();
 initializeGifVideos(document);
+initializeSpoilers();
 initializeSteamIframeColorScheme();
 
 InstantClick.on('change', () => {
@@ -26,6 +28,7 @@ InstantClick.on('change', () => {
   initializeSettings();
   initializeNotifications();
   initializeGifVideos(document);
+  initializeSpoilers();
   initializeSteamIframeColorScheme();
 });
 

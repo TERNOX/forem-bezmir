@@ -113,7 +113,9 @@ RSpec.describe Html::Parser, type: :service do
 
       expect(spoiler).to be_present
       expect(spoiler['tabindex']).to eq('0')
-      expect(spoiler['aria-label']).to eq('Spoiler content. Focus to reveal.')
+      expect(spoiler['aria-label']).to eq('Spoiler content. Click to toggle.')
+      expect(spoiler['aria-expanded']).to eq('false')
+      expect(spoiler['data-spoiler-expanded']).to eq('false')
       expect(spoiler['data-spoiler-label']).to eq('Spoiler')
       expect(spoiler.inner_html).to eq('hidden')
     end
@@ -141,7 +143,7 @@ RSpec.describe Html::Parser, type: :service do
       parsed_html = described_class.new(html).wrap_spoilers.html
 
       expect(parsed_html).to include(
-        '<span data-spoiler="true" data-spoiler-label="Spoiler" tabindex="0" aria-label="Spoiler content. Focus to reveal."><strong>secret</strong></span>',
+        '<span data-spoiler="true" data-spoiler-label="Spoiler" data-spoiler-expanded="false" tabindex="0" aria-label="Spoiler content. Click to toggle." aria-expanded="false"><strong>secret</strong></span>',
       )
     end
 
