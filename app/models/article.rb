@@ -1037,7 +1037,32 @@ class Article < ApplicationRecord
       p "Parsed YouTube video URL: #{video}" if Rails.env.development?
     rescue StandardError => e
       Rails.logger.error("Error parsing YouTube video URL: #{e.message}")
+    return unless video_source_url.present?
+
+    if video_source_url.include?("youtube.com")
+      begin
+        self.video = YoutubeParser.new(video_source_url).call
+        p "Parsed YouTube video URL: #{video}" if Rails.env.development?
+      rescue StandardError => e
+        Rails.logger.error("Error parsing YouTube video URL: #{e.message}")
+      end
+    elsif video_source_url.include?("player.mux.com")
+      begin
+        parser = MuxParser.new(video_source_url)
+        self.video = parser.call
+        self.video_thumbnail_url = mux_thumbnail_url(parser.video_id) if parser.video_id
+        p "Parsed Mux video URL: #{video}" if Rails.env.development?
+      rescue StandardError => e
+        Rails.logger.error("Error parsing Mux video URL: #{e.message}")
+      end
+
     end
+  end
+
+  def mux_thumbnail_url(video_id)
+    return nil unless video_id.present?
+
+    "https://image.mux.com/#{video_id}/thumbnail.webp"
   end
 
   def set_markdown_from_body_url
@@ -1201,7 +1226,7 @@ class Article < ApplicationRecord
   end
 
   def fetch_video_duration
-    return if YoutubeUrl.youtube_url?(video_source_url)
+    return if video_source_url&.include?("youtube.com") || video_source_url&.include?("player.mux.com")
 
     if video.present? && video_duration_in_seconds.zero?
       url = video_source_url.gsub(".m3u8", "1351620000001-200015_hls_v4.m3u8")
