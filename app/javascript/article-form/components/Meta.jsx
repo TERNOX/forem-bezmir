@@ -14,6 +14,8 @@ export const Meta = ({
   switchHelpContext,
   coverImageCrop,
   coverImageHeight,
+  videoSourceUrl,
+  onVideoUrlChange,
 }) => {
   return (
     <div className="crayons-article-form__top text-padding drop-area">
@@ -22,6 +24,8 @@ export const Meta = ({
         onMainImageUrlChange={onMainImageUrlChange}
         coverImageCrop={coverImageCrop}
         coverImageHeight={coverImageHeight}
+        videoSourceUrl={videoSourceUrl}
+        onVideoUrlChange={onVideoUrlChange}
       />
       <Title
         defaultValue={titleDefaultValue}
@@ -47,6 +51,8 @@ Meta.propTypes = {
   switchHelpContext: PropTypes.func.isRequired,
   coverImageHeight: PropTypes.string.isRequired,
   coverImageCrop: PropTypes.string.isRequired,
+  videoSourceUrl: PropTypes.string,
+  onVideoUrlChange: PropTypes.func,
 };
 
 Meta.displayName = 'Meta';

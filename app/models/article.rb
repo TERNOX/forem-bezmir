@@ -285,7 +285,7 @@ class Article < ApplicationRecord
   before_validation :replace_blank_title_for_status
   before_validation :remove_prohibited_unicode_characters
   before_validation :remove_invalid_published_at
-  before_validation :get_youtube_embed_url
+  before_validation :generate_video_embed_url
   before_validation :set_default_subforem_id
   before_save :set_cached_entities
   before_save :set_all_dates
@@ -1028,6 +1028,7 @@ class Article < ApplicationRecord
     self.subforem_id = RequestStore.store[:default_subforem_id]
   end
 
+
   def get_youtube_embed_url
     source_url = video_source_url.presence || video
     return unless YoutubeUrl.youtube_url?(source_url)
@@ -1037,9 +1038,10 @@ class Article < ApplicationRecord
       p "Parsed YouTube video URL: #{video}" if Rails.env.development?
     rescue StandardError => e
       Rails.logger.error("Error parsing YouTube video URL: #{e.message}")
+
     return unless video_source_url.present?
 
-    if video_source_url.include?("youtube.com")
+    if video_source_url.include?("youtube.com") || video_source_url.include?("youtu.be")
       begin
         self.video = YoutubeParser.new(video_source_url).call
         p "Parsed YouTube video URL: #{video}" if Rails.env.development?
@@ -1055,7 +1057,14 @@ class Article < ApplicationRecord
       rescue StandardError => e
         Rails.logger.error("Error parsing Mux video URL: #{e.message}")
       end
-
+    elsif video_source_url.include?("twitch.tv")
+      begin
+        parser = TwitchParser.new(video_source_url)
+        self.video = parser.call
+        p "Parsed Twitch video URL: #{video}" if Rails.env.development?
+      rescue StandardError => e
+        Rails.logger.error("Error parsing Twitch video URL: #{e.message}")
+      end
     end
   end
 

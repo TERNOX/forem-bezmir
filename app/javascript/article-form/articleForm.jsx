@@ -103,6 +103,7 @@ export class ArticleForm extends Component {
             tagList: previousContent.tagList || '',
             mainImage: previousContent.mainImage || null,
             bodyMarkdown: previousContent.bodyMarkdown || '',
+            videoSourceUrl: previousContent.videoSourceUrl || null,
             edited: true,
           }
         : {};
@@ -139,6 +140,7 @@ export class ArticleForm extends Component {
       submitting: false,
       editing: this.article.id !== null, // eslint-disable-line react/no-unused-state
       mainImage: this.article.main_image || null,
+      videoSourceUrl: this.article.video_source_url || null,
       organizations,
       organizationId: this.article.organization_id,
       errors: null,
@@ -180,7 +182,7 @@ export class ArticleForm extends Component {
       return;
     }
 
-    const { version, title, tagList, mainImage, bodyMarkdown } = this.state;
+    const { version, title, tagList, mainImage, bodyMarkdown, videoSourceUrl } = this.state;
     const updatedAt = new Date();
     localStorage.setItem(
       `editor-${version}-${this.url}`,
@@ -189,6 +191,7 @@ export class ArticleForm extends Component {
         tagList,
         mainImage,
         bodyMarkdown,
+        videoSourceUrl,
         updatedAt,
       }),
     );
@@ -301,8 +304,19 @@ export class ArticleForm extends Component {
   };
 
   handleMainImageUrlChange = (payload) => {
+    const newImage = payload.links[0];
     this.setState({
-      mainImage: payload.links[0],
+      mainImage: newImage,
+      // Clear video when image is set
+      videoSourceUrl: newImage ? null : this.state.videoSourceUrl,
+    });
+  };
+
+  handleVideoUrlChange = (url) => {
+    this.setState({
+      videoSourceUrl: url,
+      // Clear image when video is set
+      mainImage: url ? null : this.state.mainImage,
     });
   };
 
@@ -509,6 +523,8 @@ export class ArticleForm extends Component {
             switchHelpContext={this.switchHelpContext}
             coverImageHeight={coverImageHeight}
             coverImageCrop={coverImageCrop}
+            videoSourceUrl={this.state.videoSourceUrl}
+            onVideoUrlChange={this.handleVideoUrlChange}
           />
         )}
 
