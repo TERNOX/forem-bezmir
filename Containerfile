@@ -22,7 +22,8 @@ ARG TARGETARCH
 USER root
 
 # системні залежності для зборки gems/node (canvas etc.)
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN rm -f /etc/apt/sources.list.d/nodesource.list* \
+    && apt-get update && apt-get install -y --no-install-recommends \
       build-essential \
       libcurl4-openssl-dev \
       libffi-dev \
@@ -94,7 +95,8 @@ FROM base AS development
 USER root
 
 # dev-інструменти/клієнти ставимо ЛИШЕ в dev (НЕ в production!)
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN rm -f /etc/apt/sources.list.d/nodesource.list* \
+    && apt-get update && apt-get install -y --no-install-recommends \
       build-essential git curl less \
       libpq-dev postgresql-client \
       libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 \
