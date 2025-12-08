@@ -14,7 +14,6 @@ const isYouTubeEmbed = (url) => {
   }
 };
 
-
 const normalizeYouTubeEmbedUrl = (url) => {
   try {
     const parsed = new URL(url);
@@ -40,6 +39,8 @@ const normalizeYouTubeEmbedUrl = (url) => {
     return `${parsed.origin}${parsed.pathname}${queryString ? `?${queryString}` : ""}`;
   } catch {
     return url;
+  }
+};
 
 const isMuxEmbed = (url) => {
   try {
@@ -47,7 +48,6 @@ const isMuxEmbed = (url) => {
     return parsed.host === "player.mux.com";
   } catch {
     return false;
-
   }
 };
 
