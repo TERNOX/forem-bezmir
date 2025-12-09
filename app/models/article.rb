@@ -536,6 +536,7 @@ class Article < ApplicationRecord
       unscoped { where(score: 0..).average(:score) } || 0.0
     end
   end
+ 
 
   def self.seo_boostable(tag = nil, time_ago = 18.days.ago)
     # Time ago sometimes returns this phrase instead of a date
@@ -1633,4 +1634,5 @@ class Article < ApplicationRecord
 
     normalized_body == normalized_expected
   end
+end
 end
