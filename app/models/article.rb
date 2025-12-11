@@ -825,7 +825,9 @@ class Article < ApplicationRecord
   end
 
   def has_frontmatter?
-    processed_content.has_front_matter?
+    return false unless respond_to?(:processed_content, true)
+
+    processed_content&.has_front_matter? || false
   end
 
   def edited?
