@@ -279,7 +279,8 @@ class Article < ApplicationRecord
   validate :validate_co_authors_exist, unless: -> { co_author_ids.blank? }
 
   before_validation :set_markdown_from_body_url, if: :body_url?
-  before_validation :add_urls_from_title_to_body, if: :should_add_urls_from_title?
+  before_validation :add_urls_from_title_to_body,
+                    if: -> { respond_to?(:should_add_urls_from_title?, true) && should_add_urls_from_title? }
   before_validation :evaluate_markdown, :create_slug, :set_published_date
   before_validation :normalize_title
   before_validation :replace_blank_title_for_status
