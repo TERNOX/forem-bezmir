@@ -4,50 +4,50 @@ import { articlePropTypes } from '../../common-prop-types';
 const isYouTubeEmbed = (url) => {
   try {
     const parsed = new URL(url);
-    const host = parsed.hostname.replace(/^www\./, "");
+    const host = parsed.hostname.replace(/^www\./, '');
     return (
-      ["youtube.com", "youtube-nocookie.com"].includes(host) &&
-      parsed.pathname.startsWith("/embed/")
+      ['youtube.com', 'youtube-nocookie.com'].includes(host) &&
+      parsed.pathname.startsWith('/embed/')
     );
   } catch {
     return false;
   }
 };
 
-
 const normalizeYouTubeEmbedUrl = (url) => {
   try {
     const parsed = new URL(url);
-    if (!parsed.pathname.startsWith("/embed/")) {
+    if (!parsed.pathname.startsWith('/embed/')) {
       return url;
     }
 
-    const [, , videoId] = parsed.pathname.split("/");
+    const [, , videoId] = parsed.pathname.split('/');
     if (!videoId) {
       return url;
     }
 
-    parsed.protocol = "https:";
-    parsed.hostname = "www.youtube.com";
+    parsed.protocol = 'https:';
+    parsed.hostname = 'www.youtube.com';
     parsed.pathname = `/embed/${videoId}`;
 
-    parsed.searchParams.set("autoplay", "1");
-    parsed.searchParams.set("rel", "0");
-    parsed.searchParams.set("modestbranding", "1");
-    parsed.searchParams.set("playsinline", "1");
+    parsed.searchParams.set('autoplay', '1');
+    parsed.searchParams.set('rel', '0');
+    parsed.searchParams.set('modestbranding', '1');
+    parsed.searchParams.set('playsinline', '1');
 
     const queryString = parsed.searchParams.toString();
-    return `${parsed.origin}${parsed.pathname}${queryString ? `?${queryString}` : ""}`;
+    return `${parsed.origin}${parsed.pathname}${queryString ? `?${queryString}` : ''}`;
   } catch {
     return url;
+  }
+};
 
 const isMuxEmbed = (url) => {
   try {
     const parsed = new URL(url);
-    return parsed.host === "player.mux.com";
+    return parsed.host === 'player.mux.com';
   } catch {
     return false;
-
   }
 };
 
@@ -58,20 +58,20 @@ export const Video = ({ article }) => {
       <div
         className="crayons-article__cover crayons-article__cover__image__feed"
         style={{
-          width: "100%",
-          aspectRatio: "16 / 9",
-          position: "relative",
+          width: '100%',
+          aspectRatio: '16 / 9',
+          position: 'relative',
         }}
       >
         <iframe
           src={normalizeYouTubeEmbedUrl(article.video)}
           style={{
             border: 0,
-            position: "absolute",
+            position: 'absolute',
             top: 0,
             left: 0,
-            width: "100%",
-            height: "100%",
+            width: '100%',
+            height: '100%',
           }}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           referrerPolicy="strict-origin-when-cross-origin"
@@ -81,6 +81,7 @@ export const Video = ({ article }) => {
       </div>
     );
   }
+
   return (
     <a
       href={article.url}
