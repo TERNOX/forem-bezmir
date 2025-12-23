@@ -1042,6 +1042,7 @@ class Article < ApplicationRecord
       p "Parsed YouTube video URL: #{video}" if Rails.env.development?
     rescue StandardError => e
       Rails.logger.error("Error parsing YouTube video URL: #{e.message}")
+    end
 
     return unless video_source_url.present?
 
@@ -1637,5 +1638,4 @@ class Article < ApplicationRecord
 
     normalized_body == normalized_expected
   end
-end
 end
