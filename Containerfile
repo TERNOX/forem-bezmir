@@ -3,6 +3,9 @@ FROM ghcr.io/forem/ruby:3.3.0@sha256:9cda49a45931e9253d58f7d561221e43bd0d47676b8
 
 # інколи всередині образу немає /usr/bin/bash — робимо симлінк
 USER root
+
+# прибираємо застарілий репозиторій nodesource, який більше не має Release-файлу
+RUN rm -f /etc/apt/sources.list.d/nodesource.list
 RUN ln -sf /bin/bash /usr/bin/bash
 
 ENV APP_USER=forem \
