@@ -38,6 +38,9 @@ RUN install -d /etc/apt/keyrings \
       libpixman-1-dev \
       libcairo2-dev \
       libpango1.0-dev \
+      libjpeg-dev \
+      libgif-dev \
+      librsvg2-dev \
       curl ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
