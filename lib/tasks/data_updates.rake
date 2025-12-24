@@ -12,7 +12,15 @@ namespace :data_updates do
 
       # Use the env variable to delay running data update scripts if your
       # deploy strategy requires it
-      DataUpdateWorker.perform_in(ENV.fetch("WORKERS_DATA_UPDATE_DELAY_SECONDS") { default_delay })
+      begin
+        DataUpdateWorker.perform_in(ENV.fetch("WORKERS_DATA_UPDATE_DELAY_SECONDS") { default_delay })
+      rescue StandardError => e
+        if defined?(Redis::BaseError) && e.is_a?(Redis::BaseError)
+          Rails.logger.warn("Skipping data update enqueue due to Redis error: #{e.class}")
+        else
+          raise
+        end
+      end
     end
   end
 

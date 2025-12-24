@@ -3,8 +3,17 @@ namespace :cache do
   task enqueue_path_bust_workers: :environment do
     # Trigger cache purges for globally-cached endpoints that could have changed
     [30, 180, 600].each do |n|
-      BustCachePathWorker.set(queue: :high_priority).perform_in(n.seconds, "/")
-      BustCachePathWorker.set(queue: :high_priority).perform_in(n.seconds, "/onboarding")
+      begin
+        BustCachePathWorker.set(queue: :high_priority).perform_in(n.seconds, "/")
+        BustCachePathWorker.set(queue: :high_priority).perform_in(n.seconds, "/onboarding")
+      rescue StandardError => e
+        if defined?(Redis::BaseError) && e.is_a?(Redis::BaseError)
+          Rails.logger.warn("Skipping cache bust enqueue due to Redis error: #{e.class}")
+          break
+        else
+          raise
+        end
+      end
     end
   end
 
