@@ -1032,6 +1032,13 @@ class Article < ApplicationRecord
     self.subforem_id = RequestStore.store[:default_subforem_id]
   end
 
+  def generate_video_embed_url
+    return unless video_source_url.present? || video.present?
+
+    get_youtube_embed_url
+  rescue StandardError => e
+    Rails.logger.error("Error generating video embed URL: #{e.message}")
+  end
 
   def get_youtube_embed_url
     source_url = video_source_url.presence || video
