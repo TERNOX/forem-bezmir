@@ -22,7 +22,11 @@ ARG TARGETARCH
 USER root
 
 # системні залежності для зборки gems/node (canvas etc.)
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN install -d /etc/apt/keyrings \
+    && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
+    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_22.x nodistro main" > /etc/apt/sources.list.d/nodesource.list \
+    && echo 'Acquire::Retries "5";' > /etc/apt/apt.conf.d/80-retries \
+    && apt-get update && apt-get -o Acquire::Retries=5 install -y --no-install-recommends \
       build-essential \
       libcurl4-openssl-dev \
       libffi-dev \
@@ -34,6 +38,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       libpixman-1-dev \
       libcairo2-dev \
       libpango1.0-dev \
+      libjpeg-dev \
+      libgif-dev \
+      librsvg2-dev \
       curl ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
@@ -94,7 +101,11 @@ FROM base AS development
 USER root
 
 # dev-інструменти/клієнти ставимо ЛИШЕ в dev (НЕ в production!)
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN install -d /etc/apt/keyrings \
+    && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
+    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_22.x nodistro main" > /etc/apt/sources.list.d/nodesource.list \
+    && echo 'Acquire::Retries "5";' > /etc/apt/apt.conf.d/80-retries \
+    && apt-get update && apt-get -o Acquire::Retries=5 install -y --no-install-recommends \
       build-essential git curl less \
       libpq-dev postgresql-client \
       libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 \

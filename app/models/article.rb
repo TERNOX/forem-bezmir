@@ -279,7 +279,8 @@ class Article < ApplicationRecord
   validate :validate_co_authors_exist, unless: -> { co_author_ids.blank? }
 
   before_validation :set_markdown_from_body_url, if: :body_url?
-  before_validation :add_urls_from_title_to_body, if: :should_add_urls_from_title?
+  before_validation :add_urls_from_title_to_body,
+                    if: -> { respond_to?(:should_add_urls_from_title?, true) && should_add_urls_from_title? }
   before_validation :evaluate_markdown, :create_slug, :set_published_date
   before_validation :normalize_title
   before_validation :replace_blank_title_for_status
@@ -536,6 +537,7 @@ class Article < ApplicationRecord
       unscoped { where(score: 0..).average(:score) } || 0.0
     end
   end
+ 
 
   def self.seo_boostable(tag = nil, time_ago = 18.days.ago)
     # Time ago sometimes returns this phrase instead of a date
@@ -824,7 +826,9 @@ class Article < ApplicationRecord
   end
 
   def has_frontmatter?
-    processed_content.has_front_matter?
+    return false unless respond_to?(:processed_content, true)
+
+    processed_content&.has_front_matter? || false
   end
 
   def edited?
@@ -1028,6 +1032,13 @@ class Article < ApplicationRecord
     self.subforem_id = RequestStore.store[:default_subforem_id]
   end
 
+  def generate_video_embed_url
+    return unless video_source_url.present? || video.present?
+
+    get_youtube_embed_url
+  rescue StandardError => e
+    Rails.logger.error("Error generating video embed URL: #{e.message}")
+  end
 
   def get_youtube_embed_url
     source_url = video_source_url.presence || video
@@ -1038,6 +1049,7 @@ class Article < ApplicationRecord
       p "Parsed YouTube video URL: #{video}" if Rails.env.development?
     rescue StandardError => e
       Rails.logger.error("Error parsing YouTube video URL: #{e.message}")
+    end
 
     return unless video_source_url.present?
 

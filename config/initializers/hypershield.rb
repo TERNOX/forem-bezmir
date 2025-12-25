@@ -46,5 +46,7 @@ if Rails.env.production? && ENV["ENV_AVAILABLE"] == "true"
     end
   rescue ActiveRecord::NoDatabaseError
     Rails.logger.error("Hypershield initializer failed to check schema due to NoDatabaseError")
+  rescue PG::ConnectionBad, ActiveRecord::ConnectionNotEstablished => e
+    Rails.logger.warn("Hypershield initializer skipped: #{e.class} - #{e.message}")
   end
 end
