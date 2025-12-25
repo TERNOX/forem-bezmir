@@ -7,7 +7,7 @@ expires_after = app_config_expires_after.positive? ? app_config_expires_after : 
 
 # See https://github.com/redis-store/redis-rails#session-storage for configuration options
 servers = ApplicationConfig["REDIS_SESSIONS_URL"] || ApplicationConfig["REDIS_URL"]
-if Rails.env.development?
+if Rails.env.development? && servers.present?
   begin
     require "uri"
     uri = URI.parse(servers)
@@ -27,24 +27,48 @@ rescue PublicSuffix::DomainInvalid
   domain = nil
 end
 
-# Main session store
-Rails.application.config.session_store :redis_store,
-                                       key: ApplicationConfig["SESSION_KEY"],
-                                       domain: domain,
-                                       servers: servers,
-                                       expire_after: expires_after,
-                                       secure: ApplicationConfig["FORCE_SSL_IN_RAILS"] == "true",
-                                       same_site: :lax,
-                                       httponly: true
+use_cookie_store = servers.blank?
+use_cookie_store ||= Rails.env.production? && servers.match?(/localhost|127\.0\.0\.1/)
 
-# iFrame session store options
-Rails.application.config.iframe_session_options = {
-  key: "_iframe_session",
-  domain: domain,
-  servers: servers,
-  expire_after: 48.hours.to_i, # Shorter expiration time for the iFrame session
-  secure: ApplicationConfig["FORCE_SSL_IN_RAILS"] == "true",
-  same_site: :none,
-  httponly: true,
-  path: "/auth_pass" # Limit the cookie to the /auth_pass path
-}
+if use_cookie_store
+  Rails.logger.warn("Redis session store disabled; falling back to cookie store.")
+  Rails.application.config.session_store :cookie_store,
+                                         key: ApplicationConfig["SESSION_KEY"],
+                                         domain: domain,
+                                         expire_after: expires_after,
+                                         secure: ApplicationConfig["FORCE_SSL_IN_RAILS"] == "true",
+                                         same_site: :lax,
+                                         httponly: true
+
+  Rails.application.config.iframe_session_options = {
+    key: "_iframe_session",
+    domain: domain,
+    expire_after: 48.hours.to_i, # Shorter expiration time for the iFrame session
+    secure: ApplicationConfig["FORCE_SSL_IN_RAILS"] == "true",
+    same_site: :none,
+    httponly: true,
+    path: "/auth_pass" # Limit the cookie to the /auth_pass path
+  }
+else
+  # Main session store
+  Rails.application.config.session_store :redis_store,
+                                         key: ApplicationConfig["SESSION_KEY"],
+                                         domain: domain,
+                                         servers: servers,
+                                         expire_after: expires_after,
+                                         secure: ApplicationConfig["FORCE_SSL_IN_RAILS"] == "true",
+                                         same_site: :lax,
+                                         httponly: true
+
+  # iFrame session store options
+  Rails.application.config.iframe_session_options = {
+    key: "_iframe_session",
+    domain: domain,
+    servers: servers,
+    expire_after: 48.hours.to_i, # Shorter expiration time for the iFrame session
+    secure: ApplicationConfig["FORCE_SSL_IN_RAILS"] == "true",
+    same_site: :none,
+    httponly: true,
+    path: "/auth_pass" # Limit the cookie to the /auth_pass path
+  }
+end
