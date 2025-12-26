@@ -165,6 +165,7 @@ module Settings
               numericality: { greater_than: 0, allow_nil: true }
             }
     setting :top_articles_digest_minimum_score, type: :integer, default: 0
+    setting :top_articles_digest_minimum_body_length, type: :integer, default: 100
     setting :top_articles_digest_excluded_tags, type: :array, default: %w[]
     setting :top_articles_digest_excluded_organization_ids, type: :array,
             default: Articles::TopArticles::PeriodQuery::DEFAULT_EXCLUDED_ORGANIZATION_IDS

@@ -43,6 +43,7 @@ module Articles
           .where(articles: { published_at: start_time...end_time })
           .where.not(articles: { type_of: Article.type_ofs[:status] })
           .where("#{article_score_expression} >= ?", minimum_score)
+          .where("length(coalesce(articles.body_markdown, '')) >= ?", minimum_body_length)
 
         if (predicate = organization_filter_predicate)
           scope = scope.where(predicate)
@@ -101,6 +102,16 @@ module Articles
       def minimum_score
         @minimum_score ||= begin
           value = ::Settings::General.top_articles_digest_minimum_score
+          value = 0 if value.nil?
+          value.to_i
+        rescue NameError
+          0
+        end
+      end
+
+      def minimum_body_length
+        @minimum_body_length ||= begin
+          value = ::Settings::General.top_articles_digest_minimum_body_length
           value = 0 if value.nil?
           value.to_i
         rescue NameError

@@ -156,7 +156,7 @@ module Admin
         if usernames.blank?
           flash[:danger] = I18n.t("views.admin.tools.top_articles_digest.test_badges.missing_authors")
         else
-          Badges::AwardTopSeven.call(usernames)
+          Badges::AwardTopSeven.call(usernames, badge_slug: preview_badge_slug)
           flash[:success] = I18n.t(
             "views.admin.tools.top_articles_digest.test_badges.success",
             count: usernames.size,
@@ -189,6 +189,7 @@ module Admin
         frequency: ::Settings::General.top_articles_digest_frequency,
         article_limit: ::Settings::General.top_articles_digest_article_limit,
         minimum_score: ::Settings::General.top_articles_digest_minimum_score,
+        minimum_body_length: ::Settings::General.top_articles_digest_minimum_body_length,
         badge_slug: ::Settings::General.top_articles_badge_slug,
         excluded_organization_ids: Array(::Settings::General.top_articles_digest_excluded_organization_ids).join(", "),
         excluded_tags: ::Settings::General.top_articles_digest_excluded_tags.join(", "),
@@ -208,6 +209,7 @@ module Admin
       ::Settings::General.set_top_articles_digest_frequency(permitted[:frequency])
       ::Settings::General.set_top_articles_digest_article_limit(permitted[:article_limit].presence)
       ::Settings::General.set_top_articles_digest_minimum_score(permitted[:minimum_score].presence)
+      ::Settings::General.set_top_articles_digest_minimum_body_length(permitted[:minimum_body_length].presence)
       ::Settings::General.set_top_articles_badge_slug(permitted[:badge_slug])
       ::Settings::General.set_top_articles_digest_excluded_organization_ids(
         parse_id_list(permitted[:excluded_organization_ids])
@@ -249,6 +251,10 @@ module Admin
       else
         { digest_preview_mode: "settings" }
       end
+    end
+
+    def preview_badge_slug
+      params[:preview_badge_slug].to_s.strip.presence
     end
 
     def digest_period_range
@@ -301,6 +307,7 @@ module Admin
         :frequency,
         :article_limit,
         :minimum_score,
+        :minimum_body_length,
         :badge_slug,
         :excluded_organization_ids,
         :excluded_tags,

@@ -68,6 +68,8 @@ uk:
             article_limit: Number of articles to include
             minimum_score: Мінімальний рейтинг статті
             minimum_score_help: "Матеріали з меншим рейтингом не потрапляють до добірки."
+            minimum_body_length: Мінімальна довжина статті (символи)
+            minimum_body_length_help: "Статті мають містити щонайменше стільки символів у тілі, щоб потрапити до добірки."
             excluded_tags: Заборонені теги
             excluded_tags_help: "Вкажіть теги через кому (наприклад: news, videos). Пости з будь-яким із них буде пропущено."
             badge_slug: Badge slug to reward the authors
@@ -114,6 +116,8 @@ uk:
               failure: "The test digest could not be published."
             test_badges:
               button: Award badges to previewed authors
+              badge_slug: Badge slug для попереднього нагородження
+              badge_slug_help: "Залиште порожнім, щоб використати бейдж дайджесту."
               success: "Awarded badges to %{count} authors."
               missing_articles: "No articles were available for the selected period."
               missing_authors: "The previewed articles do not have eligible authors."
