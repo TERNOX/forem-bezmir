@@ -12,6 +12,7 @@ class CatalogItem < ApplicationRecord
   mount_uploader :cover_image, CatalogCoverUploader
 
   validates :title, presence: true
+  validate :required_fields_present
 
   before_validation :apply_field_tags
 
@@ -37,5 +38,24 @@ class CatalogItem < ApplicationRecord
     end
 
     self.tag_list = tag_values.flatten.uniq
+  end
+
+  def required_fields_present
+    required_definitions = CatalogFieldDefinition.where(subforem_id: subforem_id, required: true)
+    return if required_definitions.empty?
+
+    required_definitions.each do |definition|
+      field_value = catalog_field_values.find { |value| value.catalog_field_definition_id == definition.id }
+      if field_value.blank?
+        errors.add(:base, "#{definition.name} can't be blank")
+        next
+      end
+
+      if definition.file?
+        errors.add(:base, "#{definition.name} can't be blank") if field_value.file.blank?
+      else
+        errors.add(:base, "#{definition.name} can't be blank") if field_value.value_string.blank?
+      end
+    end
   end
 end
