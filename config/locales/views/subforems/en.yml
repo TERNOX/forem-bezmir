@@ -31,6 +31,7 @@ en:
           discoverability: Discoverability
           community_settings: Community Settings
           feed_settings: Feed & Content Settings
+          catalog_settings: Catalog Settings
           branding: Branding
         form:
           community_name:
@@ -62,6 +63,12 @@ en:
               basic: Basic
               rich: Rich (with cover images)
               compact: Compact
+          subforem_home_default_view:
+            label: Default Subforem Home View
+            description: Choose whether the subforem homepage shows the blog feed or the catalog by default.
+            options:
+              posts: Blog posts
+              catalog: Catalog
           feed_lookback_days:
             label: Feed Lookback Days
             placeholder: "10"
@@ -118,6 +125,29 @@ en:
           subheading_html: "You can create basic markdown pages for this subforem. <strong>Note:</strong> Advanced page features (HTML, custom templates) may be added in the future."
           create_button: Create Page
           view_button: View
+        catalog_fields:
+          description: Configure the fields that catalog entries must fill out. These fields become tags and can include file uploads.
+          empty: No catalog fields configured yet.
+          form:
+            name: Field name
+            type: Field type
+            position: Order
+            required: Required
+            required_toggle: Required field
+            add: Add field
+            update: Update field
+            delete: Delete field
+            delete_confirm: Are you sure you want to delete this field?
+          types:
+            text: Text
+            link: Link
+            file: File
+            tag: Tag
+          messages:
+            created: Catalog field created.
+            updated: Catalog field updated.
+            deleted: Catalog field deleted.
+            not_found: Catalog field not found.
           edit_button: Edit
           delete_button: Delete
           delete_confirm: Are you sure you want to delete this page?

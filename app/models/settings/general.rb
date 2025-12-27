@@ -59,6 +59,7 @@ module Settings
 
     setting :enable_video_upload, type: :boolean, default: false
     setting :video_upload_max_file_size_mb, type: :integer, default: 50
+    setting :catalog_upload_max_file_size_mb, type: :integer, default: 100
 
     # Mascot
     setting :mascot_user_id, type: :integer, default: nil

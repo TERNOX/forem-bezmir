@@ -1,0 +1,55 @@
+<% content_for :page_title, @catalog_item.title %>
+
+<div class="crayons-layout crayons-layout--1-col">
+  <main class="crayons-layout__content" id="main-content">
+    <%= render "shared/catalog_toggle" %>
+
+    <article class="catalog-detail">
+      <div class="catalog-detail__header">
+        <div class="catalog-detail__cover">
+          <% if @catalog_item.cover_image.present? %>
+            <img src="<%= @catalog_item.cover_image.url %>" alt="<%= @catalog_item.title %>">
+          <% else %>
+            <div class="catalog-card__placeholder"><%= t("views.catalog_items.index.no_cover") %></div>
+          <% end %>
+        </div>
+        <div class="catalog-detail__info">
+          <h1 class="fs-2xl fw-bold"><%= @catalog_item.title %></h1>
+          <p class="color-base-60"><%= t("views.catalog_items.index.by", user: @catalog_item.user.username) %></p>
+          <% if @catalog_item.description.present? %>
+            <p class="color-base-80 mt-2"><%= simple_format(@catalog_item.description) %></p>
+          <% end %>
+          <% if @catalog_item.tag_list.any? %>
+            <div class="catalog-card__tags mt-2">
+              <% @catalog_item.tag_list.each do |tag| %>
+                <span class="crayons-tag crayons-tag--s"><%= tag %></span>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <section class="catalog-detail__fields">
+        <h2 class="fs-l fw-bold"><%= t("views.catalog_items.show.details") %></h2>
+        <dl>
+          <% @field_definitions.each do |definition| %>
+            <% field_value = @catalog_item.field_value_for(definition) %>
+            <% next if field_value.blank? || field_value.display_value.blank? %>
+            <div class="catalog-detail__field">
+              <dt><%= definition.name %></dt>
+              <dd>
+                <% if definition.file? %>
+                  <%= link_to t("views.catalog_items.show.download"), field_value.file.url, class: "crayons-btn crayons-btn--secondary" %>
+                <% elsif definition.link? %>
+                  <%= link_to field_value.value_string, field_value.value_string, class: "crayons-link", target: "_blank", rel: "noopener" %>
+                <% else %>
+                  <%= field_value.value_string %>
+                <% end %>
+              </dd>
+            </div>
+          <% end %>
+        </dl>
+      </section>
+    </article>
+  </main>
+</div>

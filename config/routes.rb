@@ -120,6 +120,8 @@ Rails.application.routes.draw do
       patch "/admin_unpublish", to: "articles#admin_unpublish"
       patch "/admin_featured_toggle", to: "articles#admin_featured_toggle"
     end
+
+    resources :catalog_items, path: "catalog", only: %i[index show new create]
     resources :article_mutes, only: %i[update]
     resources :comments, only: %i[create update destroy] do
       patch "/hide", to: "comments#hide"
@@ -179,6 +181,9 @@ Rails.application.routes.draw do
         post :create_navigation_link
         patch 'update_navigation_link/:navigation_link_id', to: 'subforems#update_navigation_link', as: :update_navigation_link
         delete :destroy_navigation_link
+        post "catalog_fields", to: "subforems#create_catalog_field_definition", as: :create_catalog_field_definition
+        patch "catalog_fields/:catalog_field_definition_id", to: "subforems#update_catalog_field_definition", as: :update_catalog_field_definition
+        delete "catalog_fields/:catalog_field_definition_id", to: "subforems#destroy_catalog_field_definition", as: :destroy_catalog_field_definition
         get :new_page
         post :create_page
         get 'edit_page/:page_id', to: 'subforems#edit_page', as: :edit_page

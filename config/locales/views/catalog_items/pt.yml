@@ -1,0 +1,31 @@
+---
+pt:
+  views:
+    catalog_items:
+      toggle:
+        blog: Blog
+        catalog: Catálogo
+      messages:
+        created: Entrada do catálogo criada.
+      index:
+        title: Catálogo
+        heading: Catálogo
+        subheading: Navegue por jogos e arquivos compartilhados pela comunidade.
+        view_grid: Grade
+        view_list: Lista
+        new: Adicionar entrada
+        no_cover: Sem capa
+        by: "por %{user}"
+      new:
+        title: Nova entrada do catálogo
+        heading: Criar entrada do catálogo
+      form:
+        title: Título
+        description: Descrição
+        cover_image: Imagem de capa (600x900)
+        fields_heading: Campos do catálogo
+        required: Campo obrigatório
+        submit: Publicar
+      show:
+        details: Detalhes
+        download: Baixar arquivo

@@ -1,0 +1,31 @@
+---
+en:
+  views:
+    catalog_items:
+      toggle:
+        blog: Blog
+        catalog: Catalog
+      messages:
+        created: Catalog entry created.
+      index:
+        title: Catalog
+        heading: Catalog
+        subheading: Browse games and downloadable files shared by the community.
+        view_grid: Grid
+        view_list: List
+        new: Add entry
+        no_cover: No cover
+        by: "by %{user}"
+      new:
+        title: New catalog entry
+        heading: Create catalog entry
+      form:
+        title: Title
+        description: Description
+        cover_image: Cover image (600x900)
+        fields_heading: Catalog fields
+        required: Required field
+        submit: Publish
+      show:
+        details: Details
+        download: Download file

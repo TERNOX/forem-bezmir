@@ -7,6 +7,7 @@ module Settings
     FEED_STRATEGIES = %w[basic configured large_forem_experimental].freeze
     FEED_STYLES = %w[basic rich compact].freeze
     COVER_IMAGE_FITS = %w[crop limit].freeze
+    SUBFOREM_HOME_DEFAULT_VIEWS = %w[posts catalog].freeze
 
     # The default font for all users that have not chosen a custom font yet
     setting :default_font, type: :string, default: "sans_serif"
@@ -16,6 +17,9 @@ module Settings
     # basic (current default), rich (cover image on all posts), compact (more minimal)
     setting :feed_style, type: :string, default: "basic", validates: {
       inclusion: { in: FEED_STYLES }
+    }
+    setting :subforem_home_default_view, type: :string, default: "posts", validates: {
+      inclusion: { in: SUBFOREM_HOME_DEFAULT_VIEWS }
     }
     setting :feed_lookback_days, type: :integer, default: 10
     setting :home_feed_minimum_score, type: :integer, default: 0

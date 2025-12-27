@@ -1,0 +1,63 @@
+<% content_for :page_title, t("views.catalog_items.index.title") %>
+
+<div class="crayons-layout crayons-layout--1-col">
+  <main class="crayons-layout__content" id="main-content">
+    <%= render "shared/catalog_toggle" %>
+
+    <header class="catalog-header">
+      <div>
+        <h1 class="fs-2xl fw-bold"><%= t("views.catalog_items.index.heading") %></h1>
+        <p class="color-base-60"><%= t("views.catalog_items.index.subheading") %></p>
+      </div>
+      <div class="catalog-header__actions">
+        <div class="catalog-view-switch">
+          <%= link_to t("views.catalog_items.index.view_grid"), catalog_items_path(view: "grid"),
+                      class: "crayons-btn crayons-btn--secondary #{'crayons-btn--primary' if @display_mode == 'grid'}" %>
+          <%= link_to t("views.catalog_items.index.view_list"), catalog_items_path(view: "list"),
+                      class: "crayons-btn crayons-btn--secondary #{'crayons-btn--primary' if @display_mode == 'list'}" %>
+        </div>
+        <% if user_signed_in? %>
+          <%= link_to t("views.catalog_items.index.new"), new_catalog_item_path, class: "crayons-btn crayons-btn--primary" %>
+        <% end %>
+      </div>
+    </header>
+
+    <section class="catalog-items <%= @display_mode == 'list' ? 'catalog-list' : 'catalog-grid' %>">
+      <% @catalog_items.each do |catalog_item| %>
+        <article class="catalog-card">
+          <%= link_to catalog_item_path(catalog_item), class: "catalog-card__cover" do %>
+            <% if catalog_item.cover_image.present? %>
+              <img src="<%= catalog_item.cover_image.url %>" alt="<%= catalog_item.title %>" loading="lazy">
+            <% else %>
+              <div class="catalog-card__placeholder"><%= t("views.catalog_items.index.no_cover") %></div>
+            <% end %>
+          <% end %>
+          <div class="catalog-card__body">
+            <h2 class="fs-l fw-bold">
+              <%= link_to catalog_item.title, catalog_item_path(catalog_item), class: "catalog-card__title" %>
+            </h2>
+            <% if catalog_item.description.present? %>
+              <p class="color-base-70"><%= truncate(catalog_item.description, length: 180) %></p>
+            <% end %>
+            <div class="catalog-card__meta">
+              <span class="color-base-60">
+                <%= t("views.catalog_items.index.by", user: catalog_item.user.username) %>
+              </span>
+              <% if catalog_item.tag_list.any? %>
+                <div class="catalog-card__tags">
+                  <% catalog_item.tag_list.each do |tag| %>
+                    <span class="crayons-tag crayons-tag--s"><%= tag %></span>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </article>
+      <% end %>
+    </section>
+
+    <div class="mt-6">
+      <%= paginate @catalog_items %>
+    </div>
+  </main>
+</div>

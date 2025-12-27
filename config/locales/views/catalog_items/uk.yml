@@ -1,0 +1,31 @@
+---
+uk:
+  views:
+    catalog_items:
+      toggle:
+        blog: Блог
+        catalog: Каталог
+      messages:
+        created: Запис каталогу створено.
+      index:
+        title: Каталог
+        heading: Каталог
+        subheading: Переглядайте ігри та файли, які завантажують учасники спільноти.
+        view_grid: Сітка
+        view_list: Список
+        new: Додати запис
+        no_cover: Немає обкладинки
+        by: "від %{user}"
+      new:
+        title: Новий запис каталогу
+        heading: Створити запис каталогу
+      form:
+        title: Назва
+        description: Опис
+        cover_image: Обкладинка (600x900)
+        fields_heading: Поля каталогу
+        required: Обов'язкове поле
+        submit: Опублікувати
+      show:
+        details: Деталі
+        download: Завантажити файл

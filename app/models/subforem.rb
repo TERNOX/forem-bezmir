@@ -3,6 +3,8 @@ class Subforem < ApplicationRecord
   resourcify
 
   has_many :articles, dependent: :nullify
+  has_many :catalog_field_definitions, dependent: :destroy
+  has_many :catalog_items, dependent: :destroy
   has_many :navigation_links, dependent: :nullify
   has_many :pages, dependent: :nullify
   has_many :tag_relationships, class_name: "TagSubforemRelationship", dependent: :destroy

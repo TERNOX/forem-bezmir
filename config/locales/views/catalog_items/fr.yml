@@ -1,0 +1,31 @@
+---
+fr:
+  views:
+    catalog_items:
+      toggle:
+        blog: Blog
+        catalog: Catalogue
+      messages:
+        created: Entrée du catalogue créée.
+      index:
+        title: Catalogue
+        heading: Catalogue
+        subheading: Parcourez les jeux et fichiers partagés par la communauté.
+        view_grid: Grille
+        view_list: Liste
+        new: Ajouter une entrée
+        no_cover: Pas de couverture
+        by: "par %{user}"
+      new:
+        title: Nouvelle entrée du catalogue
+        heading: Créer une entrée du catalogue
+      form:
+        title: Titre
+        description: Description
+        cover_image: Image de couverture (600x900)
+        fields_heading: Champs du catalogue
+        required: Champ requis
+        submit: Publier
+      show:
+        details: Détails
+        download: Télécharger le fichier

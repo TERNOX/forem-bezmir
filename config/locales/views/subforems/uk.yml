@@ -21,7 +21,20 @@ uk:
         admin: "Адмін"
         help: "Довідка"
         view: "Переглянути"
+        sections:
+          basic_information: Основна інформація
+          discoverability: Відкритість
+          community_settings: Налаштування спільноти
+          feed_settings: Налаштування стрічки та контенту
+          catalog_settings: Налаштування каталогу
+          branding: Брендинг
         form:
+          subforem_home_default_view:
+            label: Тип головної сторінки сабфорему
+            description: Виберіть, що показувати за замовчуванням на головній сторінці сабфорему.
+            options:
+              posts: Дописи
+              catalog: Каталог
           pretty_name:
             label: Назва підсайту
             placeholder: Це назва, що відображається у верхній частині сторінки.
@@ -37,6 +50,29 @@ uk:
             label: Правила (розмітка)
             placeholder: Необов’язково — можна використати для викликів чи правил подання.
           submit: Зберегти
+        catalog_fields:
+          description: Налаштуйте поля, які заповнюються у записах каталогу. Значення цих полів стають тегами, також можна додавати файли.
+          empty: Поля каталогу ще не налаштовані.
+          form:
+            name: Назва поля
+            type: Тип поля
+            position: Порядок
+            required: Обов'язкове
+            required_toggle: Поле обов'язкове
+            add: Додати поле
+            update: Оновити поле
+            delete: Видалити поле
+            delete_confirm: Ви впевнені, що хочете видалити це поле?
+          types:
+            text: Текст
+            link: Посилання
+            file: Файл
+            tag: Тег
+          messages:
+            created: Поле каталогу створено.
+            updated: Поле каталогу оновлено.
+            deleted: Поле каталогу видалено.
+            not_found: Поле каталогу не знайдено.
       follow: Підписатися
       hide: Приховати
       aria_labels:
