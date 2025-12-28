@@ -121,7 +121,7 @@ Rails.application.routes.draw do
       patch "/admin_featured_toggle", to: "articles#admin_featured_toggle"
     end
 
-    resources :catalog_items, path: "catalog", only: %i[index show new create]
+    resources :catalog_items, path: "catalog", only: %i[index show new create edit update]
     resources :article_mutes, only: %i[update]
     resources :comments, only: %i[create update destroy] do
       patch "/hide", to: "comments#hide"

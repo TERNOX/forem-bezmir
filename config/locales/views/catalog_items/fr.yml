@@ -7,6 +7,7 @@ fr:
         catalog: Catalogue
       messages:
         created: Entrée du catalogue créée.
+        updated: Entrée du catalogue mise à jour.
       index:
         title: Catalogue
         heading: Catalogue
@@ -21,6 +22,10 @@ fr:
       new:
         title: Nouvelle entrée du catalogue
         heading: Créer une entrée du catalogue
+      edit:
+        title: Modifier l'entrée du catalogue
+        heading: Modifier l'entrée du catalogue
+        submit: Enregistrer les modifications
       form:
         title: Titre
         description: Description
@@ -31,3 +36,4 @@ fr:
       show:
         details: Détails
         download: Télécharger le fichier
+        edit: Modifier l'entrée

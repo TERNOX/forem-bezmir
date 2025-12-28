@@ -30,6 +30,12 @@
               </div>
             </div>
           </div>
+          <% if user_signed_in? && (current_user.any_admin? || current_user.id == @catalog_item.user_id) %>
+            <div class="mt-3">
+              <%= link_to t("views.catalog_items.show.edit"), edit_catalog_item_path(@catalog_item),
+                          class: "crayons-btn crayons-btn--secondary" %>
+            </div>
+          <% end %>
           <% if @catalog_item.description.present? %>
             <div class="mt-2 color-base-80"><%= simple_format(@catalog_item.description) %></div>
           <% end %>

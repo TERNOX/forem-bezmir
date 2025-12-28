@@ -6,51 +6,9 @@
 
     <h1 class="fs-2xl fw-bold mb-4"><%= t("views.catalog_items.new.heading") %></h1>
 
-    <%= form_with model: @catalog_item, url: catalog_items_path, local: true, multipart: true, class: "catalog-form crayons-card p-6" do |form| %>
-      <% if @catalog_item.errors.any? %>
-        <div class="crayons-notice crayons-notice--danger mb-4">
-          <p><%= @catalog_item.errors_as_sentence %></p>
-        </div>
-      <% end %>
-
-      <div class="crayons-field">
-        <%= form.label :title, t("views.catalog_items.form.title"), class: "crayons-field__label" %>
-        <%= form.text_field :title, class: "crayons-textfield", required: true %>
-      </div>
-
-      <div class="crayons-field">
-        <%= form.label :description, t("views.catalog_items.form.description"), class: "crayons-field__label" %>
-        <%= form.text_area :description, class: "crayons-textfield", rows: 5 %>
-      </div>
-
-      <div class="crayons-field">
-        <%= form.label :cover_image, t("views.catalog_items.form.cover_image"), class: "crayons-field__label" %>
-        <%= form.file_field :cover_image, class: "crayons-file" %>
-      </div>
-
-      <h2 class="fs-l fw-bold mt-6"><%= t("views.catalog_items.form.fields_heading") %></h2>
-
-      <div class="catalog-form__fields">
-        <%= form.fields_for :catalog_field_values do |field_form| %>
-          <% definition = field_form.object.catalog_field_definition %>
-          <div class="crayons-field">
-            <%= field_form.hidden_field :catalog_field_definition_id %>
-            <%= field_form.label :value_string, definition.name, class: "crayons-field__label" %>
-            <% if definition.file? %>
-              <%= field_form.file_field :file, class: "crayons-file", required: definition.required? %>
-            <% else %>
-              <%= field_form.text_field :value_string, class: "crayons-textfield", required: definition.required? %>
-            <% end %>
-            <% if definition.required? %>
-              <p class="crayons-field__description"><%= t("views.catalog_items.form.required") %></p>
-            <% end %>
-          </div>
-        <% end %>
-      </div>
-
-      <div class="mt-6">
-        <%= form.submit t("views.catalog_items.form.submit"), class: "crayons-btn crayons-btn--primary" %>
-      </div>
-    <% end %>
+    <%= render "catalog_items/form",
+               catalog_item: @catalog_item,
+               form_url: catalog_items_path,
+               submit_label: t("views.catalog_items.form.submit") %>
   </main>
 </div>

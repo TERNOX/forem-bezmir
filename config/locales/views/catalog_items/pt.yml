@@ -7,6 +7,7 @@ pt:
         catalog: Catálogo
       messages:
         created: Entrada do catálogo criada.
+        updated: Entrada do catálogo atualizada.
       index:
         title: Catálogo
         heading: Catálogo
@@ -21,6 +22,10 @@ pt:
       new:
         title: Nova entrada do catálogo
         heading: Criar entrada do catálogo
+      edit:
+        title: Editar entrada do catálogo
+        heading: Editar entrada do catálogo
+        submit: Salvar alterações
       form:
         title: Título
         description: Descrição
@@ -31,3 +36,4 @@ pt:
       show:
         details: Detalhes
         download: Baixar arquivo
+        edit: Editar entrada

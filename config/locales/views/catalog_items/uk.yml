@@ -7,6 +7,7 @@ uk:
         catalog: Каталог
       messages:
         created: Запис каталогу створено.
+        updated: Запис каталогу оновлено.
       index:
         title: Каталог
         heading: Каталог
@@ -21,6 +22,10 @@ uk:
       new:
         title: Новий запис каталогу
         heading: Створити запис каталогу
+      edit:
+        title: Редагувати запис каталогу
+        heading: Редагувати запис каталогу
+        submit: Зберегти зміни
       form:
         title: Назва
         description: Опис
@@ -31,3 +36,4 @@ uk:
       show:
         details: Деталі
         download: Завантажити файл
+        edit: Редагувати запис

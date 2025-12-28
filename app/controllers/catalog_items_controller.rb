@@ -1,7 +1,8 @@
 class CatalogItemsController < ApplicationController
-  before_action :authenticate_user!, only: %i[new create]
+  before_action :authenticate_user!, only: %i[new create edit update]
   before_action :ensure_catalog_available!
-  before_action :set_catalog_item, only: :show
+  before_action :set_catalog_item, only: %i[show edit update]
+  before_action :authorize_catalog_item_edit!, only: %i[edit update]
 
   def index
     @display_mode = params[:view].presence_in(%w[grid list]) || "list"
@@ -28,10 +29,7 @@ class CatalogItemsController < ApplicationController
 
   def new
     @catalog_item = CatalogItem.new
-    @field_definitions = CatalogFieldDefinition.from_subforem.ordered
-    @field_definitions.each do |definition|
-      @catalog_item.catalog_field_values.build(catalog_field_definition: definition)
-    end
+    build_field_values
   end
 
   def create
@@ -43,6 +41,19 @@ class CatalogItemsController < ApplicationController
     else
       @field_definitions = CatalogFieldDefinition.from_subforem.ordered
       render :new, status: :unprocessable_entity
+    end
+  end
+
+  def edit
+    build_field_values
+  end
+
+  def update
+    if @catalog_item.update(catalog_item_params)
+      redirect_to catalog_item_path(@catalog_item), notice: t("views.catalog_items.messages.updated")
+    else
+      build_field_values
+      render :edit, status: :unprocessable_entity
     end
   end
 
@@ -61,9 +72,24 @@ class CatalogItemsController < ApplicationController
     @catalog_item = CatalogItem.from_subforem.find(params[:id])
   end
 
+  def build_field_values
+    @field_definitions = CatalogFieldDefinition.from_subforem.ordered
+    @field_definitions.each do |definition|
+      next if @catalog_item.catalog_field_values.any? { |value| value.catalog_field_definition_id == definition.id }
+
+      @catalog_item.catalog_field_values.build(catalog_field_definition: definition)
+    end
+  end
+
   def ensure_catalog_available!
     return if Settings::UserExperience.catalog_enabled(subforem_id: RequestStore.store[:subforem_id])
 
     not_found
+  end
+
+  def authorize_catalog_item_edit!
+    return if current_user&.any_admin? || @catalog_item.user_id == current_user&.id
+
+    head :forbidden
   end
 end
