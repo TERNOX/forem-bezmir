@@ -29,6 +29,9 @@ uk:
           catalog_settings: Налаштування каталогу
           branding: Брендинг
         form:
+          catalog_enabled:
+            label: Увімкнути каталог
+            description: Дозволити записи каталогу та їх перегляд для цього сабфорему.
           subforem_home_default_view:
             label: Тип головної сторінки сабфорему
             description: Виберіть, що показувати за замовчуванням на головній сторінці сабфорему.

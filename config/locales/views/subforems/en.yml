@@ -63,6 +63,9 @@ en:
               basic: Basic
               rich: Rich (with cover images)
               compact: Compact
+          catalog_enabled:
+            label: Enable Catalog
+            description: Allow catalog entries and catalog views for this subforem.
           subforem_home_default_view:
             label: Default Subforem Home View
             description: Choose whether the subforem homepage shows the blog feed or the catalog by default.

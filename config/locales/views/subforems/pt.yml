@@ -63,6 +63,9 @@ pt:
               basic: Básico
               rich: Rico (com imagens de capa)
               compact: Compacto
+          catalog_enabled:
+            label: Ativar catálogo
+            description: Permitir entradas e visualizações do catálogo para este subforem.
           subforem_home_default_view:
             label: Visualização padrão do subforem
             description: Escolha se a página inicial do subforem mostra o blog ou o catálogo por padrão.

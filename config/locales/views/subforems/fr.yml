@@ -63,6 +63,9 @@ fr:
               basic: Basique
               rich: Riche (avec images de couverture)
               compact: Compact
+          catalog_enabled:
+            label: Activer le catalogue
+            description: Autoriser les entrées du catalogue et leur affichage pour ce subforem.
           subforem_home_default_view:
             label: Vue par défaut de la page d’accueil
             description: Choisissez si la page d’accueil du subforem affiche le blog ou le catalogue par défaut.

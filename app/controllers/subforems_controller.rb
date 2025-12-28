@@ -392,7 +392,8 @@ class SubforemsController < ApplicationController
 
   def update_user_experience_settings
     return unless params[:feed_style].present? || params[:feed_lookback_days].present? || 
-                  params[:primary_brand_color_hex].present? || params[:subforem_home_default_view].present?
+                  params[:primary_brand_color_hex].present? || params[:subforem_home_default_view].present? ||
+                  params.key?(:catalog_enabled)
 
     if params[:feed_style].present?
       Settings::UserExperience.set_feed_style(params[:feed_style], subforem_id: @subforem.id)
@@ -409,6 +410,10 @@ class SubforemsController < ApplicationController
     if params[:subforem_home_default_view].present?
       Settings::UserExperience.set_subforem_home_default_view(params[:subforem_home_default_view],
                                                               subforem_id: @subforem.id)
+    end
+
+    if params.key?(:catalog_enabled)
+      Settings::UserExperience.set_catalog_enabled(params[:catalog_enabled] == "1", subforem_id: @subforem.id)
     end
   end
 

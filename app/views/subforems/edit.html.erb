@@ -13,6 +13,7 @@
         <li><a href="#section-community" class="manage-sidebar-link" data-section="section-community">Community Settings</a></li>
         <li><a href="#section-feed" class="manage-sidebar-link" data-section="section-feed">Feed & Content</a></li>
         <li><a href="#section-branding" class="manage-sidebar-link" data-section="section-branding">Branding</a></li>
+        <li><a href="#section-catalog" class="manage-sidebar-link" data-section="section-catalog">Catalog</a></li>
         <li><a href="#section-tags" class="manage-sidebar-link" data-section="section-tags">Supported Tags</a></li>
         <li><a href="#section-pages" class="manage-sidebar-link" data-section="section-pages">Pages</a></li>
         <li><a href="#section-nav-links" class="manage-sidebar-link" data-section="section-nav-links">Navigation Links</a></li>
@@ -120,6 +121,13 @@
             </div>
 
             <div class="crayons-field">
+              <%= label_tag :catalog_enabled, t("views.subforems.edit.form.catalog_enabled.label"), class: "crayons-field__label" %>
+              <%= hidden_field_tag :catalog_enabled, "0" %>
+              <%= check_box_tag :catalog_enabled, "1", Settings::UserExperience.catalog_enabled(subforem_id: @subforem.id), class: "crayons-checkbox" %>
+              <p class="crayons-field__description"><%= t("views.subforems.edit.form.catalog_enabled.description") %></p>
+            </div>
+
+            <div class="crayons-field">
               <%= label_tag :subforem_home_default_view, t("views.subforems.edit.form.subforem_home_default_view.label"), class: "crayons-field__label" %>
               <%= select_tag :subforem_home_default_view,
                 options_for_select(
@@ -160,98 +168,6 @@
               <p class="crayons-field__description"><%= t("views.subforems.edit.form.sidebar_tags.description") %></p>
           </div>
         </div>
-      </div>
-
-      <!-- SECTION 4: Catalog Settings -->
-      <div class="crayons-card p-6 mb-4" id="section-catalog">
-        <h2 class="crayons-title mb-4"><%= t("views.subforems.edit.sections.catalog_settings") %></h2>
-        <p class="crayons-field__description mb-4"><%= t("views.subforems.edit.catalog_fields.description") %></p>
-
-        <%= form_tag(create_catalog_field_definition_subforem_path(@subforem), method: :post, class: "mb-6") do %>
-          <div class="grid gap-4 m:grid-cols-4 items-end">
-            <div class="crayons-field">
-              <%= label_tag "catalog_field_definition[name]", t("views.subforems.edit.catalog_fields.form.name"), class: "crayons-field__label" %>
-              <%= text_field_tag "catalog_field_definition[name]", nil, class: "crayons-textfield", required: true %>
-            </div>
-            <div class="crayons-field">
-              <%= label_tag "catalog_field_definition[field_type]", t("views.subforems.edit.catalog_fields.form.type"), class: "crayons-field__label" %>
-              <%= select_tag "catalog_field_definition[field_type]",
-                options_for_select(
-                  [[t("views.subforems.edit.catalog_fields.types.text"), "text"],
-                   [t("views.subforems.edit.catalog_fields.types.link"), "link"],
-                   [t("views.subforems.edit.catalog_fields.types.file"), "file"],
-                   [t("views.subforems.edit.catalog_fields.types.tag"), "tag"]]
-                ),
-                class: "crayons-select" %>
-            </div>
-            <div class="crayons-field">
-              <%= label_tag "catalog_field_definition[position]", t("views.subforems.edit.catalog_fields.form.position"), class: "crayons-field__label" %>
-              <%= number_field_tag "catalog_field_definition[position]", 0, class: "crayons-textfield", min: 0 %>
-            </div>
-            <div class="crayons-field">
-              <%= label_tag "catalog_field_definition[required]", t("views.subforems.edit.catalog_fields.form.required"), class: "crayons-field__label" %>
-              <div class="crayons-toggle">
-                <%= check_box_tag "catalog_field_definition[required]", "1", false, class: "crayons-toggle__input" %>
-                <span class="crayons-toggle__label"><%= t("views.subforems.edit.catalog_fields.form.required_toggle") %></span>
-              </div>
-            </div>
-          </div>
-          <div class="mt-4">
-            <%= submit_tag t("views.subforems.edit.catalog_fields.form.add"), class: "crayons-btn crayons-btn--primary" %>
-          </div>
-        <% end %>
-
-        <% if @catalog_field_definitions.any? %>
-          <div class="flex flex-col gap-4">
-            <% @catalog_field_definitions.each do |definition| %>
-              <div class="crayons-card crayons-card--secondary p-4">
-                <%= form_tag(update_catalog_field_definition_subforem_path(@subforem, definition), method: :patch) do %>
-                  <div class="grid gap-4 m:grid-cols-4 items-end">
-                    <div class="crayons-field">
-                      <%= label_tag "catalog_field_definition[name]", t("views.subforems.edit.catalog_fields.form.name"), class: "crayons-field__label" %>
-                      <%= text_field_tag "catalog_field_definition[name]", definition.name, class: "crayons-textfield", required: true %>
-                    </div>
-                    <div class="crayons-field">
-                      <%= label_tag "catalog_field_definition[field_type]", t("views.subforems.edit.catalog_fields.form.type"), class: "crayons-field__label" %>
-                      <%= select_tag "catalog_field_definition[field_type]",
-                        options_for_select(
-                          [[t("views.subforems.edit.catalog_fields.types.text"), "text"],
-                           [t("views.subforems.edit.catalog_fields.types.link"), "link"],
-                           [t("views.subforems.edit.catalog_fields.types.file"), "file"],
-                           [t("views.subforems.edit.catalog_fields.types.tag"), "tag"]],
-                          definition.field_type
-                        ),
-                        class: "crayons-select" %>
-                    </div>
-                    <div class="crayons-field">
-                      <%= label_tag "catalog_field_definition[position]", t("views.subforems.edit.catalog_fields.form.position"), class: "crayons-field__label" %>
-                      <%= number_field_tag "catalog_field_definition[position]", definition.position, class: "crayons-textfield", min: 0 %>
-                    </div>
-                    <div class="crayons-field">
-                      <%= label_tag "catalog_field_definition[required]", t("views.subforems.edit.catalog_fields.form.required"), class: "crayons-field__label" %>
-                      <div class="crayons-toggle">
-                        <%= check_box_tag "catalog_field_definition[required]", "1", definition.required?, class: "crayons-toggle__input" %>
-                        <span class="crayons-toggle__label"><%= t("views.subforems.edit.catalog_fields.form.required_toggle") %></span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="flex gap-2 mt-4">
-                    <%= submit_tag t("views.subforems.edit.catalog_fields.form.update"), class: "crayons-btn crayons-btn--secondary" %>
-                  </div>
-                <% end %>
-                <div class="mt-2">
-                  <%= button_to t("views.subforems.edit.catalog_fields.form.delete"),
-                                destroy_catalog_field_definition_subforem_path(@subforem, definition),
-                                method: :delete,
-                                data: { confirm: t("views.subforems.edit.catalog_fields.form.delete_confirm") },
-                                class: "crayons-btn crayons-btn--danger" %>
-                </div>
-              </div>
-            <% end %>
-          </div>
-        <% else %>
-          <p class="text-sm color-base-60"><%= t("views.subforems.edit.catalog_fields.empty") %></p>
-        <% end %>
       </div>
 
       <!-- SECTION 5: Branding -->
@@ -344,10 +260,102 @@
         </div>
       </div>
 
-      <div class="mt-6 mb-4">
-        <%= form.submit t("views.subforems.edit.form.submit_button"), class: "crayons-btn crayons-btn--primary" %>
-      </div>
-    <% end %>
+    <div class="mt-6 mb-4">
+      <%= form.submit t("views.subforems.edit.form.submit_button"), class: "crayons-btn crayons-btn--primary" %>
+    </div>
+  <% end %>
+
+    <!-- SECTION 4: Catalog Settings -->
+    <div class="crayons-card p-6 mb-4" id="section-catalog">
+      <h2 class="crayons-title mb-4"><%= t("views.subforems.edit.sections.catalog_settings") %></h2>
+      <p class="crayons-field__description mb-4"><%= t("views.subforems.edit.catalog_fields.description") %></p>
+
+      <%= form_tag(create_catalog_field_definition_subforem_path(@subforem), method: :post, class: "mb-6") do %>
+        <div class="grid gap-4 m:grid-cols-4 items-end">
+          <div class="crayons-field">
+            <%= label_tag "catalog_field_definition[name]", t("views.subforems.edit.catalog_fields.form.name"), class: "crayons-field__label" %>
+            <%= text_field_tag "catalog_field_definition[name]", nil, class: "crayons-textfield", required: true %>
+          </div>
+          <div class="crayons-field">
+            <%= label_tag "catalog_field_definition[field_type]", t("views.subforems.edit.catalog_fields.form.type"), class: "crayons-field__label" %>
+            <%= select_tag "catalog_field_definition[field_type]",
+              options_for_select(
+                [[t("views.subforems.edit.catalog_fields.types.text"), "text"],
+                 [t("views.subforems.edit.catalog_fields.types.link"), "link"],
+                 [t("views.subforems.edit.catalog_fields.types.file"), "file"],
+                 [t("views.subforems.edit.catalog_fields.types.tag"), "tag"]]
+              ),
+              class: "crayons-select" %>
+          </div>
+          <div class="crayons-field">
+            <%= label_tag "catalog_field_definition[position]", t("views.subforems.edit.catalog_fields.form.position"), class: "crayons-field__label" %>
+            <%= number_field_tag "catalog_field_definition[position]", 0, class: "crayons-textfield", min: 0 %>
+          </div>
+          <div class="crayons-field">
+            <%= label_tag "catalog_field_definition[required]", t("views.subforems.edit.catalog_fields.form.required"), class: "crayons-field__label" %>
+            <div class="crayons-toggle">
+              <%= check_box_tag "catalog_field_definition[required]", "1", false, class: "crayons-toggle__input" %>
+              <span class="crayons-toggle__label"><%= t("views.subforems.edit.catalog_fields.form.required_toggle") %></span>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4">
+          <%= submit_tag t("views.subforems.edit.catalog_fields.form.add"), class: "crayons-btn crayons-btn--primary" %>
+        </div>
+      <% end %>
+
+      <% if @catalog_field_definitions.any? %>
+        <div class="flex flex-col gap-4">
+          <% @catalog_field_definitions.each do |definition| %>
+            <div class="crayons-card crayons-card--secondary p-4">
+              <%= form_tag(update_catalog_field_definition_subforem_path(@subforem, definition), method: :patch) do %>
+                <div class="grid gap-4 m:grid-cols-4 items-end">
+                  <div class="crayons-field">
+                    <%= label_tag "catalog_field_definition[name]", t("views.subforems.edit.catalog_fields.form.name"), class: "crayons-field__label" %>
+                    <%= text_field_tag "catalog_field_definition[name]", definition.name, class: "crayons-textfield", required: true %>
+                  </div>
+                  <div class="crayons-field">
+                    <%= label_tag "catalog_field_definition[field_type]", t("views.subforems.edit.catalog_fields.form.type"), class: "crayons-field__label" %>
+                    <%= select_tag "catalog_field_definition[field_type]",
+                      options_for_select(
+                        [[t("views.subforems.edit.catalog_fields.types.text"), "text"],
+                         [t("views.subforems.edit.catalog_fields.types.link"), "link"],
+                         [t("views.subforems.edit.catalog_fields.types.file"), "file"],
+                         [t("views.subforems.edit.catalog_fields.types.tag"), "tag"]],
+                        definition.field_type
+                      ),
+                      class: "crayons-select" %>
+                  </div>
+                  <div class="crayons-field">
+                    <%= label_tag "catalog_field_definition[position]", t("views.subforems.edit.catalog_fields.form.position"), class: "crayons-field__label" %>
+                    <%= number_field_tag "catalog_field_definition[position]", definition.position, class: "crayons-textfield", min: 0 %>
+                  </div>
+                  <div class="crayons-field">
+                    <%= label_tag "catalog_field_definition[required]", t("views.subforems.edit.catalog_fields.form.required"), class: "crayons-field__label" %>
+                    <div class="crayons-toggle">
+                      <%= check_box_tag "catalog_field_definition[required]", "1", definition.required?, class: "crayons-toggle__input" %>
+                      <span class="crayons-toggle__label"><%= t("views.subforems.edit.catalog_fields.form.required_toggle") %></span>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex gap-2 mt-4">
+                  <%= submit_tag t("views.subforems.edit.catalog_fields.form.update"), class: "crayons-btn crayons-btn--secondary" %>
+                </div>
+              <% end %>
+              <div class="mt-2">
+                <%= button_to t("views.subforems.edit.catalog_fields.form.delete"),
+                              destroy_catalog_field_definition_subforem_path(@subforem, definition),
+                              method: :delete,
+                              data: { confirm: t("views.subforems.edit.catalog_fields.form.delete_confirm") },
+                              class: "crayons-btn crayons-btn--danger" %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-sm color-base-60"><%= t("views.subforems.edit.catalog_fields.empty") %></p>
+      <% end %>
+    </div>
 
     <!-- SECTION: Supported Tags -->
     <div class="crayons-card p-6 mb-4" id="section-tags">

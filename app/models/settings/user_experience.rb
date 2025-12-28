@@ -21,6 +21,7 @@ module Settings
     setting :subforem_home_default_view, type: :string, default: "posts", validates: {
       inclusion: { in: SUBFOREM_HOME_DEFAULT_VIEWS }
     }
+    setting :catalog_enabled, type: :boolean, default: false
     setting :feed_lookback_days, type: :integer, default: 10
     setting :home_feed_minimum_score, type: :integer, default: 0
     setting :index_minimum_score, type: :integer, default: 0
