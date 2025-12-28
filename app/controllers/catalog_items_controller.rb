@@ -4,12 +4,21 @@ class CatalogItemsController < ApplicationController
   before_action :set_catalog_item, only: :show
 
   def index
-    @display_mode = params[:view].presence_in(%w[grid list]) || "grid"
+    @display_mode = params[:view].presence_in(%w[grid list]) || "list"
     @catalog_items = CatalogItem.published
       .from_subforem
       .includes(:user, :subforem, :tags, catalog_field_values: :catalog_field_definition)
       .order(created_at: :desc)
-      .page(params[:page]).per(24)
+
+    if params[:tag].present?
+      @catalog_items = @catalog_items.tagged_with(params[:tag])
+    end
+    if params[:q].present?
+      @catalog_items = @catalog_items.where("catalog_items.title ILIKE :q OR catalog_items.description ILIKE :q",
+                                            q: "%#{params[:q]}%")
+    end
+
+    @catalog_items = @catalog_items.page(params[:page]).per(24)
     @field_definitions = CatalogFieldDefinition.from_subforem.ordered
   end
 

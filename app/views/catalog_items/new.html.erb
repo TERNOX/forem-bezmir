@@ -6,7 +6,7 @@
 
     <h1 class="fs-2xl fw-bold mb-4"><%= t("views.catalog_items.new.heading") %></h1>
 
-    <%= form_with model: @catalog_item, url: catalog_items_path, local: true, multipart: true, class: "catalog-form" do |form| %>
+    <%= form_with model: @catalog_item, url: catalog_items_path, local: true, multipart: true, class: "catalog-form crayons-card p-6" do |form| %>
       <% if @catalog_item.errors.any? %>
         <div class="crayons-notice crayons-notice--danger mb-4">
           <p><%= @catalog_item.errors_as_sentence %></p>

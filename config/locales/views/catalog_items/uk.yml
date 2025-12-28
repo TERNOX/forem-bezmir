@@ -16,6 +16,8 @@ uk:
         new: Додати запис
         no_cover: Немає обкладинки
         by: "від %{user}"
+        search_placeholder: Пошук у каталозі...
+        clear_filters: Скинути фільтри
       new:
         title: Новий запис каталогу
         heading: Створити запис каталогу

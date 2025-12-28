@@ -16,6 +16,8 @@ en:
         new: Add entry
         no_cover: No cover
         by: "by %{user}"
+        search_placeholder: Search catalog...
+        clear_filters: Clear filters
       new:
         title: New catalog entry
         heading: Create catalog entry

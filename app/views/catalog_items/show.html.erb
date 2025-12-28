@@ -1,11 +1,13 @@
 <% content_for :page_title, @catalog_item.title %>
 
-<div class="crayons-layout crayons-layout--1-col">
+<div class="crayons-layout crayons-layout--3-cols crayons-layout--3-cols--1-2-1">
+  <%= render "articles/sidebar" %>
+
   <main class="crayons-layout__content" id="main-content">
     <%= render "shared/catalog_toggle" %>
 
-    <article class="catalog-detail">
-      <div class="catalog-detail__header">
+    <article class="catalog-detail crayons-card p-6">
+      <header class="catalog-detail__header">
         <div class="catalog-detail__cover">
           <% if @catalog_item.cover_image.present? %>
             <img src="<%= @catalog_item.cover_image.url %>" alt="<%= @catalog_item.title %>">
@@ -15,19 +17,33 @@
         </div>
         <div class="catalog-detail__info">
           <h1 class="fs-2xl fw-bold"><%= @catalog_item.title %></h1>
-          <p class="color-base-60"><%= t("views.catalog_items.index.by", user: @catalog_item.user.username) %></p>
+          <div class="catalog-detail__meta">
+            <a href="/<%= @catalog_item.user.username %>" class="crayons-avatar crayons-avatar--l">
+              <img src="<%= @catalog_item.user.profile_image_90 %>" alt="<%= @catalog_item.user.username %> profile" class="crayons-avatar__image" loading="lazy" />
+            </a>
+            <div>
+              <a href="/<%= @catalog_item.user.username %>" class="crayons-story__secondary fw-medium">
+                <%= @catalog_item.user.name %>
+              </a>
+              <div class="crayons-story__tertiary fs-xs">
+                <time datetime="<%= @catalog_item.created_at.iso8601 %>"><%= l(@catalog_item.created_at, format: :short) %></time>
+              </div>
+            </div>
+          </div>
           <% if @catalog_item.description.present? %>
-            <p class="color-base-80 mt-2"><%= simple_format(@catalog_item.description) %></p>
+            <div class="mt-2 color-base-80"><%= simple_format(@catalog_item.description) %></div>
           <% end %>
           <% if @catalog_item.tag_list.any? %>
             <div class="catalog-card__tags mt-2">
               <% @catalog_item.tag_list.each do |tag| %>
-                <span class="crayons-tag crayons-tag--s"><%= tag %></span>
+                <a class="crayons-tag crayons-tag--monochrome" href="<%= catalog_items_path(tag: tag) %>">
+                  <span class="crayons-tag__prefix">#</span><%= tag %>
+                </a>
               <% end %>
             </div>
           <% end %>
         </div>
-      </div>
+      </header>
 
       <section class="catalog-detail__fields">
         <h2 class="fs-l fw-bold"><%= t("views.catalog_items.show.details") %></h2>
@@ -52,4 +68,6 @@
       </section>
     </article>
   </main>
+
+  <%= render "articles/sidebar_additional" %>
 </div>

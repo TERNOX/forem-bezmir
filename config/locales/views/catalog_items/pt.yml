@@ -16,6 +16,8 @@ pt:
         new: Adicionar entrada
         no_cover: Sem capa
         by: "por %{user}"
+        search_placeholder: Pesquisar no catálogo...
+        clear_filters: Limpar filtros
       new:
         title: Nova entrada do catálogo
         heading: Criar entrada do catálogo
