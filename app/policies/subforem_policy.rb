@@ -31,6 +31,18 @@ class SubforemPolicy < ApplicationPolicy
     has_mod_permission? || user_super_moderator?
   end
 
+  def create_catalog_field_definition?
+    has_mod_permission? || user_super_moderator?
+  end
+
+  def update_catalog_field_definition?
+    has_mod_permission? || user_super_moderator?
+  end
+
+  def destroy_catalog_field_definition?
+    has_mod_permission? || user_super_moderator?
+  end
+
   def create_page?
     has_mod_permission? || user_super_moderator?
   end

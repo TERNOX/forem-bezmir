@@ -53,8 +53,7 @@ class CatalogItemsController < ApplicationController
   end
 
   def ensure_catalog_available!
-    return if CatalogFieldDefinition.from_subforem.exists? &&
-      Settings::UserExperience.catalog_enabled(subforem_id: RequestStore.store[:subforem_id])
+    return if Settings::UserExperience.catalog_enabled(subforem_id: RequestStore.store[:subforem_id])
 
     not_found
   end

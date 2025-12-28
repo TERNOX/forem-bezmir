@@ -497,8 +497,6 @@ module ApplicationHelper
     subforem_id = RequestStore.store[:subforem_id]
     return false if subforem_id.blank?
 
-    return false unless Settings::UserExperience.catalog_enabled(subforem_id: subforem_id)
-
-    CatalogFieldDefinition.where(subforem_id: subforem_id).exists?
+    Settings::UserExperience.catalog_enabled(subforem_id: subforem_id)
   end
 end
