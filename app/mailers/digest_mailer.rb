@@ -39,7 +39,7 @@ class DigestMailer < ApplicationMailer
 
     return fallback_digest_title if additional_count.zero?
 
-    "#{display_title(@articles.first)} + #{additional_posts_label(additional_count)} #{random_emoji}"
+    "#{display_title(@articles.first)} та інші дописи на сайті Куток #{random_emoji}"
   end
 
   def adjusted_title(article)
