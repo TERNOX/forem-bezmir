@@ -40,6 +40,7 @@ en:
           save_success: Monthly top users settings updated.
           errors:
             invalid_day: "Choose a day between 1 and 31."
+            invalid_time: "Choose a valid time in 24-hour format (HH:MM)."
         top_seven:
           heading: Weekly Top 7 preview
           description_html: "Preview the seven most reacted posts for each week. These are the articles that will be considered when awarding the Top 7 badge."
