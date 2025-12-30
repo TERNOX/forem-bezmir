@@ -1,7 +1,7 @@
 module Admin
   class StatsData
-    def initialize(period: 7, time_range: nil)
-      @period = period
+    def initialize(period = 7, time_range: nil, **options)
+      @period = options.fetch(:period, period)
       @time_range = time_range
     end
 
