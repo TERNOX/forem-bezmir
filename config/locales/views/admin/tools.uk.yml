@@ -40,6 +40,7 @@ uk:
           save_success: Налаштування місячного топ-10 збережено.
           errors:
             invalid_day: "Вкажіть день від 1 до 31."
+            invalid_time: "Вкажіть коректний час у форматі 24 годин (HH:MM)."
         top_seven:
           heading: Weekly Top 7 preview
           description_html: "Preview the seven most reacted posts for each week. These are the articles that will be considered when awarding the Top 7 badge."

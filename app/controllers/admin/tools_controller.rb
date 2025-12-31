@@ -381,6 +381,13 @@ module Admin
       raise ArgumentError, I18n.t("views.admin.tools.monthly_top_users.errors.invalid_day")
     end
 
+    def normalized_time(value)
+      normalized = TimeOfDaySetting.normalize(value)
+      return normalized if normalized.present?
+
+      raise ArgumentError, I18n.t("views.admin.tools.monthly_top_users.errors.invalid_time")
+    end
+
     def monthly_top_users_settings
       {
         badge_slug: ::Settings::General.monthly_top_users_badge_slug,

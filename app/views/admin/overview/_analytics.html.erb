@@ -20,8 +20,27 @@
               <%= radio_button_tag :period, 90, false, class: "crayons-radio js-period-selector", id: "90days", data: { period: 90 } %>
               <label for="90days" class="crayons-field__label">Last 90 days</label>
             </li>
+            <li class="crayons-field crayons-field--radio">
+              <%= radio_button_tag :period, 365, false, class: "crayons-radio js-period-selector", id: "365days", data: { period: 365 } %>
+              <label for="365days" class="crayons-field__label">Last 365 days</label>
+            </li>
+            <li class="crayons-field crayons-field--radio">
+              <%= radio_button_tag :period, "custom", false, class: "crayons-radio js-period-selector js-custom-period", id: "custom-period", data: { period: "custom" } %>
+              <label for="custom-period" class="crayons-field__label">Custom range</label>
+            </li>
           </ul>
         </fieldset>
+        <div class="p-2 flex flex-col gap-3 hidden js-custom-period-fields" aria-hidden="true">
+          <div class="crayons-field">
+            <label for="custom-start-date" class="crayons-field__label">Start date</label>
+            <input id="custom-start-date" type="date" class="crayons-textfield w-100" />
+          </div>
+          <div class="crayons-field">
+            <label for="custom-end-date" class="crayons-field__label">End date</label>
+            <input id="custom-end-date" type="date" class="crayons-textfield w-100" />
+          </div>
+          <button type="button" class="c-btn c-btn--primary" id="custom-period-apply">Apply</button>
+        </div>
       </div>
     </div>
   </header>

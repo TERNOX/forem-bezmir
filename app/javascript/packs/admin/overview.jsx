@@ -6,9 +6,17 @@ initializeDropdown({
 });
 
 // Fetch and display stats
-async function fetchStats(period = 7) {
+async function fetchStats({ period = 7, startDate = null, endDate = null } = {}) {
   try {
-    const response = await fetch(`/admin/stats?period=${period}`);
+    const params = new URLSearchParams();
+    if (startDate && endDate) {
+      params.set('start_date', startDate);
+      params.set('end_date', endDate);
+    } else {
+      params.set('period', period);
+    }
+
+    const response = await fetch(`/admin/stats?${params.toString()}`);
     const data = await response.json();
     updateStatsDisplay(data);
   } catch (error) {
@@ -42,14 +50,53 @@ function showError() {
 // Handle period selector changes
 document.addEventListener('DOMContentLoaded', () => {
   // Load initial stats
-  fetchStats(7);
+  fetchStats({ period: 7 });
+
+  const customPeriodSelector = document.querySelector('.js-custom-period');
+  const customFields = document.querySelector('.js-custom-period-fields');
+  const customStartDate = document.getElementById('custom-start-date');
+  const customEndDate = document.getElementById('custom-end-date');
+  const customApply = document.getElementById('custom-period-apply');
+
+  const toggleCustomFields = (show) => {
+    if (!customFields) {
+      return;
+    }
+
+    customFields.classList.toggle('hidden', !show);
+    customFields.setAttribute('aria-hidden', (!show).toString());
+  };
 
   // Add event listeners to period selectors
   const periodSelectors = document.querySelectorAll('.js-period-selector');
   periodSelectors.forEach((selector) => {
     selector.addEventListener('change', (e) => {
       const period = e.target.dataset.period;
-      fetchStats(period);
+      if (period === 'custom') {
+        toggleCustomFields(true);
+        return;
+      }
+
+      toggleCustomFields(false);
+      fetchStats({ period });
     });
   });
+
+  if (customStartDate && customEndDate) {
+    customStartDate.addEventListener('change', () => {
+      customEndDate.min = customStartDate.value;
+    });
+  }
+
+  if (customApply) {
+    customApply.addEventListener('click', () => {
+      if (!customStartDate?.value || !customEndDate?.value) {
+        return;
+      }
+
+      fetchStats({ startDate: customStartDate.value, endDate: customEndDate.value });
+    });
+  }
+
+  toggleCustomFields(customPeriodSelector?.checked);
 });
