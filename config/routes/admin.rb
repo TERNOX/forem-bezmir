@@ -52,6 +52,7 @@ namespace :admin do
         post "banish"
         patch "reputation_modifier"
         patch "max_score"
+        patch "update_profile"
         patch "update_email"
         patch "update_avatar"
         post "export_data"
