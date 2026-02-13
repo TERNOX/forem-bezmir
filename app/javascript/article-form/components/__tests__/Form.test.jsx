@@ -242,6 +242,36 @@ describe('<Form />', () => {
       userEvent.clear(textArea);
     });
 
+    it('allows switching to the visual editor', () => {
+      const { getByRole } = render(
+        <Form
+          titleDefaultValue="Test Title v2"
+          titleOnChange={null}
+          tagsDefaultValue="javascript, career"
+          tagsOnInput={null}
+          bodyDefaultValue={bodyMarkdown}
+          bodyOnChange={null}
+          bodyHasFocus={false}
+          version="v2"
+          mainImage={mainImage}
+          onMainImageUrlChange={null}
+          errors={null}
+          switchHelpContext={null}
+        />,
+      );
+
+      const visualButton = getByRole('button', { name: 'Visual' });
+      userEvent.click(visualButton);
+
+      const visualEditor = getByRole('textbox', { name: /Post Content/ });
+      expect(visualEditor.tagName).toBe('DIV');
+
+      const markdownButton = getByRole('button', { name: 'Markdown' });
+      userEvent.click(markdownButton);
+      const markdownEditor = getByRole('textbox', { name: /Post Content/ });
+      expect(markdownEditor.tagName).toBe('TEXTAREA');
+    });
+
     it('renders an overflow menu of markdown formatters', async () => {
       const { getByRole } = render(
         <Form

@@ -41,6 +41,13 @@ module.exports = {
     '^@components(.*)$': '<rootDir>/app/javascript/shared/components$1',
     '^react$': 'preact/compat',
     '^react-dom$': 'preact/compat',
+    '^@tiptap/react$': '<rootDir>/app/javascript/__mocks__/@tiptap/react.js',
+    '^@tiptap/starter-kit$': '<rootDir>/app/javascript/__mocks__/@tiptap/starter-kit.js',
+    '^@tiptap/extension-link$': '<rootDir>/app/javascript/__mocks__/@tiptap/extension-link.js',
+    '^@tiptap/extension-image$': '<rootDir>/app/javascript/__mocks__/@tiptap/extension-image.js',
+    '^@tiptap/extension-placeholder$': '<rootDir>/app/javascript/__mocks__/@tiptap/extension-placeholder.js',
+    '^@tiptap/core$': '<rootDir>/app/javascript/__mocks__/@tiptap/core.js',
+    '^@tiptap/pm$': '<rootDir>/app/javascript/__mocks__/@tiptap/pm.js',
   },
   // The webpack config folder for webpacker is excluded as it has a test.js file that gets
   // picked up by jest if this folder is not excluded causing a false negative of a test suite failing.

@@ -22504,3 +22504,67 @@ __metadata:
   checksum: 10c0/26dc7d32e5596824b565db1da9650d00d32659c1211195bef50c25c60820f9c942aa7abefe678fc1ed0b97c1755036ac1bde5f97881d7d0e73e04e02aca56957
   languageName: node
   linkType: hard
+"@tiptap/core@npm:^2.2.4":
+  version: 2.2.4
+  resolution: "@tiptap/core@npm:2.2.4"
+  dependencies:
+    "@tiptap/pm": "npm:2.2.4"
+  checksum: 10c0/00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+  languageName: node
+  linkType: hard
+
+"@tiptap/extension-image@npm:^2.2.4":
+  version: 2.2.4
+  resolution: "@tiptap/extension-image@npm:2.2.4"
+  dependencies:
+    "@tiptap/core": "npm:^2.2.4"
+    "@tiptap/pm": "npm:2.2.4"
+  checksum: 10c0/00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+  languageName: node
+  linkType: hard
+
+"@tiptap/extension-link@npm:^2.2.4":
+  version: 2.2.4
+  resolution: "@tiptap/extension-link@npm:2.2.4"
+  dependencies:
+    "@tiptap/core": "npm:^2.2.4"
+    "@tiptap/pm": "npm:2.2.4"
+  checksum: 10c0/00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+  languageName: node
+  linkType: hard
+
+"@tiptap/extension-placeholder@npm:^2.2.4":
+  version: 2.2.4
+  resolution: "@tiptap/extension-placeholder@npm:2.2.4"
+  dependencies:
+    "@tiptap/core": "npm:^2.2.4"
+    "@tiptap/pm": "npm:2.2.4"
+  checksum: 10c0/00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+  languageName: node
+  linkType: hard
+
+"@tiptap/pm@npm:^2.2.4":
+  version: 2.2.4
+  resolution: "@tiptap/pm@npm:2.2.4"
+  checksum: 10c0/00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+  languageName: node
+  linkType: hard
+
+"@tiptap/react@npm:^2.2.4":
+  version: 2.2.4
+  resolution: "@tiptap/react@npm:2.2.4"
+  dependencies:
+    "@tiptap/core": "npm:^2.2.4"
+    "@tiptap/pm": "npm:2.2.4"
+  checksum: 10c0/00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+  languageName: node
+  linkType: hard
+
+"@tiptap/starter-kit@npm:^2.2.4":
+  version: 2.2.4
+  resolution: "@tiptap/starter-kit@npm:2.2.4"
+  dependencies:
+    "@tiptap/core": "npm:^2.2.4"
+  checksum: 10c0/00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+  languageName: node
+  linkType: hard
