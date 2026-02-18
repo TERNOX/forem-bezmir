@@ -31,6 +31,7 @@ fr:
           discoverability: Découvrabilité
           community_settings: Paramètres de la Communauté
           feed_settings: Paramètres de Fil et Contenu
+          catalog_settings: Paramètres du Catalogue
           branding: Image de Marque
         form:
           community_name:
@@ -62,6 +63,15 @@ fr:
               basic: Basique
               rich: Riche (avec images de couverture)
               compact: Compact
+          catalog_enabled:
+            label: Activer le catalogue
+            description: Autoriser les entrées du catalogue et leur affichage pour ce subforem.
+          subforem_home_default_view:
+            label: Vue par défaut de la page d’accueil
+            description: Choisissez si la page d’accueil du subforem affiche le blog ou le catalogue par défaut.
+            options:
+              posts: Articles du blog
+              catalog: Catalogue
           feed_lookback_days:
             label: Jours de Rétroaction du Fil
             placeholder: "10"
@@ -125,6 +135,29 @@ fr:
           slug_label: Slug
           path_label: Chemin
           no_pages: Aucune page dédiée trouvée pour ce subforem.
+        catalog_fields:
+          description: Configurez les champs que les entrées du catalogue doivent remplir. Ces champs deviennent des tags et peuvent inclure des fichiers.
+          empty: Aucun champ de catalogue n’est encore configuré.
+          form:
+            name: Nom du champ
+            type: Type de champ
+            position: Ordre
+            required: Requis
+            required_toggle: Champ requis
+            add: Ajouter un champ
+            update: Mettre à jour le champ
+            delete: Supprimer le champ
+            delete_confirm: Êtes-vous sûr de vouloir supprimer ce champ ?
+          types:
+            text: Texte
+            link: Lien
+            file: Fichier
+            tag: Tag
+          messages:
+            created: Champ de catalogue créé.
+            updated: Champ de catalogue mis à jour.
+            deleted: Champ de catalogue supprimé.
+            not_found: Champ de catalogue introuvable.
         navigation_links:
           heading: Liens de Navigation
           add_button: Ajouter un Lien de Navigation

@@ -1,0 +1,14 @@
+<% content_for :page_title, t("views.catalog_items.new.title") %>
+
+<div class="crayons-layout crayons-layout--1-col">
+  <main class="crayons-layout__content" id="main-content">
+    <%= render "shared/catalog_toggle" %>
+
+    <h1 class="fs-2xl fw-bold mb-4"><%= t("views.catalog_items.new.heading") %></h1>
+
+    <%= render "catalog_items/form",
+               catalog_item: @catalog_item,
+               form_url: catalog_items_path,
+               submit_label: t("views.catalog_items.form.submit") %>
+  </main>
+</div>

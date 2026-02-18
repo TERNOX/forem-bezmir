@@ -1,0 +1,79 @@
+<% content_for :page_title, @catalog_item.title %>
+
+<div class="crayons-layout crayons-layout--3-cols crayons-layout--3-cols--1-2-1">
+  <%= render "articles/sidebar" %>
+
+  <main class="crayons-layout__content" id="main-content">
+    <%= render "shared/catalog_toggle" %>
+
+    <article class="catalog-detail crayons-card p-6">
+      <header class="catalog-detail__header">
+        <div class="catalog-detail__cover">
+          <% if @catalog_item.cover_image.present? %>
+            <img src="<%= @catalog_item.cover_image.url %>" alt="<%= @catalog_item.title %>">
+          <% else %>
+            <div class="catalog-card__placeholder"><%= t("views.catalog_items.index.no_cover") %></div>
+          <% end %>
+        </div>
+        <div class="catalog-detail__info">
+          <h1 class="fs-2xl fw-bold"><%= @catalog_item.title %></h1>
+          <div class="catalog-detail__meta">
+            <a href="/<%= @catalog_item.user.username %>" class="crayons-avatar crayons-avatar--l">
+              <img src="<%= @catalog_item.user.profile_image_90 %>" alt="<%= @catalog_item.user.username %> profile" class="crayons-avatar__image" loading="lazy" />
+            </a>
+            <div>
+              <a href="/<%= @catalog_item.user.username %>" class="crayons-story__secondary fw-medium">
+                <%= @catalog_item.user.name %>
+              </a>
+              <div class="crayons-story__tertiary fs-xs">
+                <time datetime="<%= @catalog_item.created_at.iso8601 %>"><%= l(@catalog_item.created_at, format: :short) %></time>
+              </div>
+            </div>
+          </div>
+          <% if user_signed_in? && (current_user.any_admin? || current_user.id == @catalog_item.user_id) %>
+            <div class="mt-3">
+              <%= link_to t("views.catalog_items.show.edit"), edit_catalog_item_path(@catalog_item),
+                          class: "crayons-btn crayons-btn--secondary" %>
+            </div>
+          <% end %>
+          <% if @catalog_item.description.present? %>
+            <div class="mt-2 color-base-80"><%= simple_format(@catalog_item.description) %></div>
+          <% end %>
+          <% if @catalog_item.tag_list.any? %>
+            <div class="catalog-card__tags mt-2">
+              <% @catalog_item.tag_list.each do |tag| %>
+                <a class="crayons-tag crayons-tag--monochrome" href="<%= catalog_items_path(tag: tag) %>">
+                  <span class="crayons-tag__prefix">#</span><%= tag %>
+                </a>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </header>
+
+      <section class="catalog-detail__fields">
+        <h2 class="fs-l fw-bold"><%= t("views.catalog_items.show.details") %></h2>
+        <dl>
+          <% @field_definitions.each do |definition| %>
+            <% field_value = @catalog_item.field_value_for(definition) %>
+            <% next if field_value.blank? || field_value.display_value.blank? %>
+            <div class="catalog-detail__field">
+              <dt><%= definition.name %></dt>
+              <dd>
+                <% if definition.file? %>
+                  <%= link_to t("views.catalog_items.show.download"), field_value.file.url, class: "crayons-btn crayons-btn--secondary" %>
+                <% elsif definition.link? %>
+                  <%= link_to field_value.value_string, field_value.value_string, class: "crayons-link", target: "_blank", rel: "noopener" %>
+                <% else %>
+                  <%= field_value.value_string %>
+                <% end %>
+              </dd>
+            </div>
+          <% end %>
+        </dl>
+      </section>
+    </article>
+  </main>
+
+  <%= render "articles/sidebar_additional" %>
+</div>

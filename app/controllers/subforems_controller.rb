@@ -1,8 +1,8 @@
 class SubforemsController < ApplicationController
   rescue_from Pundit::NotAuthorizedError, with: :render_forbidden
-  before_action :authenticate_user!, only: %i[edit update add_tag remove_tag create_navigation_link update_navigation_link destroy_navigation_link new_page create_page edit_page update_page destroy_page]
-  before_action :set_subforem, only: %i[edit update add_tag remove_tag create_navigation_link update_navigation_link destroy_navigation_link new_page create_page edit_page update_page destroy_page]
-  before_action :authorize_subforem, only: %i[edit update add_tag remove_tag]
+  before_action :authenticate_user!, only: %i[edit update add_tag remove_tag create_navigation_link update_navigation_link destroy_navigation_link new_page create_page edit_page update_page destroy_page create_catalog_field_definition update_catalog_field_definition destroy_catalog_field_definition]
+  before_action :set_subforem, only: %i[edit update add_tag remove_tag create_navigation_link update_navigation_link destroy_navigation_link new_page create_page edit_page update_page destroy_page create_catalog_field_definition update_catalog_field_definition destroy_catalog_field_definition]
+  before_action :authorize_subforem, only: %i[edit update add_tag remove_tag create_catalog_field_definition update_catalog_field_definition destroy_catalog_field_definition]
   before_action :authorize_navigation_link_action, only: %i[create_navigation_link update_navigation_link destroy_navigation_link]
   before_action :authorize_page_action, only: %i[new_page create_page edit_page update_page destroy_page]
   after_action :bust_navigation_links_cache, only: %i[create_navigation_link update_navigation_link destroy_navigation_link]
@@ -34,6 +34,8 @@ class SubforemsController < ApplicationController
 
     # Get navigation links for this subforem
     @navigation_links = NavigationLink.where(subforem_id: @subforem.id).ordered
+
+    @catalog_field_definitions = CatalogFieldDefinition.where(subforem_id: @subforem.id).ordered
   end
 
   def update
@@ -163,6 +165,51 @@ class SubforemsController < ApplicationController
       flash[:success] = I18n.t("views.subforems.edit.navigation_links.messages.deleted")
     else
       flash[:error] = navigation_link.errors_as_sentence
+    end
+    redirect_to manage_subforem_path
+  end
+
+  def create_catalog_field_definition
+    catalog_field_definition = CatalogFieldDefinition.new(catalog_field_definition_params.merge(subforem_id: @subforem.id))
+
+    if catalog_field_definition.save
+      flash[:success] = I18n.t("views.subforems.edit.catalog_fields.messages.created")
+    else
+      flash[:error] = catalog_field_definition.errors_as_sentence
+    end
+    redirect_to manage_subforem_path
+  end
+
+  def update_catalog_field_definition
+    catalog_field_definition = CatalogFieldDefinition.find(params[:catalog_field_definition_id])
+
+    unless catalog_field_definition.subforem_id == @subforem.id
+      flash[:error] = I18n.t("views.subforems.edit.catalog_fields.messages.not_found")
+      redirect_to manage_subforem_path
+      return
+    end
+
+    if catalog_field_definition.update(catalog_field_definition_params)
+      flash[:success] = I18n.t("views.subforems.edit.catalog_fields.messages.updated")
+    else
+      flash[:error] = catalog_field_definition.errors_as_sentence
+    end
+    redirect_to manage_subforem_path
+  end
+
+  def destroy_catalog_field_definition
+    catalog_field_definition = CatalogFieldDefinition.find(params[:catalog_field_definition_id])
+
+    unless catalog_field_definition.subforem_id == @subforem.id
+      flash[:error] = I18n.t("views.subforems.edit.catalog_fields.messages.not_found")
+      redirect_to manage_subforem_path
+      return
+    end
+
+    if catalog_field_definition.destroy
+      flash[:success] = I18n.t("views.subforems.edit.catalog_fields.messages.deleted")
+    else
+      flash[:error] = catalog_field_definition.errors_as_sentence
     end
     redirect_to manage_subforem_path
   end
@@ -345,7 +392,8 @@ class SubforemsController < ApplicationController
 
   def update_user_experience_settings
     return unless params[:feed_style].present? || params[:feed_lookback_days].present? || 
-                  params[:primary_brand_color_hex].present?
+                  params[:primary_brand_color_hex].present? || params[:subforem_home_default_view].present? ||
+                  params.key?(:catalog_enabled)
 
     if params[:feed_style].present?
       Settings::UserExperience.set_feed_style(params[:feed_style], subforem_id: @subforem.id)
@@ -357,6 +405,15 @@ class SubforemsController < ApplicationController
     
     if params[:primary_brand_color_hex].present?
       Settings::UserExperience.set_primary_brand_color_hex(params[:primary_brand_color_hex], subforem_id: @subforem.id)
+    end
+
+    if params[:subforem_home_default_view].present?
+      Settings::UserExperience.set_subforem_home_default_view(params[:subforem_home_default_view],
+                                                              subforem_id: @subforem.id)
+    end
+
+    if params.key?(:catalog_enabled)
+      Settings::UserExperience.set_catalog_enabled(params[:catalog_enabled] == "1", subforem_id: @subforem.id)
     end
   end
 
@@ -388,6 +445,10 @@ class SubforemsController < ApplicationController
       uploader.set_image_type(image_type)
       uploader.store!(image)
     end
+  end
+
+  def catalog_field_definition_params
+    params.require(:catalog_field_definition).permit(:name, :field_type, :required, :position)
   end
 
   def bust_navigation_links_cache

@@ -156,6 +156,11 @@ class StoriesController < ApplicationController
   end
 
   def handle_base_index
+    if catalog_default_home?
+      redirect_to catalog_items_path
+      return
+    end
+
     @home_page = true
     assign_feed_stories unless user_signed_in? # Feed fetched async for signed-in users
     assign_hero_banner
@@ -173,6 +178,14 @@ class StoriesController < ApplicationController
 
   def pinned_article
     @pinned_article ||= PinnedArticle.get
+  end
+
+  def catalog_default_home?
+    subforem_id = RequestStore.store[:subforem_id]
+    return false if subforem_id.blank?
+    return false unless Settings::UserExperience.catalog_enabled(subforem_id: subforem_id)
+
+    Settings::UserExperience.subforem_home_default_view(subforem_id: subforem_id) == "catalog"
   end
 
   def featured_story

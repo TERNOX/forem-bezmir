@@ -492,4 +492,11 @@ module ApplicationHelper
 
     content_tag(name, class: dom_class, **kwargs, &block)
   end
+
+  def catalog_enabled_for_subforem?
+    subforem_id = RequestStore.store[:subforem_id]
+    return false if subforem_id.blank?
+
+    Settings::UserExperience.catalog_enabled(subforem_id: subforem_id)
+  end
 end

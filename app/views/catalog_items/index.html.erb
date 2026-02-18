@@ -1,0 +1,107 @@
+<% content_for :page_title, t("views.catalog_items.index.title") %>
+
+<div class="crayons-layout crayons-layout--3-cols crayons-layout--3-cols--1-2-1">
+  <%= render "articles/sidebar" %>
+
+  <main class="articles-list crayons-layout__content" id="main-content">
+    <%= render "shared/catalog_toggle" %>
+
+    <header class="catalog-header">
+      <div>
+        <h1 class="fs-2xl fw-bold"><%= t("views.catalog_items.index.heading") %></h1>
+        <p class="color-base-60"><%= t("views.catalog_items.index.subheading") %></p>
+      </div>
+      <div class="catalog-header__actions">
+        <%= form_with url: catalog_items_path, method: :get, local: true, class: "catalog-search" do |form| %>
+          <%= form.hidden_field :view, value: @display_mode if @display_mode.present? %>
+          <%= form.text_field :q, value: params[:q], placeholder: t("views.catalog_items.index.search_placeholder"),
+                             class: "crayons-textfield" %>
+        <% end %>
+        <div class="catalog-view-switch">
+          <%= link_to t("views.catalog_items.index.view_grid"), catalog_items_path(view: "grid"),
+                      class: "crayons-btn crayons-btn--secondary #{'crayons-btn--primary' if @display_mode == 'grid'}" %>
+          <%= link_to t("views.catalog_items.index.view_list"), catalog_items_path(view: "list"),
+                      class: "crayons-btn crayons-btn--secondary #{'crayons-btn--primary' if @display_mode == 'list'}" %>
+        </div>
+        <% if user_signed_in? %>
+          <%= link_to t("views.catalog_items.index.new"), new_catalog_item_path, class: "crayons-btn crayons-btn--primary" %>
+        <% end %>
+      </div>
+    </header>
+
+    <% if params[:tag].present? || params[:q].present? %>
+      <div class="catalog-filters mb-4">
+        <% if params[:tag].present? %>
+          <span class="crayons-tag crayons-tag--monochrome">
+            <span class="crayons-tag__prefix">#</span><%= params[:tag] %>
+          </span>
+        <% end %>
+        <% if params[:q].present? %>
+          <span class="crayons-tag crayons-tag--monochrome"><%= params[:q] %></span>
+        <% end %>
+        <%= link_to t("views.catalog_items.index.clear_filters"), catalog_items_path(view: @display_mode), class: "crayons-btn crayons-btn--ghost" %>
+      </div>
+    <% end %>
+
+    <section class="catalog-items <%= @display_mode == 'list' ? 'catalog-list' : 'catalog-grid' %>">
+      <% @catalog_items.each do |catalog_item| %>
+        <% cover_url = catalog_item.cover_image.presence&.url %>
+        <article class="crayons-story catalog-story">
+          <%= link_to catalog_item_path(catalog_item), class: "crayons-story__hidden-navigation-link" do %>
+            <%= catalog_item.title %>
+          <% end %>
+          <div class="catalog-story__cover">
+            <%= link_to catalog_item_path(catalog_item), class: "catalog-story__cover-link" do %>
+              <% if cover_url.present? %>
+                <img src="<%= cover_url %>" alt="<%= catalog_item.title %>" loading="lazy">
+              <% else %>
+                <div class="catalog-card__placeholder"><%= t("views.catalog_items.index.no_cover") %></div>
+              <% end %>
+            <% end %>
+          </div>
+          <div class="crayons-story__body">
+            <div class="crayons-story__top">
+              <div class="crayons-story__meta">
+                <a href="/<%= catalog_item.user.username %>" class="crayons-avatar crayons-avatar--l">
+                  <img src="<%= catalog_item.user.profile_image_90 %>" alt="<%= catalog_item.user.username %> profile" class="crayons-avatar__image" loading="lazy" />
+                </a>
+                <div>
+                  <a href="/<%= catalog_item.user.username %>" class="crayons-story__secondary fw-medium">
+                    <%= catalog_item.user.name %>
+                  </a>
+                  <div class="crayons-story__tertiary fs-xs">
+                    <time datetime="<%= catalog_item.created_at.iso8601 %>"><%= l(catalog_item.created_at, format: :short) %></time>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="crayons-story__indention">
+              <h2 class="crayons-story__title">
+                <%= link_to catalog_item.title, catalog_item_path(catalog_item) %>
+              </h2>
+              <% if catalog_item.description.present? %>
+                <p class="crayons-story__description truncate-at-4"><%= catalog_item.description %></p>
+              <% end %>
+              <% if catalog_item.tag_list.any? %>
+                <div class="catalog-card__tags">
+                  <% catalog_item.tag_list.each do |tag| %>
+                    <a class="crayons-tag crayons-tag--monochrome" href="<%= catalog_items_path(view: @display_mode, tag: tag) %>">
+                      <span class="crayons-tag__prefix">#</span><%= tag %>
+                    </a>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </article>
+      <% end %>
+    </section>
+
+    <div class="mt-6">
+      <%= paginate @catalog_items %>
+    </div>
+  </main>
+
+  <%= render "articles/sidebar_additional" %>
+</div>

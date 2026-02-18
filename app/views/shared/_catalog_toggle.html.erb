@@ -1,0 +1,10 @@
+<% return unless catalog_enabled_for_subforem? %>
+
+<nav class="crayons-navigation mb-4 catalog-toggle" aria-label="Catalog toggle">
+  <a href="/" class="crayons-navigation__item <%= controller_name == "stories" ? "crayons-navigation__item--current" : "" %>">
+    <%= t("views.catalog_items.toggle.blog") %>
+  </a>
+  <a href="<%= catalog_items_path %>" class="crayons-navigation__item <%= controller_name == "catalog_items" ? "crayons-navigation__item--current" : "" %>">
+    <%= t("views.catalog_items.toggle.catalog") %>
+  </a>
+</nav>

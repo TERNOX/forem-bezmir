@@ -31,6 +31,7 @@ pt:
           discoverability: Descoberta
           community_settings: Configurações da Comunidade
           feed_settings: Configurações de Feed e Conteúdo
+          catalog_settings: Configurações do Catálogo
           branding: Marca
         form:
           community_name:
@@ -62,6 +63,15 @@ pt:
               basic: Básico
               rich: Rico (com imagens de capa)
               compact: Compacto
+          catalog_enabled:
+            label: Ativar catálogo
+            description: Permitir entradas e visualizações do catálogo para este subforem.
+          subforem_home_default_view:
+            label: Visualização padrão do subforem
+            description: Escolha se a página inicial do subforem mostra o blog ou o catálogo por padrão.
+            options:
+              posts: Postagens do blog
+              catalog: Catálogo
           feed_lookback_days:
             label: Dias de Retrospectiva do Feed
             placeholder: "10"
@@ -125,6 +135,29 @@ pt:
           slug_label: Slug
           path_label: Caminho
           no_pages: Nenhuma página dedicada encontrada para este subforem.
+        catalog_fields:
+          description: Configure os campos que as entradas do catálogo devem preencher. Esses campos se tornam tags e podem incluir uploads de arquivos.
+          empty: Nenhum campo de catálogo configurado ainda.
+          form:
+            name: Nome do campo
+            type: Tipo do campo
+            position: Ordem
+            required: Obrigatório
+            required_toggle: Campo obrigatório
+            add: Adicionar campo
+            update: Atualizar campo
+            delete: Excluir campo
+            delete_confirm: Tem certeza de que deseja excluir este campo?
+          types:
+            text: Texto
+            link: Link
+            file: Arquivo
+            tag: Tag
+          messages:
+            created: Campo do catálogo criado.
+            updated: Campo do catálogo atualizado.
+            deleted: Campo do catálogo excluído.
+            not_found: Campo do catálogo não encontrado.
         navigation_links:
           heading: Links de Navegação
           add_button: Adicionar Link de Navegação
