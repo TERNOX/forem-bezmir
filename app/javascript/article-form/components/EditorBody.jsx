@@ -85,7 +85,7 @@ export const EditorBody = ({
     const handler = handleURLPasted(textAreaRef);
     textarea.addEventListener('paste', handler);
     return () => textarea.removeEventListener('paste', handler);
-  }, [textAreaRef.current]);
+  }, []);
 
   return (
     <div
