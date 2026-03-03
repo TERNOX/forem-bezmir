@@ -79,6 +79,8 @@ Rails.application.routes.draw do
 
         resources :pages, only: %i[index show create update destroy]
 
+        resources :agent_sessions, only: %i[index show create]
+
         resources :feedback_messages, only: :update
 
         resources :organizations, only: %i[index create update destroy]
@@ -156,6 +158,7 @@ Rails.application.routes.draw do
     end
     resources :image_uploads, only: [:create]
     resources :video_uploads, only: [:create]
+    resources :agent_sessions, only: %i[index new create show edit update destroy]
     resources :notifications, only: [:index]
     resources :tags, only: [:index] do
       collection do
