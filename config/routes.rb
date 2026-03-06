@@ -79,7 +79,14 @@ Rails.application.routes.draw do
 
         resources :pages, only: %i[index show create update destroy]
 
-        resources :agent_sessions, only: %i[index show create]
+        resources :agent_sessions, only: %i[index show create] do
+          collection do
+            post :presign
+          end
+          member do
+            get :raw_url
+          end
+        end
 
         resources :feedback_messages, only: :update
 
@@ -158,7 +165,14 @@ Rails.application.routes.draw do
     end
     resources :image_uploads, only: [:create]
     resources :video_uploads, only: [:create]
-    resources :agent_sessions, only: %i[index new create show edit update destroy]
+    resources :agent_sessions, only: %i[index new create show edit update destroy] do
+      collection do
+        post :presign
+      end
+      member do
+        get :raw_url
+      end
+    end
     resources :notifications, only: [:index]
     resources :tags, only: [:index] do
       collection do
