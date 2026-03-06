@@ -34,7 +34,11 @@ module MarkdownProcessor
       renderer = Redcarpet::Render::HTMLRouge.new(options)
       markdown = Redcarpet::Markdown.new(renderer, Constants::Redcarpet::CONFIG)
       catch_xss_attempts(@content)
-      code_tag_content = convert_code_tags_to_triple_backticks(@content)
+      
+      # Workaround for Redcarpet dropping link text at nesting levels >= 5 (16+ spaces)
+      content_with_fixed_links = convert_deeply_nested_links_to_html(@content)
+      
+      code_tag_content = convert_code_tags_to_triple_backticks(content_with_fixed_links)
       escaped_content = escape_liquid_tags_in_codeblock(code_tag_content)
       html = markdown.render(escaped_content)
       sanitized_content = ActionController::Base.helpers.sanitize html, { scrubber: RenderedMarkdownScrubber.new }
@@ -58,6 +62,14 @@ module MarkdownProcessor
 
       html = add_target_blank_to_outbound_links(html)
       parse_html(html, prefix_images_options)
+    end
+
+    def convert_deeply_nested_links_to_html(content)
+      content.gsub(/^(?: {16,}|\t{4,})[-*+ \d.]* .*$/) do |line|
+        line.gsub(/\[([^\]]*)\]\(([^)]*)\)/) do
+          "<a href=\"#{$2}\">#{$1}</a>"
+        end
+      end
     end
 
     def add_target_blank_to_outbound_links(html)
