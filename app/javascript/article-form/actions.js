@@ -1,12 +1,16 @@
 import { validateFileInputs } from '../packs/validateFileInputs';
 import { getVideoConfig, formatTemplate } from './components/mediaConfig';
 
+function getCsrfToken() {
+  return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || window.csrfToken;
+}
+
 export function previewArticle(payload, successCb, failureCb) {
   fetch('/articles/preview', {
     method: 'POST',
     headers: {
       Accept: 'application/json',
-      'X-CSRF-Token': window.csrfToken,
+      'X-CSRF-Token': getCsrfToken(),
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -52,7 +56,7 @@ export function submitArticle({ payload, onSuccess, onError }) {
     method,
     headers: {
       Accept: 'application/json',
-      'X-CSRF-Token': window.csrfToken,
+      'X-CSRF-Token': getCsrfToken(),
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -73,7 +77,7 @@ export function submitArticle({ payload, onSuccess, onError }) {
 }
 
 function generateUploadFormdata(payload, fieldName = 'image') {
-  const token = window.csrfToken;
+  const token = getCsrfToken();
   const formData = new FormData();
   formData.append('authenticity_token', token);
 
@@ -88,7 +92,7 @@ export function generateMainImage({ payload, successCb, failureCb, signal }) {
   fetch('/image_uploads', {
     method: 'POST',
     headers: {
-      'X-CSRF-Token': window.csrfToken,
+      'X-CSRF-Token': getCsrfToken(),
     },
     body: generateUploadFormdata(payload),
     credentials: 'same-origin',
@@ -110,7 +114,8 @@ export function generateVideoUpload({ payload, successCb, failureCb, signal }) {
   fetch('/video_uploads', {
     method: 'POST',
     headers: {
-      'X-CSRF-Token': window.csrfToken,
+      'X-CSRF-Token': getCsrfToken(),
+      'Content-Type': 'application/json',
     },
     body: generateUploadFormdata(payload, 'video'),
     credentials: 'same-origin',
