@@ -20,7 +20,19 @@ function initDropdown() {
   const reportAbuseLink = profileDropdownDiv.querySelector(
     '.report-abuse-link-wrapper',
   );
-  reportAbuseLink.innerHTML = `<a href="${reportAbuseLink.dataset.path}" class="crayons-link crayons-link--block">Report Abuse</a>`;
+  if (reportAbuseLink) {
+    const reportLabel = reportAbuseLink.dataset.label || 'Report Abuse';
+    reportAbuseLink.innerHTML = `<a href="${reportAbuseLink.dataset.path}" class="crayons-link crayons-link--block">${reportLabel}</a>`;
+  }
+
+  const adminSettingsLink = profileDropdownDiv.querySelector(
+    '.organization-admin-link-wrapper',
+  );
+
+  if (adminSettingsLink) {
+    const adminLabel = adminSettingsLink.dataset.label || 'Admin settings';
+    adminSettingsLink.innerHTML = `<a href="${adminSettingsLink.dataset.path}" class="crayons-link crayons-link--block" data-no-instant>${adminLabel}</a>`;
+  }
 
   profileDropdownDiv.dataset.dropdownInitialized = true;
 }

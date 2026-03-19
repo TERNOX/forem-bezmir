@@ -3,6 +3,7 @@ pt:
   views:
     organizations:
       dropdown: Organization actions
+      admin_settings: Admin settings
       empty: 404 bio not found
       external:
         icon: External link icon
