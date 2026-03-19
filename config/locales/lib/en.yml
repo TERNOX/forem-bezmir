@@ -193,6 +193,24 @@ en:
             description: Maximum file size in megabytes allowed for uploaded videos
           video:
             description: Secret key used to allow AWS video encoding through the VideoStatesController
+          video_upload_access_key_id:
+            description: AWS access key ID used to sign direct uploads for raw video files
+            placeholder: AKIA************
+          video_upload_secret_access_key:
+            description: AWS secret access key paired with the access key ID for direct uploads
+            placeholder: your-secret-access-key
+          video_upload_bucket:
+            description: Name of the S3 bucket where members upload raw video files before encoding
+            placeholder: forem-video-uploads
+          video_upload_region:
+            description: AWS region for the upload bucket (for example, us-east-1)
+            placeholder: us-east-1
+          video_upload_custom_endpoint:
+            description: Optional custom S3 endpoint to use for uploads (leave blank to use the AWS default)
+            placeholder: https://s3.amazonaws.com/your-bucket/
+          video_cdn_base_url:
+            description: Base URL that serves encoded video streams and thumbnails
+            placeholder: https://videos.example.com
         rate_limit:
           new_days:
             description: The number of days a user is considered new. The default is 3 days, but you can disable this entirely by inputting 0.

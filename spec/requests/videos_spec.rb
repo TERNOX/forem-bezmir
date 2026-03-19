@@ -3,8 +3,13 @@ require "rails_helper"
 RSpec.describe "Videos" do
   let(:unauthorized_user) { create(:user) }
   let(:authorized_user)   { create(:user, created_at: 1.month.ago) }
+  let(:cdn_base_url) { "https://videos.example.com" }
 
-  before { allow(Settings::General).to receive(:enable_video_upload).and_return(true) }
+  before do
+    allow(Settings::General).to receive(:enable_video_upload).and_return(true)
+    allow(Video::UploadConfiguration).to receive(:configured?).and_return(true)
+    allow(Settings::General).to receive(:video_cdn_base_url).and_return(cdn_base_url)
+  end
 
   describe "GET /videos" do
     it "shows video page" do
@@ -88,7 +93,7 @@ RSpec.describe "Videos" do
       before { sign_in authorized_user }
 
       it "redirects to the article's edit page for the logged in user" do
-        stub_request(:get, %r{dw71fyauz7yz9\.cloudfront\.net/})
+        stub_request(:get, %r{videos\.example\.com/})
           .to_return(status: 200, body: "", headers: {})
 
         post "/videos", params: { article: { video: "https://www.something.com/something.mp4" } }

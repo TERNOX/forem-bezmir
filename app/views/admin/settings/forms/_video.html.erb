@@ -1,0 +1,86 @@
+<%= form_for(Settings::General.new,
+             url: admin_settings_general_settings_path,
+             html: { data: { action: "submit->config#updateConfigurationSettings" } }) do |f| %>
+  <details class="crayons-card">
+    <summary class="crayons-subtitle-2 p-6">Video</summary>
+
+    <div class="p-6 pt-0">
+      <fieldset class="grid gap-4">
+        <div class="crayons-field crayons-field--checkbox">
+          <%= f.check_box :enable_video_upload,
+                          checked: Settings::General.enable_video_upload,
+                          class: "crayons-checkbox" %>
+          <div>
+            <%= admin_config_label :enable_video_upload, "Enable video upload" %>
+            <%= admin_config_description Constants::Settings::General.details[:enable_video_upload][:description] %>
+          </div>
+        </div>
+
+        <div class="crayons-field">
+          <%= admin_config_label :video_encoder_key, "Video encoder key" %>
+          <%= admin_config_description Constants::Settings::General.details[:video_encoder_key][:description] %>
+          <%= f.text_field :video_encoder_key,
+                           class: "crayons-textfield",
+                           value: Settings::General.video_encoder_key,
+                           placeholder: Constants::Settings::General.details[:video_encoder_key][:placeholder] %>
+        </div>
+
+        <div class="crayons-field">
+          <%= admin_config_label :video_upload_access_key_id, "AWS access key ID" %>
+          <%= admin_config_description Constants::Settings::General.details[:video_upload_access_key_id][:description] %>
+          <%= f.text_field :video_upload_access_key_id,
+                           class: "crayons-textfield",
+                           value: Settings::General.video_upload_access_key_id,
+                           placeholder: Constants::Settings::General.details[:video_upload_access_key_id][:placeholder] %>
+        </div>
+
+        <div class="crayons-field">
+          <%= admin_config_label :video_upload_secret_access_key, "AWS secret access key" %>
+          <%= admin_config_description Constants::Settings::General.details[:video_upload_secret_access_key][:description] %>
+          <%= f.text_field :video_upload_secret_access_key,
+                           class: "crayons-textfield",
+                           value: Settings::General.video_upload_secret_access_key,
+                           placeholder: Constants::Settings::General.details[:video_upload_secret_access_key][:placeholder] %>
+        </div>
+
+        <div class="crayons-field">
+          <%= admin_config_label :video_upload_bucket, "Upload bucket" %>
+          <%= admin_config_description Constants::Settings::General.details[:video_upload_bucket][:description] %>
+          <%= f.text_field :video_upload_bucket,
+                           class: "crayons-textfield",
+                           value: Settings::General.video_upload_bucket,
+                           placeholder: Constants::Settings::General.details[:video_upload_bucket][:placeholder] %>
+        </div>
+
+        <div class="crayons-field">
+          <%= admin_config_label :video_upload_region, "Upload bucket region" %>
+          <%= admin_config_description Constants::Settings::General.details[:video_upload_region][:description] %>
+          <%= f.text_field :video_upload_region,
+                           class: "crayons-textfield",
+                           value: Settings::General.video_upload_region,
+                           placeholder: Constants::Settings::General.details[:video_upload_region][:placeholder] %>
+        </div>
+
+        <div class="crayons-field">
+          <%= admin_config_label :video_upload_custom_endpoint, "Custom upload endpoint" %>
+          <%= admin_config_description Constants::Settings::General.details[:video_upload_custom_endpoint][:description] %>
+          <%= f.text_field :video_upload_custom_endpoint,
+                           class: "crayons-textfield",
+                           value: Settings::General.video_upload_custom_endpoint,
+                           placeholder: Constants::Settings::General.details[:video_upload_custom_endpoint][:placeholder] %>
+        </div>
+
+        <div class="crayons-field">
+          <%= admin_config_label :video_cdn_base_url, "Video CDN base URL" %>
+          <%= admin_config_description Constants::Settings::General.details[:video_cdn_base_url][:description] %>
+          <%= f.text_field :video_cdn_base_url,
+                           class: "crayons-textfield",
+                           value: Settings::General.video_cdn_base_url,
+                           placeholder: Constants::Settings::General.details[:video_cdn_base_url][:placeholder] %>
+        </div>
+      </fieldset>
+
+      <%= render "update_setting_button", f: f %>
+    </div>
+  </details>
+<% end %>

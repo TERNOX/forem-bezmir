@@ -9,6 +9,7 @@ class VideoPolicy < ApplicationPolicy
   #       administrators to set the number of days to consider a "new user".
   def create?
     return false unless Settings::General.enable_video_upload
+    return false unless Video::UploadConfiguration.configured?
 
     require_user_in_good_standing!
     return false unless user.created_at

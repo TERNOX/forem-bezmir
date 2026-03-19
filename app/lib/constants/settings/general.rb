@@ -167,6 +167,30 @@ module Constants
           video_encoder_key: {
             description: I18n.t("lib.constants.settings.general.video.description"),
             placeholder: ""
+          },
+          video_upload_access_key_id: {
+            description: I18n.t("lib.constants.settings.general.video_upload_access_key_id.description"),
+            placeholder: I18n.t("lib.constants.settings.general.video_upload_access_key_id.placeholder")
+          },
+          video_upload_secret_access_key: {
+            description: I18n.t("lib.constants.settings.general.video_upload_secret_access_key.description"),
+            placeholder: I18n.t("lib.constants.settings.general.video_upload_secret_access_key.placeholder")
+          },
+          video_upload_bucket: {
+            description: I18n.t("lib.constants.settings.general.video_upload_bucket.description"),
+            placeholder: I18n.t("lib.constants.settings.general.video_upload_bucket.placeholder")
+          },
+          video_upload_region: {
+            description: I18n.t("lib.constants.settings.general.video_upload_region.description"),
+            placeholder: I18n.t("lib.constants.settings.general.video_upload_region.placeholder")
+          },
+          video_upload_custom_endpoint: {
+            description: I18n.t("lib.constants.settings.general.video_upload_custom_endpoint.description"),
+            placeholder: I18n.t("lib.constants.settings.general.video_upload_custom_endpoint.placeholder")
+          },
+          video_cdn_base_url: {
+            description: I18n.t("lib.constants.settings.general.video_cdn_base_url.description"),
+            placeholder: I18n.t("lib.constants.settings.general.video_cdn_base_url.placeholder")
           }
         }
       end

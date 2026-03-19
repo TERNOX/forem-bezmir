@@ -1,6 +1,7 @@
 class VideosController < ApplicationController
   after_action :verify_authorized, except: %i[index]
   before_action :set_cache_control_headers, only: %i[index]
+  before_action :apply_video_upload_configuration, only: %i[new]
 
   def index
     @video_articles = Article.with_video.from_subforem
@@ -29,5 +30,9 @@ class VideosController < ApplicationController
 
   def article_params
     params.require(:article).permit(:video)
+  end
+
+  def apply_video_upload_configuration
+    Video::UploadConfiguration.apply_s3_direct_upload!
   end
 end
