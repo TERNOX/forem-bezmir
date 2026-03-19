@@ -159,6 +159,11 @@ RSpec.describe LinkTag, type: :liquid_tag do
     expect(liquid.render).to eq(correct_link_html(article))
   end
 
+  it "renders with an additional internal domain" do
+    liquid = generate_new_liquid(slug: "https://kutok.io/#{user.username}/#{article.slug}/")
+    expect(liquid.render).to eq(correct_link_html(article))
+  end
+
   it "escapes title" do
     liquid = generate_new_liquid(slug: "/#{user.username}/#{escaped_article.slug}/")
     expect(liquid.render).to eq(correct_link_html(escaped_article))

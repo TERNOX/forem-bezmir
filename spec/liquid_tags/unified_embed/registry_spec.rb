@@ -362,5 +362,10 @@ RSpec.describe UnifiedEmbed::Registry do
       expect(described_class.find_liquid_tag_for(link: "http://#{subforem.domain}#{article.path}"))
         .to eq(LinkTag)
     end
+
+    it "returns link tag for an additional internal domain" do
+      expect(described_class.find_liquid_tag_for(link: "https://kutok.io#{article.path}"))
+        .to eq(LinkTag)
+    end
   end
 end
