@@ -10,6 +10,14 @@ RSpec.describe "Tags", :proper_status do
       expect(response.body).to include("Tags", "ruby", "javascript")
     end
 
+    it "includes tags that are not supported" do
+      create(:tag, name: "unsanctioned", supported: false)
+
+      get tags_path
+
+      expect(response.body).to include("unsanctioned")
+    end
+
     it "does not include tags with alias" do
       create(:tag, name: "ruby")
       create(:tag, name: "aliastag", alias_for: "ruby")
