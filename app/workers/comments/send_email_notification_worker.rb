@@ -15,6 +15,8 @@ module Comments
       end
 
       NotifyMailer.with(comment: comment).new_reply_email.deliver_now
+    rescue ArgumentError => e
+      raise unless e.message.include?("SMTP To address may not be blank")
     end
   end
 end
