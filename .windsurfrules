@@ -7,6 +7,7 @@ Follow these rules and patterns to ensure high-quality contributions.
 - **Follow Patterns**: Application consistency is key. Mimic existing patterns for controllers, services, and specs.
 - **Smaller is Better**: Prefer atomic, focused modifications over sprawling refactors.
 - **Re-usability**: Changes should strengthen Forem as a platform, avoiding DEV-specific hardcoding unless absolutely necessary.
+- **Disruption & Clarification**: Always be vigilant about not disrupting existing functionality (e.g., core auth, feed sorting, cache pipelines). If a proposal touches or runs adjacent to a major subsystem, explicitly ask clarifying questions to validate isolation and proactively determine if extra tests are needed to guarantee no side-effects occur.
 
 ## Testing Standards
 - **Regression Tests are Mandatory**: specific regression tests to verify your code works are required for almost all PRs.
