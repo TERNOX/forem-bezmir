@@ -195,6 +195,8 @@ en:
             description: Toggle to allow members to upload videos on your Forem
           video_upload_max_file_size_mb:
             description: Maximum file size in megabytes allowed for uploaded videos
+          display_sidebar_onboarding_checklist:
+            description: Display the onboarding checklist in the right sidebar for new users who haven't completed all steps.
           enable_agent_sessions:
             description: Enable the Agent Sessions feature for uploading and embedding coding agent session transcripts.
           video:

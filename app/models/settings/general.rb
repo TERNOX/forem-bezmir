@@ -108,6 +108,7 @@ module Settings
 
     # Onboarding
     setting :suggested_tags, type: :array, default: %w[]
+    setting :display_sidebar_onboarding_checklist, type: :boolean, default: false
 
     # Social Media
     setting :social_media_handles, type: :hash, default: {
