@@ -33,7 +33,7 @@ export function previewArticle(payload, successCb, failureCb) {
 
 export function getArticle() {}
 
-function processPayload(payload) {
+export function processPayload(payload) {
   const {
     /* eslint-disable no-unused-vars */
     previewShowing,
@@ -43,6 +43,9 @@ function processPayload(payload) {
     imageManagementShowing,
     moreConfigShowing,
     errors,
+    organizations,
+    authorId,
+    coAuthorsData,
     /* eslint-enable no-unused-vars */
     ...neededPayload
   } = payload;

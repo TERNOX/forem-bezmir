@@ -22,6 +22,7 @@ export const Form = ({
   coverImageHeight,
   videoSourceUrl,
   onVideoUrlChange,
+  coAuthorsData,
 }) => {
   const contentRef = useRef(null);
 
@@ -52,6 +53,7 @@ export const Form = ({
           coverImageHeight={coverImageHeight}
           videoSourceUrl={videoSourceUrl}
           onVideoUrlChange={onVideoUrlChange}
+          coAuthorsData={coAuthorsData}
         />
       )}
 
@@ -83,6 +85,7 @@ Form.propTypes = {
   coverImageCrop: PropTypes.string.isRequired,
   videoSourceUrl: PropTypes.string,
   onVideoUrlChange: PropTypes.func,
+  coAuthorsData: PropTypes.array,
 };
 
 Form.displayName = 'Form';
