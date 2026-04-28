@@ -7,6 +7,7 @@ class Article < ApplicationRecord
   include UserSubscriptionSourceable
   include PgSearch::Model
   include AlgoliaSearchable
+  include WebpageTrackable
 
   acts_as_taggable_on :tags
   resourcify
@@ -997,10 +998,23 @@ class Article < ApplicationRecord
                       calculated_comment_score
                     end
 
+    score_changed_flag = score_changed? || self.comment_score != comment_score
+
     update_columns(score: score,
                    privileged_users_reaction_points_sum: reactions.privileged_category.sum(:points),
                    comment_score: comment_score,
                    hotness_score: BlackBox.article_hotness_score(self))
+
+    trigger_linked_domain_score_updates if score_changed_flag
+  end
+
+  def trigger_linked_domain_score_updates
+    domain_ids = webpage_references.select(:linked_domain_id).distinct.pluck(:linked_domain_id)
+    return if domain_ids.empty?
+
+    domain_ids.each do |domain_id|
+      LinkedDomains::UpdateScoreWorker.perform_async(domain_id)
+    end
   end
 
   def co_author_ids_list
