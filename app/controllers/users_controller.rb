@@ -303,7 +303,8 @@ class UsersController < ApplicationController
   private
 
   def handle_organization_tab
-    @organizations = @current_user.organizations.order(name: :asc)
+    # use member_organizations to hide pending org invitations (#23331)
+    @organizations = @current_user.member_organizations.order(name: :asc)
     if params[:org_id] == "new" || (params[:org_id].blank? && @organizations.empty?)
       @organization = Organization.new
     elsif params[:org_id].blank? || params[:org_id].match?(/\d/)
