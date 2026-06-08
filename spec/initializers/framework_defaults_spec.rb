@@ -13,3 +13,10 @@ describe "Framework Defaults 7.0 Upgrade Verification" do
     expect(Rails.application.config.active_support.key_generator_hash_digest_class).to eq(OpenSSL::Digest::SHA1)
   end
 end
+
+describe "Framework Defaults 7.1 Upgrade Preparation" do
+  it "has the new_framework_defaults_7_1.rb initializer file" do
+    expect(File.exist?(Rails.root.join("config/initializers/new_framework_defaults_7_1.rb"))).to be(true)
+  end
+end
+# rubocop:enable RSpec/DescribeClass
