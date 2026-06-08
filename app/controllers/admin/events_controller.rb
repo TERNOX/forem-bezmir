@@ -71,6 +71,8 @@ module Admin
         :user_id, 
         :organization_id, 
         :tag_list,
+        :page_id,
+        :delegate_to_page,
         data: {}
       )
     end
