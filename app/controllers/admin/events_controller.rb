@@ -63,6 +63,7 @@ module Admin
         :description, 
         :primary_stream_url, 
         :published, 
+        :elevated,
         :start_time, 
         :end_time, 
         :type_of,

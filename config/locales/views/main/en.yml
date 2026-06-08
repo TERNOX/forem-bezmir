@@ -51,6 +51,7 @@ en:
         Videos: Videos
       side:
         active_discussions: "Active discussions"
+        upcoming_events: "Upcoming events"
         listings:
           heading: Listings
           all: See all
