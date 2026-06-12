@@ -62,4 +62,5 @@ rescue LoadError
 end
 
 require "bundler/setup" # Set up gems listed in the Gemfile.
+require "logger"
 require "bootsnap/setup" # Speed up boot time by caching expensive operations.
