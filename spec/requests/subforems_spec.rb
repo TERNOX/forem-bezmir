@@ -58,7 +58,7 @@ RSpec.describe "Subforems", type: :request do
       it "returns a successful response" do
         get edit_subforem_path(subforem)
         expect(response).to have_http_status(:ok)
-        expect(response.body).to include("Edit #{subforem.domain}")
+        expect(response.body).to include(I18n.t("views.subforems.edit.heading", subforem: subforem.domain))
       end
     end
 
@@ -68,7 +68,7 @@ RSpec.describe "Subforems", type: :request do
       it "returns a successful response" do
         get edit_subforem_path(subforem)
         expect(response).to have_http_status(:ok)
-        expect(response.body).to include("Edit #{subforem.domain}")
+        expect(response.body).to include(I18n.t("views.subforems.edit.heading", subforem: subforem.domain))
       end
     end
 
