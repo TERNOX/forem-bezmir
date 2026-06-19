@@ -23,6 +23,25 @@ module Sidekiq
   end
 end
 
+# Resolve the Redis instance Sidekiq uses, shared by BOTH the server (worker)
+# and client (web) processes so they always talk to the same Redis. In
+# development we pin to db /3; this has to apply to the client too, otherwise
+# the web process's Sidekiq.redis (e.g. Sidekiq::ProcessSet, which powers the
+# "Sidekiq is not running" banner) reads a different db than the worker
+# registers in, and the banner shows even when Sidekiq is running.
+# This local is captured by the configure_server/configure_client closures below.
+sidekiq_url = ApplicationConfig["REDIS_SIDEKIQ_URL"] || ApplicationConfig["REDIS_URL"] || "redis://localhost:6379"
+if Rails.env.development?
+  begin
+    require "uri"
+    uri = URI.parse(sidekiq_url)
+    uri.path = "/3" if uri.path.nil? || uri.path == "" || uri.path == "/"
+    sidekiq_url = uri.to_s
+  rescue URI::InvalidURIError
+    nil
+  end
+end
+
 Sidekiq.configure_server do |config|
   # @mstruve/@sre: sidekiq-cron still uses the removed poll_interval
   # to determine how often to poll for jobs so we should manually set it
@@ -31,16 +50,6 @@ Sidekiq.configure_server do |config|
   # every 30 seconds which the gem defaults to
   config[:poll_interval] = 10
 
-  sidekiq_url = ApplicationConfig["REDIS_SIDEKIQ_URL"] || ApplicationConfig["REDIS_URL"] || "redis://localhost:6379"
-  if Rails.env.development?
-    begin
-      require "uri"
-      uri = URI.parse(sidekiq_url)
-      uri.path = "/3" if uri.path.nil? || uri.path == "" || uri.path == "/"
-      sidekiq_url = uri.to_s
-    rescue URI::InvalidURIError
-    end
-  end
   # On Heroku this configuration is overridden and Sidekiq will point at the redis
   # instance given by the ENV variable REDIS_PROVIDER
   config.redis = { url: sidekiq_url }
@@ -78,6 +87,10 @@ Sidekiq.configure_server do |config|
 end
 
 Sidekiq.configure_client do |config|
+  # Point the client (web/enqueue side) at the same Redis the server uses, so in
+  # development Sidekiq::ProcessSet and friends read db /3 too (see comment above).
+  config.redis = { url: sidekiq_url }
+
   config.client_middleware do |chain|
     chain.add SidekiqUniqueJobs::Middleware::Client
   end
