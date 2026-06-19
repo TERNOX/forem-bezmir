@@ -9,7 +9,6 @@ en:
       invalid_url: Invalid Bolt URL
     cloud_run_tag:
       invalid_cloud_run_url: Invalid Cloud Run URL
-
     codepen_tag:
       invalid_codepen_url: Invalid CodePen URL
       invalid_options: Invalid Options
@@ -51,8 +50,8 @@ en:
     kotlin_tag:
       invalid_kotlin_playground: Invalid Kotlin Playground URL
     link_tag:
-      not_exist: "The article you're looking for does not exist: %{slug}"
-      not_exist_link: "The article you're looking for does not exist: {% link %{slug} %}"
+      not_exist: 'The article you''re looking for does not exist: %{slug}'
+      not_exist_link: 'The article you''re looking for does not exist: {% link %{slug} %}'
     liquid_tag_base:
       invalid_context: Invalid context. This liquid tag can only be used in %{valid}.
       no_source_found: No source found
@@ -86,7 +85,7 @@ en:
     slideshare_tag:
       invalid_slideshare_key: Invalid Slideshare Key
     soundcloud_tag:
-      invalid_soundcloud_url: "Invalid Soundcloud URL - try taking off any URL params: '?something=value'"
+      invalid_soundcloud_url: 'Invalid Soundcloud URL - try taking off any URL params: ''?something=value'''
     speakerdeck_tag:
       invalid_speakerdeck_id: Invalid Speakerdeck Id
     spotify_tag:
@@ -98,9 +97,8 @@ en:
       invalid_stackblitz_id: Invalid Stackblitz Id
     stackery_tag:
       missing_argument: Stackery - Missing owner and/or repository name arguments
-
     stackexchange_tag:
-      post_not_found: "Couldn't find a post with that ID: {% %{tag} %{input} %}"
+      post_not_found: 'Couldn''t find a post with that ID: {% %{tag} %{input} %}'
       invalid_id: 'Invalid Stack Exchange ID: {% %{tag} %{input} %}'
       invalid_site: 'Invalid Stack Exchange site: {% %{tag} %{input} %}'
     tag_tag:
@@ -125,11 +123,33 @@ en:
       invalid_url: Invalid Warp URL
     wikipedia_tag:
       section_not_found: Couldn't find the section of the Wikipedia article - %{input}
-      article_not_found: "Couldn't find the Wikipedia article - %{input}: %{response_detail}"
+      article_not_found: 'Couldn''t find the Wikipedia article - %{input}: %{response_detail}'
       invalid_wikipedia_url: Invalid Wikipedia URL
     agent_session_tag:
-      invalid: "Invalid agent_session syntax. Use: {% agent_session ID %}, {% agent_session ID start..end %}, or {% agent_session ID slice_name %}"
+      invalid: 'Invalid agent_session syntax. Use: {% agent_session ID %}, {% agent_session ID start..end %}, or {% agent_session ID slice_name %}'
       not_found: Agent session not found
       unpublished: Only the session owner can embed this session
     youtube_tag:
       invalid_youtube_id: Invalid YouTube ID or URL
+    invalid_url_scheme: 'Invalid URL for ''%{option}'': only http and https URLs are allowed'
+    row_tag:
+      no_args: The row tag does not accept any arguments
+    col_tag:
+      invalid_span: Span must be between 1 and 4
+    netlify_tag:
+      invalid_url: Invalid Netlify URL. Must be a https://*.netlify.app URL
+    features_tag:
+      no_args: The features tag does not accept any arguments
+    feature_tag:
+      missing_title: Feature tag requires a title option
+    offer_tag:
+      default_button: Learn More
+    quote_tag:
+      missing_author: Quote tag requires an author option
+      invalid_rating: Rating must be between 1 and 5
+      learn_more: Learn more
+    slide_tag:
+      missing_image: Slide tag requires an image option
+      missing_content: 'Slide tag requires at least one of: image, video, or link'
+    slides_tag:
+      invalid_mode: Slides mode must be 'default' or 'carousel'

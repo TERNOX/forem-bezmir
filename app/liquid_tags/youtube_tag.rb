@@ -14,6 +14,14 @@ class YoutubeTag < LiquidTagBase
     ApplicationController.render(partial: PARTIAL, locals: { id: @id, width: @width, height: @height })
   end
 
+  # Class-level video id extraction, used by SlideTag for video slides.
+  def self.extract_video_id(str)
+    match = str.match(%r{youtu\.be/([a-zA-Z0-9_-]{11})}) ||
+            str.match(%r{[?&]v=([a-zA-Z0-9_-]{11})}) ||
+            str.match(/\A([a-zA-Z0-9_-]{11})\z/)
+    match[1] if match
+  end
+
   private
 
   def extract_video_id_and_start_time
