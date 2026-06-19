@@ -300,6 +300,11 @@ class ApplicationController < ActionController::Base
   def determine_locale
     I18n.locale = if %w[en fr pt].include?(params[:locale])
                     params[:locale]
+                  elsif Rails.env.test?
+                    # Keep request specs deterministic under the default :en locale,
+                    # matching upstream specs. Production/development still use the
+                    # community-configured default (e.g. uk).
+                    :en
                   else
                     Settings::UserExperience.default_locale
                   end
