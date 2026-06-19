@@ -11,7 +11,7 @@ uk:
         icon: Логотип GitHub
       joined:
         icon: Створено
-        text_html: "Створено %{date}"
+        text_html: Створено %{date}
       location:
         icon: Локація
       logo: Зображення профілю %{org}
@@ -43,3 +43,15 @@ uk:
       all_members: Переглянути всіх учасників
       twitter:
         icon: Логотип X (Twitter)
+      confirm_invitation:
+        confirm_button: Прийняти запрошення
+        greeting: Вітаємо, %{name}!
+        invalid_token: Недійсний або прострочений токен запрошення.
+        invited_by_html: "<strong>%{inviter_name}</strong> запросив(ла) Вас приєднатися до <strong>%{organization_name}</strong> як учасника."
+        invited_html: Вас запрошено приєднатися до <strong>%{organization_name}</strong> як учасника.
+        organization_explanation: Проєкти на %{community} дозволяють командам і групам співпрацювати, ділитися контентом і будувати спільну присутність. Як учасник, Ви зможете публікувати статті від імені проєкту та співпрацювати зі своєю командою.
+        sign_in_button: Увійти
+        sign_in_required: Будь ласка, увійдіть, щоб підтвердити своє членство в проєкті.
+        title: Підтвердження запрошення до проєкту
+        what_is_organization: Що таке проєкт?
+        wrong_user: Щоб підтвердити це запрошення, увійдіть як запрошений користувач.

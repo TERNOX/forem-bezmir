@@ -51,10 +51,10 @@ uk:
     counted_user:
       one: "%{count} людина"
       other: "%{count} людей"
-    not_following: "Ви ні на кого не підписані"
-    following_everyone: "Ви підписані на %{details} (усіх)"
-    you_are_following: "Ви підписані на"
-    and: "та"
+    not_following: Ви ні на кого не підписані
+    following_everyone: Ви підписані на %{details} (усіх)
+    you_are_following: Ви підписані на
+    and: та
   date:
     abbr_month_names:
     - 
@@ -71,7 +71,7 @@ uk:
     - лис
     - гру
     month_names_with_day:
-    -
+    - 
     - січня
     - лютого
     - березня
@@ -85,7 +85,7 @@ uk:
     - листопада
     - грудня
     month_names_standalone:
-    -
+    - 
     - Січень
     - Лютий
     - Березень
@@ -99,64 +99,64 @@ uk:
     - Листопад
     - Грудень
     formats:
-        default: "%d.%m.%Y"
-        long_month: "%B %Y"
-        month_year_standalone: "%{month} %{year}"
-        full: "%-d %B, %H:%M, %Y - %A"
-        full_month: "%B, %Y"
-        full_day: "%-d %B, %H:%M, %Y"
-        week_abbr: "%a"
-        admin_user: "%Y-%m-%d, %H:%M"
-        comment: "%d %B %Y"
-        email_verified: "%e %b '%y, %H:%M"
-        github: "%d %b %Y"
-        json: "%e %b %Y"
-        medium: "%-d %b %Y"
-        members: "%d %b"
-        members_with_year: "%d %b, %Y"
-        reddit: "%e %b '%y"
-        long: "%d.%m.%Y"
-        short_with_yy: "%-d %b '%y"
-        short_with_year: "%-e %b, %Y"
-        stackexchange: "%e %b '%y"
+      default: "%d.%m.%Y"
+      long_month: "%B %Y"
+      month_year_standalone: "%{month} %{year}"
+      full: "%-d %B, %H:%M, %Y - %A"
+      full_month: "%B, %Y"
+      full_day: "%-d %B, %H:%M, %Y"
+      week_abbr: "%a"
+      admin_user: "%Y-%m-%d, %H:%M"
+      comment: "%d %B %Y"
+      email_verified: "%e %b '%y, %H:%M"
+      github: "%d %b %Y"
+      json: "%e %b %Y"
+      medium: "%-d %b %Y"
+      members: "%d %b"
+      members_with_year: "%d %b, %Y"
+      reddit: "%e %b '%y"
+      long: "%d.%m.%Y"
+      short_with_yy: "%-d %b '%y"
+      short_with_year: "%-e %b, %Y"
+      stackexchange: "%e %b '%y"
   datetime:
     distance_in_words_ago:
       about_x_hours:
-        one: "приблизно %{count} годину тому"
-        few: "приблизно %{count} години тому"
-        many: "приблизно %{count} годин тому"
-        other: "приблизно %{count} годин тому"
+        one: приблизно %{count} годину тому
+        few: приблизно %{count} години тому
+        many: приблизно %{count} годин тому
+        other: приблизно %{count} годин тому
       about_x_months:
-        one: "приблизно %{count} місяць тому"
-        few: "приблизно %{count} місяці тому"
-        many: "приблизно %{count} місяців тому"
-        other: "приблизно %{count} місяців тому"
+        one: приблизно %{count} місяць тому
+        few: приблизно %{count} місяці тому
+        many: приблизно %{count} місяців тому
+        other: приблизно %{count} місяців тому
       about_x_years:
-        one: "приблизно %{count} рік тому"
-        few: "приблизно %{count} роки тому"
-        many: "приблизно %{count} років тому"
-        other: "приблизно %{count} років тому"
+        one: приблизно %{count} рік тому
+        few: приблизно %{count} роки тому
+        many: приблизно %{count} років тому
+        other: приблизно %{count} років тому
       almost_x_years:
-        one: "майже %{count} рік тому"
-        few: "майже %{count} роки тому"
-        many: "майже %{count} років тому"
-        other: "майже %{count} років тому"
-      half_a_minute: "пів хвилини тому"
+        one: майже %{count} рік тому
+        few: майже %{count} роки тому
+        many: майже %{count} років тому
+        other: майже %{count} років тому
+      half_a_minute: пів хвилини тому
       less_than_x_seconds:
-        one: "менше %{count} секунди тому"
-        few: "менше %{count} секунди тому"
-        many: "менше %{count} секунд тому"
-        other: "менше %{count} секунди тому"
+        one: менше %{count} секунди тому
+        few: менше %{count} секунди тому
+        many: менше %{count} секунд тому
+        other: менше %{count} секунди тому
       less_than_x_minutes:
-        one: "менше %{count} хвилини тому"
-        few: "менше %{count} хвилини тому"
-        many: "менше %{count} хвилин тому"
-        other: "менше %{count} хвилини тому"
+        one: менше %{count} хвилини тому
+        few: менше %{count} хвилини тому
+        many: менше %{count} хвилин тому
+        other: менше %{count} хвилини тому
       over_x_years:
-        one: "понад %{count} рік тому"
-        few: "понад %{count} роки тому"
-        many: "понад %{count} років тому"
-        other: "понад %{count} року тому"
+        one: понад %{count} рік тому
+        few: понад %{count} роки тому
+        many: понад %{count} років тому
+        other: понад %{count} року тому
       x_seconds:
         one: "%{count} секунду тому"
         few: "%{count} секунди тому"
@@ -182,7 +182,6 @@ uk:
         few: "%{count} роки тому"
         many: "%{count} років тому"
         other: "%{count} років тому"
-
     expired_ago:
       about_x_hours:
         one: Прострочено приблизно годину тому
@@ -259,6 +258,70 @@ uk:
       x_years:
         one: Мине рік
         other: Минуть %{count} років
+    distance_in_words:
+      half_a_minute: півхвилини
+      less_than_x_seconds:
+        one: менше ніж %{count} секунду
+        few: менше ніж %{count} секунди
+        many: менше ніж %{count} секунд
+        other: менше ніж %{count} секунди
+      x_seconds:
+        one: "%{count} секунда"
+        few: "%{count} секунди"
+        many: "%{count} секунд"
+        other: "%{count} секунди"
+      less_than_x_minutes:
+        one: менше ніж %{count} хвилину
+        few: менше ніж %{count} хвилини
+        many: менше ніж %{count} хвилин
+        other: менше ніж %{count} хвилини
+      x_minutes:
+        one: "%{count} хвилина"
+        few: "%{count} хвилини"
+        many: "%{count} хвилин"
+        other: "%{count} хвилини"
+      about_x_hours:
+        one: близько %{count} години
+        few: близько %{count} годин
+        many: близько %{count} годин
+        other: близько %{count} години
+      x_days:
+        one: "%{count} день"
+        few: "%{count} дні"
+        many: "%{count} днів"
+        other: "%{count} дня"
+      about_x_months:
+        one: близько %{count} місяця
+        few: близько %{count} місяців
+        many: близько %{count} місяців
+        other: близько %{count} місяця
+      x_months:
+        one: "%{count} місяць"
+        few: "%{count} місяці"
+        many: "%{count} місяців"
+        other: "%{count} місяця"
+      about_x_years:
+        one: близько %{count} року
+        few: близько %{count} років
+        many: близько %{count} років
+        other: близько %{count} року
+      over_x_years:
+        one: понад %{count} рік
+        few: понад %{count} роки
+        many: понад %{count} років
+        other: понад %{count} року
+      almost_x_years:
+        one: майже %{count} рік
+        few: майже %{count} роки
+        many: майже %{count} років
+        other: майже %{count} року
+    prompts:
+      day: День
+      hour: Година
+      minute: Хвилина
+      month: Місяць
+      second: Секунди
+      year: Рік
   billboard:
     promoted: Реклама
     menu:
@@ -322,3 +385,36 @@ uk:
       short_with_yy: "%-d %b '%y"
       short_with_year: "%-e %b, %Y"
       stackexchange: "%e %b '%y"
+  views:
+    comments_continue_editing: Продовжити редагування
+    survey_enter_response: Введіть свою відповідь тут...
+    survey_thank_you_response: Дякуємо за вашу відповідь.
+    survey_thank_you_completing: Дякуємо за проходження опитування!
+    dashboard_analytics_readers: Читачі
+    dashboard_analytics_comments: Коментарі
+    dashboard_analytics_reactions: Реакції
+    stats_by: від
+    editor_new_title: Заголовок
+    editor_body_placeholder: Напишіть текст вашого допису тут...
+    tags_field_label: Додайте до 6 теґів
+    tags_field_placeholder: Додайте до 6 теґів...
+    counted_organization:
+      one: "%{count} проєкт"
+      other: "%{count} проєкти"
+    counted_user:
+      one: "%{count} людина"
+      other: "%{count} людей"
+    not_following: Ви ні на кого не підписані
+    following_everyone: Ви підписані на %{details} (усіх)
+    you_are_following: Ви підписані на
+    and: та
+    youtube:
+      play_video: Відтворити відео YouTube
+      thumbnail_alt: Зображення попереднього перегляду відео
+      video_title: Програвач відео YouTube
+    pagination:
+      first: "&laquo; Перша"
+      last: Остання &raquo;
+      next: Далі &rsaquo;
+      previous: "&lsaquo; Назад"
+      truncate: "&hellip;"
