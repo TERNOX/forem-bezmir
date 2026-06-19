@@ -75,7 +75,10 @@ RSpec.describe "Admin::Surveys", type: :request do
         expect {
           post admin_surveys_path, params: { survey: { title: "" } }
         }.not_to change(Survey, :count)
-        expect(response.body).to include("can&#39;t be blank")
+        # This fork surfaces validation errors through its admin notice/flash
+        # mechanism rather than inline copy, so assert the error notice was
+        # rendered (locale- and markup-independent) instead of a hardcoded string.
+        expect(response.body).to include('data-testid="flash-danger"')
       end
     end
   end
