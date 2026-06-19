@@ -4,91 +4,91 @@ FactoryBot.define do
     active_status_updated_at { 2.days.ago }
 
     factory :set_up_profile_broadcast do
-      title          { "Welcome Notification: set_up_profile" }
+      title          { I18n.t("services.broadcasts.welcome_notification.generator.welcome", key: "set_up_profile") }
       type_of        { "Welcome" }
       processed_html { I18n.t("broadcast.welcome.set_up_profile") }
     end
 
     factory :welcome_broadcast do
-      title          { "Welcome Notification: welcome_thread" }
+      title          { I18n.t("services.broadcasts.welcome_notification.generator.welcome", key: "welcome_thread") }
       type_of        { "Welcome" }
       processed_html { I18n.t("broadcast.welcome.welcome_thread") }
     end
 
     factory :apple_connect_broadcast do
-      title          { "Welcome Notification: apple_connect" }
+      title          { I18n.t("services.broadcasts.welcome_notification.generator.welcome", key: "apple_connect") }
       type_of        { "Welcome" }
       processed_html { I18n.t("broadcast.connect.apple") }
     end
 
     factory :github_connect_broadcast do
-      title          { "Welcome Notification: github_connect" }
+      title          { I18n.t("services.broadcasts.welcome_notification.generator.welcome", key: "github_connect") }
       type_of        { "Welcome" }
       processed_html { I18n.t("broadcast.connect.github") }
     end
 
     factory :google_oauth2_connect_broadcast do
-      title          { "Welcome Notification: google_oauth2_connect" }
+      title          { I18n.t("services.broadcasts.welcome_notification.generator.welcome", key: "google_oauth2_connect") }
       type_of        { "Welcome" }
       processed_html { I18n.t("broadcast.connect.google") }
     end
 
     factory :facebook_connect_broadcast do
-      title          { "Welcome Notification: facebook_connect" }
+      title          { I18n.t("services.broadcasts.welcome_notification.generator.welcome", key: "facebook_connect") }
       type_of        { "Welcome" }
       processed_html { I18n.t("broadcast.connect.facebook") }
     end
 
     factory :forem_connect_broadcast do
-      title          { "Welcome Notification: forem_connect" }
+      title          { I18n.t("services.broadcasts.welcome_notification.generator.welcome", key: "forem_connect") }
       type_of        { "Welcome" }
       processed_html { I18n.t("broadcast.connect.forem") }
     end
 
     factory :twitter_connect_broadcast do
-      title          { "Welcome Notification: twitter_connect" }
+      title          { I18n.t("services.broadcasts.welcome_notification.generator.welcome", key: "twitter_connect") }
       type_of        { "Welcome" }
       processed_html { I18n.t("broadcast.connect.twitter") }
     end
 
     factory :mlh_connect_broadcast do
-      title          { "Welcome Notification: mlh_connect" }
+      title          { I18n.t("services.broadcasts.welcome_notification.generator.welcome", key: "mlh_connect") }
       type_of        { "Welcome" }
       processed_html { I18n.t("broadcast.connect.mlh") }
     end
 
     factory :customize_ux_broadcast do
-      title          { "Welcome Notification: customize_experience" }
+      title          { I18n.t("services.broadcasts.welcome_notification.generator.welcome", key: "customize_experience") }
       type_of        { "Welcome" }
       processed_html { I18n.t("broadcast.welcome.customize_experience") }
     end
 
     factory :customize_feed_broadcast do
-      title          { "Welcome Notification: customize_feed" }
+      title          { I18n.t("services.broadcasts.welcome_notification.generator.welcome", key: "customize_feed") }
       type_of        { "Welcome" }
       processed_html { I18n.t("broadcast.welcome.customize_feed") }
     end
 
     factory :start_discussion_broadcast do
-      title          { "Welcome Notification: start_discussion" }
+      title          { I18n.t("services.broadcasts.welcome_notification.generator.welcome", key: "start_discussion") }
       type_of        { "Welcome" }
       processed_html { I18n.t("broadcast.welcome.start_discussion") }
     end
 
     factory :ask_question_broadcast do
-      title          { "Welcome Notification: ask_question" }
+      title          { I18n.t("services.broadcasts.welcome_notification.generator.welcome", key: "ask_question") }
       type_of        { "Welcome" }
       processed_html { I18n.t("broadcast.welcome.ask_question") }
     end
 
     factory :discuss_and_ask_broadcast do
-      title          { "Welcome Notification: discuss_and_ask" }
+      title          { I18n.t("services.broadcasts.welcome_notification.generator.welcome", key: "discuss_and_ask") }
       type_of        { "Welcome" }
       processed_html { I18n.t("broadcast.welcome.discuss_and_ask") }
     end
 
     factory :download_app_broadcast do
-      title          { "Welcome Notification: download_app" }
+      title          { I18n.t("services.broadcasts.welcome_notification.generator.welcome", key: "download_app") }
       type_of        { "Welcome" }
       processed_html { I18n.t("broadcast.welcome.download_app") }
     end
