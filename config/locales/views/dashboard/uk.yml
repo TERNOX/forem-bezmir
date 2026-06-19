@@ -14,6 +14,7 @@ uk:
           following_orgs: Відстежувані проєкти (%{num})
           following_pods: Відстежувані подкасти (%{num})
           hidden_tags: Приховані теги (%{num})
+          feed_imports: RSS-імпорт стрічок
         posts: Пости
         series: Серії
         followers: Підписники
@@ -26,13 +27,14 @@ uk:
         analytics: Аналітика
         for_org: Аналітика для %{org}
         upload: Завантажити відео
+        feed_imports: RSS-імпорт стрічок
       analytics:
         meta:
           title: Аналітика
         heading: Аналітика %{name}
-        back: "Повернутись до головної панелі"
+        back: Повернутись до головної панелі
         your: Ваша панель
-        org: "Аналітика проєкту %{org}"
+        org: Аналітика проєкту %{org}
         readers: Читачі
         comments: Коментарі
         reactions: Реакції
@@ -41,16 +43,16 @@ uk:
           text_html: "%{archived}%{title}"
           archived: "[Архівовано] "
         archived: Архівовано
-        published: "Опубліковано:"
-        published_html: "Опубліковано: %{date}"
-        edited: "Редаговано:"
-        edited_html: "Редаговано: %{date}"
-        series: "Серія:"
+        published: 'Опубліковано:'
+        published_html: 'Опубліковано: %{date}'
+        edited: 'Редаговано:'
+        edited_html: 'Редаговано: %{date}'
+        series: 'Серія:'
         series_html: "<strong>Серія:</strong> %{series}"
         draft: Чернетка
         scheduled: Заплановано
-        scheduled_at: "Заплановано:"
-        language: "Мова:"
+        scheduled_at: 'Заплановано:'
+        language: 'Мова:'
         reactions:
           title: Реакції
           icon: Реакції
@@ -82,15 +84,15 @@ uk:
           button: Закріпити у профілі
           text: Закріпити
         manage:
-          aria_label: "Керувати постом: %{title}"
+          aria_label: 'Керувати постом: %{title}'
           text: Керувати
         lock: Закрити обговорення
         unlock: Відкрити обговорення
         edit:
-          aria_label: "Редагувати пост: %{title}"
+          aria_label: 'Редагувати пост: %{title}'
           text: Редагувати
         more:
-          title: "Більше параметрів для посту: %{title}"
+          title: 'Більше параметрів для посту: %{title}'
           icon: Більше...
         stats: Статистика
         archive: Архівувати пост
@@ -99,7 +101,7 @@ uk:
         co_authors: Співавтори
         series_author_change_warning: Зміна автора для серійних постів недоступна.
         icon: Деталі
-        author_is: "АВТОР: "
+        author_is: 'АВТОР: '
         save: Зберегти
         submit: Підтвердити зміну автора
       followers:
@@ -162,3 +164,97 @@ uk:
         listings: Створено оголошень
         credits: Доступні бали
         lt_500: "< 500"
+      feed_imports:
+        all_sources: Усі джерела
+        counts:
+          duration: 'Тривалість: %{seconds}с'
+          failed: Невдалих
+          imported: Імпортовано
+          items_in_feed: Елементів у стрічці
+          skipped: Пропущено
+        empty: Додайте джерело RSS нижче, щоб почати імпортувати дописи як чернетки.
+        heading: Панель » RSS-імпорт стрічок
+        health:
+          degraded: Ваша стрічка нещодавно мала збої. Деякі імпорти могли бути пропущені.
+          failing: Ваша стрічка постійно дає збої. Будь ласка, перевірте URL стрічки вище.
+          healthy: Ваша стрічка працює коректно.
+        history_heading: Історія імпорту
+        items:
+          article: Стаття
+          heading: Деталі імпорту
+          show_duplicates:
+            one: Показати %{count} пропущений дублікат
+            few: Показати %{count} пропущені дублікати
+            many: Показати %{count} пропущених дублікатів
+            other: Показати %{count} пропущених дублікатів
+          status: Статус
+          statuses:
+            failed: Невдало
+            imported: Імпортовано
+            skipped_duplicate: Пропущено (дублікат)
+            skipped_medium_reply: Пропущено (відповідь Medium)
+          title: Заголовок
+        no_history: Поки що історії імпорту немає. Вашу стрічку буде перевірено автоматично.
+        no_notable_history: Усі нещодавні перевірки не виявили нових дописів.
+        overview:
+          last_success: Останній успішний імпорт %{time} тому
+          status:
+            degraded: Погіршено
+            failing: Збоїть
+            healthy: Справна
+            inactive: Неактивна
+        routine_checks:
+          one: Показати %{count} рутинну перевірку (без нових дописів)
+          few: Показати %{count} рутинні перевірки (без нових дописів)
+          many: Показати %{count} рутинних перевірок (без нових дописів)
+          other: Показати %{count} рутинних перевірок (без нових дописів)
+        source_filter: Фільтрувати за джерелом
+        source_label: 'Джерело:'
+        sources:
+          add_heading: Додати джерело стрічки
+          author_description: Коли автор RSS-елемента не збігається з наявним акаунтом, імпортовану статтю буде приписано цьому користувачу. Щоб призначити іншого учасника, оберіть проєкт і переконайтеся, що маєте права адміністратора проєкту.
+          author_label: Автор за замовчуванням
+          author_self: Я (за замовчуванням)
+          delete: Видалити
+          delete_confirm: Ви впевнені, що хочете видалити це джерело стрічки?
+          edit: Редагувати
+          guide: посібник
+          last_fetched: 'Останнє отримання: %{time}'
+          mark_canonical_html: Позначати RSS-джерело як канонічний URL за замовчуванням <p class='crayons-field__description'>Якщо позначити цей пункт, допис автоматично позначатиме джерело стрічки як канонічний URL.</p>
+          name_label: Назва (необов'язково)
+          name_placeholder: Мій блог
+          never_fetched: Ніколи не отримувалося
+          org_description: Імпортовані статті публікуватимуться від імені цього проєкту.
+          org_label: Проєкт (необов'язково)
+          org_no_orgs: Ви не є учасником жодного проєкту. Статті публікуватимуться під вашим особистим акаунтом.
+          org_none: Немає (особистий)
+          referential_html: Замінювати самопосилання на посилання, специфічні для %{community} <p class='crayons-field__description'>Якщо позначити цей пункт, допис автоматично змінюватиме URL-и у дописі, щоб посилатися на версію статті на %{community}, якщо доступно. Це переважно для тих, хто переносить увесь свій блог на %{community}.</p>
+          save: Зберегти зміни
+          status:
+            degraded: Погіршено
+            failing: Збоїть
+            healthy: Справна
+            inactive: Неактивна
+          submit: Додати джерело стрічки
+          url_label: URL RSS-стрічки
+          url_placeholder: https://example.com/feed.xml
+          welcome_desc1_html: Дописи з'являться на вашій панелі <strong>як чернетки</strong>, і звідти ви зможете їх опублікувати.
+          welcome_desc2: Форматування зазвичай виглядає добре, але, можливо, доведеться вносити ручні правки. У випадку Medium, можливо, доведеться вручну виправляти ембеди.
+          welcome_desc3_html: Щоб дізнатися більше про те, як чернетки створюються з вашої стрічки, прочитайте цей %{guide}.
+          welcome_desc4: Вашу стрічку буде отримано щоразу при додаванні джерела, а оновлення автоматично підтягуватимуться періодично після цього.
+          welcome_desc5_html: 'До відома: URL-и RSS-стрічок Medium мають вигляд <em>https://medium.com/feed/@your_username</em>'
+          welcome_desc6: Надсилаючи URL своєї RSS-стрічки, ви підтверджуєте, що володієте та/або маєте дозвіл на синдикацію відповідного контенту.
+          welcome_heading: Публікація з RSS
+          your_sources: Ваші джерела стрічок
+        status:
+          completed: Завершено
+          failed: Невдало
+          fetching: Отримання
+          importing: Імпортування
+          no_new_posts: Немає нових дописів
+          parsing: Розбір
+          pending: Очікує
+        summary:
+          total_failed: Елементів з помилкою
+          total_imported: Імпортовано статей
+          total_skipped: Інших елементів пропущено
