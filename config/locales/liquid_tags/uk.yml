@@ -1,6 +1,16 @@
 ---
 uk:
   liquid_tags:
+    bolt_tag:
+      invalid_url: "Недійсний URL Bolt"
+    descript_tag:
+      invalid_descript_url: "Недійсний URL Descript."
+    huggingface_tag:
+      invalid_url: "Недійсний URL простору Hugging Face"
+    lovable_tag:
+      invalid_url: "Недійсний URL Lovable"
+    warp_tag:
+      invalid_url: "Недійсний URL Warp"
     asciinema_tag:
       invalid_asciinema_id: "Неправильний Asciinema ID: %{id}"
     blogcast_tag:
