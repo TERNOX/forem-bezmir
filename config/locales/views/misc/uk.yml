@@ -130,3 +130,4 @@ uk:
       heading: Відео спільноти Куток
       beta_html: "<strong>Відео — бета-функція:</strong> %{contact}"
       upload: "🎥 Завантажити відеофайл 🙌"
+      max_file_size: "Максимальний розмір файлу: %{size}."

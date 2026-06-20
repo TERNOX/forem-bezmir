@@ -46,6 +46,7 @@ uk:
       invalid_options: Неправильні параметри
     instagram_tag:
       invalid_instagram_id: Неправильний Instagram ID
+      view_post: Переглянути цей допис в Instagram
     js_fiddle_tag:
       invalid_jsfiddle_url: Неправильний JSFiddle URL
       invalid_options: Неправильні параметри
@@ -82,6 +83,8 @@ uk:
       invalid_replit_id: Неправильний Replit URL або @user/slug
     runkit_tag:
       runkit_tag_is_invalid: Неправильний тег Runkit
+    legacy_code_tag:
+      invalid_tag: Недійсний застарілий код-тег
     slideshare_tag:
       invalid_slideshare_key: Неправильний Slideshare ключ
     soundcloud_tag:
