@@ -217,6 +217,7 @@ RSpec.describe Reaction do
         { category: "exploding_head", count: 0 },
         { category: "fire", count: 0 },
         { category: "raised_hands", count: 0 },
+        { category: "hehe", count: 0 },
         { category: "readinglist", count: 0 },
       ]
       expect(described_class.count_for_article(article.id)).to match_array(expected_result)
