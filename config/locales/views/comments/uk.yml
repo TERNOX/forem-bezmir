@@ -2,6 +2,9 @@
 uk:
   views:
     comments:
+      limited_unauthenticated:
+        text_html: "Показано лише частину коментарів. Будь ласка, %{sign_in}, щоб переглянути всі коментарі до цього допису."
+        sign_in: "увійдіть"
       meta:
         title_root: Обговорення %{title}
         description: Стаття зі спільноти Куток

@@ -1,0 +1,11 @@
+---
+uk:
+  views:
+    sidebars:
+      onboarding_progress:
+        heading: "Чек-лист реєстрації"
+        subheading: "%{completed} з %{total} виконано"
+        items:
+          fill_out_profile: "Заповніть свій профіль"
+          comment_in_welcome: "Привітайтеся у вітальній темі"
+          made_first_post: "Напишіть свій перший допис"
