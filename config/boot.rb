@@ -17,8 +17,11 @@ begin
     uri = URI.parse(raw_url)
     next unless uri.host == "localhost"
 
-    uri.host = fallback_host
-    ENV[var] = uri.to_s
+    # Replace only the host token via string substitution. Do NOT use
+    # `uri.host = ...; uri.to_s`: the `uri` gem 1.x drops the userinfo
+    # (user:password) when #host is reassigned, which would strip the DB
+    # credentials and make ActiveRecord fall back to the OS user.
+    ENV[var] = raw_url.sub(%r{//(?:[^/@]*@)?\Klocalhost(?=[:/]|\z)}, fallback_host)
   rescue URI::InvalidURIError
     # Leave malformed URLs untouched so they can surface meaningful errors later.
   end
@@ -42,8 +45,9 @@ begin
     uri = URI.parse(raw_url)
     next unless uri.host == "localhost"
 
-    uri.host = redis_fallback_host
-    ENV[var] = uri.to_s
+    # See the note above: substitute the host token instead of mutating the
+    # URI, so the `uri` gem 1.x does not strip the Redis password.
+    ENV[var] = raw_url.sub(%r{//(?:[^/@]*@)?\Klocalhost(?=[:/]|\z)}, redis_fallback_host)
   rescue URI::InvalidURIError
     # Leave malformed URLs untouched so they can surface meaningful errors later.
   end
