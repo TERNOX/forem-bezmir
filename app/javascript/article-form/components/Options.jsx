@@ -220,7 +220,7 @@ export const Options = ({
         disabled={previewLoading}
         onClick={() => setIsOptionsModalOpen(true)}
       >
-        <span className="hidden l:inline-block ml-1">Advanced Options</span>
+        <span className="hidden l:inline-block ml-1">Розширені налаштування</span>
       </Button>
       {isOptionsModalOpen && (
         <Modal
