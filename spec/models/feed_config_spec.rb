@@ -292,8 +292,11 @@ RSpec.describe FeedConfig, type: :model do
       end
 
       it "includes the language match weight" do
+        # fork gates the language term on score_weight being positive too (feed_config.rb);
+        # the locale comes from the I18n.default_locale fallback (uk in this fork, en upstream)
+        feed_config.score_weight = 1.0
         sql = feed_config.score_sql(user)
-        expect(sql).to include("CASE WHEN articles.language IN ('en') THEN 7.0")
+        expect(sql).to match(/CASE WHEN articles\.language IN \('(en|uk)'\) THEN 7\.0/)
       end
 
       it "includes the randomness injection natively bypassing VOLATILE queries organically" do

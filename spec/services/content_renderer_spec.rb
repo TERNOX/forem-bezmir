@@ -24,7 +24,8 @@ RSpec.describe ContentRenderer do
         renderer.process(link_attributes: { rel: "nofollow" })
         finalize_attrs = {
           link_attributes: { rel: "nofollow" },
-          prefix_images_options: { width: 1900, synchronous_detail_detection: false }
+          # fork default is 1700 (ContentRenderer#process), not upstream's 1900
+          prefix_images_options: { width: 1700, synchronous_detail_detection: false }
         }
         expect(parser).to have_received(:finalize).with(finalize_attrs)
       end
