@@ -6,7 +6,7 @@ class EmailDigestTestAttempt < ApplicationRecord
     failed: "failed"
   }.freeze
 
-  enum status: STATUSES, _suffix: true
+  enum :status, STATUSES, suffix: true
 
   belongs_to :user
   has_many :logs,
