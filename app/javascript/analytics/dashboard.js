@@ -629,7 +629,7 @@ function removeCardElements() {
 }
 
 function retryButtonHTML() {
-  return '<button type="button" class="crayons-btn crayons-btn--secondary mt-2" data-analytics-retry>Retry</button>';
+  return '<button type="button" class="crayons-btn crayons-btn--secondary mt-2" data-analytics-retry>Повторити</button>';
 }
 
 function bindRetryButtons(root = document) {
