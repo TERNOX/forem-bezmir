@@ -41,14 +41,17 @@
 
     <div class="grid grid-cols-2 gap-4">
       <div class="crayons-field">
-        <%= form.label :type_of, "Event Type", class: "crayons-field__label" %>
+        <%= form.label :type_of, "Event Type", class: "crayons-field__label" do %>
+          Event Type
+          <p class="crayons-field__description">What kind of event this is — mainly a label shown to users. <strong>Live Stream</strong>: a streamed event (the admin page shows stream/chat tools). <strong>Takeover</strong>: a promo push without a stream. <strong>Other</strong>: anything else. Note: the on-page video player depends on the Stream URL below, and feed promotion depends on the Broadcast Config — not on this type.</p>
+        <% end %>
         <%= form.select :type_of, Event.type_ofs.keys.map { |type| [type.titleize, type] }, {}, class: "crayons-select" %>
       </div>
 
       <div class="crayons-field">
         <%= form.label :broadcast_config, "Billboard Broadcast Config", class: "crayons-field__label" do %>
           Billboard Broadcast Config
-          <p class="crayons-field__description">Controls billboard auto-generation. No Broadcast = Billboards disabled. Tagged = Billboards target relevant tags only. Global = Billboards show to all users everywhere.</p>
+          <p class="crayons-field__description">Whether this event automatically shows promo banners (billboards) in users' feeds while it is live. <strong>No Broadcast</strong>: no banners. <strong>Tagged</strong>: banners show only to users reading posts that match this event's Tags (set below). <strong>Global</strong>: banners show to every user across the whole site. Banners appear automatically ~15 min before the Start Time and are removed after the End Time.</p>
         <% end %>
         <%= form.select :broadcast_config, Event.broadcast_configs.keys.map { |cfg| [cfg.titleize, cfg] }, {}, class: "crayons-select" %>
       </div>
