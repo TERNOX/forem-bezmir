@@ -38,8 +38,12 @@ uk:
     survey_thank_you_response: Дякуємо за вашу відповідь.
     survey_thank_you_completing: Дякуємо за проходження опитування!
     dashboard_analytics_readers: Читачі
+    dashboard_analytics_avg_read_time: сер. час читання %{seconds}с
     dashboard_analytics_comments: Коментарі
     dashboard_analytics_reactions: Реакції
+    dashboard_analytics_unique_reactors: від %{count} унікальних користувачів
+    dashboard_analytics_bookmarks: Закладки
+    dashboard_analytics_followers: Нові підписники
     stats_by: від
     editor_new_title: Заголовок
     editor_body_placeholder: Напишіть текст вашого допису тут...
@@ -391,8 +395,12 @@ uk:
     survey_thank_you_response: Дякуємо за вашу відповідь.
     survey_thank_you_completing: Дякуємо за проходження опитування!
     dashboard_analytics_readers: Читачі
+    dashboard_analytics_avg_read_time: сер. час читання %{seconds}с
     dashboard_analytics_comments: Коментарі
     dashboard_analytics_reactions: Реакції
+    dashboard_analytics_unique_reactors: від %{count} унікальних користувачів
+    dashboard_analytics_bookmarks: Закладки
+    dashboard_analytics_followers: Нові підписники
     stats_by: від
     editor_new_title: Заголовок
     editor_body_placeholder: Напишіть текст вашого допису тут...
