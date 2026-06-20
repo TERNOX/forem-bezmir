@@ -44,7 +44,7 @@ en:
     broadcasts:
       welcome_notification:
         generator:
-          welcome: 'Привітальне сповіщення: %{key}'
+          welcome: 'Welcome Notification: %{key}'
     error_messages:
       clean:
         parse_error: Виникла проблема під час розбору YAML-фронтматеру. Можливо, потрібно екранувати лапки або двокрапку. Якщо у вас проблеми, напишіть на %{email}.
@@ -80,10 +80,10 @@ en:
           one: Покупка %{count} балів.
           other: Покупка %{count} балів.
     rate_limit_checker:
-      invalid_key: 'Некоректний ключ кешу: відсутній унікальний компонент'
+      invalid_key: 'Cache key invalid: missing unique component'
       limit_reached:
-        one: Перевищено ліміт запитів, спробуйте ще раз через %{count} секунд
-        other: Перевищено ліміт запитів, спробуйте ще раз через %{count} секунд
+        one: Rate limit reached, try again in %{count} second
+        other: Rate limit reached, try again in %{count} seconds
     slack:
       messengers:
         article_fetched_feed:

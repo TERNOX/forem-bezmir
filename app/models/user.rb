@@ -35,6 +35,13 @@ class User < ApplicationRecord
   RECENTLY_ACTIVE_LIMIT = 10_000
 
   # User types enum
+  # Declare explicit attribute types so the enums load even when their backing
+  # columns are not yet present (e.g. migrating a database from scratch under
+  # Rails 7.1, which raises "Undeclared attribute type for enum" otherwise).
+  # The columns are `integer default: 0 null: false`, so these are no-ops in
+  # a fully-migrated database.
+  attribute :type_of, :integer, default: 0
+  attribute :current_subscriber_status, :integer, default: 0
   enum type_of: { member: 0, community_bot: 1, member_bot: 2 }
   enum current_subscriber_status: { not_subscribed: 0, free_subscription: 1, trial_subscription: 2, paying_subscription: 3 }
 
