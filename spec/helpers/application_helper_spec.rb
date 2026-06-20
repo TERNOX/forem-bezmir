@@ -9,12 +9,14 @@ RSpec.describe ApplicationHelper do
     end
 
     it "defines SUBTITLES" do
+      # fork serves these via I18n (uk strings live in en.yml), so build the
+      # expected hash from the same keys rather than hardcoding English copy
       subtitles = {
-        "week" => "Top posts this week",
-        "month" => "Top posts this month",
-        "year" => "Top posts this year",
-        "infinity" => "All posts",
-        "latest" => "Latest posts"
+        "week" => I18n.t("helpers.application_helper.subtitle.week"),
+        "month" => I18n.t("helpers.application_helper.subtitle.month"),
+        "year" => I18n.t("helpers.application_helper.subtitle.year"),
+        "infinity" => I18n.t("helpers.application_helper.subtitle.infinity"),
+        "latest" => I18n.t("helpers.application_helper.subtitle.latest")
       }
 
       expect(Class.new.include(described_class).new.subtitles).to eq subtitles
@@ -361,7 +363,7 @@ RSpec.describe ApplicationHelper do
     it "returns cloudinary-manipulated link" do
       image = helper.optimized_image_url(Faker::Placeholdit.image)
       expect(image).to start_with("https://res.cloudinary.com")
-        .and include("image/fetch/", "/c_limit,f_auto,fl_progressive,q_80,w_700/")
+        .and include("image/fetch/", "/c_limit,f_auto,fl_progressive,q_80,w_500/")
     end
 
     it "returns an ASCII domain for Unicode input" do
@@ -408,23 +410,14 @@ RSpec.describe ApplicationHelper do
   end
 
   describe "#sanitize_rendered_markdown" do
-    it "converts youtube embeds to the standard domain with required params" do
+    it "strips raw youtube iframes (fork renders YouTube via its own liquid player)" do
+      # upstream transforms raw youtube iframes; this fork disallows raw iframes in
+      # sanitized markdown and embeds YouTube through the custom {% youtube %} tag instead
       html = '<iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?t=45"></iframe>'
 
       sanitized = helper.sanitize_rendered_markdown(html)
 
-      src = Nokogiri::HTML.fragment(sanitized).at_css("iframe")&.[]("src")
-      expect(src).to start_with("https://www.youtube.com/embed/dQw4w9WgXcQ")
-      params = URI.parse(src).query.to_s.split("&")
-      expect(params).to include("start=45")
-      expect(params).to include(a_string_starting_with("origin="))
-      expect(params).to include("autoplay=1")
-      expect(params).to include("rel=0")
-      expect(params).to include("modestbranding=1")
-      expect(params).to include("playsinline=1")
-      iframe = Nokogiri::HTML.fragment(sanitized).at_css("iframe")
-      expect(iframe["allow"]).to include("web-share")
-      expect(iframe["referrerpolicy"]).to eq("strict-origin-when-cross-origin")
+      expect(Nokogiri::HTML.fragment(sanitized).at_css("iframe")).to be_nil
     end
   end
 
