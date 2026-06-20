@@ -47,6 +47,14 @@ uk:
     dashboard_analytics_unique_reactors: від %{count} унікальних користувачів
     dashboard_analytics_bookmarks: Закладки
     dashboard_analytics_followers: Нові підписники
+    dashboard_analytics_no_data: Немає даних за цей період
+    dashboard_analytics_no_referrers: Поки немає джерел трафіку
+    top_contributors_empty: Залучених користувачів за цей період не знайдено.
+    top_contributors_reactions: реакцій
+    top_contributors_comments: коментарів
+    top_contributors_weight_note: Коментарі важать більше
+    follower_engagement_ratio: "%{ratio}% підписників взаємодіяли"
+    follower_engagement_detail: "(%{engaged} з %{total})"
     stats_by: від
     editor_new_title: Заголовок
     editor_body_placeholder: Напишіть текст вашого допису тут...
@@ -404,6 +412,14 @@ uk:
     dashboard_analytics_unique_reactors: від %{count} унікальних користувачів
     dashboard_analytics_bookmarks: Закладки
     dashboard_analytics_followers: Нові підписники
+    dashboard_analytics_no_data: Немає даних за цей період
+    dashboard_analytics_no_referrers: Поки немає джерел трафіку
+    top_contributors_empty: Залучених користувачів за цей період не знайдено.
+    top_contributors_reactions: реакцій
+    top_contributors_comments: коментарів
+    top_contributors_weight_note: Коментарі важать більше
+    follower_engagement_ratio: "%{ratio}% підписників взаємодіяли"
+    follower_engagement_detail: "(%{engaged} з %{total})"
     stats_by: від
     editor_new_title: Заголовок
     editor_body_placeholder: Напишіть текст вашого допису тут...

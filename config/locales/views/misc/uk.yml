@@ -110,6 +110,8 @@ uk:
         source: Джерело
         views: Перегляди
       reactions_history: "Історія реакцій"
+      top_contributors:
+        heading: Топ-учасники
       by: автор
     sticky:
       joined: Приєднався
