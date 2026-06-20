@@ -25,6 +25,32 @@ RSpec.describe "ArticlesUpdate" do
     expect(article.reload.title).to eq(new_title)
   end
 
+  describe "stale-edit guard (concurrent co-author edits)" do
+    it "rejects with a conflict when the article changed after the editor loaded" do
+      put "/articles/#{article.id}", params: {
+        article: { title: "Clobbered", body_markdown: "Body",
+                   editedAt: (article.updated_at - 1.hour).iso8601 }
+      }
+      expect(response).to have_http_status(:conflict)
+      expect(article.reload.title).not_to eq("Clobbered")
+    end
+
+    it "allows the update when editedAt matches the current version" do
+      put "/articles/#{article.id}", params: {
+        article: { title: "Fresh title", body_markdown: "Body",
+                   editedAt: article.updated_at.iso8601 }
+      }
+      expect(article.reload.title).to eq("Fresh title")
+    end
+
+    it "ignores the guard when editedAt is absent" do
+      put "/articles/#{article.id}", params: {
+        article: { title: "No guard", body_markdown: "Body" }
+      }
+      expect(article.reload.title).to eq("No guard")
+    end
+  end
+
   it "returns an unprocessable status with invalid params" do
     put "/articles/#{article.id}", params: {
       article: { title: "", body_markdown: "Hello World" },

@@ -260,6 +260,12 @@ RSpec.describe ArticlePolicy do
       it_behaves_like "it requires a user in good standing"
       it_behaves_like "permitted roles", to: %i[super_admin admin org_admin]
       it_behaves_like "disallowed roles", to: [:other_users]
+
+      it "permits a co-author (project collaborator) to edit" do
+        co_author = create(:user)
+        resource.co_author_ids = [co_author.id]
+        expect(described_class.new(co_author, resource).public_send(method_name)).to be(true)
+      end
     end
   end
 

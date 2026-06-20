@@ -10,6 +10,7 @@ en:
     please_sign_in: Please sign in
   articles_controller:
     deleted: Article was successfully deleted.
+    stale_edit: This post was changed by someone else since you opened it. Please reload the page to get the latest version before saving — otherwise you would overwrite their changes.
   comments_controller:
     create:
       success: created

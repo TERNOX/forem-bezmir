@@ -380,6 +380,7 @@ export class ArticleForm extends Component {
     const payload = {
       ...this.state,
       published: true,
+      editedAt: this.state.updatedAt, // stale-edit guard baseline (see articles_controller)
     };
 
     submitArticle({
@@ -398,6 +399,7 @@ export class ArticleForm extends Component {
     const payload = {
       ...this.state,
       published: false,
+      editedAt: this.state.updatedAt, // stale-edit guard baseline (see articles_controller)
     };
 
     submitArticle({
@@ -453,6 +455,16 @@ export class ArticleForm extends Component {
 
   handleArticleError = (response) => {
     window.scrollTo(0, 0);
+    // Stale-edit conflict (409): the post changed elsewhere since this editor loaded.
+    // Show the reload message and do NOT advance the baseline, so the user must reload
+    // before saving instead of overwriting the other person's changes.
+    if (response && typeof response.error === 'string') {
+      this.setState({
+        errors: { base: response.error },
+        submitting: false,
+      });
+      return;
+    }
     this.setState({
       errors: response,
       submitting: false,

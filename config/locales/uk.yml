@@ -32,6 +32,9 @@ uk:
     article_form_publish: Опублікувати
     article_form_loading_preview: Завантаження попереднього перегляду
     article_form_preview_loaded: Попередній перегляд завантажено
+    article_form_co_authors: Співавтори
+    article_form_co_authors_description: Додайте до 4 співавторів з %{org_name}.
+    article_form_co_authors_placeholder: Додайте до 4...
     comments_preview: Попередній перегляд
     comments_continue_editing: Продовжити редагування
     survey_enter_response: Введіть свою відповідь тут...

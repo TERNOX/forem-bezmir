@@ -168,6 +168,16 @@ class ArticlesController < ApplicationController
     authorize @article
     @user = @article.user || current_user
 
+    # Stale-edit guard: with multiple co-authors (project collaboration) there is no
+    # live sync, so reject a save when the article changed since this editor was opened
+    # to avoid silently overwriting someone else's edits.
+    if stale_article_edit?
+      return render json: {
+        error: I18n.t("articles_controller.stale_edit"),
+        updated_at: @article.updated_at
+      }, status: :conflict
+    end
+
     updated = Articles::Updater.call(@user, @article, article_params_json)
 
     respond_to do |format|
@@ -190,7 +200,7 @@ class ArticlesController < ApplicationController
 
       format.json do
         if updated.success
-          render json: @article.to_json(only: [:id], methods: [:current_state_path]), status: :ok
+          render json: @article.to_json(only: %i[id updated_at], methods: [:current_state_path]), status: :ok
         else
           render json: @article.errors.to_json, status: :unprocessable_entity
         end
@@ -270,6 +280,26 @@ class ArticlesController < ApplicationController
   end
 
   private
+
+  # True when the article was modified on the server after this editor session loaded it.
+  # The client sends the `updated_at` it loaded as `article[editedAt]` (camelCase, before
+  # the params underscore transform runs); a 1s tolerance avoids false positives from
+  # sub-second timestamp rounding. No-op when absent so other update callers (archived
+  # toggle, video thumbnail, API) are unaffected.
+  def stale_article_edit?
+    client_edited_at = params.dig(:article, :editedAt).presence ||
+                       params.dig(:article, :edited_at).presence
+    return false if client_edited_at.blank?
+
+    client_time = begin
+      Time.zone.parse(client_edited_at.to_s)
+    rescue ArgumentError, TypeError
+      nil
+    end
+    return false if client_time.nil?
+
+    @article.updated_at > client_time + 1.second
+  end
 
   def base_editor_assignments
     @user = current_user

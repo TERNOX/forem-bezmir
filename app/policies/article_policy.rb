@@ -66,7 +66,7 @@ class ArticlePolicy < ApplicationPolicy
   def update?
     require_user_in_good_standing!
 
-    user_author? || user_super_admin? || user_org_admin? || user_any_admin?
+    user_author? || user_co_author? || user_super_admin? || user_org_admin? || user_any_admin?
   end
 
   def manage?
@@ -142,6 +142,14 @@ class ArticlePolicy < ApplicationPolicy
     return false unless record.respond_to?(:user_id)
 
     record.user_id == user.id
+  end
+
+  # Co-authors (project collaborators) can edit the article body, but not delete it
+  # or manage the co-author list (the latter stays org/project-admin only).
+  def user_co_author?
+    return false unless record.respond_to?(:co_author_ids)
+
+    record.co_author_ids.include?(user.id)
   end
 
   def user_org_admin?
