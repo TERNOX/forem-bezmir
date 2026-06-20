@@ -31,7 +31,9 @@ RSpec.describe "Stories::Feeds" do
     end
 
     it "exposes the sanitized first paragraph text when available" do
-      article.update!(processed_html: "<p>Hello <a href='/'>there</a></p><p>Next paragraph</p>")
+      # fork regenerates processed_html from body_markdown on every save, so set the
+      # column directly to isolate the first_paragraph_text extraction under test
+      article.update_columns(processed_html: "<p>Hello <a href='/'>there</a></p><p>Next paragraph</p>")
 
       get stories_feed_path
 
@@ -39,7 +41,7 @@ RSpec.describe "Stories::Feeds" do
     end
 
     it "omits the first paragraph text when the first paragraph has no readable characters" do
-      article.update!(processed_html: "<p><img src='https://example.com/cat.png' alt=''></p><p>Visible</p>")
+      article.update_columns(processed_html: "<p><img src='https://example.com/cat.png' alt=''></p><p>Visible</p>")
 
       get stories_feed_path
 
