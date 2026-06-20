@@ -38,6 +38,16 @@ uk:
         readers: Читачі
         comments: Коментарі
         reactions: Реакції
+        audience_heading: Ваша аудиторія
+        heatmap:
+          title: Ваша щоденна активність
+          subtitle: "%{count} внесків за останній рік"
+          subtitle_year: "%{count} внесків у %{year}"
+          year_picker_label: Період
+          last_year_option: Останні 12 місяців
+          loading: Завантаження активності…
+          empty: Немає активності за останній рік.
+          error: Не вдалося завантажити активність.
       article:
         heading:
           text_html: "%{archived}%{title}"
