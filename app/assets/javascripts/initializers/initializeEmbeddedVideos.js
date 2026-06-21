@@ -120,11 +120,13 @@ function attachTrigger(placeholder, trigger) {
 // survive a navigation, and a cached iframe can also come back with a broken
 // (huge) computed height, so we always rebuild the lightweight thumbnail.
 function restoreThumbnail(placeholder) {
-  const iframe = placeholder.querySelector('iframe');
-
-  if (iframe) {
-    iframe.remove();
-  }
+  // Remove the iframe AND any Fluidvids wrapper. Forem's Fluidvids (initialized
+  // in articles/show.html.erb) re-wraps a restored iframe in a `.fluidvids` div
+  // with a broken `padding-top` (it reads the iframe's width="100%" as 100px),
+  // which leaves a giant empty box even after the iframe itself is gone.
+  placeholder
+    .querySelectorAll('iframe, .fluidvids')
+    .forEach((node) => node.remove());
 
   placeholder.classList.remove('embedded-video--loaded');
   delete placeholder.dataset.youtubeLoaded;
@@ -150,7 +152,7 @@ function resetAllEmbeddedVideos() {
     .querySelectorAll('.embedded-video[data-youtube-id]')
     .forEach((placeholder) => {
       if (
-        placeholder.querySelector('iframe') ||
+        placeholder.querySelector('iframe, .fluidvids') ||
         placeholder.dataset.youtubeLoaded === 'true'
       ) {
         restoreThumbnail(placeholder);
@@ -265,7 +267,7 @@ function initializeEmbeddedVideos(rootNode) {
     // iframes must not survive navigation, and a cached iframe can render at a
     // broken height, so tear it back down to the thumbnail before continuing.
     if (
-      placeholder.querySelector('iframe') ||
+      placeholder.querySelector('iframe, .fluidvids') ||
       placeholder.dataset.youtubeLoaded === 'true'
     ) {
       restoreThumbnail(placeholder);
