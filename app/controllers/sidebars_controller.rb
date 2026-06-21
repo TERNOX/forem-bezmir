@@ -12,6 +12,12 @@ class SidebarsController < ApplicationController
 
   private
 
+  def get_upcoming_events
+    @upcoming_events = Rails.cache.fetch("upcoming_elevated_events", expires_in: 5.minutes) do
+      Event.published.elevated.includes(:page).where("end_time >= ?", Time.current).order(start_time: :asc).limit(5).to_a
+    end
+  end
+
   def get_latest_campaign_articles
     @campaign_articles_count = Campaign.current.count
     @latest_campaign_articles = Campaign.current.plucked_article_attributes

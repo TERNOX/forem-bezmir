@@ -43,7 +43,9 @@ uk:
     broadcasts:
       welcome_notification:
         generator:
-          welcome: 'Привітальне сповіщення: %{key}'
+          # Internal lookup identifier (matched in app/models/user.rb), not shown
+          # to users — must stay in English so the lookup works under any locale.
+          welcome: 'Welcome Notification: %{key}'
     error_messages:
       clean:
         parse_error: Виникла проблема під час розбору YAML-фронтматеру. Можливо, потрібно екранувати лапки або двокрапку. Якщо у вас проблеми, напишіть на %{email}.

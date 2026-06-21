@@ -11,10 +11,13 @@ Rails.application.configure do
     # it shouldn't need to be the proper value
     ENV["SECRET_KEY_BASE"] = "NOT_SET"
   end
+
+  # Configure secret_key_base directly from environment variable to support Rails 7.2 and 8.0
+  config.secret_key_base = ENV["SECRET_KEY_BASE"]
   # Settings specified here will take precedence over those in config/application.rb.
 
   # Code is not reloaded between requests.
-  config.cache_classes = true
+  config.enable_reloading = false
 
   # Eager load code on boot. This eager loads most of Rails and
   # your application in memory, allowing both threaded web servers
@@ -82,9 +85,14 @@ Rails.application.configure do
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false
 
-  # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
-  # the I18n.default_locale when a translation cannot be found).
-  config.i18n.fallbacks = true
+  # Enable locale fallbacks for I18n, falling back to :en explicitly.
+  # NB: do NOT use `= true` here. `true` falls back to I18n.default_locale, which
+  # this fork sets to :uk at boot — so uk would fall back to itself ([:uk]) and
+  # never reach :en. Under Rails 7.1+ template lookup follows these fallbacks
+  # strictly, so en-only views/partials (e.g. app/views/pages/*.en.html.erb, the
+  # editor help partials) would raise MissingTemplate -> 404 under the uk locale.
+  # An explicit :en root yields [:uk, :en] and resolves them.
+  config.i18n.fallbacks = [:en]
 
   # Send deprecation notices to registered listeners.
   config.active_support.deprecation = :notify

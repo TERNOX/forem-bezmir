@@ -19,6 +19,10 @@ require "sprockets/railtie"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
+if defined?(Anyway)
+  Anyway.loaders.delete(:secrets)
+end
+
 if Rails.env.test? || Rails.env.development?
   if defined?(Dotenv::Rails)
     Dotenv::Rails.load
@@ -31,7 +35,31 @@ module PracticalDeveloper
   class Application < Rails::Application
     # Specify the default Rails settings version we're targetting
     # See: https://guides.rubyonrails.org/configuring.html#results-of-config-load-defaults
-    config.load_defaults 6.1
+    config.load_defaults 7.2
+
+    # Set AhoyEmail secret token early to prevent it from accessing deprecated Rails.application.secrets
+    config.before_initialize do
+      AhoyEmail.secret_token = config.secret_key_base if defined?(AhoyEmail)
+    end
+
+    # Keep using SHA1 for the key generator hash digest class to prevent invalidation
+    # of existing user sessions and signed/encrypted cookies.
+    config.active_support.key_generator_hash_digest_class = OpenSSL::Digest::SHA1
+
+    # Enable modern cache format version 7.1
+    config.active_support.cache_format_version = 7.1
+
+    # Preserve receiver timezone when calling to_time (preparing for Rails 8.0/8.1)
+    config.active_support.to_time_preserves_timezone = :zone
+
+    # Enable strict freshness to prioritize ETag over Last-Modified (preparing for Rails 8.0)
+    config.action_dispatch.strict_freshness = true
+
+    # Enable validating only parent-related columns for presence when the parent is mandatory.
+    config.active_record.belongs_to_required_validates_foreign_key = true
+
+    # Raise ActionController::ActionNotFound when a callback references a missing action.
+    config.action_controller.raise_on_missing_callback_actions = true
 
     ### FRAMEWORK DEFAULT OVERRIDES
     # Override new framework defaults to keep existing behavior.

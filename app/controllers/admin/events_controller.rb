@@ -63,6 +63,7 @@ module Admin
         :description, 
         :primary_stream_url, 
         :published, 
+        :elevated,
         :start_time, 
         :end_time, 
         :type_of,
@@ -71,6 +72,8 @@ module Admin
         :user_id, 
         :organization_id, 
         :tag_list,
+        :page_id,
+        :delegate_to_page,
         data: {}
       )
     end

@@ -181,7 +181,9 @@
           <div class="crayons-field">
             <label for="published_at_<%= article.id %>" class="crayons-field__label"><%= t("views.moderations.article.published_at") %></label>
             <div class="flex gap-1 items-center flex-wrap">
-              <%= f.datetime_select :published_at, { required: true, include_blank: true, include_seconds: true }, class: "crayons-select w-auto" %>
+              <%# order is passed explicitly so datetime_select never calls translated_date_order, %>
+              <%# which under Rails 7.2 raises NoMethodError when date.order is not an Array for the locale. %>
+              <%= f.datetime_select :published_at, { order: %i[year month day], required: true, include_blank: true, include_seconds: true }, class: "crayons-select w-auto" %>
               <span class="whitespace-nowrap color-secondary">UTC</span>
             </div>
           </div>

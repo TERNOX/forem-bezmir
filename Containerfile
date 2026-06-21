@@ -83,6 +83,7 @@ RUN echo 'httpTimeout: 300000' >> ~/.yarnrc.yml
 
 # install node deps та препрокомпіляція ассетів
 RUN NODE_ENV=production yarn install && \
+    yarn build && \
     RAILS_ENV=production NODE_ENV=production bundle exec rake assets:precompile && \
     rm -rf node_modules
 

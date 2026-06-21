@@ -25,6 +25,8 @@ uk:
       broadcast:
         visit_html: Відвідайте %{settings}, щоб керувати своїми сповіщеннями.
         settings: налаштування
+      event:
+        reminder_html: "Нагадування: %{event_link} починається за %{time}!"
       comment:
         commented_html: "%{user} прокоментував %{title}"
         first_html: "%{user} залишив свій перший коментар до %{title}"
