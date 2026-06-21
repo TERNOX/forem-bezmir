@@ -76,6 +76,47 @@
     </div>
 
     <div class="crayons-field">
+      <label class="crayons-field__label" for="event_data_cover_image_url">
+        Cover Image URL
+        <p class="crayons-field__description">For events without a stream (e.g. a Steam sale). If there is no Primary Stream URL, this image is shown instead — and is clickable when an External Link URL is set.</p>
+      </label>
+      <input type="text" name="event[data][cover_image_url]" id="event_data_cover_image_url" class="crayons-textfield" value="<%= event.data&.dig('cover_image_url') %>">
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="crayons-field">
+        <label class="crayons-field__label" for="event_data_external_url">
+          External Link URL
+          <p class="crayons-field__description">Where the cover image / button points (e.g. the Steam sale page). Must start with https://</p>
+        </label>
+        <input type="text" name="event[data][external_url]" id="event_data_external_url" class="crayons-textfield" value="<%= event.data&.dig('external_url') %>" placeholder="https://store.steampowered.com/...">
+      </div>
+      <div class="crayons-field">
+        <label class="crayons-field__label" for="event_data_external_label">
+          External Link Label
+          <p class="crayons-field__description">Optional button text (defaults to a localized "Visit").</p>
+        </label>
+        <input type="text" name="event[data][external_label]" id="event_data_external_label" class="crayons-textfield" value="<%= event.data&.dig('external_label') %>">
+      </div>
+    </div>
+
+    <div class="crayons-field">
+      <label class="crayons-field__label" for="event_data_organizers">
+        Organizers
+        <p class="crayons-field__description">One per line, format: <code>Name | https://link</code> (the link is optional).</p>
+      </label>
+      <textarea name="event[data][organizers]" id="event_data_organizers" class="crayons-textfield" rows="3" placeholder="Valve | https://www.valvesoftware.com&#10;Kutok"><%= event.data&.dig('organizers') %></textarea>
+    </div>
+
+    <div class="crayons-field">
+      <label class="crayons-field__label" for="event_data_social_links">
+        Social Links
+        <p class="crayons-field__description">One per line, format: <code>Label | https://link</code>.</p>
+      </label>
+      <textarea name="event[data][social_links]" id="event_data_social_links" class="crayons-textfield" rows="3" placeholder="Discord | https://discord.gg/...&#10;Twitter | https://x.com/..."><%= event.data&.dig('social_links') %></textarea>
+    </div>
+
+    <div class="crayons-field">
       <%= form.label :tag_list, "Tags", class: "crayons-field__label" do %>
         Tags
         <p class="crayons-field__description">Comma separated tags. The first tag is used to fetch related articles.</p>

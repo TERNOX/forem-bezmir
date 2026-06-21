@@ -15,7 +15,7 @@ module Admin
     end
 
     def create
-      @event = Event.new(event_params)
+      @event = Event.new(event_params_with_merged_data)
       if @event.save
         redirect_to admin_events_path, notice: "Event created successfully."
       else
@@ -26,7 +26,7 @@ module Admin
     def edit; end
 
     def update
-      if @event.update(event_params)
+      if @event.update(event_params_with_merged_data(@event.data))
         redirect_to admin_events_path, notice: "Event updated successfully."
       else
         render :edit, status: :unprocessable_entity
@@ -53,6 +53,18 @@ module Admin
 
     def set_event
       @event = Event.find(params[:id])
+    end
+
+    # The form only renders a subset of the `data` jsonb keys (chat_url, cover
+    # image, external link, organizers, social links). Merge them into the
+    # existing data so keys set elsewhere (e.g. challenge body_markdown,
+    # prompt_*, badge_rewards) are preserved instead of being wiped on save.
+    def event_params_with_merged_data(existing_data = {})
+      attrs = event_params
+      if attrs.key?(:data)
+        attrs[:data] = (existing_data || {}).merge(attrs[:data].to_h)
+      end
+      attrs
     end
 
     def event_params

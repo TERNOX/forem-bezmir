@@ -1,76 +1,109 @@
 <!-- Forem Event Show Page -->
 <% content_for :title, @event.title %>
+<%
+  has_stream = @event.primary_stream_url.present?
+  cover_image = @event.data&.dig('cover_image_url').presence
+  external_url = @event.data&.dig('external_url').presence
+  external_label = @event.data&.dig('external_label').presence || t("views.events.show.visit")
+  safe_external = external_url.to_s.start_with?("http://", "https://", "/") ? external_url : nil
+
+  # organizers / social_links are stored as multiline text in `data`, one entry
+  # per line in the form "Label | https://url" (the URL part is optional).
+  parse_links = lambda do |raw|
+    raw.to_s.lines.map(&:strip).reject(&:blank?).map do |line|
+      label, url = line.split("|", 2).map(&:strip)
+      { label: label, url: (url if url.to_s.start_with?("http://", "https://", "/")) }
+    end.reject { |entry| entry[:label].blank? }
+  end
+  organizers = parse_links.call(@event.data&.dig('organizers'))
+  social_links = parse_links.call(@event.data&.dig('social_links'))
+%>
 <div class="container crayons-layout event-show-layout">
-    <% if !@event.published? %>
+    <% unless @event.published? %>
       <div class="crayons-notice crayons-notice--warning mb-8 p-4 text-center">
-        <strong>This event is not published!</strong> Only admins can see this page.
-        <a href="<%= edit_admin_event_path(@event) %>" class="c-link c-link--branded ml-2">Edit Event</a>
+        <%= t("views.events.show.unpublished_html").html_safe %>
+        <a href="<%= edit_admin_event_path(@event) %>" class="c-link c-link--branded ml-2"><%= t("views.events.show.edit") %></a>
       </div>
     <% end %>
-    
+
     <div class="event-header">
         <h1><%= @event.title %></h1>
         <% if @event.start_time <= Time.current && @event.end_time >= Time.current %>
-          <span class="live-indicator">LIVE</span>
+          <span class="live-indicator"><%= t("views.events.show.live") %></span>
         <% end %>
-        
+
         <% if @event.start_time > Time.current %>
           <div class="event-signup-container ml-auto">
             <% if current_user %>
               <% if current_user.event_signups.exists?(event: @event) %>
-                <%= button_to event_signup_path(@event.event_name_slug, @event.event_variation_slug), 
-                              method: :delete, 
-                              class: "crayons-btn crayons-btn--outlined event-signup-btn", 
-                              data: { confirm: "Are you sure you want to cancel your interest?" } do %>
+                <%= button_to event_signup_path(@event.event_name_slug, @event.event_variation_slug),
+                              method: :delete,
+                              class: "crayons-btn crayons-btn--outlined event-signup-btn",
+                              data: { confirm: t("views.events.show.cancel_confirm") } do %>
                   <svg class="c-icon mr-1" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                  Interested
+                  <%= t("views.events.show.interested_done") %>
                 <% end %>
               <% else %>
-                <%= button_to event_signup_path(@event.event_name_slug, @event.event_variation_slug), 
-                              method: :post, 
+                <%= button_to event_signup_path(@event.event_name_slug, @event.event_variation_slug),
+                              method: :post,
                               class: "crayons-btn crayons-btn--primary event-signup-btn" do %>
-                  I'm Interested
+                  <%= t("views.events.show.interested") %>
                 <% end %>
               <% end %>
             <% else %>
-              <%= link_to "I'm Interested", sign_up_path(return_to: request.fullpath), class: "crayons-btn crayons-btn--primary event-signup-btn" %>
+              <%= link_to t("views.events.show.interested"), sign_up_path(return_to: request.fullpath), class: "crayons-btn crayons-btn--primary event-signup-btn" %>
             <% end %>
           </div>
         <% end %>
     </div>
 
-    <div class="stream-grid">
-        <div class="video-wrapper" style="position: relative; background: #000; overflow: hidden; border-radius: var(--radius); min-height: 300px; display: flex; align-items: center; justify-content: center;">
-            <% if @event.primary_stream_url.present? %>
+    <% if has_stream %>
+      <div class="stream-grid">
+          <div class="video-wrapper" style="position: relative; background: #000; overflow: hidden; border-radius: var(--radius); min-height: 300px; display: flex; align-items: center; justify-content: center;">
               <div class="overlay-post absolute inset-0 z-10 flex flex-col items-center justify-center hidden" id="overlay-post-<%= @event.id %>" style="background: #000; color: #fff; width: 100%; height: 100%;">
-                <div class="text-xl mb-2 fw-medium">Stream starts in…</div>
-                <div id="countdown-post-<%= @event.id %>" class="tabular-nums text-4xl fw-bold">--:--:--</div>
+                  <div class="text-xl mb-2 fw-medium"><%= t("views.events.show.starts_in") %></div>
+                  <div id="countdown-post-<%= @event.id %>" class="tabular-nums text-4xl fw-bold">--:--:--</div>
               </div>
               <div class="player-container-post w-100 h-100" id="player-container-post-<%= @event.id %>" style="width: 100%; height: 100%;"></div>
-            <% else %>
-              <div class="crayons-card p-8 text-center flex items-center justify-center h-100 w-100">
-                <p class="color-base-60">Stream URL not configured.</p>
-              </div>
-            <% end %>
-        </div>
-
-        <% chat_url = @event.data&.dig('chat_url') || @event.data&.dig(:chat_url) %>
-        <% if chat_url.present? %>
-          <div class="chat-wrapper">
-              <iframe id="chat-frame" width="100%" height="100%" src="<%= chat_url %>" frameborder="0" title="Event Chat" loading="lazy">
-              </iframe>
           </div>
+
+          <% chat_url = @event.data&.dig('chat_url') || @event.data&.dig(:chat_url) %>
+          <% if chat_url.present? %>
+            <div class="chat-wrapper">
+                <iframe id="chat-frame" width="100%" height="100%" src="<%= chat_url %>" frameborder="0" title="<%= t("views.events.show.chat") %>" loading="lazy">
+                </iframe>
+            </div>
+          <% end %>
+      </div>
+    <% elsif cover_image %>
+      <div class="event-cover crayons-card overflow-hidden mb-4">
+        <% if safe_external %>
+          <a href="<%= safe_external %>" target="_blank" rel="noopener nofollow" aria-label="<%= external_label %>">
+            <img src="<%= cover_image %>" alt="<%= @event.title %>" class="w-100" style="display: block; max-height: 480px; object-fit: cover;" loading="lazy">
+          </a>
+        <% else %>
+          <img src="<%= cover_image %>" alt="<%= @event.title %>" class="w-100" style="display: block; max-height: 480px; object-fit: cover;" loading="lazy">
         <% end %>
-    </div>
+      </div>
+      <% if safe_external %>
+        <div class="mb-4">
+          <a href="<%= safe_external %>" target="_blank" rel="noopener nofollow" class="crayons-btn crayons-btn--l crayons-btn--primary">
+            <%= external_label %>
+          </a>
+        </div>
+      <% end %>
+    <% end %>
 
     <div class="info-section crayons-card p-6 mt-4">
-        <div class="mb-4 text-lg">
-            <%= simple_format(@event.description) %>
-        </div>
+        <% if @event.description.present? %>
+          <div class="mb-4 text-lg">
+              <%= simple_format(@event.description) %>
+          </div>
+        <% end %>
 
         <% if @event.organization %>
           <a href="<%= organization_path(@event.organization) %>" class="profile-card">
-              <img src="<%= @event.organization.profile_image_url %>" alt="<%= @event.organization.name %> Logo">
+              <img src="<%= @event.organization.profile_image_url %>" alt="<%= @event.organization.name %>">
               <div>
                   <strong><%= @event.organization.name %></strong>
                   <span>@<%= @event.organization.slug %></span>
@@ -78,24 +111,55 @@
           </a>
         <% elsif @event.user %>
           <a href="<%= user_path(@event.user) %>" class="profile-card">
-              <img src="<%= @event.user.profile_image_url %>" alt="<%= @event.user.name %> Silhouette">
+              <img src="<%= @event.user.profile_image_url %>" alt="<%= @event.user.name %>">
               <div>
                   <strong><%= @event.user.name %></strong>
                   <span>@<%= @event.user.username %></span>
               </div>
           </a>
         <% end %>
+
+        <% if organizers.any? %>
+          <div class="event-organizers mt-4">
+            <h3 class="fs-s fw-bold color-base-60 mb-2"><%= t("views.events.show.organizers") %></h3>
+            <ul class="list-none flex flex-wrap gap-2">
+              <% organizers.each do |org| %>
+                <li>
+                  <% if org[:url] %>
+                    <a href="<%= org[:url] %>" target="_blank" rel="noopener nofollow" class="crayons-btn crayons-btn--outlined crayons-btn--s"><%= org[:label] %></a>
+                  <% else %>
+                    <span class="crayons-indicator"><%= org[:label] %></span>
+                  <% end %>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <% if social_links.any? %>
+          <div class="event-socials mt-4">
+            <h3 class="fs-s fw-bold color-base-60 mb-2"><%= t("views.events.show.socials") %></h3>
+            <ul class="list-none flex flex-wrap gap-2">
+              <% social_links.each do |link| %>
+                <% next unless link[:url] %>
+                <li>
+                  <a href="<%= link[:url] %>" target="_blank" rel="noopener nofollow" class="crayons-btn crayons-btn--outlined crayons-btn--s"><%= link[:label] %></a>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
     </div>
 
     <% tag_name = @event.tags.first&.name %>
 
-    <% if @articles.any? %>
+    <% if @articles.present? && @articles.any? %>
       <div class="community-header mt-8 mb-4">
           <h2 class="crayons-title">
             <% if tag_name.present? %>
-              What the <%= tag_name.upcase %> community has been writing about
+              <%= t("views.events.show.community_writing", tag: tag_name.upcase) %>
             <% else %>
-              What the community has been writing about
+              <%= t("views.events.show.community_writing_generic") %>
             <% end %>
           </h2>
       </div>
@@ -123,7 +187,7 @@
       </div>
     <% end %>
 
-    <% if @event.primary_stream_url.present? %>
+    <% if has_stream %>
       <script>
         (function() {
           const TARGET_TIME = new Date(<%= @event.start_time.iso8601.to_json.html_safe %>).getTime();
@@ -144,7 +208,7 @@
 
               if (playerContainer && !playerContainer.querySelector("iframe")) {
                 const iframe = document.createElement("iframe");
-                
+
                 let finalSrc = IFRAME_SRC;
                 try {
                   const url = new URL(finalSrc);
@@ -173,7 +237,7 @@
             }
 
             if (overlay) overlay.classList.remove("hidden");
-            
+
             if (countdownEl) {
               const diffSeconds = Math.max(0, Math.floor((TARGET_TIME - now) / 1000));
               const hours = String(Math.floor(diffSeconds / 3600)).padStart(2, "0");

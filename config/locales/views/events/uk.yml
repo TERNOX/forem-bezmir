@@ -1,0 +1,50 @@
+uk:
+  views:
+    events:
+      index:
+        title: Найближчі події
+        none: Зараз немає запланованих подій. Зазирніть пізніше!
+        view: Переглянути подію
+      show:
+        unpublished_html: "<strong>Цю подію ще не опубліковано!</strong> Її бачать лише адміністратори."
+        edit: Редагувати подію
+        live: НАЖИВО
+        interested: Цікавить
+        interested_done: Ви зацікавлені
+        cancel_confirm: Скасувати інтерес до події?
+        starts_in: Початок за…
+        no_stream: Ця подія не має трансляції.
+        visit: Перейти
+        organizers: Організатори
+        socials: Стежте за подією
+        about: Про подію
+        community_writing: Про що пише спільнота %{tag}
+        community_writing_generic: Про що пише спільнота
+        chat: Чат події
+      type_of:
+        live_stream: Трансляція
+        takeover: Анонс
+        other: Подія
+        challenge: Челендж
+      status:
+        live: НАЖИВО
+        ended: ЗАВЕРШЕНО
+      challenge:
+        breadcrumb: Челенджі
+        status: "Статус челенджу:"
+        prompt_default: Завдання челенджу
+        submission_template: Шаблон допису
+        submission_template_hint: Натисніть нижче, щоб почати чернетку з готовим шаблоном.
+        use_submission_template: Використати шаблон
+        judging_criteria: Критерії оцінювання
+        how_to_participate: Як взяти участь
+        faq: Часті запитання
+        rules: Правила
+        key_dates: Важливі дати
+        contest_start: Початок
+        submissions_due: Дедлайн подачі
+        winners_announced: Оголошення переможців
+        badge_rewards: Нагороди-бейджі
+        find_out_more: Дізнатися більше
+        find_out_more_hint: Став питання й ділись ідеями в анонс-дописі.
+        view_launch_post: Переглянути анонс-допис

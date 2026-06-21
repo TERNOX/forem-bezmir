@@ -1,0 +1,50 @@
+en:
+  views:
+    events:
+      index:
+        title: Upcoming Events
+        none: No upcoming events scheduled right now. Check back soon!
+        view: View Event
+      show:
+        unpublished_html: "<strong>This event is not published!</strong> Only admins can see this page."
+        edit: Edit Event
+        live: LIVE
+        interested: I'm Interested
+        interested_done: Interested
+        cancel_confirm: Are you sure you want to cancel your interest?
+        starts_in: Stream starts in…
+        no_stream: Stream URL not configured.
+        visit: Visit
+        organizers: Organizers
+        socials: Follow the event
+        about: About the event
+        community_writing: What the %{tag} community has been writing about
+        community_writing_generic: What the community has been writing about
+        chat: Event Chat
+      type_of:
+        live_stream: Live Stream
+        takeover: Takeover
+        other: Event
+        challenge: Challenge
+      status:
+        live: LIVE
+        ended: ENDED
+      challenge:
+        breadcrumb: Challenges
+        status: "Challenge Status:"
+        prompt_default: Challenge Prompt
+        submission_template: Submission Template
+        submission_template_hint: Click below to start your submission draft with the prefilled template.
+        use_submission_template: Use Submission Template
+        judging_criteria: Judging Criteria
+        how_to_participate: How To Participate
+        faq: Frequently Asked Questions
+        rules: Rules
+        key_dates: Key Dates
+        contest_start: Contest Start
+        submissions_due: Submissions Due
+        winners_announced: Winners Announced
+        badge_rewards: Badge Rewards
+        find_out_more: Find Out More
+        find_out_more_hint: Ask questions and share your ideas on the Launch Post.
+        view_launch_post: View Launch Post
