@@ -12,6 +12,9 @@ uk:
     beta: бета
     comment: Коментар
     copy_link: Копіювати посилання
+    paste_embed_prompt: Вбудувати це посилання?
+    paste_embed_button: Вбудувати
+    paste_embed_dismiss: Закрити
     edit_profile: Редагувати профіль
     follow: Підписатися
     follow_back: Підписатися у відповідь

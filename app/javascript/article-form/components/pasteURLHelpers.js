@@ -1,4 +1,5 @@
 import { getCursorXY } from '@utilities/textAreaUtils';
+import { locale } from '@utilities/locale';
 
 const URL_REGEX = /^https?:\/\/\S+$/;
 const POPOVER_ID = 'embed-url-popover';
@@ -89,15 +90,15 @@ export function handleURLPasted(textAreaRef) {
       `;
 
       const label = document.createElement('span');
-      label.textContent = 'Embed this link?';
+      label.textContent = locale('core.paste_embed_prompt');
       label.style.whiteSpace = 'nowrap';
 
       const embedBtn = document.createElement('button');
-      embedBtn.textContent = 'Embed';
+      embedBtn.textContent = locale('core.paste_embed_button');
       embedBtn.className = 'crayons-btn crayons-btn--s';
 
       const dismissBtn = document.createElement('button');
-      dismissBtn.textContent = 'Dismiss';
+      dismissBtn.textContent = locale('core.paste_embed_dismiss');
       dismissBtn.className = 'crayons-btn crayons-btn--s crayons-btn--ghost';
 
       const replaceWithEmbed = () => {

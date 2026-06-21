@@ -17,6 +17,9 @@ en:
     beta: beta
     comment: Comment
     copy_link: Copy link
+    paste_embed_prompt: Embed this link?
+    paste_embed_button: Embed
+    paste_embed_dismiss: Dismiss
     edit_profile: Edit profile
     follow: Follow
     follow_back: Follow back
