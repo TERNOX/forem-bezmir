@@ -161,24 +161,37 @@ function resetAllEmbeddedVideos() {
   initializeEmbeddedVideos();
 }
 
-let lifecycleListenersInitialized = false;
+let pageshowListenerAdded = false;
+let instantClickRestoreAdded = false;
 
 function initializeLifecycleListeners() {
-  if (lifecycleListenersInitialized) {
-    return;
+  // Full-page back/forward cache (bfcache) restores do NOT re-run
+  // initializePage, so reset here.
+  if (!pageshowListenerAdded) {
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) {
+        resetAllEmbeddedVideos();
+      }
+    });
+    pageshowListenerAdded = true;
   }
 
-  // Full-page back/forward cache (bfcache) restores do NOT re-run
-  // initializePage, so reset here. InstantClick navigations are handled by the
-  // reset built into initializeEmbeddedVideos (called on every InstantClick
-  // 'change').
-  window.addEventListener('pageshow', (event) => {
-    if (event.persisted) {
+  // InstantClick fires 'change' on forward navigation (which re-runs
+  // initializePage -> initializeEmbeddedVideos), but on the Back button it fires
+  // 'restore' instead — and Forem only hooks 'change'. Without this, pressing
+  // Back re-inserts the cached <iframe autoplay> (it replays and renders at a
+  // runaway height). Reset to the thumbnail on 'restore' too. Retry until
+  // InstantClick is available (it may not be on the very first call).
+  if (
+    !instantClickRestoreAdded &&
+    window.InstantClick &&
+    typeof window.InstantClick.on === 'function'
+  ) {
+    window.InstantClick.on('restore', () => {
       resetAllEmbeddedVideos();
-    }
-  });
-
-  lifecycleListenersInitialized = true;
+    });
+    instantClickRestoreAdded = true;
+  }
 }
 
 function createYouTubeIframe(container) {
