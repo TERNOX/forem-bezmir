@@ -196,10 +196,12 @@ function createYouTubeIframe(container) {
   if (width) {
     iframe.width = width;
   }
-  // Sizing is fully owned by the .embedded-video CSS (the container holds the
-  // 16/9 aspect-ratio and the iframe is absolutely positioned to fill it). Do
-  // NOT set an inline aspect-ratio/height here — that previously let a restored
-  // iframe render at a runaway height.
+  // Keep the iframe a normal in-flow 16/9 box (this is what renders correctly on
+  // a fresh click). The runaway-height case only happened when a *cached* page
+  // was restored with this iframe still present; that is now handled by resetting
+  // the player back to its thumbnail on (re)initialization, so no extra CSS is
+  // needed here.
+  iframe.style.aspectRatio = '16 / 9';
   iframe.setAttribute('title', title);
   iframe.setAttribute('allowfullscreen', '');
   iframe.setAttribute(
