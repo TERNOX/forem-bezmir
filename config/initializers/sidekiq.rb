@@ -3,6 +3,7 @@
 require "sidekiq/honeycomb_middleware"
 require "sidekiq/worker_retries_exhausted_reporter"
 require "sidekiq/sidekiq_connection_cleanup"
+require "sidekiq/request_store_cleanup"
 require "sidekiq/transaction_safe_rescue"
 require "sidekiq/throttled"
 require "sidekiq/memory_killer"
@@ -80,6 +81,11 @@ Sidekiq.configure_server do |config|
   config.redis = { url: sidekiq_url }
 
   config.server_middleware do |chain|
+    # Reset RequestStore first so it wraps the entire job: without this, worker
+    # threads keep stale RequestStore-memoized Settings between jobs, which made
+    # the top-articles digest publish multiple times. See RequestStoreCleanup.
+    chain.add Sidekiq::RequestStoreCleanup
+
     # sidekiq-throttled wires itself up when `require "sidekiq/throttled"` is loaded:
     # it registers `Sidekiq::Throttled::Middlewares::Server` via its own
     # `Sidekiq.configure_server` block (see the gem's `lib/sidekiq/throttled.rb`).
