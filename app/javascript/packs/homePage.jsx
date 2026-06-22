@@ -148,12 +148,30 @@ if (document.getElementById('sidebar-nav-followed-tags')) {
             return;
           }
 
-          const url = new URL(window.location);
+          const url = new URL(window.location.href);
           const changedFeedTimeFrame = determineFeedTimeFrame(url);
 
           const normalizedPath = removeLocalePath(url.pathname);
 
           if (!frontPageFeedPathNames.has(normalizedPath)) {
+            return;
+          }
+
+          const callback = () => {
+            initializeBillboardVisibility();
+            observeBillboards();
+            setupBillboardInteractivity();
+            observeFeedElements();
+          };
+
+          renderFeed(changedFeedTimeFrame, callback);
+        });
+
+        window.addEventListener('forem:feed:refresh', () => {
+          const url = new URL(window.location.href);
+          const changedFeedTimeFrame = determineFeedTimeFrame(url);
+
+          if (!frontPageFeedPathNames.has(removeLocalePath(url.pathname))) {
             return;
           }
 

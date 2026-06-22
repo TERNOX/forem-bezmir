@@ -68,7 +68,7 @@ module Admin
                                 :exclude_article_ids, :audience_segment_id, :priority, :browser_context,
                                 :exclude_role_names, :target_role_names, :include_subforem_ids,
                                 :render_mode, :template, :custom_display_label, :requires_cookies, :expires_at,
-                                :target_organization_ids)
+                                :target_organization_ids, :special_behavior, :minimized_body_markdown)
 
       if permitted.key?(:tag_list)
         permitted[:tag_list] = sanitize_tag_list(permitted[:tag_list])
