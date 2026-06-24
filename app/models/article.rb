@@ -543,7 +543,8 @@ class Article < ApplicationRecord
                      :cached_tag_list,
                      :main_image,
                      :social_image,
-                     :video_thumbnail_url
+                     :video_thumbnail_url,
+                     :slug
                    )
                }
 

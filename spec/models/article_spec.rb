@@ -2117,7 +2117,7 @@ RSpec.describe Article do
       feed_article = described_class.feed.first
 
       fields = %w[id tag_list published_at processed_html user_id organization_id title path cached_tag_list
-                  main_image social_image video_thumbnail_url]
+                  main_image social_image video_thumbnail_url slug]
       expect(feed_article.attributes.keys).to match_array(fields)
     end
   end
