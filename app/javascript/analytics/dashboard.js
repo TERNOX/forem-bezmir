@@ -493,7 +493,7 @@ function renderReferrers(data) {
   if (emptyDomainReferrer) {
     tableBody.push(`
       <tr>
-        <td class="align-left">Усі інші зовнішні джерела</td>
+        <td class="align-left">Прямі / Невідомі</td>
         <td class="align-right">${emptyDomainReferrer.count}</td>
       </tr>
     `);

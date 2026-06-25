@@ -1,6 +1,9 @@
 /*eslint-disable prefer-rest-params*/
 /* global isTouchDevice */
 
+let currentReferrer = document.referrer;
+let currentUrl = window.location.href;
+
 function initializeBaseTracking() {
   showCookieConsentBanner();
   trackGoogleAnalytics3();
@@ -97,7 +100,7 @@ function fallbackActivityRecording() {
   const dataBody = {
     path: location.pathname + location.search,
     user_language: navigator.language,
-    referrer: document.referrer,
+    referrer: currentReferrer,
     user_agent: navigator.userAgent,
     viewport_size: `${h}x${w}`,
     screen_resolution: `${screenH}x${screenW}`,
@@ -169,7 +172,7 @@ function trackCustomImpressions() {
 
       const dataBody = {
         article_id: articleId,
-        referrer: document.referrer,
+        referrer: currentReferrer,
         user_agent: navigator.userAgent,
       };
       if (viewableType && viewableId) {
@@ -341,6 +344,8 @@ function trackFifteenSecondsOnPage(articleId, csrfToken) {
 }
 
 window.InstantClick.on('change', () => {
+  currentReferrer = currentUrl;
+  currentUrl = window.location.href;
   initializeBaseTracking();
 });
 initializeBaseTracking();
