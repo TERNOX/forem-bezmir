@@ -1,0 +1,36 @@
+---
+uk:
+  views:
+    calendar:
+      meta:
+        title: Календар
+      heading: Календар
+      range:
+        from: Від
+        to: До
+        apply: Застосувати
+      nav:
+        previous_month: Попередній місяць
+        next_month: Наступний місяць
+      weekdays:
+        - Нд
+        - Пн
+        - Вт
+        - Ср
+        - Чт
+        - Пт
+        - Сб
+      hint: Клікніть день початку, потім день кінця, щоб задати діапазон.
+      legend:
+        selected: Вибрано
+        today: Сьогодні
+        has_events: Є події
+      today: Сьогодні
+      empty: У цьому діапазоні подій немає. Спробуйте інший місяць!
+      event:
+        attending: Іду
+        view: Переглянути подію
+      pagination:
+        label: Сторінки подій
+        previous: Попередня сторінка
+        next: Наступна сторінка

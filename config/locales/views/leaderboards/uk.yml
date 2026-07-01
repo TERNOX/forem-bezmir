@@ -1,0 +1,13 @@
+---
+uk:
+  views:
+    leaderboards:
+      index:
+        title: "Лідерборд"
+        heading: "Лідерборд"
+        subtitle: "Топ-%{count} за бейджами на %{community_name}"
+        rank: "Місце"
+        user: "Учасник"
+        recent_badges: "Нещодавні бейджі"
+        badges: "Бейджі"
+        no_users: "На лідерборді ще немає користувачів."
