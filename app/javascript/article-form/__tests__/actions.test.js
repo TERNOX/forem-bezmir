@@ -32,6 +32,8 @@ describe('processVideoUpload', () => {
   afterEach(() => {
     generateVideoUploadSpy.mockRestore();
     jest.clearAllMocks();
+    delete global.fetch;
+    delete window.csrfToken;
   });
 
   it('surfaces an error when the video exceeds the configured size limit', () => {
@@ -87,9 +89,6 @@ describe('processVideoUpload', () => {
       '/video_uploads',
       expect.objectContaining({ method: 'POST' }),
     );
-
-    delete global.fetch;
-    delete window.csrfToken;
   });
 });
 
