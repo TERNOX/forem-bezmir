@@ -53,7 +53,9 @@ class BlueskyTag < LiquidTagBase
   def snapshot
     SocialEmbeds::Snapshotter.call(
       platform: "bluesky",
-      source_id: @parsed[:at_uri].split("/").last,
+      # Use the full AT-URI: a post rkey alone is unique only within an author's
+      # repo, not globally, so keying by rkey could collide across authors.
+      source_id: @parsed[:at_uri],
       source_url: @parsed[:url],
       at_uri: @parsed[:at_uri],
     )

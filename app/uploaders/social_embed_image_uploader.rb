@@ -30,6 +30,8 @@ class SocialEmbedImageUploader < CarrierWave::Uploader::Base
   # @return [String, nil] the durable URL on our storage, or nil on failure
   def upload_from_url(url)
     remote = URI.open(url, "User-Agent" => "ForemSocialEmbed/1.0", :read_timeout => 10) # rubocop:disable Security/Open
+    return nil if remote.respond_to?(:meta) && remote.meta["content-length"].to_i > MAX_FILE_SIZE
+
     ext = File.extname(remote.base_uri.path).presence || content_type_extension(remote)
     temp_file = Tempfile.new(["social_embed", ext])
     temp_file.binmode

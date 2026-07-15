@@ -82,7 +82,9 @@ module SocialEmbeds
         timeout: 10,
       )
 
-      return PostData.deleted if response.code == 404
+      # Deletion is asserted only by syndication (404 / tombstone). oEmbed 404s
+      # for unsupported URL forms and under rate-limits, so treat any non-200
+      # here as :unavailable to avoid falsely archiving a live tweet.
       return PostData.unavailable(raw: { "code" => response.code }) unless response.code == 200
 
       data = response.parsed_response

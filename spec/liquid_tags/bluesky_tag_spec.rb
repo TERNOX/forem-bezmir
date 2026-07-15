@@ -55,5 +55,12 @@ RSpec.describe BlueskyTag, type: :liquid_tag do
       expect { generate_bluesky_tag(valid_url) }
         .not_to raise_error
     end
+
+    it "keys the snapshot by the full AT-URI, not the rkey alone" do
+      generate_bluesky_tag(valid_url).render
+
+      expect(SocialEmbeds::Snapshotter).to have_received(:call)
+        .with(hash_including(source_id: "at://did:plc:abcdef12345/app.bsky.feed.post/3ldhpt43zps2g"))
+    end
   end
 end
