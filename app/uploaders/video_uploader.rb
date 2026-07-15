@@ -1,5 +1,5 @@
 class VideoUploader < CarrierWave::Uploader::Base
-  EXTENSION_ALLOWLIST = %w[mp4 webm].freeze
+  EXTENSION_ALLOWLIST = %w[mp4 webm mov].freeze
 
   def store_dir
     "uploads/videos/"
@@ -14,7 +14,7 @@ class VideoUploader < CarrierWave::Uploader::Base
   end
 
   def filename
-    "#{Array.new(20) { rand(36).to_s(36) }.join}.#{file.extension}" if original_filename.present?
+    "#{Array.new(20) { rand(36).to_s(36) }.join}.#{file.extension}" if file.present?
   end
 
   private
