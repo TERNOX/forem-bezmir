@@ -1,1 +1,14 @@
-<%= html.html_safe %>
+<%# locals: html (Bluesky oEmbed markup, live widget), snapshot (SocialPostSnapshot or nil).
+    While the post is live we show Bluesky's official embed; when the source is gone
+    (or JS confirms deletion via initializeSocialEmbeds) the archive card is shown. %>
+<div class="ltag-social-embed ltag-social-embed--bluesky<%= " is-archived" if snapshot&.archived_fallback? %>"
+     data-platform="bluesky"
+     data-source-id="<%= snapshot&.source_id %>"
+     data-status="<%= snapshot&.source_status || "unknown" %>">
+  <div class="ltag-social-embed__live">
+    <%= html.to_s.html_safe %>
+  </div>
+  <% if snapshot&.renderable? %>
+    <%= render partial: "liquids/social_embed_archive", locals: { snapshot: snapshot } %>
+  <% end %>
+</div>

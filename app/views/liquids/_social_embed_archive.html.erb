@@ -1,0 +1,43 @@
+<%# Fork-only: durable, self-hosted archive card for an embedded social post.
+    Shown as a fallback when the original post/account is gone. locals: snapshot %>
+<div class="ltag-social-embed__archive">
+  <div class="ltag-social-embed__card">
+    <div class="ltag-social-embed__head">
+      <% if snapshot.author_avatar_url.present? %>
+        <img class="ltag-social-embed__avatar" src="<%= snapshot.author_avatar_url %>" alt="" width="44" height="44" loading="lazy" onerror="this.style.display='none'">
+      <% end %>
+      <div class="ltag-social-embed__meta">
+        <span class="ltag-social-embed__name"><%= snapshot.author_name.presence || snapshot.author_handle %></span>
+        <% if snapshot.author_handle.present? %>
+          <span class="ltag-social-embed__handle">@<%= snapshot.author_handle %></span>
+        <% end %>
+      </div>
+      <span class="ltag-social-embed__badge ltag-social-embed__badge--<%= snapshot.platform %>" aria-hidden="true">
+        <%= snapshot.platform == "bluesky" ? "Bluesky" : "X" %>
+      </span>
+    </div>
+
+    <% if snapshot.text_html.present? %>
+      <div class="ltag-social-embed__text"><%= snapshot.text_html.html_safe %></div>
+    <% end %>
+
+    <% if snapshot.photos.any? %>
+      <div class="ltag-social-embed__media ltag-social-embed__media--count-<%= [snapshot.photos.size, 4].min %>">
+        <% snapshot.photos.first(4).each do |photo| %>
+          <a class="ltag-social-embed__photo-link" href="<%= photo["url"] %>" target="_blank" rel="nofollow noopener">
+            <img class="ltag-social-embed__photo" src="<%= photo["url"] %>" alt="<%= photo["alt"] %>" loading="lazy">
+          </a>
+        <% end %>
+      </div>
+    <% end %>
+
+    <div class="ltag-social-embed__foot">
+      <% if snapshot.posted_at.present? %>
+        <time class="ltag-social-embed__date" datetime="<%= snapshot.posted_at.iso8601 %>"><%= snapshot.posted_at.strftime("%-d.%m.%Y") %></time>
+      <% end %>
+      <a class="ltag-social-embed__source" href="<%= snapshot.source_url %>" target="_blank" rel="nofollow noopener"><%= I18n.t("liquid_tags.social_embed.view_original") %></a>
+    </div>
+
+    <p class="ltag-social-embed__note"><%= I18n.t("liquid_tags.social_embed.archived_note") %></p>
+  </div>
+</div>

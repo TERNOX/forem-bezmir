@@ -16,6 +16,7 @@ function callInitializers() {
   initializeCreditsPage();
   initializeOnboardingTaskCard();
   initializeEmbeddedVideos();
+  initializeSocialEmbeds();
 }
 
 function initializePage() {

@@ -62,11 +62,25 @@ class TweetTag < LiquidTagBase
       partial: PARTIAL,
       locals: {
         id: @id,
+        snapshot: snapshot
       },
     )
   end
 
   private
+
+  # Fork-only: capture/refresh a durable snapshot so the quote survives deletion.
+  # Never let a snapshot failure break article rendering.
+  def snapshot
+    SocialEmbeds::Snapshotter.call(
+      platform: "twitter",
+      source_id: @id,
+      source_url: "https://twitter.com/i/status/#{@id}",
+    )
+  rescue StandardError => e
+    Rails.logger.warn("TweetTag snapshot failed for #{@id}: #{e.class}: #{e.message}")
+    nil
+  end
 
   def parse_id_or_url(input)
     match = pattern_match_for(input, REGEXP_OPTIONS)

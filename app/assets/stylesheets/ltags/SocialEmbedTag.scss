@@ -1,0 +1,128 @@
+// Fork-only: durable archive card for embedded social posts (Twitter/X, Bluesky).
+// While the source is live we show the platform's own widget (.ltag-social-embed__live);
+// when it's gone the wrapper gets .is-archived and we show the self-hosted card.
+.ltag-social-embed {
+  margin: 0 auto var(--su-4);
+
+  &__archive {
+    display: none;
+  }
+
+  &.is-archived {
+    .ltag-social-embed__live {
+      display: none;
+    }
+
+    .ltag-social-embed__archive {
+      display: block;
+    }
+  }
+
+  &__card {
+    max-width: 550px;
+    margin: 0 auto;
+    padding: var(--su-4);
+    border: 1px solid var(--card-border, var(--base-20));
+    border-radius: var(--radius, 8px);
+    background: var(--card-bg, var(--base-inverted-text));
+    color: var(--body-color, var(--base-90));
+    font-size: var(--fs-base);
+    line-height: 1.5;
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    gap: var(--su-2);
+    margin-bottom: var(--su-3);
+  }
+
+  &__avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  &__meta {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &__name {
+    font-weight: var(--fw-bold);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__handle {
+    color: var(--base-60);
+    font-size: var(--fs-s);
+  }
+
+  &__badge {
+    margin-left: auto;
+    padding: 2px var(--su-2);
+    border-radius: var(--radius, 8px);
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-medium);
+    color: var(--base-60);
+    background: var(--base-10);
+  }
+
+  &__text {
+    margin-bottom: var(--su-3);
+    white-space: pre-wrap;
+    word-wrap: break-word;
+
+    a {
+      color: var(--link-color, var(--accent-brand));
+    }
+  }
+
+  &__media {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--su-1);
+    margin-bottom: var(--su-3);
+    border-radius: var(--radius, 8px);
+    overflow: hidden;
+
+    &--count-2,
+    &--count-3,
+    &--count-4 {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  &__photo {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-height: 320px;
+    object-fit: cover;
+  }
+
+  &__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--su-2);
+    font-size: var(--fs-s);
+    color: var(--base-60);
+  }
+
+  &__source {
+    color: var(--link-color, var(--accent-brand));
+  }
+
+  &__note {
+    margin: var(--su-2) 0 0;
+    font-size: var(--fs-xs);
+    font-style: italic;
+    color: var(--base-50);
+  }
+}

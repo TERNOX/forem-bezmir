@@ -1,16 +1,27 @@
+<%# locals: id, snapshot (SocialPostSnapshot or nil).
+    While the tweet is live we show X's iframe widget; when the source is gone
+    (or JS confirms deletion via initializeSocialEmbeds) the archive card is shown. %>
 <% obj_id = "#{id}-#{rand(1_000)}" %>
-<iframe
-  class="tweet-embed"
-  scrolling="no"
-  id="tweet-<%= obj_id %>"
-  src="https://platform.twitter.com/embed/Tweet.html?id=<%= id %>">
-</iframe>
-<script>
-  // Detect dark theme
-  var iframe = document.getElementById('tweet-<%= obj_id %>');
-  if (document.body.className.includes('dark-theme')) {
-    iframe.src = "https://platform.twitter.com/embed/Tweet.html?id=<%= id %>&theme=dark"
-  }
-
-</script>
-
+<div class="ltag-social-embed ltag-social-embed--twitter<%= " is-archived" if snapshot&.archived_fallback? %>"
+     data-platform="twitter"
+     data-source-id="<%= id %>"
+     data-status="<%= snapshot&.source_status || "unknown" %>">
+  <div class="ltag-social-embed__live">
+    <iframe
+      class="tweet-embed"
+      scrolling="no"
+      id="tweet-<%= obj_id %>"
+      src="https://platform.twitter.com/embed/Tweet.html?id=<%= id %>">
+    </iframe>
+    <script>
+      // Detect dark theme
+      var iframe = document.getElementById('tweet-<%= obj_id %>');
+      if (document.body.className.includes('dark-theme')) {
+        iframe.src = "https://platform.twitter.com/embed/Tweet.html?id=<%= id %>&theme=dark"
+      }
+    </script>
+  </div>
+  <% if snapshot&.renderable? %>
+    <%= render partial: "liquids/social_embed_archive", locals: { snapshot: snapshot } %>
+  <% end %>
+</div>

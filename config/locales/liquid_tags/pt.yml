@@ -1,6 +1,9 @@
 ---
 pt:
   liquid_tags:
+    social_embed:
+      view_original: Ver original
+      archived_note: A publicação original não está mais disponível — exibindo uma cópia arquivada.
     asciinema_tag:
       invalid_asciinema_id: 'ID do Asciinema inválido: %{id}'
     blogcast_tag:

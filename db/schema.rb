@@ -10,13 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_06_30_143448) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_15_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "ltree"
+  enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
   enable_extension "pgcrypto"
-  enable_extension "plpgsql"
   enable_extension "unaccent"
 
   create_table "agent_sessions", force: :cascade do |t|
@@ -1607,6 +1607,28 @@ ActiveRecord::Schema[7.2].define(version: 2026_06_30_143448) do
     t.string "var", null: false
     t.index ["subforem_id"], name: "index_site_configs_on_subforem_id"
     t.index ["var", "subforem_id"], name: "index_site_configs_on_var_and_subforem_id", unique: true
+  end
+
+  create_table "social_post_snapshots", force: :cascade do |t|
+    t.string "at_uri"
+    t.string "author_avatar_url"
+    t.string "author_handle"
+    t.string "author_name"
+    t.datetime "checked_at"
+    t.datetime "created_at", null: false
+    t.datetime "fetched_at"
+    t.jsonb "media", default: [], null: false
+    t.string "platform", null: false
+    t.datetime "posted_at"
+    t.jsonb "raw", default: {}, null: false
+    t.string "source_id", null: false
+    t.integer "source_status", default: 0, null: false
+    t.string "source_url", null: false
+    t.text "text_content"
+    t.text "text_html"
+    t.datetime "updated_at", null: false
+    t.index ["platform", "source_id"], name: "index_social_post_snapshots_on_platform_and_source_id", unique: true
+    t.index ["source_status"], name: "index_social_post_snapshots_on_source_status"
   end
 
   create_table "subforems", force: :cascade do |t|

@@ -10,6 +10,12 @@ RSpec.describe TweetTag, type: :liquid_tag do
       Liquid::Template.parse("{% tweet #{id} %}")
     end
 
+    before do
+      # Fork-only: TweetTag now captures a durable snapshot on render; keep the
+      # network out of these parsing specs.
+      allow(SocialEmbeds::Snapshotter).to receive(:call).and_return(nil)
+    end
+
     it "checks that the tag is properly parsed" do
       valid_id = "1671839966572290048"
       liquid = generate_tweet_tag(valid_id)

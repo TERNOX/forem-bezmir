@@ -22,6 +22,9 @@ RSpec.describe BlueskyTag, type: :liquid_tag do
       # Stub ApplicationController.render to simulate the rendering of the partial.
       allow(ApplicationController).to receive(:render)
         .and_return("<div class=\"bluesky-embed\">Embedded Bluesky Post</div>")
+      # Fork-only: BlueskyTag now captures a durable snapshot on render; keep the
+      # network out of these specs.
+      allow(SocialEmbeds::Snapshotter).to receive(:call).and_return(nil)
     end
 
     it "renders the Bluesky embed for a valid URL" do

@@ -41,11 +41,26 @@ class BlueskyTag < LiquidTagBase
       partial: PARTIAL,
       locals: {
         html: @html,
+        snapshot: snapshot,
       }
     )
   end
 
   private
+
+  # Fork-only: capture/refresh a durable snapshot so the quote survives deletion.
+  # Never let a snapshot failure break article rendering.
+  def snapshot
+    SocialEmbeds::Snapshotter.call(
+      platform: "bluesky",
+      source_id: @parsed[:at_uri].split("/").last,
+      source_url: @parsed[:url],
+      at_uri: @parsed[:at_uri],
+    )
+  rescue StandardError => e
+    Rails.logger.warn("BlueskyTag snapshot failed for #{@parsed[:url]}: #{e.class}: #{e.message}")
+    nil
+  end
 
   def parse_id_or_url(input)
     match = pattern_match_for(input, REGEXP_OPTIONS)
