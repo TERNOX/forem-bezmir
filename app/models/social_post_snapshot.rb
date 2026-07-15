@@ -1,7 +1,7 @@
 # Fork-only feature. A durable, self-hosted copy of an embedded social post
 # (Twitter/X or Bluesky) captured at article-save time so the quote survives even
 # after the original post/account is deleted. Populated by SocialEmbeds::Snapshotter
-# and re-checked by SocialEmbeds::RefreshSnapshotWorker.
+# and re-checked by SocialEmbeds::RefreshSnapshotsWorker.
 class SocialPostSnapshot < ApplicationRecord
   # unknown: not yet fetched; live: source confirmed present; deleted: source gone
   # (404); unavailable: source could not be fetched (rate-limited/API down) but is
