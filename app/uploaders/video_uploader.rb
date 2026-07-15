@@ -1,5 +1,5 @@
 class VideoUploader < CarrierWave::Uploader::Base
-  EXTENSION_ALLOWLIST = %w[mp4 webm].freeze
+  EXTENSION_ALLOWLIST = %w[mp4 webm mov].freeze
 
   def store_dir
     "uploads/videos/"
