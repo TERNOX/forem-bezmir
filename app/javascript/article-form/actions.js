@@ -116,9 +116,13 @@ export function generateMainImage({ payload, successCb, failureCb, signal }) {
 export function generateVideoUpload({ payload, successCb, failureCb, signal }) {
   fetch('/video_uploads', {
     method: 'POST',
+    // NOTE: the body is multipart FormData, so we must NOT set Content-Type
+    // ourselves — the browser sets multipart/form-data with the correct
+    // boundary. Hardcoding application/json made the server try to JSON-parse
+    // the multipart body and fail (ActionDispatch ParseError), which surfaced
+    // in the editor as "Unexpected non-whitespace character after JSON".
     headers: {
       'X-CSRF-Token': getCsrfToken(),
-      'Content-Type': 'application/json',
     },
     body: generateUploadFormdata(payload, 'video'),
     credentials: 'same-origin',
