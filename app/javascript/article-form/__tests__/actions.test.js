@@ -1,4 +1,5 @@
 import * as actions from '../actions';
+import { processPayload } from '../actions';
 import { validateFileInputs } from '../../packs/validateFileInputs';
 import { getVideoConfig, formatTemplate } from '../components/mediaConfig';
 
@@ -68,20 +69,29 @@ describe('processVideoUpload', () => {
   });
 
   it('dispatches the upload when the file fits within the limit', () => {
+    // Restore the real generateVideoUpload and observe the actual request it
+    // makes (spying the module export does not intercept the internal call).
+    generateVideoUploadSpy.mockRestore();
+    window.csrfToken = 'test-token';
+    global.fetch = jest
+      .fn()
+      .mockResolvedValue({ json: () => Promise.resolve({}) });
+
     const uploading = jest.fn();
-    const success = jest.fn();
-    const failure = jest.fn();
     const file = { size: 10 * 1024 * 1024 };
 
-    actions.processVideoUpload([file], uploading, success, failure);
+    actions.processVideoUpload([file], uploading, jest.fn(), jest.fn());
 
     expect(uploading).toHaveBeenCalledTimes(1);
-    expect(generateVideoUploadSpy).toHaveBeenCalledWith({
-      payload: { video: [file] },
-      successCb: success,
-      failureCb: failure,
-    });
-import { processPayload } from '../actions';
+    expect(global.fetch).toHaveBeenCalledWith(
+      '/video_uploads',
+      expect.objectContaining({ method: 'POST' }),
+    );
+
+    delete global.fetch;
+    delete window.csrfToken;
+  });
+});
 
 describe('processPayload', () => {
   const basePayload = {
@@ -170,5 +180,39 @@ describe('processPayload', () => {
     const result = processPayload({ ...basePayload });
 
     expect(result).toEqual(basePayload);
+  });
+});
+
+describe('generateVideoUpload', () => {
+  const originalFetch = global.fetch;
+
+  afterEach(() => {
+    global.fetch = originalFetch;
+    delete window.csrfToken;
+    jest.clearAllMocks();
+  });
+
+  it('posts multipart FormData and does NOT force Content-Type: application/json', () => {
+    // Regression: hardcoding application/json while sending FormData made the
+    // server fail to parse the request (ActionDispatch ParseError), surfacing in
+    // the editor as "Unexpected non-whitespace character after JSON".
+    window.csrfToken = 'test-token';
+    global.fetch = jest
+      .fn()
+      .mockResolvedValue({ json: () => Promise.resolve({}) });
+
+    actions.generateVideoUpload({
+      payload: { video: ['a-video-file'] },
+      successCb: jest.fn(),
+      failureCb: jest.fn(),
+    });
+
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    const [url, options] = global.fetch.mock.calls[0];
+    expect(url).toBe('/video_uploads');
+    expect(options.method).toBe('POST');
+    expect(options.body).toBeInstanceOf(FormData);
+    expect(options.headers['X-CSRF-Token']).toBe('test-token');
+    expect(options.headers['Content-Type']).toBeUndefined();
   });
 });
