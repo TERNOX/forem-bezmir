@@ -3,6 +3,7 @@ fr:
   liquid_tags:
     social_embed:
       view_original: Voir l'original
+      archived_badge: Copie archivée
       archived_note: La publication d'origine n'est plus disponible — copie archivée affichée.
     asciinema_tag:
       invalid_asciinema_id: "ID d'Asciinema non valide : %{id}"

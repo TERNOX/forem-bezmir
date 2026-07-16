@@ -3,6 +3,7 @@ uk:
   liquid_tags:
     social_embed:
       view_original: Переглянути оригінал
+      archived_badge: Збережена копія
       archived_note: Оригінал більше недоступний — показано збережену копію.
     bolt_tag:
       invalid_url: Недійсний URL Bolt

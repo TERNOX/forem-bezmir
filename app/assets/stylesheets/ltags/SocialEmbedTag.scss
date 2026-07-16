@@ -21,7 +21,7 @@
   &__card {
     max-width: 550px;
     margin: 0 auto;
-    padding: var(--su-4);
+    padding: var(--su-4) var(--su-5);
     border: 1px solid var(--card-border, var(--base-20));
     border-radius: var(--radius, 8px);
     background: var(--card-bg, var(--base-inverted-text));
@@ -33,16 +33,17 @@
   &__head {
     display: flex;
     align-items: center;
-    gap: var(--su-2);
+    gap: var(--su-3);
     margin-bottom: var(--su-3);
   }
 
   &__avatar {
-    width: 44px;
-    height: 44px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     object-fit: cover;
     flex-shrink: 0;
+    background: var(--base-10);
   }
 
   &__meta {
@@ -63,20 +64,25 @@
     font-size: var(--fs-s);
   }
 
-  &__badge {
+  // Muted brand mark in the corner. Deliberately small and low-contrast so it
+  // reads as a source logo, not a close/dismiss button.
+  &__logo {
+    display: flex;
+    align-items: center;
     margin-left: auto;
-    padding: 2px var(--su-2);
-    border-radius: var(--radius, 8px);
-    font-size: var(--fs-xs);
-    font-weight: var(--fw-medium);
-    color: var(--base-60);
-    background: var(--base-10);
+    align-self: flex-start;
+    color: var(--base-40);
+
+    svg {
+      display: block;
+    }
   }
 
   &__text {
     margin-bottom: var(--su-3);
     white-space: pre-wrap;
     word-wrap: break-word;
+    overflow-wrap: anywhere;
 
     a {
       color: var(--link-color, var(--accent-brand));
@@ -86,7 +92,7 @@
   &__media {
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--su-1);
+    gap: 2px;
     margin-bottom: var(--su-3);
     border-radius: var(--radius, 8px);
     overflow: hidden;
@@ -96,6 +102,11 @@
     &--count-4 {
       grid-template-columns: 1fr 1fr;
     }
+  }
+
+  &__photo-link {
+    display: block;
+    min-width: 0;
   }
 
   &__photo {
@@ -110,19 +121,35 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
     gap: var(--su-2);
+    margin-top: var(--su-3);
+    padding-top: var(--su-3);
+    border-top: 1px solid var(--card-border, var(--base-20));
     font-size: var(--fs-s);
-    color: var(--base-60);
+  }
+
+  &__archived {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--su-1);
+    color: var(--base-50);
   }
 
   &__source {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--su-1);
     color: var(--link-color, var(--accent-brand));
+    font-weight: var(--fw-medium);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
   }
 
-  &__note {
-    margin: var(--su-2) 0 0;
-    font-size: var(--fs-xs);
-    font-style: italic;
-    color: var(--base-50);
+  &__foot-icon {
+    flex-shrink: 0;
   }
 }
