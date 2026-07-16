@@ -83,23 +83,32 @@ module SocialEmbeds
     def apply_content(snapshot, data)
       snapshot.author_handle = data.author_handle if data.author_handle.present?
       snapshot.author_name = data.author_name if data.author_name.present?
-      snapshot.author_avatar_url = data.author_avatar_url if data.author_avatar_url.present?
+      snapshot.author_avatar_url = rehost_avatar(snapshot, data.author_avatar_url)
       snapshot.text_content = data.text_content if data.text_content.present?
       snapshot.text_html = SocialEmbeds::TextFormatter.call(data.text_content) if data.text_content.present?
       snapshot.posted_at = data.posted_at if data.posted_at.present?
       snapshot.media = rehost_photos(snapshot, data.photos)
     end
 
-    # Downloads each source photo onto our own storage. Reuses previously stored
-    # entries (keyed by original source_url) so refreshes don't re-download.
+    # Re-host the author avatar onto our own storage so the card survives the
+    # account being deleted. Captured once: keeps the stored copy on later
+    # refreshes and on any download failure (never regresses to nil).
+    def rehost_avatar(snapshot, source_url)
+      return snapshot.author_avatar_url if snapshot.author_avatar_url.present?
+      return snapshot.author_avatar_url if source_url.blank?
+
+      SocialEmbedImageUploader.new.upload_from_url(source_url) || snapshot.author_avatar_url
+    end
+
+    # Downloads the post's photos onto our own storage, once. Once we have a
+    # durable set we keep it untouched, so a transient storage/CDN failure on a
+    # later refresh can never erase already-archived media (Codex P2).
     def rehost_photos(snapshot, photos)
       existing = Array.wrap(snapshot.media)
+      return existing if existing.any?
       return existing if photos.blank?
 
       Array.wrap(photos).filter_map do |photo|
-        prior = existing.detect { |m| m["source_url"] == photo["url"] && m["url"].present? }
-        next prior if prior
-
         stored_url = SocialEmbedImageUploader.new.upload_from_url(photo["url"])
         next nil unless stored_url
 

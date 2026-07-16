@@ -51,13 +51,16 @@ class BlueskyTag < LiquidTagBase
   # Fork-only: capture/refresh a durable snapshot so the quote survives deletion.
   # Never let a snapshot failure break article rendering.
   def snapshot
+    # Canonicalize to the DID-based AT-URI: a rkey alone is unique only within an
+    # author's repo, and the API rejects handle-based URIs (which is what most
+    # bsky.app URLs produce). Keying by the resolved DID URI keeps distinct posts
+    # from colliding and survives handle changes.
+    at_uri = SocialEmbeds::BlueskyClient.canonical_at_uri(@parsed[:at_uri])
     SocialEmbeds::Snapshotter.call(
       platform: "bluesky",
-      # Use the full AT-URI: a post rkey alone is unique only within an author's
-      # repo, not globally, so keying by rkey could collide across authors.
-      source_id: @parsed[:at_uri],
+      source_id: at_uri,
       source_url: @parsed[:url],
-      at_uri: @parsed[:at_uri],
+      at_uri: at_uri,
     )
   rescue StandardError => e
     Rails.logger.warn("BlueskyTag snapshot failed for #{@parsed[:url]}: #{e.class}: #{e.message}")

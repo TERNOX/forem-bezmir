@@ -21,6 +21,12 @@ class SocialEmbedsController < ApplicationController
       return render json: { status: snapshot&.source_status || "unknown", archived: false }
     end
 
+    # Deletion is terminal: once archived, keep serving that from storage instead
+    # of re-hitting the platform API every cache cycle for a dead post.
+    if snapshot.deleted?
+      return render json: { status: "deleted", archived: true }
+    end
+
     current = live_status(snapshot)
     render json: { status: current, archived: current == "deleted" }
   end

@@ -3,9 +3,33 @@ module SocialEmbeds
   # No API key required. Returns a SocialEmbeds::PostData.
   class BlueskyClient
     ENDPOINT = "https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread".freeze
+    RESOLVE_ENDPOINT = "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle".freeze
+    AT_URI_REGEXP = %r{\Aat://(?<authority>[^/]+)/(?<collection>[^/]+)/(?<rkey>[^/]+)\z}
 
     def self.fetch(at_uri:, **_kwargs)
       new(at_uri).fetch
+    end
+
+    # The getPostThread API only accepts DID-based AT-URIs — a handle-based one
+    # (what users' bsky.app URLs produce) returns notFound. Resolve the handle to
+    # its stable DID so capture works and the snapshot is keyed canonically.
+    # Falls back to the input if resolution fails.
+    def self.canonical_at_uri(at_uri)
+      match = at_uri.to_s.match(AT_URI_REGEXP)
+      return at_uri unless match
+      return at_uri if match[:authority].start_with?("did:")
+
+      did = resolve_handle(match[:authority])
+      did ? "at://#{did}/#{match[:collection]}/#{match[:rkey]}" : at_uri
+    end
+
+    def self.resolve_handle(handle)
+      response = HTTParty.get(RESOLVE_ENDPOINT, query: { handle: handle },
+                                                headers: { "Accept" => "application/json" }, timeout: 10)
+      response.code == 200 ? response.parsed_response["did"].presence : nil
+    rescue StandardError => e
+      Rails.logger.warn("SocialEmbeds::BlueskyClient resolve_handle failed for #{handle}: #{e.class}: #{e.message}")
+      nil
     end
 
     def initialize(at_uri)

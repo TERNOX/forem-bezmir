@@ -46,5 +46,15 @@ RSpec.describe "SocialEmbeds" do
       expect(snapshot.reload).to be_deleted
       expect(snapshot.text_html).to eq("kept")
     end
+
+    it "serves an already-deleted snapshot without hitting the platform again" do
+      snapshot = create(:social_post_snapshot, :archived, text_html: "kept")
+      allow(SocialEmbeds::BlueskyClient).to receive(:fetch)
+
+      get_status(platform: snapshot.platform, source_id: snapshot.source_id)
+
+      expect(response.parsed_body).to eq("status" => "deleted", "archived" => true)
+      expect(SocialEmbeds::BlueskyClient).not_to have_received(:fetch)
+    end
   end
 end

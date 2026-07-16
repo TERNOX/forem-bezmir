@@ -91,5 +91,43 @@ RSpec.describe SocialEmbeds::Snapshotter do
         "alt" => "cat",
       )
     end
+
+    it "never erases already-archived photos when a later re-host fails" do
+      allow_any_instance_of(SocialEmbedImageUploader) # rubocop:disable RSpec/AnyInstance
+        .to receive(:upload_from_url).and_return("https://ourhost/photo.jpg")
+      stub_client(ok_data(photos: [{ "url" => "https://cdn/a.jpg", "alt" => "" }]))
+      snapshot = described_class.call(**args)
+
+      allow_any_instance_of(SocialEmbedImageUploader) # rubocop:disable RSpec/AnyInstance
+        .to receive(:upload_from_url).and_return(nil)
+      stub_client(ok_data(photos: [{ "url" => "https://cdn/CHANGED.jpg", "alt" => "" }]))
+      described_class.refresh(snapshot)
+
+      expect(snapshot.reload.photos.pluck("url")).to eq(["https://ourhost/photo.jpg"])
+    end
+  end
+
+  describe "avatar re-hosting" do
+    it "re-hosts the author avatar onto our storage" do
+      allow_any_instance_of(SocialEmbedImageUploader) # rubocop:disable RSpec/AnyInstance
+        .to receive(:upload_from_url).and_return("https://ourhost/av.jpg")
+      stub_client(ok_data(author_avatar_url: "https://cdn/orig-av.jpg"))
+
+      snapshot = described_class.call(**args)
+
+      expect(snapshot.author_avatar_url).to eq("https://ourhost/av.jpg")
+    end
+
+    it "keeps the stored avatar on refresh instead of re-downloading" do
+      allow_any_instance_of(SocialEmbedImageUploader) # rubocop:disable RSpec/AnyInstance
+        .to receive(:upload_from_url).and_return("https://ourhost/av.jpg")
+      stub_client(ok_data(author_avatar_url: "https://cdn/orig-av.jpg"))
+      snapshot = described_class.call(**args)
+
+      stub_client(ok_data(author_avatar_url: "https://cdn/CHANGED-av.jpg"))
+      described_class.refresh(snapshot)
+
+      expect(snapshot.reload.author_avatar_url).to eq("https://ourhost/av.jpg")
+    end
   end
 end
