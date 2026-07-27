@@ -144,6 +144,7 @@ namespace :admin do
     resources :events do
       member do
         patch :end_broadcast
+        get :fork
       end
     end
   end
