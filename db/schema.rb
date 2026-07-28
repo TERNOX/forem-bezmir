@@ -675,6 +675,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_08_11_143500) do
     t.text "body", null: false
     t.datetime "created_at", null: false
     t.integer "drip_day", default: 0
+    t.bigint "event_id"
     t.bigint "onboarding_subforem_id"
     t.integer "status", default: 0
     t.string "subject", null: false
@@ -684,6 +685,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_08_11_143500) do
     t.bigint "user_query_id"
     t.text "variables"
     t.index ["audience_segment_id"], name: "index_emails_on_audience_segment_id"
+    t.index ["event_id"], name: "index_emails_on_event_id"
     t.index ["onboarding_subforem_id"], name: "index_emails_on_onboarding_subforem_id"
     t.index ["user_query_id"], name: "index_emails_on_user_query_id"
   end
