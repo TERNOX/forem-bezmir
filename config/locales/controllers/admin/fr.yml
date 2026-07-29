@@ -222,6 +222,8 @@ fr:
       top_articles_digest_missing: "Impossible de mettre à jour le récapitulatif : configuration manquante"
       resave_published_articles:
         enqueued: "Tous les articles publiés seront réenregistrés en arrière-plan. Les contenus embarqués seront reconstruits sous peu."
+      social_images_queued: "Régénération des images sociales mise en file d'attente pour @%{user}"
+      user_not_found: 'Utilisateur introuvable'
     users_controller:
       exported: Données exportées vers le %{receiver}. Le travail sera terminé dans un instant.
       email_fail: L'envoi de l'e-mail a échoué !
