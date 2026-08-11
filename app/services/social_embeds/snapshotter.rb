@@ -100,17 +100,21 @@ module SocialEmbeds
       SocialEmbedImageUploader.new.upload_from_url(source_url) || snapshot.author_avatar_url
     end
 
-    # Downloads the post's photos onto our own storage, once. Once we have a
-    # durable set we keep it untouched, so a transient storage/CDN failure on a
-    # later refresh can never erase already-archived media (Codex P2).
+    # Downloads the post's photos onto our own storage. Already-stored entries are
+    # kept as-is (so a transient failure on a later refresh can never erase durable
+    # media), while source photos we haven't stored yet are retried on each refresh
+    # and appended once they succeed (so a partially-failed capture eventually
+    # completes). Codex P2.
     def rehost_photos(snapshot, photos)
-      existing = Array.wrap(snapshot.media)
-      return existing if existing.any?
+      existing = Array.wrap(snapshot.media).select { |m| m["url"].present? }
       return existing if photos.blank?
 
-      Array.wrap(photos).filter_map do |photo|
+      stored_sources = existing.filter_map { |m| m["source_url"] }
+      additions = Array.wrap(photos).filter_map do |photo|
+        next if stored_sources.include?(photo["url"])
+
         stored_url = SocialEmbedImageUploader.new.upload_from_url(photo["url"])
-        next nil unless stored_url
+        next unless stored_url
 
         {
           "type" => "photo",
@@ -119,6 +123,8 @@ module SocialEmbeds
           "alt" => photo["alt"].to_s
         }
       end
+
+      existing + additions
     end
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_16_120000) do
+ActiveRecord::Schema[8.0].define(version: 2026_08_11_143500) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "ltree"
@@ -1627,8 +1627,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_16_120000) do
     t.text "text_content"
     t.text "text_html"
     t.datetime "updated_at", null: false
+    t.index ["checked_at"], name: "index_social_post_snapshots_on_checked_at_active", where: "(source_status <> 2)"
     t.index ["platform", "source_id"], name: "index_social_post_snapshots_on_platform_and_source_id", unique: true
-    t.index ["source_status", "checked_at"], name: "index_social_post_snapshots_on_status_and_checked_at"
     t.index ["source_status"], name: "index_social_post_snapshots_on_source_status"
   end
 

@@ -105,6 +105,25 @@ RSpec.describe SocialEmbeds::Snapshotter do
 
       expect(snapshot.reload.photos.pluck("url")).to eq(["https://ourhost/photo.jpg"])
     end
+
+    it "retries a photo that failed on the initial capture" do
+      photos = [{ "url" => "https://cdn/a.jpg", "alt" => "" }, { "url" => "https://cdn/b.jpg", "alt" => "" }]
+      # first capture: a stores, b transiently fails
+      allow_any_instance_of(SocialEmbedImageUploader) # rubocop:disable RSpec/AnyInstance
+        .to receive(:upload_from_url) { |_instance, url| url == "https://cdn/a.jpg" ? "https://ourhost/a.jpg" : nil }
+      stub_client(ok_data(photos: photos))
+      snapshot = described_class.call(**args)
+      expect(snapshot.photos.pluck("source_url")).to eq(["https://cdn/a.jpg"])
+
+      # refresh: b now succeeds and is appended, a is kept
+      allow_any_instance_of(SocialEmbedImageUploader) # rubocop:disable RSpec/AnyInstance
+        .to receive(:upload_from_url).and_return("https://ourhost/b.jpg")
+      stub_client(ok_data(photos: photos))
+      described_class.refresh(snapshot)
+
+      expect(snapshot.reload.photos.pluck("source_url"))
+        .to contain_exactly("https://cdn/a.jpg", "https://cdn/b.jpg")
+    end
   end
 
   describe "avatar re-hosting" do

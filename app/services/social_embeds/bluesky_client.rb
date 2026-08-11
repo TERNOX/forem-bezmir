@@ -39,9 +39,14 @@ module SocialEmbeds
     def fetch
       return PostData.unavailable if @at_uri.blank?
 
+      # Re-resolve to the DID form on every fetch: if resolution failed at capture
+      # time a handle-based URI may be persisted, and getPostThread rejects those.
+      # Resolving here lets scheduled refreshes recover such snapshots.
+      uri = self.class.canonical_at_uri(@at_uri)
+
       response = HTTParty.get(
         ENDPOINT,
-        query: { uri: @at_uri, depth: 0, parentHeight: 0 },
+        query: { uri: uri, depth: 0, parentHeight: 0 },
         headers: { "Accept" => "application/json" },
         timeout: 10,
       )

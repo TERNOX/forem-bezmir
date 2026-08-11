@@ -54,6 +54,30 @@ RSpec.describe SocialEmbeds::BlueskyClient do
     expect(described_class.fetch(at_uri: at_uri).status).to eq(:unavailable)
   end
 
+  it "resolves a handle-based at_uri to its DID before fetching" do
+    stub_request(:get, "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle")
+      .with(query: { handle: "alice.bsky.social" })
+      .to_return(status: 200, body: { did: "did:plc:alice" }.to_json,
+                 headers: { "Content-Type" => "application/json" })
+    stub_request(:get, endpoint)
+      .with(query: hash_including({ "uri" => "at://did:plc:alice/app.bsky.feed.post/xyz" }))
+      .to_return(
+        status: 200,
+        body: {
+          "thread" => {
+            "$type" => "app.bsky.feed.defs#threadViewPost",
+            "post" => { "author" => { "handle" => "alice.bsky.social" }, "record" => { "text" => "hi" } }
+          }
+        }.to_json,
+        headers: { "Content-Type" => "application/json" },
+      )
+
+    data = described_class.fetch(at_uri: "at://alice.bsky.social/app.bsky.feed.post/xyz")
+
+    expect(data).to be_ok
+    expect(data.text_content).to eq("hi")
+  end
+
   describe ".canonical_at_uri" do
     let(:resolve_endpoint) { "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle" }
 
