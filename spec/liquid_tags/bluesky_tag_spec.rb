@@ -10,9 +10,10 @@ RSpec.describe BlueskyTag, type: :liquid_tag do
     let(:invalid_input) { "invalid-input" }
 
     # Helper method to register and parse the Bluesky tag with the given input.
-    def generate_bluesky_tag(input)
+    # capture_social_embeds mirrors the real article-save render path.
+    def generate_bluesky_tag(input, capture: true)
       Liquid::Template.register_tag("bluesky", BlueskyTag)
-      Liquid::Template.parse("{% bluesky #{input} %}")
+      Liquid::Template.parse("{% bluesky #{input} %}", capture_social_embeds: capture)
     end
 
     before do
@@ -61,6 +62,12 @@ RSpec.describe BlueskyTag, type: :liquid_tag do
 
       expect(SocialEmbeds::Snapshotter).to have_received(:call)
         .with(hash_including(source_id: "at://did:plc:abcdef12345/app.bsky.feed.post/3ldhpt43zps2g"))
+    end
+
+    it "does not capture a snapshot when the capture flag is absent (e.g. preview)" do
+      generate_bluesky_tag(valid_url, capture: false).render
+
+      expect(SocialEmbeds::Snapshotter).not_to have_received(:call)
     end
   end
 end

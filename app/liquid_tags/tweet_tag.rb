@@ -51,10 +51,11 @@ class TweetTag < LiquidTagBase
     SCRIPT
   end
 
-  def initialize(_tag_name, id, _parse_context)
+  def initialize(_tag_name, id, parse_context)
     super
     input = CGI.unescape_html(strip_tags(id))
     @id = parse_id_or_url(input)
+    @capture_snapshot = parse_context.partial_options[:capture_social_embeds]
   end
 
   def render(_context)
@@ -70,8 +71,11 @@ class TweetTag < LiquidTagBase
   private
 
   # Fork-only: capture/refresh a durable snapshot so the quote survives deletion.
-  # Never let a snapshot failure break article rendering.
+  # Only on the real article-save path (not previews). Never let a snapshot
+  # failure break article rendering.
   def snapshot
+    return nil unless @capture_snapshot
+
     SocialEmbeds::Snapshotter.call(
       platform: "twitter",
       source_id: @id,

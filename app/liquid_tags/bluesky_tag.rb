@@ -17,11 +17,12 @@ class BlueskyTag < LiquidTagBase
     true
   end
 
-  def initialize(_tag_name, input, _parse_context)
+  def initialize(_tag_name, input, parse_context)
     super
     # Clean the input
     input = CGI.unescape_html(strip_tags(input))
     @parsed = parse_id_or_url(input)
+    @capture_snapshot = parse_context.partial_options[:capture_social_embeds]
   end
 
   def render(_context)
@@ -51,6 +52,8 @@ class BlueskyTag < LiquidTagBase
   # Fork-only: capture/refresh a durable snapshot so the quote survives deletion.
   # Never let a snapshot failure break article rendering.
   def snapshot
+    return nil unless @capture_snapshot
+
     # Canonicalize to the DID-based AT-URI: a rkey alone is unique only within an
     # author's repo, and the API rejects handle-based URIs (which is what most
     # bsky.app URLs produce). Keying by the resolved DID URI keeps distinct posts

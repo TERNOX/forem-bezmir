@@ -10,11 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_08_11_143500) do
+ActiveRecord::Schema[7.2].define(version: 2026_08_11_143500) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "ltree"
-  enable_extension "pg_catalog.plpgsql"
+  enable_extension "plpgsql"
   enable_extension "pg_trgm"
   enable_extension "pgcrypto"
   enable_extension "unaccent"
