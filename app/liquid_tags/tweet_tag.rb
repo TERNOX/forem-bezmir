@@ -51,10 +51,11 @@ class TweetTag < LiquidTagBase
     SCRIPT
   end
 
-  def initialize(_tag_name, id, _parse_context)
+  def initialize(_tag_name, id, parse_context)
     super
     input = CGI.unescape_html(strip_tags(id))
     @id = parse_id_or_url(input)
+    @capture_snapshot = parse_context.partial_options[:capture_social_embeds]
   end
 
   def render(_context)
@@ -62,11 +63,28 @@ class TweetTag < LiquidTagBase
       partial: PARTIAL,
       locals: {
         id: @id,
+        snapshot: snapshot
       },
     )
   end
 
   private
+
+  # Fork-only: capture/refresh a durable snapshot so the quote survives deletion.
+  # Only on the real article-save path (not previews). Never let a snapshot
+  # failure break article rendering.
+  def snapshot
+    return nil unless @capture_snapshot
+
+    SocialEmbeds::Snapshotter.call(
+      platform: "twitter",
+      source_id: @id,
+      source_url: "https://twitter.com/i/status/#{@id}",
+    )
+  rescue StandardError => e
+    Rails.logger.warn("TweetTag snapshot failed for #{@id}: #{e.class}: #{e.message}")
+    nil
+  end
 
   def parse_id_or_url(input)
     match = pattern_match_for(input, REGEXP_OPTIONS)

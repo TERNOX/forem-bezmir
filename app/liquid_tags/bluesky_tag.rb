@@ -17,11 +17,12 @@ class BlueskyTag < LiquidTagBase
     true
   end
 
-  def initialize(_tag_name, input, _parse_context)
+  def initialize(_tag_name, input, parse_context)
     super
     # Clean the input
     input = CGI.unescape_html(strip_tags(input))
     @parsed = parse_id_or_url(input)
+    @capture_snapshot = parse_context.partial_options[:capture_social_embeds]
   end
 
   def render(_context)
@@ -41,11 +42,33 @@ class BlueskyTag < LiquidTagBase
       partial: PARTIAL,
       locals: {
         html: @html,
+        snapshot: snapshot,
       }
     )
   end
 
   private
+
+  # Fork-only: capture/refresh a durable snapshot so the quote survives deletion.
+  # Never let a snapshot failure break article rendering.
+  def snapshot
+    return nil unless @capture_snapshot
+
+    # Canonicalize to the DID-based AT-URI: a rkey alone is unique only within an
+    # author's repo, and the API rejects handle-based URIs (which is what most
+    # bsky.app URLs produce). Keying by the resolved DID URI keeps distinct posts
+    # from colliding and survives handle changes.
+    at_uri = SocialEmbeds::BlueskyClient.canonical_at_uri(@parsed[:at_uri])
+    SocialEmbeds::Snapshotter.call(
+      platform: "bluesky",
+      source_id: at_uri,
+      source_url: @parsed[:url],
+      at_uri: at_uri,
+    )
+  rescue StandardError => e
+    Rails.logger.warn("BlueskyTag snapshot failed for #{@parsed[:url]}: #{e.class}: #{e.message}")
+    nil
+  end
 
   def parse_id_or_url(input)
     match = pattern_match_for(input, REGEXP_OPTIONS)

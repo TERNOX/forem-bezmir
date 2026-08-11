@@ -1,0 +1,155 @@
+// Fork-only: durable archive card for embedded social posts (Twitter/X, Bluesky).
+// While the source is live we show the platform's own widget (.ltag-social-embed__live);
+// when it's gone the wrapper gets .is-archived and we show the self-hosted card.
+.ltag-social-embed {
+  margin: 0 auto var(--su-4);
+
+  &__archive {
+    display: none;
+  }
+
+  &.is-archived {
+    .ltag-social-embed__live {
+      display: none;
+    }
+
+    .ltag-social-embed__archive {
+      display: block;
+    }
+  }
+
+  &__card {
+    max-width: 550px;
+    margin: 0 auto;
+    padding: var(--su-4) var(--su-5);
+    border: 1px solid var(--card-border, var(--base-20));
+    border-radius: var(--radius, 8px);
+    background: var(--card-bg, var(--base-inverted-text));
+    color: var(--body-color, var(--base-90));
+    font-size: var(--fs-base);
+    line-height: 1.5;
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--su-2);
+    margin-bottom: var(--su-3);
+  }
+
+  &__avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: var(--base-10);
+  }
+
+  &__meta {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &__name {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--su-1);
+    font-weight: var(--fw-bold);
+  }
+
+  &__handle {
+    color: var(--base-60);
+    font-size: var(--fs-s);
+  }
+
+  // Small muted brand mark inline next to the name (like a verified tick), so it
+  // reads as a source logo rather than a close/dismiss button in the corner.
+  &__logo {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    color: var(--base-40);
+
+    svg {
+      display: block;
+    }
+  }
+
+  &__text {
+    margin-bottom: var(--su-3);
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: anywhere;
+
+    a {
+      color: var(--link-color, var(--accent-brand));
+    }
+  }
+
+  &__media {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2px;
+    margin-bottom: var(--su-3);
+    border-radius: var(--radius, 8px);
+    overflow: hidden;
+
+    &--count-2,
+    &--count-3,
+    &--count-4 {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  &__photo-link {
+    display: block;
+    min-width: 0;
+  }
+
+  &__photo {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-height: 320px;
+    object-fit: cover;
+  }
+
+  &__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--su-2);
+    margin-top: var(--su-3);
+    padding-top: var(--su-3);
+    border-top: 1px solid var(--card-border, var(--base-20));
+    font-size: var(--fs-s);
+  }
+
+  &__archived {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--su-1);
+    color: var(--base-50);
+  }
+
+  &__source {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--su-1);
+    color: var(--link-color, var(--accent-brand));
+    font-weight: var(--fw-medium);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__foot-icon {
+    flex-shrink: 0;
+  }
+}

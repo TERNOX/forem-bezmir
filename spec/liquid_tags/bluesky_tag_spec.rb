@@ -10,9 +10,10 @@ RSpec.describe BlueskyTag, type: :liquid_tag do
     let(:invalid_input) { "invalid-input" }
 
     # Helper method to register and parse the Bluesky tag with the given input.
-    def generate_bluesky_tag(input)
+    # capture_social_embeds mirrors the real article-save render path.
+    def generate_bluesky_tag(input, capture: true)
       Liquid::Template.register_tag("bluesky", BlueskyTag)
-      Liquid::Template.parse("{% bluesky #{input} %}")
+      Liquid::Template.parse("{% bluesky #{input} %}", capture_social_embeds: capture)
     end
 
     before do
@@ -22,6 +23,9 @@ RSpec.describe BlueskyTag, type: :liquid_tag do
       # Stub ApplicationController.render to simulate the rendering of the partial.
       allow(ApplicationController).to receive(:render)
         .and_return("<div class=\"bluesky-embed\">Embedded Bluesky Post</div>")
+      # Fork-only: BlueskyTag now captures a durable snapshot on render; keep the
+      # network out of these specs.
+      allow(SocialEmbeds::Snapshotter).to receive(:call).and_return(nil)
     end
 
     it "renders the Bluesky embed for a valid URL" do
@@ -51,6 +55,19 @@ RSpec.describe BlueskyTag, type: :liquid_tag do
     it "accepts a valid URL without raising errors" do
       expect { generate_bluesky_tag(valid_url) }
         .not_to raise_error
+    end
+
+    it "keys the snapshot by the full AT-URI, not the rkey alone" do
+      generate_bluesky_tag(valid_url).render
+
+      expect(SocialEmbeds::Snapshotter).to have_received(:call)
+        .with(hash_including(source_id: "at://did:plc:abcdef12345/app.bsky.feed.post/3ldhpt43zps2g"))
+    end
+
+    it "does not capture a snapshot when the capture flag is absent (e.g. preview)" do
+      generate_bluesky_tag(valid_url, capture: false).render
+
+      expect(SocialEmbeds::Snapshotter).not_to have_received(:call)
     end
   end
 end

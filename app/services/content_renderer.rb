@@ -57,7 +57,11 @@ class ContentRenderer
     fixed = fixer.call(input)
     parsed = front_matter_parser.call(fixed)
     front_matter = parsed.front_matter
-    processed = processor.new(parsed.content, source: source, user: user)
+    # Fork-only: only the real article-save path (not preview/#process) may capture
+    # durable social-embed snapshots, so previews don't trigger external requests,
+    # uploads or orphaned rows.
+    processed = processor.new(parsed.content, source: source, user: user,
+                                              liquid_tag_options: { capture_social_embeds: true })
 
     reading_time = processed.calculate_reading_time
 
