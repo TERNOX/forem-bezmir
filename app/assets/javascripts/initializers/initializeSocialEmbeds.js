@@ -27,16 +27,15 @@ function initializeSocialEmbeds() {
       return;
     }
 
-    const hasBakedCard = !!embed.querySelector('.ltag-social-embed__archive');
-    let url =
+    // Always request the current card HTML: a baked card may be stale or partial
+    // (e.g. one photo failed at capture and was recovered later by a refresh), so
+    // we replace it with the server-rendered card reflecting the latest snapshot.
+    const url =
       '/social_embeds/status?platform=' +
       encodeURIComponent(platform) +
       '&source_id=' +
-      encodeURIComponent(sourceId);
-    // Only ask the server to render the card when we have nothing to reveal.
-    if (!hasBakedCard) {
-      url += '&include_html=1';
-    }
+      encodeURIComponent(sourceId) +
+      '&include_html=1';
 
     window
       .fetch(url, {
@@ -48,7 +47,11 @@ function initializeSocialEmbeds() {
         if (!data || !data.archived) {
           return;
         }
-        if (!hasBakedCard && data.html) {
+        if (data.html) {
+          const existing = embed.querySelector('.ltag-social-embed__archive');
+          if (existing) {
+            existing.remove();
+          }
           embed.insertAdjacentHTML('beforeend', data.html);
         }
         embed.classList.add('is-archived');

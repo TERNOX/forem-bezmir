@@ -44,6 +44,12 @@ module SocialEmbeds
       # Resolving here lets scheduled refreshes recover such snapshots.
       uri = self.class.canonical_at_uri(@at_uri)
 
+      # If we still don't have a DID (resolution failed), getPostThread would
+      # return NotFound and we'd wrongly mark a live post as deleted — which is
+      # terminal and excludes it from future refreshes. Report unavailable so it
+      # is retried instead.
+      return PostData.unavailable unless uri.start_with?("at://did:")
+
       response = HTTParty.get(
         ENDPOINT,
         query: { uri: uri, depth: 0, parentHeight: 0 },

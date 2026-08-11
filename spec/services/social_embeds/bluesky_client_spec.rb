@@ -78,6 +78,17 @@ RSpec.describe SocialEmbeds::BlueskyClient do
     expect(data.text_content).to eq("hi")
   end
 
+  it "returns :unavailable (not :deleted) when a handle cannot be resolved" do
+    stub_request(:get, "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle")
+      .with(query: { handle: "ghost.bsky.social" })
+      .to_return(status: 400, body: "{}")
+    # getPostThread must NOT be called with the unresolved handle URI (no stub for it).
+
+    result = described_class.fetch(at_uri: "at://ghost.bsky.social/app.bsky.feed.post/xyz")
+
+    expect(result.status).to eq(:unavailable)
+  end
+
   describe ".canonical_at_uri" do
     let(:resolve_endpoint) { "https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle" }
 

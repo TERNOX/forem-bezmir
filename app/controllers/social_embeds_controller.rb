@@ -33,21 +33,27 @@ class SocialEmbedsController < ApplicationController
 
   private
 
-  # The front-end injects `html` when the article's baked markup lacks an archive
-  # card (capture failed at publish time) — it only asks for it in that case, so
-  # we skip rendering the partial otherwise.
+  # The front-end asks for `html` when transitioning an embed to archived, so it
+  # can render (or replace a stale/partial baked) card with the current snapshot.
+  # Cached by the snapshot's updated_at so repeated views don't re-render, yet
+  # newly-recovered media invalidates it.
   def archived_payload(snapshot)
     payload = { status: "deleted", archived: true }
     if params[:include_html].present?
-      payload[:html] = render_to_string(partial: "liquids/social_embed_archive",
-                                        locals: { snapshot: snapshot }, formats: [:html], layout: false)
+      payload[:html] = Rails.cache.fetch("social_embed:card:#{snapshot.id}:#{snapshot.updated_at.to_i}") do
+        render_to_string(partial: "liquids/social_embed_archive",
+                         locals: { snapshot: snapshot }, formats: [:html], layout: false)
+      end
     end
     payload
   end
 
   # Real liveness, cached briefly per embed to bound external calls.
+  # race_condition_ttl gives one request a short lease to recompute while
+  # concurrent requests keep serving the stale value, avoiding a stampede of
+  # identical external calls when the entry expires.
   def live_status(snapshot)
-    Rails.cache.fetch(cache_key(snapshot), expires_in: LIVENESS_CACHE_TTL) do
+    Rails.cache.fetch(cache_key(snapshot), expires_in: LIVENESS_CACHE_TTL, race_condition_ttl: 10.seconds) do
       SocialEmbeds::Snapshotter.refresh(snapshot).source_status
     end
   rescue StandardError => e

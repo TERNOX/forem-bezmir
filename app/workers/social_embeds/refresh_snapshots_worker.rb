@@ -11,10 +11,12 @@ module SocialEmbeds
     BATCH_SIZE = 200
 
     def perform
+      # Order matches index_social_post_snapshots_on_checked_at_active (checked_at
+      # ASC, NULLS LAST by default) so the scan can be read straight off the index.
       snapshots = SocialPostSnapshot
         .where.not(source_status: :deleted)
         .where("checked_at IS NULL OR checked_at < ?", SocialPostSnapshot::LIVENESS_TTL.ago)
-        .order(Arel.sql("checked_at ASC NULLS FIRST"))
+        .order(Arel.sql("checked_at ASC NULLS LAST"))
         .limit(BATCH_SIZE)
 
       snapshots.each do |snapshot|
