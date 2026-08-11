@@ -1,7 +1,9 @@
-/* Fork-only: for each embedded social post (Twitter/X, Bluesky) that has a durable
-   archive card, ask our own liveness endpoint whether the original is gone; if so,
-   swap the dead platform widget for the self-hosted archive card. Live posts are
-   left untouched. Safe to run repeatedly (InstantClick re-runs initializers). */
+/* Fork-only: for each embedded social post (Twitter/X, Bluesky), ask our own
+   liveness endpoint whether the original is gone; if so, swap the dead platform
+   widget for the self-hosted archive card. If the article's markup already has a
+   baked archive card we just reveal it; otherwise (capture failed at publish
+   time) we inject the card HTML the endpoint returns. Live posts are left
+   untouched. Safe to run repeatedly (InstantClick re-runs initializers). */
 function initializeSocialEmbeds() {
   const embeds = document.querySelectorAll('.ltag-social-embed');
   if (!embeds.length) {
@@ -14,17 +16,8 @@ function initializeSocialEmbeds() {
     }
     embed.dataset.socialEmbedChecked = 'true';
 
-    // Nothing to fall back to if we never captured a snapshot.
-    if (!embed.querySelector('.ltag-social-embed__archive')) {
-      return;
-    }
-
     // Already archived server-side (source was gone when the article rendered).
-    if (
-      embed.classList.contains('is-archived') ||
-      embed.dataset.status === 'deleted'
-    ) {
-      embed.classList.add('is-archived');
+    if (embed.classList.contains('is-archived')) {
       return;
     }
 
@@ -34,11 +27,16 @@ function initializeSocialEmbeds() {
       return;
     }
 
-    const url =
+    const hasBakedCard = !!embed.querySelector('.ltag-social-embed__archive');
+    let url =
       '/social_embeds/status?platform=' +
       encodeURIComponent(platform) +
       '&source_id=' +
       encodeURIComponent(sourceId);
+    // Only ask the server to render the card when we have nothing to reveal.
+    if (!hasBakedCard) {
+      url += '&include_html=1';
+    }
 
     window
       .fetch(url, {
@@ -47,9 +45,13 @@ function initializeSocialEmbeds() {
       })
       .then((response) => (response.ok ? response.json() : null))
       .then((data) => {
-        if (data && (data.status === 'deleted' || data.archived)) {
-          embed.classList.add('is-archived');
+        if (!data || !data.archived) {
+          return;
         }
+        if (!hasBakedCard && data.html) {
+          embed.insertAdjacentHTML('beforeend', data.html);
+        }
+        embed.classList.add('is-archived');
       })
       .catch(() => {
         /* network hiccup — leave the live widget in place */

@@ -56,5 +56,24 @@ RSpec.describe "SocialEmbeds" do
       expect(response.parsed_body).to eq("status" => "deleted", "archived" => true)
       expect(SocialEmbeds::BlueskyClient).not_to have_received(:fetch)
     end
+
+    it "returns the rendered archive card html when include_html is requested" do
+      snapshot = create(:social_post_snapshot, :archived, text_html: "kept copy")
+
+      get "/social_embeds/status",
+          params: { platform: snapshot.platform, source_id: snapshot.source_id, include_html: 1 }
+
+      expect(response.parsed_body["archived"]).to be(true)
+      expect(response.parsed_body["html"]).to include("ltag-social-embed__card")
+      expect(response.parsed_body["html"]).to include("kept copy")
+    end
+
+    it "omits html unless it is requested" do
+      snapshot = create(:social_post_snapshot, :archived, text_html: "kept")
+
+      get_status(platform: snapshot.platform, source_id: snapshot.source_id)
+
+      expect(response.parsed_body).not_to have_key("html")
+    end
   end
 end

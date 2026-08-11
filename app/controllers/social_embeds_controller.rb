@@ -23,15 +23,27 @@ class SocialEmbedsController < ApplicationController
 
     # Deletion is terminal: once archived, keep serving that from storage instead
     # of re-hitting the platform API every cache cycle for a dead post.
-    if snapshot.deleted?
-      return render json: { status: "deleted", archived: true }
-    end
+    return render(json: archived_payload(snapshot)) if snapshot.deleted?
 
     current = live_status(snapshot)
-    render json: { status: current, archived: current == "deleted" }
+    return render(json: archived_payload(snapshot)) if current == "deleted"
+
+    render json: { status: current, archived: false }
   end
 
   private
+
+  # The front-end injects `html` when the article's baked markup lacks an archive
+  # card (capture failed at publish time) — it only asks for it in that case, so
+  # we skip rendering the partial otherwise.
+  def archived_payload(snapshot)
+    payload = { status: "deleted", archived: true }
+    if params[:include_html].present?
+      payload[:html] = render_to_string(partial: "liquids/social_embed_archive",
+                                        locals: { snapshot: snapshot }, formats: [:html], layout: false)
+    end
+    payload
+  end
 
   # Real liveness, cached briefly per embed to bound external calls.
   def live_status(snapshot)
