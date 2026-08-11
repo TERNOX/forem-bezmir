@@ -22,6 +22,7 @@ class NotifyMailer < ApplicationMailer
     return if RateLimitChecker.new.limit_by_email_recipient_address(@user.email)
 
     @unsubscribe = generate_unsubscribe_token(@user.id, :email_comment_notifications)
+    add_unsubscribe_headers(@unsubscribe)
     @localized_parent_type = localized_parent_type(@comment.parent_type)
 
     # Don't send the email if there's no visible contents
@@ -42,6 +43,7 @@ class NotifyMailer < ApplicationMailer
 
     @follower = follow.follower
     @unsubscribe = generate_unsubscribe_token(@user.id, :email_follower_notifications)
+    add_unsubscribe_headers(@unsubscribe)
 
     mail(to: @user.email, subject: "#{@follower.name} #{subjects[__method__]}")
   end
@@ -56,6 +58,7 @@ class NotifyMailer < ApplicationMailer
     @mentionable_type = @mention.decorate.formatted_mentionable_type
 
     @unsubscribe = generate_unsubscribe_token(@user.id, :email_mention_notifications)
+    add_unsubscribe_headers(@unsubscribe)
 
     mail(to: @user.email,
          subject: I18n.t("mailers.notify_mailer.new_mention", name: @mentioner.name, type: @mentionable_type))
@@ -67,6 +70,7 @@ class NotifyMailer < ApplicationMailer
 
     @unread_notifications_count = @user.notifications.unread.count
     @unsubscribe = generate_unsubscribe_token(@user.id, :email_unread_notifications)
+    add_unsubscribe_headers(@unsubscribe)
     subject = I18n.t("mailers.notify_mailer.unread_notifications", count: @unread_notifications_count,
                                                                    community: Settings::Community.community_name(subforem_id: @subforem_id))
     mail(to: @user.email, subject: subject)
@@ -83,6 +87,7 @@ class NotifyMailer < ApplicationMailer
     @user = @badge_achievement.user
     @badge = @badge_achievement.badge
     @unsubscribe = generate_unsubscribe_token(@user.id, :email_badge_notifications)
+    add_unsubscribe_headers(@unsubscribe)
 
     mail(to: @user.email, subject: I18n.t("mailers.notify_mailer.new_badge"))
   end
