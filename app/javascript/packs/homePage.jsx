@@ -20,7 +20,8 @@ const frontPageFeedPathNames = new Map([
   ['/top/infinity', 'infinity'],
   ['/latest', 'latest'],
   ['/following', ''],
-  ['/following/latest', 'latest']
+  ['/following/latest', 'latest'],
+  ['/following/latest_less_filtered', 'latest_less_filtered'],
 ]);
 
 function determineFeedTimeFrame(url = new URL(window.location.href)) {
