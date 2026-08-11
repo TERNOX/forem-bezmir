@@ -5,9 +5,12 @@
      data-platform="bluesky"
      data-source-id="<%= snapshot&.source_id %>"
      data-status="<%= snapshot&.source_status || "unknown" %>">
-  <div class="ltag-social-embed__live">
-    <%= html.to_s.html_safe %>
-  </div>
+  <%# Skip the live widget entirely when we already know the post is gone. %>
+  <% unless snapshot&.archived_fallback? %>
+    <div class="ltag-social-embed__live">
+      <%= html.to_s.html_safe %>
+    </div>
+  <% end %>
   <% if snapshot&.renderable? %>
     <%= render partial: "liquids/social_embed_archive", locals: { snapshot: snapshot } %>
   <% end %>
