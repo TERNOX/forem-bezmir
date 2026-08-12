@@ -512,6 +512,17 @@ en:
           enable: Enable Fully Trusted
           disable: Disable Fully Trusted
           enabled_notice: This organization is fully trusted. Members can be added directly without confirmation.
+      favorites:
+        leaderboard:
+          heading: Impact Leaderboard
+          description: User ranking by downstream engagement of their favorite content.
+          empty: No favorite content yet.
+          rank: Rank
+          leader: Leader
+          favorites: Favorites
+          articles: Articles
+          comments: Comments
+          impact: Impact
       events:
         fork: "Fork"
         fork_event: "Fork Event"

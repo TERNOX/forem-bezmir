@@ -499,6 +499,17 @@ fr:
           enable: Activer la confiance totale
           disable: Désactiver la confiance totale
           enabled_notice: Cette organisation est de confiance totale. Les membres peuvent être ajoutés directement sans confirmation.
+      favorites:
+        leaderboard:
+          heading: Classement d'impact
+          description: Classement des utilisateurs selon l'engagement généré par leurs contenus mis en favori.
+          empty: Aucun contenu en favori pour le moment.
+          rank: Rang
+          leader: Leader
+          favorites: Favoris
+          articles: Articles
+          comments: Commentaires
+          impact: Impact
       events:
         fork: "Dupliquer"
         fork_event: "Dupliquer l'événement"

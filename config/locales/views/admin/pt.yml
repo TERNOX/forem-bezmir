@@ -420,6 +420,17 @@ pt:
           enable: Habilitar Totalmente Confiável
           disable: Desabilitar Totalmente Confiável
           enabled_notice: Esta organização é totalmente confiável. Os membros podem ser adicionados diretamente sem confirmação.
+      favorites:
+        leaderboard:
+          heading: Ranking de impacto
+          description: Classificação de usuários pelo engajamento gerado por seus conteúdos favoritados.
+          empty: Nenhum conteúdo favoritado ainda.
+          rank: Posição
+          leader: Líder
+          favorites: Favoritos
+          articles: Artigos
+          comments: Comentários
+          impact: Impacto
       events:
         fork: "Duplicar"
         fork_event: "Duplicar Evento"
