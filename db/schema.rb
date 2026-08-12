@@ -2130,6 +2130,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_08_11_143500) do
   add_foreign_key "email_digest_test_attempt_logs", "email_digest_test_attempts"
   add_foreign_key "email_digest_test_attempts", "users"
   add_foreign_key "emails", "audience_segments"
+  add_foreign_key "emails", "events", validate: false
   add_foreign_key "emails", "user_queries", validate: false
   add_foreign_key "event_signups", "events"
   add_foreign_key "event_signups", "users"
