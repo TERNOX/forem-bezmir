@@ -223,6 +223,8 @@ en:
       invalid_next_run_hour: 'Invalid hour selected for the next digest run'
       resave_published_articles:
         enqueued: 'All published articles will be resaved in the background. Embeds will be rebuilt shortly.'
+      social_images_queued: 'Social image regeneration queued for @%{user}'
+      user_not_found: 'User not found'
     users_controller:
       exported: Data exported to the %{receiver}. The job will complete momentarily.
       email_fail: Email failed to send!

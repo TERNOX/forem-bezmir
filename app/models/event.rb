@@ -9,6 +9,7 @@ class Event < ApplicationRecord
   has_many :billboards, foreign_key: :event_id, dependent: :destroy
   has_many :event_signups, dependent: :destroy
   has_many :signed_up_users, through: :event_signups, source: :user
+  has_many :emails, dependent: :nullify
 
   enum :type_of, { live_stream: 0, takeover: 1, other: 2, challenge: 3 }
   enum :broadcast_config, { no_broadcast: 0, tagged_broadcast: 1, global_broadcast: 2 }
@@ -36,6 +37,22 @@ class Event < ApplicationRecord
         .where("start_time <= ? AND end_time >= ?", Time.current + 15.minutes, Time.current - 5.minutes)
         .select(:id, :broadcast_config, :start_time, :end_time, :tags_array)
         .to_a
+    end
+  end
+
+  def signup_button_text(signed_up: false)
+    if challenge?
+      signed_up ? "Signed Up" : "Sign Up"
+    else
+      signed_up ? "Interested" : "I'm Interested"
+    end
+  end
+
+  def signup_confirm_message
+    if challenge?
+      "Are you sure you want to cancel your sign up?"
+    else
+      "Are you sure you want to cancel your interest?"
     end
   end
 

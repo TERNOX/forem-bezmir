@@ -392,3 +392,17 @@ pt:
           enable: Habilitar Totalmente Confiável
           disable: Desabilitar Totalmente Confiável
           enabled_notice: Esta organização é totalmente confiável. Os membros podem ser adicionados diretamente sem confirmação.
+      events:
+        fork: "Duplicar"
+        fork_event: "Duplicar Evento"
+        show:
+          signups_title: "Inscrições no evento"
+          no_signups: "Nenhuma inscrição para este evento ainda."
+          headers:
+            user: "Usuário"
+            signed_up_at: "Inscrito em"
+            notifications: "Notificações enviadas"
+          notifications:
+            day_before: "1 dia antes"
+            hour_before: "1 hora antes"
+            none: "Nenhuma"

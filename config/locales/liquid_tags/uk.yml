@@ -1,6 +1,8 @@
 ---
 uk:
   liquid_tags:
+    event_tag:
+      not_found: Подію не знайдено
     social_embed:
       view_original: Переглянути оригінал
       archived_badge: Збережена копія

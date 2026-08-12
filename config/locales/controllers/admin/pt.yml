@@ -183,6 +183,8 @@ pt:
       top_articles_digest_missing: 'Não foi possível atualizar o resumo: configuração ausente'
       resave_published_articles:
         enqueued: 'Todos os artigos publicados serão salvos novamente em segundo plano. Os embeds serão reconstruídos em breve.'
+      social_images_queued: 'Regeneração de imagens sociais em fila para @%{user}'
+      user_not_found: 'Usuário não encontrado'
     users_controller:
       role_removed: 'Função: %{role} foi removida com sucesso do usuário!'
       updated: Usuário foi atualizado
