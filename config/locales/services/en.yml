@@ -23,6 +23,9 @@ en:
         not_available: Провайдер %{name} недоступний!
         not_enabled: Провайдер %{name} не ввімкнений!
     badges:
+      award_community_favorite:
+        article_message: "Well done! [Your post](%{url}) is a community favorite!"
+        comment_message: "Well done! [Your comment](%{url}) is a community favorite!"
       award_beloved_comment:
         message: "Ви стали відомі! [Ось цей коментар](%{comment}), за який вас відзначено. 😄"
       award_streak:

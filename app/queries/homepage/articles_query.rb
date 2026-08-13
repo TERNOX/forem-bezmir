@@ -5,6 +5,7 @@ module Homepage
       comments_count
       crossposted_at
       displayed_comments_count
+      favorited_by_user_id
       id
       main_image
       main_image_background_hex_color

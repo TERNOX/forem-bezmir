@@ -390,6 +390,7 @@ function insertArticles(articles) {
       var newHTML = buildArticleHTML(article, currentUserId);
       newArticlesHTML += newHTML;
       initializeReadingListIcons();
+      initializeFavoritedMarkers();
     }
   });
   var distanceFromBottom =
@@ -528,6 +529,7 @@ function paginate(tag, params, requiresApproval) {
       const checkBlockedContentEvent = new CustomEvent('checkBlockedContent');
       window.dispatchEvent(checkBlockedContentEvent);
       initializeReadingListIcons();
+      initializeFavoritedMarkers();
       if (resultsCollection.length === 0) {
         const loadingElement = document.getElementById('loading-articles');
         if (loadingElement) {
