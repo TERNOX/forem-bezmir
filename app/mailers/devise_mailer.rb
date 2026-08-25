@@ -45,6 +45,13 @@ class DeviseMailer < Devise::Mailer
     super
   end
 
+  def reset_password_instructions(record, token, opts = {})
+    # Surfaced in the reset email when an admin triggered the reset from the
+    # user admin panel (opts[:admin_triggered_by] carries the admin's name).
+    @admin_triggered_by = opts[:admin_triggered_by]
+    super
+  end
+
   private
 
   # Override find_user_for_email to work with Devise's @resource

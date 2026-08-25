@@ -25,6 +25,7 @@ uk:
         subject: "Пароль змінено"
       reset_password_instructions:
         subject: "Інструкції зі скидання пароля"
+        admin_triggered_html: "Адміністратор (%{admin}) запросив це скидання пароля, щоб допомогти вам відновити доступ до акаунта."
       unlock_instructions:
         subject: "Інструкції з розблокування"
       magic_link:

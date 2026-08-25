@@ -863,6 +863,14 @@ class User < ApplicationRecord
     last_followed_at.respond_to?(:rfc3339) ? last_followed_at.rfc3339 : last_followed_at.to_s
   end
 
+
+  # rubocop:disable Style/OptionHash
+  def send_reset_password_instructions(opts = {})
+    token = set_reset_password_token
+    send_devise_notification(:reset_password_instructions, token, opts)
+    token
+  end
+  # rubocop:enable Style/OptionHash
   protected
 
   # Send emails asynchronously

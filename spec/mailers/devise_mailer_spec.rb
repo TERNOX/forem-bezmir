@@ -39,6 +39,20 @@ RSpec.describe DeviseMailer, type: :mailer do
       expect(email.to_s).not_to include("ahoy_click=true")
       expect(email.to_s).not_to include("/ahoy/click")
     end
+
+    context "when triggered by an admin" do
+      let(:admin_email) { described_class.reset_password_instructions(user, "test", admin_triggered_by: "AdminUser") }
+
+      it "includes the admin-triggered explanation in the email body" do
+        expect(admin_email.body.encoded).to include("An admin (AdminUser) requested this password reset")
+      end
+    end
+
+    context "when not triggered by an admin" do
+      it "does not include the admin-triggered explanation" do
+        expect(email.body.encoded).not_to include("An admin (")
+      end
+    end
   end
 
   describe "#confirmation_instructions" do
