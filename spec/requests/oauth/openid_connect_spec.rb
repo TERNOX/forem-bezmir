@@ -190,4 +190,47 @@ RSpec.describe "OpenID Connect provider" do
       expect(Doorkeeper::AccessGrant.count).to be_zero
     end
   end
+
+  describe "private forem" do
+    # With `Settings::UserExperience.public` off, ApplicationController renders
+    # the private landing page instead of running the action. For the OAuth
+    # endpoints that would swallow the request: a member who is simply logged
+    # out would hit a dead end rather than a sign-in prompt, and machine
+    # endpoints would answer HTML. Doorkeeper enforces its own authentication,
+    # so the guard steps aside for it.
+    before { allow(Settings::UserExperience).to receive(:public).and_return(false) }
+
+    it "sends a logged-out visitor through sign-in instead of the private landing page" do
+      get "/oauth/authorize", params: {
+        client_id: application.uid,
+        redirect_uri: application.redirect_uri,
+        response_type: "code",
+        scope: "openid email"
+      }
+
+      expect(response).to have_http_status(:redirect)
+      expect(response.redirect_url).to include("/enter").or include("/users/sign_in")
+    end
+
+    it "still serves the discovery document to a relying party" do
+      get "/.well-known/openid-configuration"
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body["issuer"]).to eq(URL.url)
+    end
+
+    it "still authorizes a signed-in member" do
+      sign_in user
+
+      post "/oauth/authorize", params: {
+        client_id: application.uid,
+        redirect_uri: application.redirect_uri,
+        response_type: "code",
+        scope: "openid email profile"
+      }
+
+      expect(response.redirect_url).to start_with(application.redirect_uri)
+      expect(Doorkeeper::AccessGrant.last.resource_owner_id).to eq(user.id)
+    end
+  end
 end

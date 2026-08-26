@@ -106,6 +106,14 @@ class ApplicationController < ActionController::Base
   def verify_private_forem
     return if controller_name.in?(PUBLIC_CONTROLLERS)
     return if self.class.module_parent.to_s == "Admin"
+    # OAuth/OIDC endpoints enforce their own authentication: the
+    # authorization page bounces an anonymous visitor through Devise and
+    # returns them here afterwards, while token/userinfo authenticate the
+    # client or a bearer token. Letting this guard run first would render
+    # the private landing page in place of the flow — a dead end that
+    # swallows the request instead of asking the visitor to sign in, and
+    # answers machine endpoints with HTML.
+    return if self.class.name.to_s.start_with?("Doorkeeper::")
     return if user_signed_in? || Settings::UserExperience.public
 
     if api_action?
