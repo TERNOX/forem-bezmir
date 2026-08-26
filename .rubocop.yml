@@ -307,6 +307,9 @@ Metrics/BlockLength:
     - 'db/seeds.rb'
     - 'Guardfile'
     - 'spec/**/*'
+    # Configuration DSL, like the entries above: the block length is the
+    # size of the configuration, not of a method that could be split up.
+    - 'config/initializers/doorkeeper_openid_connect.rb'
 
 Metrics/ClassLength:
   Description: 'Avoid classes longer than 100 lines of code.'
