@@ -12,6 +12,12 @@ Rails.application.routes.draw do
     confirmations: "confirmations"
   }
 
+  # OAuth 2 / OIDC provider endpoints. Kept outside the i18n scope for the
+  # same reason as the omniauth callbacks above: a relying party discovers
+  # these paths once and must not have a locale segment injected into them.
+  use_doorkeeper
+  use_doorkeeper_openid_connect
+
   devise_scope :user do
     get "/enter", to: "registrations#new", as: :sign_up
     get "/confirm-email", to: "confirmations#new"

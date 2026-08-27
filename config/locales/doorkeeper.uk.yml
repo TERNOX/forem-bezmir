@@ -1,0 +1,53 @@
+# Ukrainian strings for the OAuth/OIDC consent flow.
+#
+# Only the visitor-facing part is translated: the consent screen and the errors
+# a visitor can actually hit. Doorkeeper's application CRUD under
+# /oauth/applications is super-admin-only and falls back to English on purpose —
+# a machine translation of admin plumbing would be worse than the original.
+uk:
+  doorkeeper:
+    admin:
+      not_authorized: 'Недостатньо прав'
+    authorizations:
+      buttons:
+        authorize: 'Дозволити'
+        deny: 'Відхилити'
+      error:
+        title: 'Сталася помилка'
+      new:
+        title: 'Потрібен дозвіл'
+        prompt: 'Дозволити «%{client_name}» користуватися вашим акаунтом?'
+        able_to: 'Цей застосунок зможе:'
+      show:
+        title: 'Код авторизації:'
+      form_post:
+        title: 'Надішліть цю форму'
+
+    authorized_applications:
+      confirmations:
+        revoke: 'Ви впевнені?'
+      buttons:
+        revoke: 'Відкликати'
+      index:
+        title: 'Застосунки з доступом до вашого акаунта'
+        application: 'Застосунок'
+        created_at: 'Надано'
+        date_format: '%d.%m.%Y %H:%M'
+
+    scopes:
+      openid: 'Підтвердити, що акаунт ваш'
+      profile: 'Бачити ваші імʼя та нікнейм'
+      email: 'Бачити вашу електронну пошту'
+
+    errors:
+      messages:
+        invalid_request:
+          unknown: 'У запиті бракує обовʼязкового параметра, або він некоректний.'
+          missing_param: 'Бракує обовʼязкового параметра: %{value}.'
+          request_not_authorized: 'Запит потребує авторизації: обовʼязковий параметр відсутній або недійсний.'
+        invalid_redirect_uri: 'Адреса повернення некоректна або не збігається з тією, що вказана для застосунку.'
+        unauthorized_client: 'Застосунку не дозволено виконувати цей запит у такий спосіб.'
+        access_denied: 'Ви відхилили запит.'
+        invalid_scope: 'Запитано доступ, якого цей застосунок не має.'
+        server_error: 'Сервер авторизації натрапив на неочікувану помилку.'
+        temporarily_unavailable: 'Сервер авторизації тимчасово недоступний.'

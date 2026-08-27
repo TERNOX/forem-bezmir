@@ -1,0 +1,52 @@
+# French strings for the OAuth/OIDC consent flow.
+#
+# Only the visitor-facing part is translated: the consent screen and the errors
+# a visitor can actually hit. Doorkeeper's application CRUD under
+# /oauth/applications is super-admin-only and falls back to English on purpose.
+fr:
+  doorkeeper:
+    admin:
+      not_authorized: "Vous n'êtes pas autorisé à effectuer cette action"
+    authorizations:
+      buttons:
+        authorize: 'Autoriser'
+        deny: 'Refuser'
+      error:
+        title: "Une erreur s'est produite"
+      new:
+        title: 'Autorisation requise'
+        prompt: 'Autoriser « %{client_name} » à utiliser votre compte ?'
+        able_to: 'Cette application pourra :'
+      show:
+        title: "Code d'autorisation :"
+      form_post:
+        title: 'Envoyer ce formulaire'
+
+    authorized_applications:
+      confirmations:
+        revoke: 'Êtes-vous sûr ?'
+      buttons:
+        revoke: 'Révoquer'
+      index:
+        title: 'Applications autorisées'
+        application: 'Application'
+        created_at: 'Autorisée le'
+        date_format: '%d/%m/%Y %H:%M'
+
+    scopes:
+      openid: 'Confirmer que ce compte est le vôtre'
+      profile: 'Voir votre nom et votre nom d’utilisateur'
+      email: 'Voir votre adresse e-mail'
+
+    errors:
+      messages:
+        invalid_request:
+          unknown: "La requête est incomplète ou mal formée."
+          missing_param: 'Paramètre obligatoire manquant : %{value}.'
+          request_not_authorized: "La requête doit être autorisée : un paramètre obligatoire est manquant ou invalide."
+        invalid_redirect_uri: "L'URI de redirection est mal formée ou ne correspond pas à celle de l'application."
+        unauthorized_client: "L'application n'est pas autorisée à effectuer cette requête de cette manière."
+        access_denied: 'Vous avez refusé la demande.'
+        invalid_scope: "L'accès demandé n'est pas accordé à cette application."
+        server_error: "Le serveur d'autorisation a rencontré une erreur inattendue."
+        temporarily_unavailable: "Le serveur d'autorisation est temporairement indisponible."

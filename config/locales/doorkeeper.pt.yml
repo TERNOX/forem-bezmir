@@ -1,0 +1,52 @@
+# Portuguese strings for the OAuth/OIDC consent flow.
+#
+# Only the visitor-facing part is translated: the consent screen and the errors
+# a visitor can actually hit. Doorkeeper's application CRUD under
+# /oauth/applications is super-admin-only and falls back to English on purpose.
+pt:
+  doorkeeper:
+    admin:
+      not_authorized: 'Você não tem permissão para esta ação'
+    authorizations:
+      buttons:
+        authorize: 'Autorizar'
+        deny: 'Recusar'
+      error:
+        title: 'Ocorreu um erro'
+      new:
+        title: 'Autorização necessária'
+        prompt: 'Autorizar «%{client_name}» a usar a sua conta?'
+        able_to: 'Este aplicativo poderá:'
+      show:
+        title: 'Código de autorização:'
+      form_post:
+        title: 'Envie este formulário'
+
+    authorized_applications:
+      confirmations:
+        revoke: 'Tem certeza?'
+      buttons:
+        revoke: 'Revogar'
+      index:
+        title: 'Aplicativos autorizados'
+        application: 'Aplicativo'
+        created_at: 'Autorizado em'
+        date_format: '%d/%m/%Y %H:%M'
+
+    scopes:
+      openid: 'Confirmar que a conta é sua'
+      profile: 'Ver o seu nome e nome de usuário'
+      email: 'Ver o seu endereço de e-mail'
+
+    errors:
+      messages:
+        invalid_request:
+          unknown: 'A requisição está incompleta ou malformada.'
+          missing_param: 'Parâmetro obrigatório ausente: %{value}.'
+          request_not_authorized: 'A requisição precisa ser autorizada: um parâmetro obrigatório está ausente ou inválido.'
+        invalid_redirect_uri: 'A URI de redirecionamento é inválida ou não corresponde à do aplicativo.'
+        unauthorized_client: 'O aplicativo não está autorizado a fazer esta requisição desta forma.'
+        access_denied: 'Você recusou a solicitação.'
+        invalid_scope: 'O acesso solicitado não foi concedido a este aplicativo.'
+        server_error: 'O servidor de autorização encontrou um erro inesperado.'
+        temporarily_unavailable: 'O servidor de autorização está temporariamente indisponível.'
