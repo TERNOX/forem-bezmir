@@ -24,8 +24,8 @@ en:
         not_enabled: Провайдер %{name} не ввімкнений!
     badges:
       award_community_favorite:
-        article_message: "Well done! [Your post](%{url}) is a community favorite!"
-        comment_message: "Well done! [Your comment](%{url}) is a community favorite!"
+        article_message: "Well done! [Your post](%{url}) was picked as a community gem!"
+        comment_message: "Well done! [Your comment](%{url}) was picked as a community gem!"
       award_beloved_comment:
         message: "Ви стали відомі! [Ось цей коментар](%{comment}), за який вас відзначено. 😄"
       award_streak:

@@ -157,8 +157,8 @@ en:
         no_max_if_zero: No max if set to zero
         edit: Edit
         featured: Featured
-        favorited_by: Favorited by
-        unfavorite: Unfavorite
+        favorited_by: Picked as gem by
+        unfavorite: Remove gem
         likes: likes
         notes:
           user_notes: user notes
