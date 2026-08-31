@@ -120,6 +120,12 @@ fr:
       fully_trusted_enabled: Le statut de confiance totale a été activé pour cette organisation.
       fully_trusted_disabled: Le statut de confiance totale a été désactivé pour cette organisation.
       baseline_score_updated: Le score de base a été mis à jour !
+      bulk_add_users:
+        added: "%{count} utilisateur(s) (%{usernames}) ont été ajoutés avec succès à l'organisation."
+        already_members: "Déjà membre(s) : %{usernames}."
+        not_found: "Utilisateur(s) non trouvé(s) : %{usernames}."
+        failed: "Échec de l'ajout de %{count} utilisateur(s) : %{errors}."
+        empty_input: "Veuillez fournir au moins un nom d'utilisateur."
     pages_controller:
       updated: La page a été mise à jour avec succès.
       created: La page a été créée avec succès.

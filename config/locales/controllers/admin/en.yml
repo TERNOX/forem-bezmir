@@ -120,6 +120,12 @@ en:
       fully_trusted_enabled: Fully trusted status has been enabled for this organization.
       fully_trusted_disabled: Fully trusted status has been disabled for this organization.
       baseline_score_updated: Baseline score updated!
+      bulk_add_users:
+        added: "Successfully added %{count} user(s) (%{usernames}) to the organization."
+        already_members: "Already member(s): %{usernames}."
+        not_found: "User(s) not found: %{usernames}."
+        failed: "Failed to add %{count} user(s): %{errors}."
+        empty_input: "Please provide at least one username."
     pages_controller:
       updated: Page has been successfully updated.
       created: Page has been successfully created.
