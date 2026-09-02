@@ -30,6 +30,7 @@ uk:
       feed:
         discover: Відкрийте
         following: Відстежувані
+        curated: Платина
         top_this_week: Топ цього тижня
         top_this_month: Топ цього місяця
         top_this_year: Топ цього року
@@ -43,6 +44,11 @@ uk:
           following:
             title: "Немає дописів від тих, на кого ви підписані"
             description: "Підпишіться на учасників, щоб бачити їхні нові дописи у своїй стрічці."
+            action_text: "Назад до вкладки «Відкрийте»"
+            action_href: "/discover"
+          curated:
+            title: "Поки немає дописів із платиною"
+            description: "Загляньте пізніше — тут з'являться дописи, які спільнота нагородила платиною!"
             action_text: "Назад до вкладки «Відкрийте»"
             action_href: "/discover"
           default:

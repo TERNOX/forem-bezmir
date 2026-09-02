@@ -383,6 +383,8 @@ class StoriesController < ApplicationController
     if timeframe.in?(Timeframe::FILTER_TIMEFRAMES)
       @stories = Articles::Feeds::Timeframe.call(timeframe)
       @stories = filter_community_stories(@stories)
+    elsif params[:feed_type] == "curated"
+      @stories = Articles::Feeds::Curated.call(page: @page)
     elsif timeframe == Timeframe::LATEST_TIMEFRAME
       @stories = Articles::Feeds::Latest.call(minimum_score: Settings::UserExperience.home_feed_minimum_score)
       @stories = filter_community_stories(@stories)

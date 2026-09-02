@@ -51,6 +51,8 @@ module Stories
                   latest_following_feed
                 elsif params[:type_of] == "following" && user_signed_in?
                   relevant_following_feed
+                elsif params[:type_of] == "curated"
+                  curated_feed
                 elsif timeframe == Timeframe::LATEST_TIMEFRAME
                   latest_feed
                 elsif user_signed_in?
@@ -130,6 +132,15 @@ module Stories
 
     def latest_feed
       Articles::Feeds::Latest.call(tag: params[:tag], page: @page)
+    end
+
+    def curated_feed
+      Articles::Feeds::Curated.call(
+        user: current_user,
+        tag: params[:tag],
+        page: @page,
+        number_of_articles: 25,
+      )
     end
 
     def latest_following_feed
