@@ -75,6 +75,15 @@ class Survey < ApplicationRecord
     survey_completions.exists?(user: user)
   end
 
+  def extra_email_context_html
+    return if extra_email_context_paragraph.blank?
+
+    MarkdownProcessor::Parser.new(extra_email_context_paragraph).evaluate_markdown(
+      allowed_tags: MarkdownProcessor::AllowedTags::EMAIL_SURVEY,
+      allowed_attributes: MarkdownProcessor::AllowedAttributes::EMAIL_SURVEY,
+    )&.strip
+  end
+
   private
 
   def generate_slug
