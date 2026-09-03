@@ -9,6 +9,8 @@ class SurveyMailer < ApplicationMailer
       subject = "You've been randomly selected for a very quick #{@community_name} Industry Survey"
     elsif @survey.fun?
       subject = "A quick, fun survey from #{@community_name}!"
+    elsif @survey.beta_testing?
+      subject = "You've been randomly selected for a beta testing survey"
     else
       subject = "You've been randomly selected for a #{@community_name} Pulse Survey"
     end

@@ -50,6 +50,22 @@ RSpec.describe SurveyMailer, type: :mailer do
       end
     end
 
+    context "when survey is beta_testing" do
+      let(:survey) do
+        create(:survey, title: "Beta Survey", type_of: :beta_testing, extra_email_context_paragraph: "Beta details.")
+      end
+
+      it "renders the headers" do
+        expect(mail.subject).to eq("You've been randomly selected for a beta testing survey")
+      end
+
+      it "renders the body with link to survey" do
+        expect(mail.body.encoded).to include("Take the Beta Testing Survey")
+        expect(mail.body.encoded).to include("Beta details.")
+        expect(mail.body.encoded).to include("randomly selected to participate in a beta testing survey.")
+      end
+    end
+
     context "when survey has HTML in extra_email_context_paragraph" do
       let(:survey) do
         create(:survey,
