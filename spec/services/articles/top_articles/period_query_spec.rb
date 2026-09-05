@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe Articles::TopArticles::PeriodQuery, type: :service do
+  include ActiveSupport::Testing::TimeHelpers
+
   describe ".call" do
     let(:start_time) { Time.zone.local(2024, 6, 1) }
     let(:end_time) { start_time + 1.week }
@@ -170,12 +172,19 @@ RSpec.describe Articles::TopArticles::PeriodQuery, type: :service do
     context "with Community Favorites (gems)" do
       let(:curator) { create(:user) }
 
-      it "guarantees a gem published in the period a spot even without reactions" do
-        gem_article = create(:article, published_at: in_period_published_at)
-        gem_article.update_columns(favorited_by_user_id: curator.id, favorited_at: start_time + 1.day)
+      # The article publish-date validation rejects a published_at more than
+      # 15 minutes in the past, so freeze the clock inside the analysed period
+      # to create in-period articles the way the query expects to find them.
+      around do |example|
+        travel_to(start_time + 2.days) { example.run }
+      end
 
-        popular = create(:article, published_at: in_period_published_at)
-        create_list(:reaction, 5, reactable: popular, category: "like", created_at: start_time + 1.day)
+      it "guarantees a gem published in the period a spot even without reactions" do
+        gem_article = create(:article)
+        gem_article.update_columns(favorited_by_user_id: curator.id, favorited_at: Time.current)
+
+        popular = create(:article)
+        create_list(:reaction, 5, reactable: popular, category: "like", created_at: Time.current)
         popular.update!(score: 50)
 
         result = described_class.call(start_time: start_time, end_time: end_time, limit: 5)
@@ -185,11 +194,11 @@ RSpec.describe Articles::TopArticles::PeriodQuery, type: :service do
       end
 
       it "places gems ahead of reaction-ranked articles when slots are limited" do
-        gem_article = create(:article, published_at: in_period_published_at)
-        gem_article.update_columns(favorited_by_user_id: curator.id, favorited_at: start_time + 1.day)
+        gem_article = create(:article)
+        gem_article.update_columns(favorited_by_user_id: curator.id, favorited_at: Time.current)
 
-        popular = create(:article, published_at: in_period_published_at)
-        create_list(:reaction, 5, reactable: popular, category: "like", created_at: start_time + 1.day)
+        popular = create(:article)
+        create_list(:reaction, 5, reactable: popular, category: "like", created_at: Time.current)
         popular.update!(score: 50)
 
         result = described_class.call(start_time: start_time, end_time: end_time, limit: 1)
@@ -198,10 +207,10 @@ RSpec.describe Articles::TopArticles::PeriodQuery, type: :service do
       end
 
       it "does not duplicate a gem that also ranks by reactions" do
-        gem_article = create(:article, published_at: in_period_published_at)
-        create_list(:reaction, 5, reactable: gem_article, category: "like", created_at: start_time + 1.day)
+        gem_article = create(:article)
+        create_list(:reaction, 5, reactable: gem_article, category: "like", created_at: Time.current)
         gem_article.update!(score: 40)
-        gem_article.update_columns(favorited_by_user_id: curator.id, favorited_at: start_time + 1.day)
+        gem_article.update_columns(favorited_by_user_id: curator.id, favorited_at: Time.current)
 
         result = described_class.call(start_time: start_time, end_time: end_time, limit: 5)
 
