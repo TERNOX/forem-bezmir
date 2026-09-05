@@ -166,5 +166,47 @@ RSpec.describe Articles::TopArticles::PeriodQuery, type: :service do
 
       expect(result).to eq([kept_article.id])
     end
+
+    context "with Community Favorites (gems)" do
+      let(:curator) { create(:user) }
+
+      it "guarantees a gem published in the period a spot even without reactions" do
+        gem_article = create(:article, published_at: in_period_published_at)
+        gem_article.update_columns(favorited_by_user_id: curator.id, favorited_at: start_time + 1.day)
+
+        popular = create(:article, published_at: in_period_published_at)
+        create_list(:reaction, 5, reactable: popular, category: "like", created_at: start_time + 1.day)
+        popular.update!(score: 50)
+
+        result = described_class.call(start_time: start_time, end_time: end_time, limit: 5)
+
+        expect(result).to include(gem_article.id)
+        expect(result).to include(popular.id)
+      end
+
+      it "places gems ahead of reaction-ranked articles when slots are limited" do
+        gem_article = create(:article, published_at: in_period_published_at)
+        gem_article.update_columns(favorited_by_user_id: curator.id, favorited_at: start_time + 1.day)
+
+        popular = create(:article, published_at: in_period_published_at)
+        create_list(:reaction, 5, reactable: popular, category: "like", created_at: start_time + 1.day)
+        popular.update!(score: 50)
+
+        result = described_class.call(start_time: start_time, end_time: end_time, limit: 1)
+
+        expect(result).to eq([gem_article.id])
+      end
+
+      it "does not duplicate a gem that also ranks by reactions" do
+        gem_article = create(:article, published_at: in_period_published_at)
+        create_list(:reaction, 5, reactable: gem_article, category: "like", created_at: start_time + 1.day)
+        gem_article.update!(score: 40)
+        gem_article.update_columns(favorited_by_user_id: curator.id, favorited_at: start_time + 1.day)
+
+        result = described_class.call(start_time: start_time, end_time: end_time, limit: 5)
+
+        expect(result.count(gem_article.id)).to eq(1)
+      end
+    end
   end
 end
