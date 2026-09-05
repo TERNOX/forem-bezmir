@@ -34,6 +34,13 @@ class User < ApplicationRecord
 
   RECENTLY_ACTIVE_LIMIT = 10_000
 
+  # Activity timestamps used to decide when a user was last active — e.g. by
+  # CommunityLeaders::PruneInactive to retire community leaders who have gone
+  # quiet. (Upstream introduced this constant via the DEV→Core CDP sync PR the
+  # fork skips, so it is defined here directly.)
+  ACTIVITY_TIMESTAMP_KEYS = %w[current_sign_in_at last_sign_in_at last_presence_at last_reacted_at
+                               last_followed_at last_comment_at last_article_at].freeze
+
   # User types enum
   # Declare explicit attribute types so the enums load even when their backing
   # columns are not yet present (e.g. migrating a database from scratch under
