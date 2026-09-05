@@ -860,8 +860,27 @@ RSpec.describe User do
       large_id_list = (1..1005).to_a
       create(:user_activity, user: user, alltime_reading_list_articles: large_id_list)
 
+      # Treat every id as a published, in-subforem article so the size cap is
+      # exercised without creating 1005 records.
+      scope = double("published_scope")
+      allow(Article).to receive(:published).and_return(scope)
+      allow(scope).to receive(:from_subforem).and_return(scope)
+      allow(scope).to receive(:where).and_return(double(ids: large_id_list))
+
       expect(user.cached_reading_list_article_ids.length).to eq(1000)
       expect(user.cached_reading_list_article_ids).to eq((1..1000).to_a)
+    end
+
+    it "excludes unpublished or out-of-subforem articles from the activity-backed list" do
+      visible = create(:article)
+      hidden = create(:article)
+      create(:user_activity, user: user, alltime_reading_list_articles: [visible.id, hidden.id])
+      scope = double("published_scope")
+      allow(Article).to receive(:published).and_return(scope)
+      allow(scope).to receive(:from_subforem).and_return(scope)
+      allow(scope).to receive(:where).and_return(double(ids: [visible.id]))
+
+      expect(user.cached_reading_list_article_ids).to eq([visible.id])
     end
 
     it "has an accurate agent_sessions_count using counter cache" do

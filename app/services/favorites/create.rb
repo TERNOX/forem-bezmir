@@ -23,12 +23,23 @@ module Favorites
       grant_earned_favorite
       award_badge
       favoritable.async_score_calc if favoritable.respond_to?(:async_score_calc)
+      bust_favoritable_cache
       Result.new(success?: true, favoritable: favoritable)
     end
 
     private
 
     attr_reader :user, :favoritable
+
+    # claim_favoritable uses update_all, which leaves updated_at (and therefore
+    # the comment fragment cache key) untouched. Touch comments so their cached
+    # tree re-renders with the gem marker; touch fires Comment's cache-busting
+    # callbacks, and also refreshes the fragment cache key directly.
+    def bust_favoritable_cache
+      return unless favoritable.is_a?(Comment)
+
+      favoritable.touch
+    end
 
     def precheck_error
       return :already_favorited if favoritable.favorited_by_user_id.present?
