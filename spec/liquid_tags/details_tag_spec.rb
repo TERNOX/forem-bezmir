@@ -139,23 +139,24 @@ RSpec.describe DetailsTag, type: :liquid_tag do
         )
         rendered = template.render
 
-        expect(rendered).to include("ltag__comment")
+        # Fork's comment liquid partial uses the "liquid-comment" wrapper class.
+        expect(rendered).to include("liquid-comment")
         expect(rendered).to include(user.name)
         expect(rendered).to include("<details")
       end
     end
 
     context "when a youtube liquid tag is nested inside" do
-      it "renders the youtube iframe preserving fallback width and height attributes" do
+      it "renders the youtube embed (iframe from a trusted host survives sanitizing)" do
         template = Liquid::Template.parse(
           "{% details Watch video %} {% youtube vKeCr-MAyH4 %} {% enddetails %}",
         )
         rendered = template.render
 
+        # The fork's click-to-play player emits an iframe on the trusted
+        # youtube.com host, which the details scrubber's host allowlist keeps.
         expect(rendered).to include("<iframe")
         expect(rendered).to include("https://www.youtube.com/embed/vKeCr-MAyH4")
-        expect(rendered).to include('width="710"')
-        expect(rendered).to include('height="399"')
         expect(rendered).to include("<details")
       end
     end
@@ -169,6 +170,17 @@ RSpec.describe DetailsTag, type: :liquid_tag do
         expect(rendered).not_to include("script")
         expect(rendered).not_to include("object")
         expect(rendered).to include("<summary>Click to see the answer!")
+      end
+    end
+
+    context "when content has a raw iframe from an untrusted host" do
+      let(:summary) { "Click to see the answer!" }
+      let(:content) { '<iframe src="https://attacker.example/track"></iframe>' }
+
+      it "strips the untrusted iframe" do
+        rendered = generate_details_liquid(summary, content).render
+        expect(rendered).not_to include("attacker.example")
+        expect(rendered).not_to include("<iframe")
       end
     end
 

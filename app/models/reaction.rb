@@ -217,7 +217,7 @@ class Reaction < ApplicationRecord
 
   def reading_list_article_reaction?
     return false unless reactable_is_article?
-    return true if destroyed?
+    return category == "readinglist" if destroyed?
     return true if saved_change_to_category?(to: "readinglist") || saved_change_to_category?(from: "readinglist")
 
     category == "readinglist" && saved_change_to_status?

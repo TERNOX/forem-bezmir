@@ -51,21 +51,29 @@ module URL
     is_on_custom_domain = RequestStore.store[:custom_domain_org].present?
 
     unless is_signed_in && !is_on_custom_domain
-      has_org_attr = article.is_a?(ActiveRecord::Base) ? article.has_attribute?(:organization_id) : article.respond_to?(:organization)
-      if has_org_attr && (org = article.try(:organization))
-        if org && org.respond_to?(:custom_domain) && org.custom_domain.present? && FeatureFlag.enabled?(:org_custom_domain, FeatureFlag::Actor.new(org))
-          return url("/#{article.slug}", org.custom_domain)
-        end
-      elsif (article.is_a?(ActiveRecord::Base) ? article.has_attribute?(:organization_id) : article.respond_to?(:organization_id)) && article.organization_id.present?
-        org_id = article.organization_id
-        custom_domain = MemoryFirstCache.fetch("org_custom_domain:#{org_id}", redis_expires_in: 12.hours, return_type: :string) do
-          Organization.where(id: org_id).pick(:custom_domain).to_s
-        end
-        if custom_domain.present?
-          org = Organization.find_by(id: org_id)
-          if org && FeatureFlag.enabled?(:org_custom_domain, FeatureFlag::Actor.new(org))
-            return url("/#{article.slug}", custom_domain)
+      if article.is_a?(ActiveRecord::Base) && article.has_attribute?(:organization_id)
+        # Use the already-loaded association when present; otherwise resolve via a
+        # cached org_id lookup so signed-out feeds (which don't preload
+        # :organization) don't fire one query per article for the URL host.
+        if article.association(:organization).loaded? && (org = article.organization)
+          if org.custom_domain.present? && FeatureFlag.enabled?(:org_custom_domain, FeatureFlag::Actor.new(org))
+            return url("/#{article.slug}", org.custom_domain)
           end
+        elsif article.organization_id.present?
+          org_id = article.organization_id
+          custom_domain = MemoryFirstCache.fetch("org_custom_domain:#{org_id}", redis_expires_in: 12.hours, return_type: :string) do
+            Organization.where(id: org_id).pick(:custom_domain).to_s
+          end
+          if custom_domain.present?
+            org = Organization.find_by(id: org_id)
+            if org && FeatureFlag.enabled?(:org_custom_domain, FeatureFlag::Actor.new(org))
+              return url("/#{article.slug}", custom_domain)
+            end
+          end
+        end
+      elsif !article.is_a?(ActiveRecord::Base) && article.respond_to?(:organization) && (org = article.try(:organization))
+        if org.respond_to?(:custom_domain) && org.custom_domain.present? && FeatureFlag.enabled?(:org_custom_domain, FeatureFlag::Actor.new(org))
+          return url("/#{article.slug}", org.custom_domain)
         end
       end
     end

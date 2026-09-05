@@ -5,7 +5,25 @@ RSpec.describe "Favorites" do
   let(:author) { create(:user) }
   let(:article) { create(:article, user: author) }
 
+  before { FeatureFlag.enable(:community_favorites) }
+
+  after { FeatureFlag.remove(:community_favorites) }
+
   describe "POST /favorites" do
+    context "when the community_favorites flag is disabled" do
+      before do
+        FeatureFlag.disable(:community_favorites)
+        sign_in leader
+      end
+
+      it "does not create a favorite and returns not found" do
+        post favorites_path, params: { favoritable_type: "Article", favoritable_id: article.id }, as: :json
+
+        expect(response).to have_http_status(:not_found)
+        expect(article.reload.favorited_by_user_id).to be_nil
+      end
+    end
+
     context "when signed in as a community leader" do
       before { sign_in leader }
 

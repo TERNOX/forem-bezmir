@@ -1,5 +1,6 @@
 class FavoritesController < ApplicationController
   before_action :authenticate_user!
+  before_action :ensure_community_favorites_enabled
   after_action :verify_authorized
 
   FAVORITABLE_TYPES = %w[Article Comment].freeze
@@ -29,6 +30,16 @@ class FavoritesController < ApplicationController
   end
 
   private
+
+  # The UI hides the gem controls when community_favorites is off, but the
+  # endpoint must also refuse direct POSTs so a disabled/emergency-off flag can't
+  # be bypassed to create favorites, grant credits/badges or shift article scores.
+  def ensure_community_favorites_enabled
+    return if FeatureFlag.enabled?(:community_favorites, current_user)
+
+    skip_authorization
+    head :not_found
+  end
 
   def render_favorite_error(error)
     # Return generic error for invalid use cases

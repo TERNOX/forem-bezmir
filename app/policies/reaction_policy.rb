@@ -36,8 +36,16 @@ class ReactionPolicy < ApplicationPolicy
   end
 
   # Support staff may additionally invalidate flags on comments, which zeroes
-  # the reaction's points and restores the score of a downvoted comment.
+  # the reaction's points and restores the score of a downvoted comment. This is
+  # limited to actual flag/downvote reactions — a support admin must not be able
+  # to invalidate an ordinary like or other positive reaction on a comment.
   def admin_invalidate?
-    admin_update? || (support_admin? && record.reactable_type == "Comment")
+    admin_update? || (support_admin? && record.reactable_type == "Comment" && flag_reaction?)
+  end
+
+  private
+
+  def flag_reaction?
+    ReactionCategory.negative_privileged.map(&:to_s).include?(record.category)
   end
 end
