@@ -105,10 +105,22 @@ module Favorites
 
     def eligible?
       case favoritable
-      when Article then favoritable.published?
-      when Comment then !favoritable.deleted?
-      else false
+      when Article
+        favoritable.published? && !favoritable.scheduled?
+      when Comment
+        !favoritable.deleted? && !favoritable.hidden_by_commentable_user? && comment_parent_public?
+      else
+        false
       end
+    end
+
+    # A comment is only curatable while the thing it hangs off is itself public.
+    def comment_parent_public?
+      commentable = favoritable.commentable
+      return false if commentable.nil?
+      return commentable.published? && !commentable.scheduled? if commentable.is_a?(Article)
+
+      true
     end
 
     def award_badge

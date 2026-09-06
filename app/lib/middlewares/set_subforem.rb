@@ -50,11 +50,17 @@ module Middlewares
         # Set Content-Security-Policy header to allow embedding in iframes for all subforems
         headers.delete("X-Frame-Options")
         allowed_domains = Subforem.cached_all_domains + [Settings::General.app_domain]
-        frame_ancestors_value = "frame-ancestors " + allowed_domains.map { |d| "https://#{d}" }.join(" ")
+        subforem_sources = allowed_domains.map { |d| "https://#{d}" }
         existing_csp = headers["Content-Security-Policy"].to_s
         directives = existing_csp.split(";").map(&:strip).reject(&:blank?)
+        # Preserve any frame-ancestors a controller set explicitly (e.g. the
+        # auth-pass iframe allows an organization custom domain) and merge the
+        # subforem domains in, rather than clobbering it.
+        existing = directives.find { |d| d.start_with?("frame-ancestors") }
+        existing_sources = existing ? existing.sub(/\Aframe-ancestors\b/, "").split : []
         directives.reject! { |directive| directive.start_with?("frame-ancestors") }
-        directives << frame_ancestors_value
+        merged_sources = (existing_sources + subforem_sources).uniq
+        directives << "frame-ancestors #{merged_sources.join(' ')}"
         headers["Content-Security-Policy"] = directives.join("; ")
 
       rescue PublicSuffix::DomainInvalid

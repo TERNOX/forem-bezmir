@@ -55,9 +55,13 @@ module Favorites
 
     def hydrate(refs)
       grouped = refs.group_by(&:favoritable_type)
-      articles = Article.where(id: Array(grouped["Article"]).map(&:favoritable_id))
+      # The curation dashboard is shown to community leaders, not admins, so only
+      # hydrate content they can actually view: published articles and comments
+      # that are neither deleted nor hidden by the post author.
+      articles = Article.published.where(id: Array(grouped["Article"]).map(&:favoritable_id))
         .includes(:user, :favorited_by_user).index_by(&:id)
       comments = Comment.where(id: Array(grouped["Comment"]).map(&:favoritable_id))
+        .where(deleted: false, hidden_by_commentable_user: false)
         .includes(:user, :favorited_by_user, :commentable).index_by(&:id)
 
       refs.filter_map do |ref|
