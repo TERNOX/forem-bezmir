@@ -5,9 +5,9 @@ uk:
     revoked: Ваш API-ключ скасовано.
   favorites_controller:
     create:
-      already_favorited: Це вже обрано як самоцвіт.
-      no_allowance: Ви вичерпали свій ліміт самоцвітів.
-      cannot_favorite: Не вдалося обрати це як самоцвіт.
+      already_favorited: Цьому вже видано платину.
+      no_allowance: Ви вичерпали свій ліміт платини.
+      cannot_favorite: Не вдалося видати платину.
   application_controller:
     bad_request: 'Помилка: некоректний запит'
     not_authorized: 'Помилка: доступ заборонено'

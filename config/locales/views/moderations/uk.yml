@@ -157,8 +157,8 @@ uk:
         no_max_if_zero: Без обмеження, якщо встановлено нуль
         edit: Редагувати
         featured: Рекомендоване
-        favorited_by: Обрано самоцвітом
-        unfavorite: Прибрати самоцвіт
+        favorited_by: Платину видав
+        unfavorite: Прибрати платину
         likes: лайки
         notes:
           user_notes: нотатки користувача
