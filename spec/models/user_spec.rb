@@ -1374,52 +1374,62 @@ RSpec.describe User do
     end
   end
 
-  describe "#favorite_base_allowance" do
-    it "is 0 for a non-leader" do
-      expect(create(:user).favorite_base_allowance).to eq(0)
+  describe "#favorite_grant_per_period" do
+    it "is 0 for a user with no eligible tier" do
+      expect(create(:user).favorite_grant_per_period).to eq(0)
     end
 
-    it "uses the level 1 setting for a level 1 leader" do
-      allow(Settings::UserExperience).to receive(:community_leader_l1_favorite_allowance).and_return(5)
-      expect(create(:user, :community_leader_level_1).favorite_base_allowance).to eq(5)
+    it "uses the level 1 setting for a level 1 expert" do
+      allow(Settings::UserExperience).to receive(:community_leader_l1_favorite_allowance).and_return(1)
+      expect(create(:user, :community_leader_level_1).favorite_grant_per_period).to eq(1)
     end
 
-    it "uses the level 2 setting for a level 2 leader" do
-      allow(Settings::UserExperience).to receive(:community_leader_l2_favorite_allowance).and_return(10)
-      expect(create(:user, :community_leader_level_2).favorite_base_allowance).to eq(10)
+    it "uses the level 2 setting for a level 2 expert" do
+      allow(Settings::UserExperience).to receive(:community_leader_l2_favorite_allowance).and_return(3)
+      expect(create(:user, :community_leader_level_2).favorite_grant_per_period).to eq(3)
+    end
+
+    it "uses the subscriber setting for a paid subscriber" do
+      allow(Settings::UserExperience).to receive(:subscriber_favorite_allowance).and_return(1)
+      subscriber = create(:user)
+      subscriber.add_role(:base_subscriber)
+      expect(subscriber.favorite_grant_per_period).to eq(1)
     end
   end
 
-  describe "#favorite_allowance" do
-    it "returns earned_favorites_count for a non-leader" do
+  describe "#favorite_allowance (platinum wallet)" do
+    it "returns the wallet balance for a user with no periodic grant" do
       user = create(:user)
       user.update!(earned_favorites_count: 3)
       expect(user.favorite_allowance).to eq(3)
     end
 
-    it "is the base allowance for a fresh leader" do
-      allow(Settings::UserExperience).to receive(:community_leader_l1_favorite_allowance).and_return(5)
-      expect(create(:user, :community_leader_level_1).favorite_allowance).to eq(5)
+    it "grants a fresh expert their first period immediately" do
+      allow(Settings::UserExperience).to receive_messages(
+        community_leader_l1_favorite_allowance: 1, favorite_grant_period_days: 30,
+      )
+      expect(create(:user, :community_leader_level_1).favorite_allowance).to eq(1)
     end
 
-    it "decreases as the leader favorites within the refresh window" do
+    it "accumulates a grant for each elapsed period without resetting" do
       allow(Settings::UserExperience).to receive_messages(
-        community_leader_l1_favorite_allowance: 5, community_leader_favorite_refresh_hours: 24,
+        community_leader_l2_favorite_allowance: 3, favorite_grant_period_days: 30,
       )
-      leader = create(:user, :community_leader_level_1)
-      create(:article, favorited_by_user: leader, favorited_at: 1.hour.ago)
+      leader = create(:user, :community_leader_level_2)
+      leader.update_columns(earned_favorites_count: 3, favorite_credits_refreshed_at: 61.days.ago)
 
-      expect(leader.favorite_allowance).to eq(4)
+      # two full periods elapsed -> +6 on top of the existing 3
+      expect(leader.favorite_allowance).to eq(9)
     end
 
-    it "ignores favorites that have aged out of the refresh window" do
+    it "does not grant again within the same period" do
       allow(Settings::UserExperience).to receive_messages(
-        community_leader_l1_favorite_allowance: 5, community_leader_favorite_refresh_hours: 24,
+        community_leader_l1_favorite_allowance: 1, favorite_grant_period_days: 30,
       )
       leader = create(:user, :community_leader_level_1)
-      create(:article, favorited_by_user: leader, favorited_at: 2.days.ago)
+      leader.update_columns(earned_favorites_count: 1, favorite_credits_refreshed_at: 5.days.ago)
 
-      expect(leader.favorite_allowance).to eq(5)
+      expect(leader.favorite_allowance).to eq(1)
     end
   end
 end

@@ -149,6 +149,33 @@
                           value: Settings::UserExperience.bottom_of_body_content,
                           placeholder: Constants::Settings::UserExperience.details[:bottom_of_body_content][:placeholder] %>
         </div>
+
+        <%# Platinum ("самоцвіт"/gem) wallet — see User#accrue_favorite_credits! %>
+        <div class="crayons-field">
+          <%= f.label :favorite_grant_period_days, "Platinum: grant period (days)", class: "crayons-field__label" %>
+          <p class="crayons-field__description">How often a user's platinum wallet is topped up. 30 = monthly, 7 = weekly.</p>
+          <%= f.number_field :favorite_grant_period_days, class: "crayons-textfield", value: Settings::UserExperience.favorite_grant_period_days %>
+        </div>
+        <div class="crayons-field">
+          <%= f.label :community_leader_l1_favorite_allowance, "Platinum: Expert I grant per period", class: "crayons-field__label" %>
+          <p class="crayons-field__description">Platinum added each period for a level-1 expert.</p>
+          <%= f.number_field :community_leader_l1_favorite_allowance, class: "crayons-textfield", value: Settings::UserExperience.community_leader_l1_favorite_allowance %>
+        </div>
+        <div class="crayons-field">
+          <%= f.label :community_leader_l2_favorite_allowance, "Platinum: Expert II grant per period", class: "crayons-field__label" %>
+          <p class="crayons-field__description">Platinum added each period for a level-2 expert.</p>
+          <%= f.number_field :community_leader_l2_favorite_allowance, class: "crayons-textfield", value: Settings::UserExperience.community_leader_l2_favorite_allowance %>
+        </div>
+        <div class="crayons-field">
+          <%= f.label :subscriber_favorite_allowance, "Platinum: paid subscriber grant per period", class: "crayons-field__label" %>
+          <p class="crayons-field__description">Platinum added each period for a paid subscriber (base_subscriber role).</p>
+          <%= f.number_field :subscriber_favorite_allowance, class: "crayons-textfield", value: Settings::UserExperience.subscriber_favorite_allowance %>
+        </div>
+        <div class="crayons-field">
+          <%= f.label :favorite_daily_cap, "Platinum: max given per day", class: "crayons-field__label" %>
+          <p class="crayons-field__description">Hard limit on how much platinum one user can give in a single day, regardless of wallet balance. 0 = no daily cap.</p>
+          <%= f.number_field :favorite_daily_cap, class: "crayons-textfield", value: Settings::UserExperience.favorite_daily_cap %>
+        </div>
       </fieldset>
       <%= render "update_setting_button", f: f %>
     </div>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_09_01_140000) do
+ActiveRecord::Schema[7.2].define(version: 2026_09_06_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "ltree"
@@ -1964,6 +1964,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_01_140000) do
     t.datetime "exported_at", precision: nil
     t.string "facebook_username"
     t.integer "failed_attempts", default: 0
+    t.datetime "favorite_credits_refreshed_at"
     t.datetime "feed_fetched_at", precision: nil, default: "2017-01-01 05:00:00"
     t.integer "following_orgs_count", default: 0, null: false
     t.integer "following_tags_count", default: 0, null: false
