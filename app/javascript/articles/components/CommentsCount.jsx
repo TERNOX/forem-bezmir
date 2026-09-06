@@ -44,6 +44,7 @@ export const CommentsCount = ({ count, articlePath, articleTitle }) => {
         url={`${articlePath}#comments`}
         icon={commentsSVG}
         tagName="a"
+        className="flex items-center"
         data-testid="add-a-comment"
         aria-label={commentsAriaLabelText}
       >

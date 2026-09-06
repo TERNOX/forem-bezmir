@@ -5,6 +5,9 @@ pt:
       saved: Artigo salvo!
       pinned: Artigo Fixado!
       unpinned: Artigo Desfixado!
+      favorite_removed: Joia removida.
+    comments_controller:
+      favorite_removed: Joia removida.
     badge_achievements_controller:
       deleted: Conquista de badge foi excluída!
       rewarded: Badges estão sendo recompensados. A tarefa terminará em breve.
@@ -82,6 +85,12 @@ pt:
       fully_trusted_enabled: O status totalmente confiável foi habilitado para esta organização.
       fully_trusted_disabled: O status totalmente confiável foi desabilitado para esta organização.
       baseline_score_updated: A pontuação base foi atualizada!
+      bulk_add_users:
+        added: "%{count} usuário(s) (%{usernames}) adicionado(s) com sucesso à organização."
+        already_members: "Já membro(s): %{usernames}."
+        not_found: "Usuário(s) não encontrado(s): %{usernames}."
+        failed: "Falha ao adicionar %{count} usuário(s): %{errors}."
+        empty_input: "Por favor, forneça pelo menos um nome de usuário."
     pages_controller:
       updated: Página foi atualizada com sucesso.
       created: Página foi criada com sucesso.

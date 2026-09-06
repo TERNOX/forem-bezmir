@@ -26,6 +26,7 @@ class ApplicationController < ActionController::Base
   before_action :forward_to_app_config_domain
   before_action :redirect_custom_domain_non_profile_pages
   before_action :determine_locale
+  before_action :set_request_signed_in_context
   after_action  :clear_request_store
 
   include SessionCurrentUser
@@ -413,6 +414,11 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def set_request_signed_in_context
+    RequestStore.store[:user_signed_in] = user_signed_in?
+    RequestStore.store[:custom_domain_org] = request.env["forem.custom_domain_org"]
+  end
+
   def after_sign_out_path_for(_resource_or_scope)
     "/enter"
   end
@@ -502,7 +508,7 @@ class ApplicationController < ActionController::Base
   end
 
   def custom_domain_org
-    OrgCustomDomainConstraint.custom_domain_org(request)
+    request.env["forem.custom_domain_org"] ||= OrgCustomDomainConstraint.custom_domain_org_for_host(request.host)
   end
 
   def redirect_www_and_unregistred_subforems_to_root

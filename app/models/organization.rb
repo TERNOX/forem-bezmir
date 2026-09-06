@@ -38,6 +38,7 @@ class Organization < ApplicationRecord
   before_save :generate_secret
 
   after_save :bust_cache
+  after_save :bust_custom_domain_cache, if: :saved_change_to_custom_domain?
   after_save :generate_social_images
 
   after_update_commit :conditionally_update_articles
@@ -161,6 +162,10 @@ class Organization < ApplicationRecord
     false
   end
 
+  def cached_community_leader?
+    false
+  end
+
   def fully_trusted?
     fully_trusted == true
   end
@@ -229,5 +234,11 @@ class Organization < ApplicationRecord
 
   def bust_cache
     Organizations::BustCacheWorker.perform_async(id, slug)
+  end
+
+  # URL.article caches an org's custom domain by org_id for 12h; drop it when the
+  # domain changes so article URLs don't keep routing to the stale domain.
+  def bust_custom_domain_cache
+    MemoryFirstCache.delete("org_custom_domain:#{id}")
   end
 end

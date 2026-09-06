@@ -18,6 +18,7 @@ RSpec.describe Article do
     it { is_expected.to belong_to(:collection).optional }
     it { is_expected.to belong_to(:organization).optional }
     it { is_expected.to belong_to(:user) }
+    it { is_expected.to belong_to(:favorited_by_user).class_name("User").optional }
 
     it { is_expected.to have_one(:discussion_lock).dependent(:delete) }
 
@@ -1697,6 +1698,32 @@ RSpec.describe Article do
     end
   end
 
+  describe ".favorited" do
+    let(:leader) { create(:user, :community_leader_level_1) }
+
+    it "returns only articles that have been favorited" do
+      favorited = create(:article, favorited_by_user: leader, favorited_at: Time.current)
+      create(:article)
+
+      expect(described_class.favorited).to include(favorited)
+      expect(described_class.favorited.count).to eq(1)
+    end
+  end
+
+  describe "#favorited?" do
+    let(:leader) { create(:user, :community_leader_level_1) }
+
+    it "returns true when favorited_by_user_id is present" do
+      article = build(:article, favorited_by_user: leader)
+      expect(article.favorited?).to be true
+    end
+
+    it "returns false when favorited_by_user_id is nil" do
+      article = build(:article, favorited_by_user_id: nil)
+      expect(article.favorited?).to be false
+    end
+  end
+
   describe ".cached_admin_published_with" do
     let(:admin) { create(:user, :admin) }
     let(:cache_store) { ActiveSupport::Cache::MemoryStore.new }
@@ -2368,6 +2395,14 @@ RSpec.describe Article do
       user.add_role(:base_subscriber)
       article.update_score
       expect(article.reload.score).to eq(22)
+    end
+
+    it "includes the favorite bonus of +10 points and 10% multiple on base score" do
+      favoriter = create(:user)
+      article.update_columns(favorited_by_user_id: favoriter.id, favorited_at: Time.current)
+      # reactions sum is 10; raw score = 10; (10 * 1.1).to_i + 10 = 21
+      article.update_score
+      expect(article.reload.score).to eq(21)
     end
 
     context "when max_score is set" do

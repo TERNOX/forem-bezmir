@@ -157,6 +157,8 @@ en:
         no_max_if_zero: No max if set to zero
         edit: Edit
         featured: Featured
+        favorited_by: Escolhido como joia por
+        unfavorite: Remover joia
         likes: likes
         notes:
           user_notes: user notes

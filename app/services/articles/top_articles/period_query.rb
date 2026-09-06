@@ -20,6 +20,16 @@ module Articles
       def article_ids
         return [] unless limit.positive?
 
+        # Community Favorites ("gems") a curator picked this period are guaranteed
+        # a spot in the week's top, on top of the score boost they already receive
+        # (see Article#update_score). They fill slots first; the reaction-ranked
+        # articles fill whatever remains, up to the limit.
+        (favorited_article_ids + reaction_ranked_article_ids).uniq.first(limit)
+      end
+
+      private
+
+      def reaction_ranked_article_ids
         reaction_scope
           .group("reactions.reactable_id, #{article_score_expression}")
           .order(Arel.sql("#{article_score_expression} DESC, COUNT(*) DESC, reactions.reactable_id ASC"))
@@ -27,7 +37,30 @@ module Articles
           .pluck("reactions.reactable_id")
       end
 
-      private
+      # Gems published in the period, ranked by score. A curator's pick is an
+      # explicit endorsement, so these bypass the reaction/minimum-score gates
+      # the reaction ranking applies, but still respect the publish window,
+      # post type and org/tag exclusions.
+      def favorited_article_ids
+        scope = Article
+          .where.not(favorited_by_user_id: nil)
+          .where(published: true)
+          .where(published_at: start_time...end_time)
+          .where.not(type_of: Article.type_ofs[:status])
+
+        if (predicate = organization_filter_predicate)
+          scope = scope.where(predicate)
+        end
+
+        if (predicate = excluded_tags_predicate)
+          scope = scope.where(predicate)
+        end
+
+        scope
+          .order(Arel.sql("#{article_score_expression} DESC, articles.id ASC"))
+          .limit(limit)
+          .pluck(:id)
+      end
 
       attr_reader :start_time, :end_time, :limit
 

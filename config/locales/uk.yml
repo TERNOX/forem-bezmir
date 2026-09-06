@@ -3,6 +3,21 @@ uk:
   div: div
   span: span
   img: img
+  favorites:
+    favorite: Обрати самоцвітом
+    favorited: Обрано самоцвітом
+    favorited_by_you: Обрано самоцвітом вами
+    modal:
+      title: Самоцвіт обрано!
+      body: Ви обрали це як самоцвіт спільноти!
+      remaining_zero: На сьогодні у вас більше не залишилось самоцвітів.
+      remaining_one: На сьогодні у вас залишився ще 1 самоцвіт.
+      remaining_other: На сьогодні у вас залишилось ще %{count} самоцвітів.
+      close: Зрозуміло
+    modal_exhausted:
+      title: Самоцвіти вичерпано
+      body: На сьогодні у вас більше не залишилось самоцвітів. Ваш ліміт незабаром оновиться!
+      close: Зрозуміло
   contact_prompts:
     if_any_questions_html: <a href="/contact">Зв’яжіться з нами</a>, якщо у вас є запитання.
     if_continued_trouble_html: <a href="/contact">Зв’яжіться з нами</a>, якщо проблема не зникає.

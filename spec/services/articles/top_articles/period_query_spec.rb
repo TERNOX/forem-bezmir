@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe Articles::TopArticles::PeriodQuery, type: :service do
+  include ActiveSupport::Testing::TimeHelpers
+
   describe ".call" do
     let(:start_time) { Time.zone.local(2024, 6, 1) }
     let(:end_time) { start_time + 1.week }
@@ -165,6 +167,55 @@ RSpec.describe Articles::TopArticles::PeriodQuery, type: :service do
       result = described_class.call(start_time: start_time, end_time: end_time, limit: 5)
 
       expect(result).to eq([kept_article.id])
+    end
+
+    context "with Community Favorites (gems)" do
+      let(:curator) { create(:user) }
+
+      # The article publish-date validation rejects a published_at more than
+      # 15 minutes in the past, so freeze the clock inside the analysed period
+      # to create in-period articles the way the query expects to find them.
+      around do |example|
+        travel_to(start_time + 2.days) { example.run }
+      end
+
+      it "guarantees a gem published in the period a spot even without reactions" do
+        gem_article = create(:article)
+        gem_article.update_columns(favorited_by_user_id: curator.id, favorited_at: Time.current)
+
+        popular = create(:article)
+        create_list(:reaction, 5, reactable: popular, category: "like", created_at: Time.current)
+        popular.update!(score: 50)
+
+        result = described_class.call(start_time: start_time, end_time: end_time, limit: 5)
+
+        expect(result).to include(gem_article.id)
+        expect(result).to include(popular.id)
+      end
+
+      it "places gems ahead of reaction-ranked articles when slots are limited" do
+        gem_article = create(:article)
+        gem_article.update_columns(favorited_by_user_id: curator.id, favorited_at: Time.current)
+
+        popular = create(:article)
+        create_list(:reaction, 5, reactable: popular, category: "like", created_at: Time.current)
+        popular.update!(score: 50)
+
+        result = described_class.call(start_time: start_time, end_time: end_time, limit: 1)
+
+        expect(result).to eq([gem_article.id])
+      end
+
+      it "does not duplicate a gem that also ranks by reactions" do
+        gem_article = create(:article)
+        create_list(:reaction, 5, reactable: gem_article, category: "like", created_at: Time.current)
+        gem_article.update!(score: 40)
+        gem_article.update_columns(favorited_by_user_id: curator.id, favorited_at: Time.current)
+
+        result = described_class.call(start_time: start_time, end_time: end_time, limit: 5)
+
+        expect(result.count(gem_article.id)).to eq(1)
+      end
     end
   end
 end

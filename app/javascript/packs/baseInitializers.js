@@ -6,6 +6,7 @@ import { initializeNotifications } from './initializers/initializeNotifications'
 import { initializeDateHelpers } from './initializers/initializeDateTimeHelpers';
 import { initializeSettings } from './initializers/initializeSettings';
 import { initializeGifVideos } from '@utilities/gifVideo';
+import { initializeMermaidDiagrams } from '@utilities/mermaidDiagrams';
 import {
   showUserAlertModal,
   showModalAfterError,
@@ -19,6 +20,7 @@ initializeTimeFixer();
 initializeDateHelpers();
 initializeGifVideos(document);
 initializeSteamIframeColorScheme();
+initializeMermaidDiagrams(document);
 
 InstantClick.on('change', () => {
   initializeCommentDate();
@@ -27,6 +29,7 @@ InstantClick.on('change', () => {
   initializeNotifications();
   initializeGifVideos(document);
   initializeSteamIframeColorScheme();
+  initializeMermaidDiagrams(document);
 });
 
 window.showUserAlertModal = showUserAlertModal;

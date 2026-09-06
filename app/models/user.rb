@@ -34,6 +34,13 @@ class User < ApplicationRecord
 
   RECENTLY_ACTIVE_LIMIT = 10_000
 
+  # Activity timestamps used to decide when a user was last active — e.g. by
+  # CommunityLeaders::PruneInactive to retire community leaders who have gone
+  # quiet. (Upstream introduced this constant via the DEV→Core CDP sync PR the
+  # fork skips, so it is defined here directly.)
+  ACTIVITY_TIMESTAMP_KEYS = %w[current_sign_in_at last_sign_in_at last_presence_at last_reacted_at
+                               last_followed_at last_comment_at last_article_at].freeze
+
   # User types enum
   # Declare explicit attribute types so the enums load even when their backing
   # columns are not yet present (e.g. migrating a database from scratch under
@@ -138,6 +145,11 @@ class User < ApplicationRecord
   has_many :languages, class_name: "UserLanguage", inverse_of: :user, dependent: :delete_all
   has_many :user_visit_contexts, dependent: :delete_all
   has_one :user_activity, dependent: :delete
+
+  has_many :favorited_articles, class_name: "Article", foreign_key: :favorited_by_user_id,
+                                inverse_of: :favorited_by_user, dependent: :nullify
+  has_many :favorited_comments, class_name: "Comment", foreign_key: :favorited_by_user_id,
+                                inverse_of: :favorited_by_user, dependent: :nullify
 
   def cached_recent_user_ids
     Rails.cache.fetch("user-#{id}/recent_users", expires_in: 5.minutes) do
@@ -274,6 +286,9 @@ class User < ApplicationRecord
       articles_count: average_articles_count..,
       comments_count: average_comments_count..,
     )
+  }
+  scope :community_leaders, lambda {
+    joins(:roles).where(roles: { name: CommunityLeaders::ROLES.map(&:to_s) }).distinct
   }
 
   before_validation :downcase_email
@@ -468,9 +483,14 @@ class User < ApplicationRecord
 
   def cached_reading_list_article_ids
     Rails.cache.fetch("reading_list_ids_of_articles_#{id}_#{public_reactions_count}_#{last_reacted_at}_#{RequestStore.store[:subforem_id]}") do
-      readinglist = Reaction.readinglist_for_user(self).order("created_at DESC")
-      published = Article.published.from_subforem.where(id: readinglist.pluck(:reactable_id)).ids
-      readinglist.filter_map { |r| r.reactable_id if published.include? r.reactable_id }
+      # Source ids from the precomputed all-time list when present, otherwise the
+      # recent reading-list reactions. Either way scope to published articles in
+      # the current subforem: the persisted column is unfiltered and stores
+      # reactions across subforems, and the cache key is subforem-specific.
+      candidate_ids = (user_activity&.alltime_reading_list_articles.presence ||
+        Reaction.readinglist_for_user(self).order("created_at DESC").limit(1000).pluck(:reactable_id)).first(1000)
+      published = Article.published.from_subforem.where(id: candidate_ids).ids.to_set
+      candidate_ids.select { |reactable_id| published.include?(reactable_id) }
     end
   end
 
@@ -483,6 +503,10 @@ class User < ApplicationRecord
 
   def cached_base_subscriber?
     cached_role_names.include?("base_subscriber")
+  end
+
+  def cached_community_leader?
+    CommunityLeaders::ROLES.any? { |role| cached_role_names.include?(role.to_s) }
   end
 
   def processed_website_url
@@ -566,6 +590,9 @@ class User < ApplicationRecord
     :auditable?,
     :banished?,
     :comment_suspended?,
+    :community_leader?,
+    :community_leader_level_1?,
+    :community_leader_level_2?,
     :limited?,
     :creator?,
     :has_trusted_role?,
@@ -596,6 +623,27 @@ class User < ApplicationRecord
   # End Authorization Refactor
   #
   ##############################################################################
+
+  def favorite_base_allowance
+    return Settings::UserExperience.community_leader_l2_favorite_allowance if community_leader_level_2?
+    return Settings::UserExperience.community_leader_l1_favorite_allowance if community_leader_level_1?
+
+    0
+  end
+
+  # How many favorites the user can make.
+  #
+  # @return [Integer]
+  def favorite_allowance
+    return earned_favorites_count unless community_leader?
+
+    # Community leader allowances refresh over the configured period
+    window_start = Settings::UserExperience.community_leader_favorite_refresh_hours.hours.ago
+    spent_this_period = favorited_articles.where(favorited_at: window_start..).count +
+      favorited_comments.where(favorited_at: window_start..).count
+
+    favorite_base_allowance - spent_this_period
+  end
 
   # The name of the tags moderated by the user.
   #
@@ -824,6 +872,14 @@ class User < ApplicationRecord
     last_followed_at.respond_to?(:rfc3339) ? last_followed_at.rfc3339 : last_followed_at.to_s
   end
 
+
+  # rubocop:disable Style/OptionHash
+  def send_reset_password_instructions(opts = {})
+    token = set_reset_password_token
+    send_devise_notification(:reset_password_instructions, token, opts)
+    token
+  end
+  # rubocop:enable Style/OptionHash
   protected
 
   # Send emails asynchronously

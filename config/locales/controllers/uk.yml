@@ -3,6 +3,11 @@ uk:
   api_secrets_controller:
     generated: 'Ваш API-ключ згенеровано: %{secret}'
     revoked: Ваш API-ключ скасовано.
+  favorites_controller:
+    create:
+      already_favorited: Це вже обрано як самоцвіт.
+      no_allowance: Ви вичерпали свій ліміт самоцвітів.
+      cannot_favorite: Не вдалося обрати це як самоцвіт.
   application_controller:
     bad_request: 'Помилка: некоректний запит'
     not_authorized: 'Помилка: доступ заборонено'

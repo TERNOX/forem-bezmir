@@ -11,7 +11,7 @@ RSpec.describe Homepage::FetchArticles, type: :service do
       result = described_class.call.first
 
       base_keys = %i[
-        class_name cloudinary_video_url comments_count flare_tag id path
+        class_name cloudinary_video_url comments_count favorited_by_user_id flare_tag id path
         pinned public_reactions_count public_reaction_categories
         published_at_int readable_publish_date reading_time tag_list title
         user user_id video_duration_string

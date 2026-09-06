@@ -67,6 +67,8 @@ namespace :admin do
         post "merge"
         delete "remove_identity"
         post "send_email"
+        patch "update_password"
+        post "send_password_reset"
         post "verify_email_ownership"
         post "send_email_confirmation"
         post "confirm_email"
@@ -86,6 +88,8 @@ namespace :admin do
 
     resources :bulk_assign_role, only: %i[index]
     post "/bulk_assign_role", to: "bulk_assign_role#assign_role"
+
+    resources :favorites, only: %i[index]
   end
 
   scope :content_manager do
@@ -94,6 +98,7 @@ namespace :admin do
       member do
         delete :unpin
         post :pin
+        delete :unfavorite
       end
     end
 
@@ -107,12 +112,17 @@ namespace :admin do
     resources :badge_achievements, only: %i[index destroy]
     get "/badge_achievements/award_badges", to: "badge_achievements#award"
     post "/badge_achievements/award_badges", to: "badge_achievements#award_badges"
-    resources :comments, only: %i[index show]
+    resources :comments, only: %i[index show] do
+      member do
+        delete :unfavorite
+      end
+    end
     resources :organizations, only: %i[index show destroy] do
       member do
         patch "update_org_credits"
         patch "update_fully_trusted"
         patch "update_baseline_score"
+        post "bulk_add_users"
       end
     end
     resources :emails
