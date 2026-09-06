@@ -110,6 +110,7 @@ class UserDecorator < ApplicationDecorator
       "mod-status-#{any_admin? || !moderator_for_tags.empty?}",
       "trusted-status-#{trusted?}",
       "community-leader-status-#{community_leader?}",
+      "can-favorite-status-#{can_give_platinum?}",
       "#{setting.config_navbar.tr('_', '-')}-header",
     ]
 
