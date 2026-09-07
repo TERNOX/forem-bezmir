@@ -26,7 +26,7 @@ RUN install -d /etc/apt/keyrings \
     && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
     && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_22.x nodistro main" > /etc/apt/sources.list.d/nodesource.list \
     && echo 'Acquire::Retries "5";' > /etc/apt/apt.conf.d/80-retries \
-    && apt-get update && apt-get -o Acquire::Retries=5 install -y --no-install-recommends \
+    && n=0; until apt-get update && apt-get -o Acquire::Retries=5 install -y --no-install-recommends \
       build-essential \
       libcurl4-openssl-dev \
       libffi-dev \
@@ -41,8 +41,11 @@ RUN install -d /etc/apt/keyrings \
       libjpeg-dev \
       libgif-dev \
       librsvg2-dev \
-      curl ca-certificates && \
-    rm -rf /var/lib/apt/lists/*
+      curl ca-certificates; do \
+        n=$((n+1)); if [ "$n" -ge 5 ]; then echo "apt failed after $n attempts" && exit 1; fi; \
+        echo "apt attempt $n failed (likely a stale Debian security index); refreshing and retrying" && sleep 15; \
+      done \
+    && rm -rf /var/lib/apt/lists/*
 
 # dockerize (чекає сервіси на старті)
 ENV DOCKERIZE_VERSION=v0.7.0
@@ -106,13 +109,16 @@ RUN install -d /etc/apt/keyrings \
     && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
     && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_22.x nodistro main" > /etc/apt/sources.list.d/nodesource.list \
     && echo 'Acquire::Retries "5";' > /etc/apt/apt.conf.d/80-retries \
-    && apt-get update && apt-get -o Acquire::Retries=5 install -y --no-install-recommends \
+    && n=0; until apt-get update && apt-get -o Acquire::Retries=5 install -y --no-install-recommends \
       build-essential git curl less \
       libpq-dev postgresql-client \
       libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 \
       libnss3 libxss1 libasound2 libxtst6 xauth xvfb \
-      libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev && \
-    rm -rf /var/lib/apt/lists/*
+      libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev; do \
+        n=$((n+1)); if [ "$n" -ge 5 ]; then echo "apt failed after $n attempts" && exit 1; fi; \
+        echo "apt attempt $n failed (likely a stale Debian security index); refreshing and retrying" && sleep 15; \
+      done \
+    && rm -rf /var/lib/apt/lists/*
 
 # для локальної розробки:
 RUN gem update --system && gem install bundler
