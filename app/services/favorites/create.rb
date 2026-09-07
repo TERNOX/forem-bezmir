@@ -43,10 +43,19 @@ module Favorites
 
     def precheck_error
       return :already_favorited if favoritable.favorited_by_user_id.present?
-      return :self_favorite if favoritable.user_id == user.id
+      return :self_favorite if own_content?
       return :ineligible unless eligible?
 
       nil
+    end
+
+    # A user can't platinum their own content — including an article they only
+    # co-authored (co-authors collaborate on the post, so it's still theirs).
+    def own_content?
+      return true if favoritable.user_id == user.id
+      return favoritable.co_author_ids.to_a.include?(user.id) if favoritable.is_a?(Article)
+
+      false
     end
 
     # Claims a favorite against the user's allowance in one transaction.

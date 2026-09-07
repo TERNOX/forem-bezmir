@@ -66,6 +66,15 @@ RSpec.describe Favorites::Create, type: :service do
     expect(result.error).to eq(:self_favorite)
   end
 
+  it "rejects a co-author favoriting an article they co-authored" do
+    co_authored = create(:article, user: author, co_author_ids: [leader.id])
+
+    result = described_class.call(favoritable: co_authored, user: leader)
+
+    expect(result.error).to eq(:self_favorite)
+    expect(co_authored.reload.favorited_by_user_id).to be_nil
+  end
+
   it "rejects an unpublished article" do
     draft = create(:article, user: author, published: false)
 
