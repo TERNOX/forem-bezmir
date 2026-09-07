@@ -624,25 +624,66 @@ class User < ApplicationRecord
   #
   ##############################################################################
 
-  def favorite_base_allowance
+  # Per-period platinum grant for this user's highest eligible tier
+  # (Expert II > Expert I > paid subscriber). Returns 0 for everyone else —
+  # they can still give platinum from credits they earned by being favorited.
+  def favorite_grant_per_period
     return Settings::UserExperience.community_leader_l2_favorite_allowance if community_leader_level_2?
     return Settings::UserExperience.community_leader_l1_favorite_allowance if community_leader_level_1?
+    return Settings::UserExperience.subscriber_favorite_allowance if base_subscriber?
 
     0
   end
 
-  # How many favorites the user can make.
+  # Tops up the accumulating platinum wallet (earned_favorites_count) by one
+  # per-tier grant for every full period elapsed since the last top-up. Lazy:
+  # invoked on read/spend and writes at most once per period. A newly eligible
+  # user receives their first period's grant immediately.
+  def accrue_favorite_credits!
+    per_period = favorite_grant_per_period
+    return if per_period <= 0
+
+    period_days = Settings::UserExperience.favorite_grant_period_days.to_i
+    return if period_days <= 0
+
+    anchor = favorite_credits_refreshed_at
+    if anchor.nil?
+      grant = per_period
+      new_anchor = Time.current
+    else
+      periods = ((Time.current - anchor) / period_days.days).floor
+      return if periods < 1
+
+      grant = periods * per_period
+      new_anchor = anchor + (periods * period_days).days
+    end
+
+    # Compare-and-swap on the anchor so two concurrent requests that read the
+    # same expired anchor can't both apply the grant: only the update whose
+    # WHERE still matches the anchor we read wins; the loser affects 0 rows.
+    scope = self.class.where(id: id)
+    scope = anchor.nil? ? scope.where(favorite_credits_refreshed_at: nil) : scope.where(favorite_credits_refreshed_at: anchor)
+    updated = scope.update_all(
+      [
+        "earned_favorites_count = earned_favorites_count + ?, favorite_credits_refreshed_at = ?, updated_at = ?",
+        grant, new_anchor, Time.current
+      ],
+    )
+    reload if updated.positive?
+  end
+
+  # How many favorites (platinum) the user can currently give — the accumulated
+  # wallet balance. Grants for elapsed periods are accrued lazily first.
   #
   # @return [Integer]
   def favorite_allowance
-    return earned_favorites_count unless community_leader?
+    accrue_favorite_credits!
+    earned_favorites_count
+  end
 
-    # Community leader allowances refresh over the configured period
-    window_start = Settings::UserExperience.community_leader_favorite_refresh_hours.hours.ago
-    spent_this_period = favorited_articles.where(favorited_at: window_start..).count +
-      favorited_comments.where(favorited_at: window_start..).count
-
-    favorite_base_allowance - spent_this_period
+  # Whether to surface the platinum control for this user in the UI.
+  def can_give_platinum?
+    favorite_allowance.positive?
   end
 
   # The name of the tags moderated by the user.

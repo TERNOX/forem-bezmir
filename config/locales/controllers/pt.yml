@@ -45,6 +45,7 @@ pt:
     create:
       already_favorited: Isto já foi escolhido como joia.
       no_allowance: Você esgotou sua cota de joias.
+      daily_limit: Você atingiu o limite diário. Tente novamente amanhã.
       cannot_favorite: Não foi possível escolher isto como joia.
   feeds:
     sources:

@@ -50,9 +50,15 @@ module Settings
     setting :display_in_directory, type: :boolean, default: true
     setting :award_tag_minimum_score, type: :integer, default: 100
 
-    setting :community_leader_l1_favorite_allowance, type: :integer, default: 5
-    setting :community_leader_l2_favorite_allowance, type: :integer, default: 10
-    setting :community_leader_favorite_refresh_hours, type: :integer, default: 24
+    # Platinum ("самоцвіт"/gem) wallet. Each grant period an eligible user's
+    # balance is topped up by the per-tier amount below; the balance accumulates
+    # like a currency (unspent platinum carries over). Spending is still bounded
+    # by the daily cap and by "one platinum per material".
+    setting :community_leader_l1_favorite_allowance, type: :integer, default: 1 # Expert I grant per period
+    setting :community_leader_l2_favorite_allowance, type: :integer, default: 3 # Expert II grant per period
+    setting :subscriber_favorite_allowance, type: :integer, default: 1          # paid subscriber grant per period
+    setting :favorite_grant_period_days, type: :integer, default: 30           # how often the wallet is topped up
+    setting :favorite_daily_cap, type: :integer, default: 3                    # max platinum a user can give per day
     setting :community_leader_inactivity_days, type: :integer, default: 120
 
     # Mobile App

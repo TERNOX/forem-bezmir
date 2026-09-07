@@ -371,7 +371,7 @@ html.is-twitter-in-app {
 }
 
 @media (min-width: $breakpoint-s) {
-  body.community-leader-status-true .only-sidebar-menu-item.community-leader-visible-block {
+  body.can-favorite-status-true .only-sidebar-menu-item.community-leader-visible-block {
     display: block !important;
   }
   body.trusted-status-true .only-sidebar-menu-item.trusted-visible-block {
@@ -383,7 +383,7 @@ html.is-twitter-in-app {
   display: none !important;
 }
 
-body.community-leader-status-true .only-mobile-menu-item.community-leader-visible-block {
+body.can-favorite-status-true .only-mobile-menu-item.community-leader-visible-block {
   display: block !important;
 }
 
@@ -392,7 +392,7 @@ body.trusted-status-true .only-mobile-menu-item.trusted-visible-block {
 }
 
 @media (min-width: $breakpoint-s) {
-  body.community-leader-status-true .only-mobile-menu-item.community-leader-visible-block {
+  body.can-favorite-status-true .only-mobile-menu-item.community-leader-visible-block {
     display: none !important;
   }
   body.trusted-status-true .only-mobile-menu-item.trusted-visible-block {

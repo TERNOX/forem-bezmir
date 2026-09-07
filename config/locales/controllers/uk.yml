@@ -6,7 +6,8 @@ uk:
   favorites_controller:
     create:
       already_favorited: Цьому вже видано платину.
-      no_allowance: Ви вичерпали свій ліміт платини.
+      no_allowance: У вас закінчилась платина для видачі.
+      daily_limit: Ви вичерпали денний ліміт платини. Спробуйте завтра.
       cannot_favorite: Не вдалося видати платину.
   application_controller:
     bad_request: 'Помилка: некоректний запит'

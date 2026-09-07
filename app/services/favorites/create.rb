@@ -61,6 +61,17 @@ module Favorites
           raise ActiveRecord::Rollback
         end
 
+        # Serialize the cap check and wallet spend per user: concurrent claims
+        # by the same user queue on this row lock, so the daily-cap count and
+        # the balance can't both pass at a boundary. Locked after the favoritable
+        # update to keep the favoritable-then-user lock order (deadlock-safe).
+        user.lock!
+
+        if daily_cap_exceeded?
+          error = :daily_limit
+          raise ActiveRecord::Rollback
+        end
+
         unless can_afford_claim?
           error = :no_allowance
           raise ActiveRecord::Rollback
@@ -78,16 +89,25 @@ module Favorites
         .update_all(favorited_by_user_id: user.id, favorited_at: Time.current)
     end
 
-    # Checks that the user's favorite allowance can cover the favorite just
-    # made, and updates it for regular users.
-    # Returns true on valid and successful spend, or false otherwise.
-    def can_afford_claim?
-      return spend_earned_favorite == 1 unless user.community_leader?
+    # Whether this claim would push the user past the per-day platinum cap.
+    # claim_favoritable has already stamped favorited_at on the current record,
+    # so the count includes it — reject once it goes over the configured cap.
+    def daily_cap_exceeded?
+      cap = Settings::UserExperience.favorite_daily_cap.to_i
+      return false if cap <= 0
 
-      # For community leaders, lock to serialize the allowance check for the
-      # rest of the claim transaction.
-      user.lock!
-      !user.favorite_allowance.negative?
+      since = Time.current.beginning_of_day
+      given_today = user.favorited_articles.where(favorited_at: since..).count +
+        user.favorited_comments.where(favorited_at: since..).count
+      given_today > cap
+    end
+
+    # Everyone spends from the same accumulating platinum wallet
+    # (earned_favorites_count). Accrue any pending periodic grant first.
+    # Returns true on a successful spend, false otherwise.
+    def can_afford_claim?
+      user.accrue_favorite_credits!
+      spend_earned_favorite == 1
     end
 
     # Checks and decrements earned favorites safely in one query. Touches the

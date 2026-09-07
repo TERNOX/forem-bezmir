@@ -108,6 +108,22 @@ RSpec.describe Favorites::Create, type: :service do
     end
   end
 
+  describe "daily platinum cap" do
+    it "rejects favorites once the daily cap is reached, even with wallet balance" do
+      allow(Settings::UserExperience).to receive_messages(
+        community_leader_l2_favorite_allowance: 10, favorite_grant_period_days: 30, favorite_daily_cap: 1,
+      )
+      generous = create(:user, :community_leader_level_2)
+      described_class.call(favoritable: create(:article, user: author), user: generous)
+
+      result = described_class.call(favoritable: article, user: generous)
+
+      expect(result.success?).to be(false)
+      expect(result.error).to eq(:daily_limit)
+      expect(article.reload.favorited_by_user_id).to be_nil
+    end
+  end
+
   describe "favoriting by regular users" do
     it "lets the user spend earned credits" do
       spender = create(:user, earned_favorites_count: 1)
