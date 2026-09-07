@@ -45,6 +45,7 @@ fr:
     create:
       already_favorited: Ceci a déjà été choisi comme pépite.
       no_allowance: Vous avez épuisé votre quota de pépites.
+      daily_limit: Vous avez atteint la limite quotidienne. Réessayez demain.
       cannot_favorite: Impossible de choisir ceci comme pépite.
   feeds:
     sources:

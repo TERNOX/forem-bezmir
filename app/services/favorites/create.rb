@@ -61,6 +61,12 @@ module Favorites
           raise ActiveRecord::Rollback
         end
 
+        # Serialize the cap check and wallet spend per user: concurrent claims
+        # by the same user queue on this row lock, so the daily-cap count and
+        # the balance can't both pass at a boundary. Locked after the favoritable
+        # update to keep the favoritable-then-user lock order (deadlock-safe).
+        user.lock!
+
         if daily_cap_exceeded?
           error = :daily_limit
           raise ActiveRecord::Rollback

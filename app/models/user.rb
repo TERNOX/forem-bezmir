@@ -646,24 +646,30 @@ class User < ApplicationRecord
     period_days = Settings::UserExperience.favorite_grant_period_days.to_i
     return if period_days <= 0
 
-    if favorite_credits_refreshed_at.nil?
+    anchor = favorite_credits_refreshed_at
+    if anchor.nil?
       grant = per_period
       new_anchor = Time.current
     else
-      periods = ((Time.current - favorite_credits_refreshed_at) / period_days.days).floor
+      periods = ((Time.current - anchor) / period_days.days).floor
       return if periods < 1
 
       grant = periods * per_period
-      new_anchor = favorite_credits_refreshed_at + (periods * period_days).days
+      new_anchor = anchor + (periods * period_days).days
     end
 
-    self.class.where(id: id).update_all(
+    # Compare-and-swap on the anchor so two concurrent requests that read the
+    # same expired anchor can't both apply the grant: only the update whose
+    # WHERE still matches the anchor we read wins; the loser affects 0 rows.
+    scope = self.class.where(id: id)
+    scope = anchor.nil? ? scope.where(favorite_credits_refreshed_at: nil) : scope.where(favorite_credits_refreshed_at: anchor)
+    updated = scope.update_all(
       [
         "earned_favorites_count = earned_favorites_count + ?, favorite_credits_refreshed_at = ?, updated_at = ?",
         grant, new_anchor, Time.current
       ],
     )
-    reload
+    reload if updated.positive?
   end
 
   # How many favorites (platinum) the user can currently give — the accumulated
