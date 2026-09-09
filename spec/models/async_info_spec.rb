@@ -38,5 +38,20 @@ RSpec.describe AsyncInfo do
 
       expect(described_class.to_hash(user: user, context: context)[:favorite_allowance]).to eq(3)
     end
+
+    it "loads roles once for all role-based values" do
+      user.add_role(:admin)
+      user.reload
+      role_queries = []
+      subscriber = lambda do |_name, _started, _finished, _unique_id, payload|
+        role_queries << payload[:sql] if payload[:sql].include?('FROM "roles"')
+      end
+
+      payload = nil
+      ActiveSupport::Notifications.subscribed(subscriber, "sql.active_record") { payload = async_info }
+
+      expect(payload[:admin]).to be(true)
+      expect(role_queries.size).to eq(3)
+    end
   end
 end
