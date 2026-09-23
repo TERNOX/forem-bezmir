@@ -79,6 +79,15 @@ RSpec.describe Users::Update, type: :service do
   context "when changing username" do
     let(:new_username) { "#{user.username}_changed" }
 
+    it "preserves username history when the request omits username" do
+      user.update_columns(old_username: "previous_name", old_old_username: "older_name")
+
+      described_class.call(user, profile: { location: "New location" })
+
+      expect(user.reload.old_username).to eq("previous_name")
+      expect(user.old_old_username).to eq("older_name")
+    end
+
     it "sets old_username and old_old_username when username was changed" do
       old_username = user.username
       old_old_username = user.old_username

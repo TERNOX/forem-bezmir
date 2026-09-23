@@ -281,6 +281,17 @@ RSpec.describe User do
       expect(user.errors[:base].to_s).to include("could not be saved. Rate limit reached")
       expect(limiter).to have_received(:track_limit_by_action).with(:user_update).twice
     end
+
+    it "still limits repeated profile edits" do
+      user = create(:user)
+      allow(Rails).to receive(:cache).and_return(ActiveSupport::Cache::MemoryStore.new)
+      allow(Settings::RateLimit).to receive(:user_update).and_return(2)
+
+      expect(user.update(name: "First Name")).to be(true)
+      expect(user.update(name: "Second Name")).to be(true)
+      expect(user.update(name: "Third Name")).to be(false)
+      expect(user.errors[:base].to_s).to include("could not be saved. Rate limit reached")
+    end
   end
 
   context "when callbacks are triggered before validation" do

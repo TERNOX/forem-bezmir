@@ -54,9 +54,22 @@ export class EmailPreferencesForm extends Component {
   }
 
   finishWithoutEmail = () => {
-    localStorage.setItem('shouldRedirectToOnboarding', false);
-    const { next } = this.props;
-    next();
+    const csrfToken = getContentOfToken('csrf-token');
+    fetch('/onboarding/notifications', {
+      method: 'PATCH',
+      headers: {
+        'X-CSRF-Token': csrfToken,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ notifications: { email_newsletter: false } }),
+      credentials: 'same-origin',
+    }).then((response) => {
+      if (response.ok) {
+        localStorage.setItem('shouldRedirectToOnboarding', false);
+        const { next } = this.props;
+        next();
+      }
+    });
   }
 
   finishWithEmail = () => {

@@ -199,11 +199,41 @@ RSpec.describe "Onboardings" do
     context "when signed in" do
       before { sign_in user }
 
+      it "does not spend the profile quota or change username history when navigating slides" do
+        allow(Rails).to receive(:cache).and_return(ActiveSupport::Cache::MemoryStore.new)
+        allow(Settings::RateLimit).to receive(:user_update).and_return(2)
+        original_username = user.username
+        user.update_columns(old_username: "previous_name", old_old_username: "older_name")
+
+        5.times do |index|
+          patch "/onboarding", params: { user: { last_onboarding_page: "slide #{index}" } }
+          expect(response).to have_http_status(:ok)
+        end
+
+        patch "/onboarding", params: { user: { name: "Updated Name" } }
+        expect(response).to have_http_status(:ok)
+        expect(user.reload.name).to eq("Updated Name")
+        expect(user.username).to eq(original_username)
+        expect(user.old_username).to eq("previous_name")
+        expect(user.old_old_username).to eq("older_name")
+      end
+
       it "updates the user's last_onboarding_page attribute" do
         params = { user: { last_onboarding_page: "v2: personal info form", username: "test" } }
         expect do
           patch "/onboarding", params: params
         end.to change(user, :last_onboarding_page)
+      end
+
+      it "still limits profile edits submitted together with slide navigation" do
+        allow(Rails).to receive(:cache).and_return(ActiveSupport::Cache::MemoryStore.new)
+        allow(Settings::RateLimit).to receive(:user_update).and_return(0)
+
+        patch "/onboarding", params: { user: { last_onboarding_page: "slide 2" },
+                                       profile: { location: "Another location" } }
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(user.profile.reload.location).to eq("Llama Town")
       end
 
       it "updates the user's username attribute" do
@@ -274,6 +304,34 @@ RSpec.describe "Onboardings" do
   describe "PATCH /onboarding/notifications" do
     before { sign_in user }
 
+    it "persists completion even when email preferences are unchanged" do
+      patch notifications_onboarding_path(format: :json),
+            params: { notifications: { email_newsletter: false } }
+
+      expect(response).to have_http_status(:ok)
+      expect(user.reload.saw_onboarding).to be(true)
+      expect(user.notification_setting.reload.email_newsletter).to be(false)
+    end
+
+    it "does not report success or save preferences when user validation fails" do
+      user.update_column(:name, "")
+
+      patch notifications_onboarding_path(format: :json),
+            params: { notifications: { email_newsletter: true } }
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(user.reload.saw_onboarding).to be(false)
+      expect(user.notification_setting.reload.email_newsletter).to be(false)
+    end
+
+    it "rolls back completion when notification settings are invalid" do
+      patch notifications_onboarding_path(format: :json),
+            params: { notifications: { email_digest_periodic: nil } }
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(user.reload.saw_onboarding).to be(false)
+    end
+
     it "updates onboarding checkbox" do
       user.update_column(:saw_onboarding, false)
 
@@ -281,7 +339,7 @@ RSpec.describe "Onboardings" do
         patch notifications_onboarding_path(format: :json),
               params: { notifications: { tab: "notifications", email_newsletter: 1 } }
       end.to change { user.notification_setting.reload.email_newsletter }.from(false).to(true)
-      expect(user.saw_onboarding).to be(true)
+      expect(user.reload.saw_onboarding).to be(true)
     end
 
     it "can toggle email_newsletter" do
