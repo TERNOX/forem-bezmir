@@ -1,17 +1,12 @@
 module Emails
   class SendUserDigestWorker
     include Sidekiq::Job
-    include Sidekiq::Throttled::Job
 
     sidekiq_options queue: :low_priority, retry: 15, lock: :until_executing
-    sidekiq_throttle(
-      concurrency: { limit: 1 },
-      threshold: { limit: 1, period: [ENV.fetch("EMAIL_DIGEST_INTERVAL_SECONDS", 60).to_i, 1].max },
-      # Preserve the JID that owns the until_executing uniqueness lock.
-      requeue: { with: :enqueue },
-    )
 
     SMTP_COOLDOWN_KEY = "email_digest/smtp_retry_at".freeze
+    DELIVERY_SLOT_KEY = "email_digest/delivery_slot".freeze
+    DELIVERY_INTERVAL = [ENV.fetch("EMAIL_DIGEST_INTERVAL_SECONDS", 60).to_i, 1].max
 
     def self.smtp_rate_limited?(error)
       error.is_a?(Net::SMTPUnknownError) &&
@@ -82,6 +77,14 @@ module Emails
           ),
           article_ids: articles.map(&:id),
         )
+      end
+
+      # Reserve an SMTP slot only after eligibility and article selection. Deferring
+      # inside perform also avoids throttling unrelated work on low_priority.
+      delivery_slot = Sidekiq.redis { |redis| redis.set(DELIVERY_SLOT_KEY, user_id, nx: true, ex: DELIVERY_INTERVAL) }
+      unless delivery_slot
+        self.class.perform_in(DELIVERY_INTERVAL + rand(DELIVERY_INTERVAL), user_id, options.to_h)
+        return
       end
 
       tags = user.cached_followed_tag_names&.first(12)
