@@ -10,7 +10,7 @@ RSpec.describe EmailDigest, type: :service do
       expect(Emails::SendUserDigestWorker).to have_received(:perform_async).with(user.id)
     end
 
-    it "performs job inline if community is DEV" do
+    it "enqueues DEV digests so Sidekiq applies pacing and retries" do
       allow(ForemInstance).to receive(:dev_to?).and_return(true)
       user = create(:user)
       user.notification_setting.update(email_digest_periodic: true)
@@ -19,8 +19,8 @@ RSpec.describe EmailDigest, type: :service do
       allow(Emails::SendUserDigestWorker).to receive(:new).and_return(worker)
       allow(Emails::SendUserDigestWorker).to receive(:perform_async)
       described_class.send_periodic_digest_email
-      expect(Emails::SendUserDigestWorker).not_to have_received(:perform_async)
-      expect(worker).to have_received(:perform).with(user.id)
+      expect(Emails::SendUserDigestWorker).to have_received(:perform_async).with(user.id)
+      expect(worker).not_to have_received(:perform)
     end
   end
 end
