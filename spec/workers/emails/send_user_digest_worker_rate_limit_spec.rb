@@ -15,6 +15,7 @@ RSpec.describe Emails::SendUserDigestWorker, type: :worker do
   end
 
   before do
+    allow(Emails::DigestDeliveryLimiter).to receive(:call).and_return(nil)
     user.notification_setting.update!(email_digest_periodic: true)
     allow(Rails).to receive(:cache).and_return(cache)
     allow(EmailDigestArticleCollector).to receive(:new).and_return(collector)

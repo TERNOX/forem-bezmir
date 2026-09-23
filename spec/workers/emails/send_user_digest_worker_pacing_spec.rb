@@ -9,6 +9,7 @@ RSpec.describe Emails::SendUserDigestWorker, type: :worker do
   let(:delivery) { double }
 
   before do
+    allow(Emails::DigestDeliveryLimiter).to receive(:call).and_return(nil)
     user.notification_setting.update!(email_digest_periodic: true)
     allow(EmailDigestArticleCollector).to receive(:new).and_return(collector)
     allow(DigestMailer).to receive(:with).and_return(mailer)
@@ -21,7 +22,7 @@ RSpec.describe Emails::SendUserDigestWorker, type: :worker do
 
     described_class.new.perform(user.id)
 
-    expect(Sidekiq.redis { |redis| redis.get(described_class::DELIVERY_SLOT_KEY) }).to be_nil
+    expect(Emails::DigestDeliveryLimiter).not_to have_received(:call)
     expect(delivery).not_to have_received(:deliver_now)
   end
 
@@ -30,24 +31,24 @@ RSpec.describe Emails::SendUserDigestWorker, type: :worker do
   end
 
   it "defers an eligible delivery with its options when another delivery holds the slot" do
-    Sidekiq.redis { |redis| redis.set(described_class::DELIVERY_SLOT_KEY, "another-user") }
-    allow(described_class).to receive(:perform_in)
+    delivery_at = 1.minute.from_now.to_i
+    allow(Emails::DigestDeliveryLimiter).to receive(:call).and_return(delivery_at)
+    allow(described_class).to receive(:perform_at)
 
     described_class.new.perform(user.id, "source" => "regression")
 
-    interval = described_class::DELIVERY_INTERVAL
-    expect(described_class).to have_received(:perform_in).with(
-      a_value_between(interval, (interval * 2) - 1), user.id, "source" => "regression"
+    expect(described_class).to have_received(:perform_at).with(
+      delivery_at, user.id, "source" => "regression", "delivery_slot_at" => delivery_at
     )
     expect(delivery).not_to have_received(:deliver_now)
   end
 
-  it "reserves an expiring slot before sending a digest" do
-    described_class.new.perform(user.id)
+  it "claims its reserved slot before sending a deferred digest" do
+    reserved_at = 1.minute.ago.to_i
+    described_class.new.perform(user.id, "delivery_slot_at" => reserved_at)
 
     expect(delivery).to have_received(:deliver_now).once
-    expect(Sidekiq.redis { |redis| redis.ttl(described_class::DELIVERY_SLOT_KEY) })
-      .to be_between(1, described_class::DELIVERY_INTERVAL)
+    expect(Emails::DigestDeliveryLimiter).to have_received(:call).with(reserved_at: reserved_at)
   end
 
   # The uniqueness Lua scripts require real Redis, not fakeredis.
@@ -55,9 +56,12 @@ RSpec.describe Emails::SendUserDigestWorker, type: :worker do
   context "with real Redis" do
     let(:real_redis) { Redis.new(url: ENV.fetch("DIGEST_PACING_TEST_REDIS_URL"), driver: :ruby) }
     let(:pool) { ConnectionPool.new(size: 1) { real_redis } }
+    let(:limiter) { Emails::DigestDeliveryLimiter }
+    let(:interval) { limiter::INTERVAL }
 
     before do
       allow(Sidekiq).to receive(:redis_pool).and_return(pool)
+      allow(Emails::DigestDeliveryLimiter).to receive(:call).and_call_original
       SidekiqUniqueJobs.config.enabled = true
     end
 
@@ -81,7 +85,7 @@ RSpec.describe Emails::SendUserDigestWorker, type: :worker do
     end
 
     it "retains a deferred unique job and delivers it after the slot expires" do
-      real_redis.set(described_class::DELIVERY_SLOT_KEY, "another-user", ex: described_class::DELIVERY_INTERVAL)
+      real_redis.set(limiter::ACTIVE_SLOT_KEY, "1", ex: interval)
       jid = described_class.perform_async(user.id, "source" => "regression")
       expect(jid).to be_present
       expect(described_class.perform_async(user.id, "source" => "regression")).to be_nil
@@ -90,17 +94,39 @@ RSpec.describe Emails::SendUserDigestWorker, type: :worker do
 
       scheduled = Sidekiq::ScheduledSet.new.to_a
       expect(scheduled.size).to eq(1)
-      expect(scheduled.first.args).to eq([user.id, { "source" => "regression" }])
+      expect(scheduled.first.args.first).to eq(user.id)
+      expect(scheduled.first.args.last).to include("source" => "regression", "delivery_slot_at" => a_kind_of(Integer))
       expect(delivery).not_to have_received(:deliver_now)
 
-      real_redis.expire(described_class::DELIVERY_SLOT_KEY, 0)
-      Timecop.travel(((described_class::DELIVERY_INTERVAL * 2) + 1).seconds.from_now) do
+      real_redis.expire(limiter::ACTIVE_SLOT_KEY, 0)
+      Timecop.travel(((interval * 2) + 1).seconds.from_now) do
         Sidekiq::Scheduled::Enq.new.enqueue_jobs
         execute_queued_digest
       end
 
       expect(delivery).to have_received(:deliver_now).once
       expect(Sidekiq::ScheduledSet.new.size).to eq(0)
+    end
+
+    it "allocates a different future slot to every eligible digest in a batch" do
+      Timecop.freeze do
+        expect(limiter.call).to be_nil
+        slots = Array.new(5) { limiter.call }
+
+        expect(slots).to eq((1..5).map { |offset| Time.current.to_i + (interval * offset) })
+        expect(real_redis.ttl(limiter::NEXT_SLOT_KEY)).to be_between(interval * 5, interval * 6)
+        expect(limiter.call(reserved_at: slots.first)).to eq(slots.first)
+      end
+    end
+
+    it "spaces overdue reservations again after a worker outage" do
+      Timecop.freeze do
+        expired_reservation = 1.hour.ago.to_i
+        expect(limiter.call(reserved_at: expired_reservation)).to be_nil
+        slots = Array.new(5) { limiter.call(reserved_at: expired_reservation) }
+
+        expect(slots).to eq((1..5).map { |offset| Time.current.to_i + (interval * offset) })
+      end
     end
 
     def execute_queued_digest

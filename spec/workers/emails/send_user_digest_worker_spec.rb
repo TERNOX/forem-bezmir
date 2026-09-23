@@ -14,6 +14,7 @@ RSpec.describe Emails::SendUserDigestWorker, type: :worker do
   let(:message_delivery) { double }
 
   before do
+    allow(Emails::DigestDeliveryLimiter).to receive(:call).and_return(nil)
     # Set up default subforem for testing
     RequestStore.store[:default_subforem_id] = default_subforem.id
     allow(Subforem).to receive(:cached_default_id).and_return(default_subforem.id)

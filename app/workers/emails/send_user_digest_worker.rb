@@ -5,8 +5,6 @@ module Emails
     sidekiq_options queue: :low_priority, retry: 15, lock: :until_executing
 
     SMTP_COOLDOWN_KEY = "email_digest/smtp_retry_at".freeze
-    DELIVERY_SLOT_KEY = "email_digest/delivery_slot".freeze
-    DELIVERY_INTERVAL = [ENV.fetch("EMAIL_DIGEST_INTERVAL_SECONDS", 60).to_i, 1].max
 
     def self.smtp_rate_limited?(error)
       error.is_a?(Net::SMTPUnknownError) &&
@@ -81,9 +79,9 @@ module Emails
 
       # Reserve an SMTP slot only after eligibility and article selection. Deferring
       # inside perform also avoids throttling unrelated work on low_priority.
-      delivery_slot = Sidekiq.redis { |redis| redis.set(DELIVERY_SLOT_KEY, user_id, nx: true, ex: DELIVERY_INTERVAL) }
-      unless delivery_slot
-        self.class.perform_in(DELIVERY_INTERVAL + rand(DELIVERY_INTERVAL), user_id, options.to_h)
+      delivery_at = DigestDeliveryLimiter.call(reserved_at: options[:delivery_slot_at])
+      if delivery_at
+        self.class.perform_at(delivery_at, user_id, options.merge(delivery_slot_at: delivery_at).to_h)
         return
       end
 
