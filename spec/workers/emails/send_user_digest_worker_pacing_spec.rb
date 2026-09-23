@@ -86,16 +86,19 @@ RSpec.describe Emails::SendUserDigestWorker, type: :worker do
 
     it "retains a deferred unique job and delivers it after the slot expires" do
       real_redis.set(limiter::ACTIVE_SLOT_KEY, "1", ex: interval)
-      jid = described_class.perform_async(user.id, "source" => "regression")
+      jid = described_class.perform_async(user.id)
       expect(jid).to be_present
-      expect(described_class.perform_async(user.id, "source" => "regression")).to be_nil
+      expect(described_class.perform_async(user.id)).to be_nil
 
       execute_queued_digest
 
       scheduled = Sidekiq::ScheduledSet.new.to_a
       expect(scheduled.size).to eq(1)
       expect(scheduled.first.args.first).to eq(user.id)
-      expect(scheduled.first.args.last).to include("source" => "regression", "delivery_slot_at" => a_kind_of(Integer))
+      expect(scheduled.first.args.last).to include("delivery_slot_at" => a_kind_of(Integer))
+      expect(described_class.perform_async(user.id)).to be_nil
+      expect(described_class.perform_async(user.id, {})).to be_nil
+      expect(described_class.perform_async(user.id, "delivery_slot_at" => 1.hour.from_now.to_i)).to be_nil
       expect(delivery).not_to have_received(:deliver_now)
 
       real_redis.expire(limiter::ACTIVE_SLOT_KEY, 0)
@@ -106,6 +109,9 @@ RSpec.describe Emails::SendUserDigestWorker, type: :worker do
 
       expect(delivery).to have_received(:deliver_now).once
       expect(Sidekiq::ScheduledSet.new.size).to eq(0)
+      expect(described_class.perform_async(user.id, "test_attempt_id" => 111)).to be_present
+      expect(described_class.perform_async(user.id, "test_attempt_id" => 222)).to be_present
+      expect(described_class.perform_async(user.id, "test_attempt_id" => 111)).to be_nil
     end
 
     it "allocates a different future slot to every eligible digest in a batch" do

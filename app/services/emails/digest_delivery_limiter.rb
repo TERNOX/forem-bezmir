@@ -29,7 +29,7 @@ module Emails
       slot = Sidekiq.redis do |redis|
         redis.eval(
           RESERVE_OR_CLAIM,
-          keys: [NEXT_SLOT_KEY, ACTIVE_SLOT_KEY], argv: [Time.current.to_i, INTERVAL, reserved_at.to_i]
+          keys: [NEXT_SLOT_KEY, ACTIVE_SLOT_KEY], argv: [Time.current.to_i, INTERVAL, reserved_at.to_i],
         )
       end
       slot.zero? ? nil : slot

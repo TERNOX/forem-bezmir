@@ -6,6 +6,12 @@ module Emails
 
     SMTP_COOLDOWN_KEY = "email_digest/smtp_retry_at".freeze
 
+    def self.lock_args(args)
+      user_id, options = args
+      identity_options = (options || {}).stringify_keys.except("delivery_slot_at")
+      identity_options.empty? ? [user_id] : [user_id, identity_options]
+    end
+
     def self.smtp_rate_limited?(error)
       error.is_a?(Net::SMTPUnknownError) &&
         error.message.include?("too many messages from sender in last 60 minutes")
