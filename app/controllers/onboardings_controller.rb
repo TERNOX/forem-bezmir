@@ -81,10 +81,10 @@ class OnboardingsController < ApplicationController
       current_user.notification_setting.assign_attributes(params[:notifications].permit(ALLOWED_NOTIFICATION_PARAMS))
     end
 
-    current_user.saw_onboarding = true
-
     User.transaction do
-      current_user.save!
+      if ActiveModel::Type::Boolean.new.cast(params[:completed])
+        current_user.update!(saw_onboarding: true)
+      end
       current_user.notification_setting.save!
     end
     notifications_updated_response(true, "")

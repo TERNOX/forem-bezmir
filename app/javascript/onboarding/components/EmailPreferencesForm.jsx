@@ -37,7 +37,7 @@ export class EmailPreferencesForm extends Component {
           'X-CSRF-Token': csrfToken,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ notifications: { email_newsletter: newsletterChecked } }),
+        body: JSON.stringify({ completed: true, notifications: { email_newsletter: newsletterChecked } }),
         credentials: 'same-origin',
       }).then((response) => {
         if (response.ok) {
@@ -61,7 +61,7 @@ export class EmailPreferencesForm extends Component {
         'X-CSRF-Token': csrfToken,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ notifications: { email_newsletter: false } }),
+      body: JSON.stringify({ completed: true, notifications: { email_newsletter: false } }),
       credentials: 'same-origin',
     }).then((response) => {
       if (response.ok) {
@@ -80,7 +80,7 @@ export class EmailPreferencesForm extends Component {
         'X-CSRF-Token': csrfToken,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ notifications: { email_newsletter: true, email_digest_periodic: true } }),
+      body: JSON.stringify({ completed: true, notifications: { email_newsletter: true, email_digest_periodic: true } }),
       credentials: 'same-origin',
     }).then((response) => {
       if (response.ok) {

@@ -125,7 +125,7 @@ describe('EmailPreferencesForm', () => {
     expect(fetch).toHaveBeenLastCalledWith('/onboarding/notifications',
       expect.objectContaining({
         method: 'PATCH',
-        body: JSON.stringify({ notifications: { email_newsletter: false } }),
+        body: JSON.stringify({ completed: true, notifications: { email_newsletter: false } }),
       }),
     );
     expect(localStorage.getItem('shouldRedirectToOnboarding')).toBe('false');
@@ -148,6 +148,20 @@ describe('EmailPreferencesForm', () => {
     expect(localStorage.getItem('shouldRedirectToOnboarding')).toBeNull();
   });
 
+  it('marks onboarding complete when accepting the newsletter immediately', async () => {
+    const next = jest.fn();
+    const { getByText, findByLabelText } = renderEmailPreferencesForm(next);
+    const checkbox = await findByLabelText(/receive weekly newsletter/i);
+    fireEvent.click(checkbox);
+
+    fireEvent.click(getByText('Завершити'));
+
+    await waitFor(() => expect(next).toHaveBeenCalledTimes(1));
+    expect(fetch).toHaveBeenLastCalledWith('/onboarding/notifications', expect.objectContaining({
+      body: JSON.stringify({ completed: true, notifications: { email_newsletter: true } }),
+    }));
+  });
+
   it('should handle "Count me in" button click in the reconsideration prompt', async () => {
     const { getByText, findByLabelText } = renderEmailPreferencesForm();
     await findByLabelText(/receive weekly newsletter/i);
@@ -164,7 +178,9 @@ describe('EmailPreferencesForm', () => {
 
     // Verify that the `finishWithEmail` function is called
     await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith('/onboarding/notifications', expect.any(Object));
+      expect(fetch).toHaveBeenCalledWith('/onboarding/notifications', expect.objectContaining({
+        body: JSON.stringify({ completed: true, notifications: { email_newsletter: true, email_digest_periodic: true } }),
+      }));
     });
   });
 });

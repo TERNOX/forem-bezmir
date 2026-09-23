@@ -304,9 +304,26 @@ RSpec.describe "Onboardings" do
   describe "PATCH /onboarding/notifications" do
     before { sign_in user }
 
+    it "saves intermediate digest preferences without completing onboarding" do
+      patch notifications_onboarding_path(format: :json),
+            params: { notifications: { email_digest_periodic: true } }
+
+      expect(response).to have_http_status(:ok)
+      expect(user.notification_setting.reload.email_digest_periodic).to be(true)
+      expect(user.reload.saw_onboarding).to be(false)
+    end
+
+    it "does not complete onboarding when completion is explicitly false" do
+      patch notifications_onboarding_path(format: :json),
+            params: { completed: "false", notifications: { email_newsletter: true } }
+
+      expect(response).to have_http_status(:ok)
+      expect(user.reload.saw_onboarding).to be(false)
+    end
+
     it "persists completion even when email preferences are unchanged" do
       patch notifications_onboarding_path(format: :json),
-            params: { notifications: { email_newsletter: false } }
+            params: { completed: true, notifications: { email_newsletter: false } }
 
       expect(response).to have_http_status(:ok)
       expect(user.reload.saw_onboarding).to be(true)
@@ -317,7 +334,7 @@ RSpec.describe "Onboardings" do
       user.update_column(:name, "")
 
       patch notifications_onboarding_path(format: :json),
-            params: { notifications: { email_newsletter: true } }
+            params: { completed: true, notifications: { email_newsletter: true } }
 
       expect(response).to have_http_status(:unprocessable_entity)
       expect(user.reload.saw_onboarding).to be(false)
@@ -326,7 +343,7 @@ RSpec.describe "Onboardings" do
 
     it "rolls back completion when notification settings are invalid" do
       patch notifications_onboarding_path(format: :json),
-            params: { notifications: { email_digest_periodic: nil } }
+            params: { completed: true, notifications: { email_digest_periodic: nil } }
 
       expect(response).to have_http_status(:unprocessable_entity)
       expect(user.reload.saw_onboarding).to be(false)
@@ -337,7 +354,7 @@ RSpec.describe "Onboardings" do
 
       expect do
         patch notifications_onboarding_path(format: :json),
-              params: { notifications: { tab: "notifications", email_newsletter: 1 } }
+              params: { completed: true, notifications: { tab: "notifications", email_newsletter: 1 } }
       end.to change { user.notification_setting.reload.email_newsletter }.from(false).to(true)
       expect(user.reload.saw_onboarding).to be(true)
     end
