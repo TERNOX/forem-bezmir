@@ -30,7 +30,7 @@ RSpec.describe Emails::SendUserDigestWorker, type: :worker do
     RequestStore.store[:default_subforem_id] = nil
   end
 
-  include_examples "#enqueues_on_correct_queue", "low_priority"
+  include_examples "#enqueues_on_correct_queue", "email_digest"
 
   describe "perform" do
     context "when there's articles to be sent" do

@@ -10,26 +10,29 @@ module Emails
       local now = tonumber(ARGV[1])
       local interval = tonumber(ARGV[2])
       local reserved = tonumber(ARGV[3])
-      if reserved > now then return reserved end
+      local not_before = tonumber(ARGV[4])
+      if reserved > now and reserved >= not_before then return reserved end
 
       local next_slot = tonumber(redis.call('GET', KEYS[1])) or now
-      if (reserved > 0 or next_slot <= now) and
+      -- An explicit cooldown always reserves, even if it expires during this call.
+      if not_before == 0 and (reserved > 0 or next_slot <= now) and
           redis.call('SET', KEYS[2], '1', 'NX', 'EX', interval) then
         local following = math.max(next_slot, now + interval)
         redis.call('SET', KEYS[1], following, 'EX', following - now)
         return 0
       end
 
-      local slot = math.max(next_slot, now + interval)
+      local slot = math.max(next_slot, now + interval, not_before)
       redis.call('SET', KEYS[1], slot + interval, 'EX', slot + interval - now)
       return slot
     LUA
 
-    def self.call(reserved_at: nil)
+    def self.call(reserved_at: nil, not_before: nil)
       slot = Sidekiq.redis do |redis|
         redis.eval(
           RESERVE_OR_CLAIM,
-          keys: [NEXT_SLOT_KEY, ACTIVE_SLOT_KEY], argv: [Time.current.to_i, INTERVAL, reserved_at.to_i],
+          keys: [NEXT_SLOT_KEY, ACTIVE_SLOT_KEY],
+          argv: [Time.current.to_i, INTERVAL, reserved_at.to_i, not_before.to_i],
         )
       end
       slot.zero? ? nil : slot

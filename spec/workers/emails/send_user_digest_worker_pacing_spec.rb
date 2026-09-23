@@ -31,6 +31,14 @@ RSpec.describe Emails::SendUserDigestWorker, type: :worker do
     expect(Sidekiq::Throttled::Registry.get(described_class)).to be_nil
   end
 
+  it "uses a dedicated queue consumed by the default Sidekiq configuration" do
+    queue = described_class.get_sidekiq_options.fetch("queue").to_s
+    configuration = YAML.load_file(Rails.root.join("config/sidekiq.yml"), permitted_classes: [Symbol])
+
+    expect(queue).to eq("email_digest")
+    expect(configuration.fetch(:queues)).to include([queue, 1])
+  end
+
   it "defers an eligible delivery with its options when another delivery holds the slot" do
     delivery_at = 1.minute.from_now.to_i
     allow(Emails::DigestDeliveryLimiter).to receive(:call).and_return(delivery_at)
@@ -171,13 +179,27 @@ RSpec.describe Emails::SendUserDigestWorker, type: :worker do
       end
     end
 
+    it "reserves distinct slots after an SMTP cooldown without claiming a delivery" do
+      Timecop.freeze do
+        retry_at = 1.hour.from_now.to_i
+        expect(limiter.call(not_before: 1.second.ago.to_i)).to eq(Time.current.to_i + interval)
+        slots = Array.new(5) { limiter.call(not_before: retry_at) }
+
+        expect(slots).to eq((0..4).map { |offset| retry_at + (interval * offset) })
+        expect(real_redis.exists?(limiter::ACTIVE_SLOT_KEY)).to be(false)
+        expect(limiter.call(reserved_at: slots.first, not_before: retry_at)).to eq(slots.first)
+        expect(limiter.call(reserved_at: 1.minute.from_now.to_i, not_before: retry_at))
+          .to eq(retry_at + (interval * 5))
+      end
+    end
+
     def execute_queued_digest
-      job = Sidekiq.load_json(real_redis.rpop("queue:low_priority"))
+      job = Sidekiq.load_json(real_redis.rpop("queue:email_digest"))
       worker = described_class.new
       chain = Sidekiq::Middleware::Chain.new
       chain.add SidekiqUniqueJobs::Middleware::Client
       chain.add SidekiqUniqueJobs::Middleware::Server
-      chain.invoke(worker, job, "low_priority") { worker.perform(*job.fetch("args")) }
+      chain.invoke(worker, job, "email_digest") { worker.perform(*job.fetch("args")) }
     end
   end
 end

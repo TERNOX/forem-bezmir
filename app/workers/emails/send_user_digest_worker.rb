@@ -2,7 +2,7 @@ module Emails
   class SendUserDigestWorker
     include Sidekiq::Job
 
-    sidekiq_options queue: :low_priority, retry: 15, lock: :until_executing
+    sidekiq_options queue: :email_digest, retry: 15, lock: :until_executing
 
     SMTP_COOLDOWN_KEY = "email_digest/smtp_retry_at".freeze
 
@@ -37,7 +37,8 @@ module Emails
 
       retry_at = Rails.cache.read(SMTP_COOLDOWN_KEY)
       if retry_at && retry_at > Time.current.to_i
-        self.class.perform_in(retry_at - Time.current.to_i + rand(60), user_id, options.to_h)
+        delivery_at = DigestDeliveryLimiter.call(reserved_at: options[:delivery_slot_at], not_before: retry_at)
+        self.class.perform_at(delivery_at, user_id, options.merge(delivery_slot_at: delivery_at).to_h)
         return
       end
 

@@ -47,16 +47,21 @@ RSpec.describe Emails::SendUserDigestWorker, type: :worker do
     other_user = create(:user)
     other_user.notification_setting.update!(email_digest_periodic: true)
     attempt = EmailDigestTestAttempt.create!(user: other_user)
-    allow(described_class).to receive(:perform_in)
+    allow(described_class).to receive(:perform_at)
 
     Timecop.freeze do
-      cache.write(described_class::SMTP_COOLDOWN_KEY, 1.hour.from_now.to_i, expires_in: 1.hour)
+      retry_at = 1.hour.from_now.to_i
+      delivery_at = retry_at + Emails::DigestDeliveryLimiter::INTERVAL
+      allow(Emails::DigestDeliveryLimiter).to receive(:call).with(reserved_at: nil, not_before: retry_at)
+        .and_return(delivery_at)
+      cache.write(described_class::SMTP_COOLDOWN_KEY, retry_at, expires_in: 1.hour)
       worker.perform(other_user.id, "test_attempt_id" => attempt.id)
 
-      expect(described_class).to have_received(:perform_in).with(
-        a_value_between(3600, 3659), other_user.id, "test_attempt_id" => attempt.id
+      expect(described_class).to have_received(:perform_at).with(
+        delivery_at, other_user.id, "test_attempt_id" => attempt.id, "delivery_slot_at" => delivery_at
       )
     end
+    expect(EmailDigestArticleCollector).not_to have_received(:new)
     expect(message_delivery).not_to have_received(:deliver_now)
     expect(attempt.reload.status).to eq("queued")
   end
@@ -72,13 +77,13 @@ RSpec.describe Emails::SendUserDigestWorker, type: :worker do
 
   it "honors an unsubscribe while a delivery is waiting for retry" do
     user.notification_setting.update!(email_digest_periodic: false)
-    allow(described_class).to receive(:perform_in)
+    allow(described_class).to receive(:perform_at)
     cache.write(described_class::SMTP_COOLDOWN_KEY, 1.hour.from_now.to_i, expires_in: 1.hour)
 
     worker.perform(user.id)
 
     expect(message_delivery).not_to have_received(:deliver_now)
-    expect(described_class).not_to have_received(:perform_in)
+    expect(described_class).not_to have_received(:perform_at)
   end
 
   it "does not treat an unrelated SMTP rejection as an hourly quota" do
