@@ -42,6 +42,13 @@ class OnboardingsController < ApplicationController
       user_params = params[:user].permit(ALLOWED_USER_PARAMS)
     end
 
+    # Slide navigation must not consume the quota used by avatar and profile edits.
+    # Keep this path restricted to progress-only requests; mixed requests use normal validation.
+    if user_params.keys == ["last_onboarding_page"] && profile_params.blank?
+      current_user.update_column(:last_onboarding_page, user_params[:last_onboarding_page])
+      return render json: {}, status: :ok
+    end
+
     update_result = Users::Update.call(current_user, user: user_params, profile: profile_params)
 
     if update_result.success?
@@ -74,10 +81,15 @@ class OnboardingsController < ApplicationController
       current_user.notification_setting.assign_attributes(params[:notifications].permit(ALLOWED_NOTIFICATION_PARAMS))
     end
 
-    current_user.saw_onboarding = true
-
-    success = current_user.notification_setting.save
-    notifications_updated_response(success, current_user.notification_setting.errors_as_sentence)
+    User.transaction do
+      if ActiveModel::Type::Boolean.new.cast(params[:completed])
+        current_user.update!(saw_onboarding: true)
+      end
+      current_user.notification_setting.save!
+    end
+    notifications_updated_response(true, "")
+  rescue ActiveRecord::RecordInvalid => e
+    notifications_updated_response(false, e.record.errors_as_sentence)
   end
 
   # DEV-specific custom actions for onboarding.

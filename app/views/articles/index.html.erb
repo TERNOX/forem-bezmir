@@ -25,7 +25,11 @@
 <% end %>
 
 <%= javascript_include_tag "homePage", defer: true %>
-<% cache(release_adjusted_cache_key("main-stories-index-#{params}-#{user_signed_in?}"), expires_in: 90.seconds) do %>
+<% index_cache_key = [
+     release_adjusted_cache_key("main-stories-index-#{params}-#{user_signed_in?}"),
+     "subscriber-icon-#{FeatureFlag.enabled?(:subscriber_icon)}",
+   ] %>
+<% cache(index_cache_key, expires_in: 90.seconds) do %>
   <% if @hero_billboard && FeatureFlag.enabled?(:hero_billboard) %>
     <%= render partial: "shared/billboard", locals: { billboard: @hero_billboard, data_context_type: BillboardEvent::CONTEXT_TYPE_HOME } %>
   <% end %>

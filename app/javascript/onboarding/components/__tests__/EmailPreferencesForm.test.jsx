@@ -8,10 +8,10 @@ import { EmailPreferencesForm } from '../EmailPreferencesForm';
 global.fetch = fetch;
 
 describe('EmailPreferencesForm', () => {
-  const renderEmailPreferencesForm = () =>
+  const renderEmailPreferencesForm = (next = jest.fn()) =>
     render(
       <EmailPreferencesForm
-        next={jest.fn()}
+        next={next}
         prev={jest.fn()}
         currentSlideIndex={4}
         slidesCount={5}
@@ -51,6 +51,7 @@ describe('EmailPreferencesForm', () => {
   beforeEach(() => {
     fetch.resetMocks();
     fetch.mockResponseOnce(fakeResponse);
+    localStorage.clear();
   });
 
   beforeAll(() => {
@@ -90,54 +91,96 @@ describe('EmailPreferencesForm', () => {
 
   it('should render a button that says Finish', () => {
     const { queryByText } = renderEmailPreferencesForm();
-    expect(queryByText('Finish')).not.toBeNull();
+    expect(queryByText('Завершити')).not.toBeNull();
   });
 
   it('should show the reconsideration prompt when the checkbox is not checked', async () => {
-    const { getByText } = renderEmailPreferencesForm();
-    const finishButton = getByText('Finish');
+    const { getByText, findByLabelText } = renderEmailPreferencesForm();
+    await findByLabelText(/receive weekly newsletter/i);
+    const finishButton = getByText('Завершити');
 
     fireEvent.click(finishButton);
 
     await waitFor(() => {
-      expect(getByText(/We Recommend Subscribing to Emails/i)).not.toBeNull();
+      expect(getByText(/Рекомендуємо підписатися на розсилку/i)).not.toBeNull();
     });
   });
 
   it('should handle "No thank you" button click in the reconsideration prompt', async () => {
-    const { getByText, findByLabelText } = renderEmailPreferencesForm();
+    const next = jest.fn();
+    const { getByText, findByLabelText } = renderEmailPreferencesForm(next);
     const checkbox = await findByLabelText(/receive weekly newsletter/i);
-    const finishButton = getByText('Finish');
+    const finishButton = getByText('Завершити');
 
     fireEvent.click(finishButton);
 
     await waitFor(() => {
-      expect(getByText(/We Recommend Subscribing to Emails/i)).not.toBeNull();
+      expect(getByText(/Рекомендуємо підписатися на розсилку/i)).not.toBeNull();
     });
 
-    const noThankYouButton = getByText('No thank you');
+    const noThankYouButton = getByText('Ні, дякую');
     fireEvent.click(noThankYouButton);
 
-    // Verify that the `finishWithoutEmail` function is called
+    await waitFor(() => expect(next).toHaveBeenCalledTimes(1));
+    expect(fetch).toHaveBeenLastCalledWith('/onboarding/notifications',
+      expect.objectContaining({
+        method: 'PATCH',
+        body: JSON.stringify({ completed: true, notifications: { email_newsletter: false } }),
+      }),
+    );
+    expect(localStorage.getItem('shouldRedirectToOnboarding')).toBe('false');
     expect(checkbox.checked).toBe(false);
   });
 
+  it('stays on onboarding when saving the email opt-out fails', async () => {
+    const next = jest.fn();
+    const { getByText, findByLabelText } = renderEmailPreferencesForm(next);
+    await findByLabelText(/receive weekly newsletter/i);
+    fireEvent.click(getByText('Завершити'));
+    fetch.mockResponseOnce('{}', { status: 422 });
+
+    fireEvent.click(getByText('Ні, дякую'));
+
+    await waitFor(() => expect(fetch).toHaveBeenLastCalledWith(
+      '/onboarding/notifications', expect.any(Object),
+    ));
+    expect(next).not.toHaveBeenCalled();
+    expect(localStorage.getItem('shouldRedirectToOnboarding')).toBeNull();
+  });
+
+  it('marks onboarding complete when accepting the newsletter immediately', async () => {
+    const next = jest.fn();
+    const { getByText, findByLabelText } = renderEmailPreferencesForm(next);
+    const checkbox = await findByLabelText(/receive weekly newsletter/i);
+    fireEvent.click(checkbox);
+
+    fireEvent.click(getByText('Завершити'));
+
+    await waitFor(() => expect(next).toHaveBeenCalledTimes(1));
+    expect(fetch).toHaveBeenLastCalledWith('/onboarding/notifications', expect.objectContaining({
+      body: JSON.stringify({ completed: true, notifications: { email_newsletter: true } }),
+    }));
+  });
+
   it('should handle "Count me in" button click in the reconsideration prompt', async () => {
-    const { getByText } = renderEmailPreferencesForm();
-    const finishButton = getByText('Finish');
+    const { getByText, findByLabelText } = renderEmailPreferencesForm();
+    await findByLabelText(/receive weekly newsletter/i);
+    const finishButton = getByText('Завершити');
 
     fireEvent.click(finishButton);
 
     await waitFor(() => {
-      expect(getByText(/We Recommend Subscribing to Emails/i)).not.toBeNull();
+      expect(getByText(/Рекомендуємо підписатися на розсилку/i)).not.toBeNull();
     });
 
-    const countMeInButton = getByText('Count me in');
+    const countMeInButton = getByText('Давайте спробую');
     fireEvent.click(countMeInButton);
 
     // Verify that the `finishWithEmail` function is called
     await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith('/onboarding/notifications', expect.any(Object));
+      expect(fetch).toHaveBeenCalledWith('/onboarding/notifications', expect.objectContaining({
+        body: JSON.stringify({ completed: true, notifications: { email_newsletter: true, email_digest_periodic: true } }),
+      }));
     });
   });
 });
