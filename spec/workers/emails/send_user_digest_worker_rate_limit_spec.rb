@@ -47,17 +47,19 @@ RSpec.describe Emails::SendUserDigestWorker, type: :worker do
     other_user = create(:user)
     other_user.notification_setting.update!(email_digest_periodic: true)
     attempt = EmailDigestTestAttempt.create!(user: other_user)
-    allow(described_class).to receive(:perform_at)
+    test_digest_client = double
+    allow(described_class).to receive(:set).with(queue: :mailers).and_return(test_digest_client)
+    allow(test_digest_client).to receive(:perform_at)
 
     Timecop.freeze do
       retry_at = 1.hour.from_now.to_i
       delivery_at = retry_at + Emails::DigestDeliveryLimiter::INTERVAL
-      allow(Emails::DigestDeliveryLimiter).to receive(:call).with(reserved_at: nil, not_before: retry_at)
-        .and_return(delivery_at)
+      allow(Emails::DigestDeliveryLimiter).to receive(:call)
+        .with(reserved_at: nil, not_before: retry_at, priority: true).and_return(delivery_at)
       cache.write(described_class::SMTP_COOLDOWN_KEY, retry_at, expires_in: 1.hour)
       worker.perform(other_user.id, "test_attempt_id" => attempt.id)
 
-      expect(described_class).to have_received(:perform_at).with(
+      expect(test_digest_client).to have_received(:perform_at).with(
         delivery_at, other_user.id, "test_attempt_id" => attempt.id, "delivery_slot_at" => delivery_at
       )
     end

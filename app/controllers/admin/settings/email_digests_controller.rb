@@ -26,7 +26,7 @@ module Admin
         attempt.log_event(:info, I18n.t("admin.settings.email_digests_controller.logs.attempt_created"))
 
         begin
-          job_id = Emails::SendUserDigestWorker.perform_async(user.id, test_attempt_id: attempt.id)
+          job_id = Emails::SendUserDigestWorker.set(queue: :mailers).perform_async(user.id, test_attempt_id: attempt.id)
 
           if job_id.blank?
             attempt.mark_failed!(I18n.t("admin.settings.email_digests_controller.enqueue_failed"))

@@ -24,6 +24,9 @@ module Emails
     def perform(user_id, options = {})
       options = options.with_indifferent_access
       attempt = ::EmailDigestTestAttempt.find_by(id: options[:test_attempt_id]) if options[:test_attempt_id]
+      job_client = attempt ? self.class.set(queue: :mailers) : self.class
+      limit_options = { reserved_at: options[:delivery_slot_at] }
+      limit_options[:priority] = true if attempt
 
       attempt&.log_event(:info, I18n.t("admin.settings.email_digests_controller.logs.worker_started"), user_id: user_id)
 
@@ -37,8 +40,8 @@ module Emails
 
       retry_at = Rails.cache.read(SMTP_COOLDOWN_KEY)
       if retry_at && retry_at > Time.current.to_i
-        delivery_at = DigestDeliveryLimiter.call(reserved_at: options[:delivery_slot_at], not_before: retry_at)
-        self.class.perform_at(delivery_at, user_id, options.merge(delivery_slot_at: delivery_at).to_h)
+        delivery_at = DigestDeliveryLimiter.call(**limit_options, not_before: retry_at)
+        job_client.perform_at(delivery_at, user_id, options.merge(delivery_slot_at: delivery_at).to_h)
         return
       end
 
@@ -111,9 +114,9 @@ module Emails
       end
       # Keep scheduling outside the delivery rescue so infrastructure failures
       # reach Sidekiq's retry handler instead of acknowledging a lost digest.
-      delivery_at = DigestDeliveryLimiter.call(reserved_at: options[:delivery_slot_at])
+      delivery_at = DigestDeliveryLimiter.call(**limit_options)
       if delivery_at
-        self.class.perform_at(delivery_at, user_id, options.merge(delivery_slot_at: delivery_at).to_h)
+        job_client.perform_at(delivery_at, user_id, options.merge(delivery_slot_at: delivery_at).to_h)
         return
       end
 

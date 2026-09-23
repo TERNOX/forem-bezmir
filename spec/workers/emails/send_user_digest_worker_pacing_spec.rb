@@ -60,6 +60,21 @@ RSpec.describe Emails::SendUserDigestWorker, type: :worker do
     expect(Emails::DigestDeliveryLimiter).to have_received(:call).with(reserved_at: reserved_at)
   end
 
+  it "keeps a deferred test digest on the priority mail queue" do
+    attempt = EmailDigestTestAttempt.create!(user: user)
+    delivery_at = 1.minute.from_now.to_i
+    allow(Emails::DigestDeliveryLimiter).to receive(:call).with(reserved_at: nil, priority: true)
+      .and_return(delivery_at)
+
+    described_class.new.perform(user.id, test_attempt_id: attempt.id)
+
+    expect(described_class.jobs.last).to include(
+      "queue" => "mailers",
+      "args" => [user.id, { "test_attempt_id" => attempt.id, "delivery_slot_at" => delivery_at }],
+    )
+    expect(delivery).not_to have_received(:deliver_now)
+  end
+
   it "lets Sidekiq retry a Redis failure while claiming a delivery slot" do
     allow(Emails::DigestDeliveryLimiter).to receive(:call).and_raise(Redis::CannotConnectError)
 
@@ -176,6 +191,22 @@ RSpec.describe Emails::SendUserDigestWorker, type: :worker do
         slots = Array.new(5) { limiter.call(reserved_at: expired_reservation) }
 
         expect(slots).to eq((1..5).map { |offset| Time.current.to_i + (interval * offset) })
+      end
+    end
+
+    it "gives previews timely slots while sharing the actual SMTP delivery guard" do
+      Timecop.freeze do
+        expect(limiter.call).to be_nil
+        bulk_slots = Array.new(5) { limiter.call }
+        preview_slot = limiter.call(priority: true)
+
+        expect(preview_slot).to eq(Time.current.to_i + interval)
+        expect(preview_slot).to be < bulk_slots.last
+        real_redis.expire(limiter::ACTIVE_SLOT_KEY, 0)
+        Timecop.travel(Time.zone.at(preview_slot)) do
+          expect(limiter.call(reserved_at: preview_slot, priority: true)).to be_nil
+          expect(limiter.call(reserved_at: bulk_slots.first)).to be > Time.current.to_i
+        end
       end
     end
 
