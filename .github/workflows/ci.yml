@@ -57,6 +57,8 @@ jobs:
     needs: [build]
     timeout-minutes: 20
     env:
+      # Separate from application Redis databases; the integration specs require an empty DB.
+      DIGEST_PACING_TEST_REDIS_URL: redis://localhost:6379/15
       KNAPSACK_PRO_CI_NODE_TOTAL: ${{ matrix.ci_node_total }}
       KNAPSACK_PRO_CI_NODE_INDEX: ${{ matrix.ci_node_index }}
       KNAPSACK_PRO_TEST_SUITE_TOKEN_RSPEC: ${{ secrets.KNAPSACK_PRO_TEST_SUITE_TOKEN_RSPEC }}
