@@ -3,5 +3,5 @@ fr:
   views:
     admin:
       smtp:
-        delivery_enabled: Envoyer des e-mails
-        delivery_description: Désactivez cette option pour arrêter tous les e-mails sortants, y compris ceux de connexion et de réinitialisation du mot de passe. Les paramètres SMTP sont conservés. Les messages ignorés ne sont pas envoyés automatiquement après la réactivation.
+        automatic_digests_enabled: Envoyer les récapitulatifs automatiques
+        automatic_digests_description: Désactivez cette option pour arrêter les récapitulatifs automatiques par e-mail. Les messages de connexion, de réinitialisation du mot de passe et les autres messages restent envoyés. Les paramètres SMTP sont conservés et vous pouvez toujours envoyer un récapitulatif de test manuellement.

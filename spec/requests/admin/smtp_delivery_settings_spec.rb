@@ -15,12 +15,12 @@ RSpec.describe "SMTP delivery settings" do
 
   after { Settings::SMTP.clear_cache }
 
-  it "disables and re-enables sending without clearing credentials or bypassing email confirmation" do
+  it "disables and re-enables automatic digests without clearing credentials or bypassing email confirmation" do
     %w[0 1].each do |value|
-      post admin_settings_smtp_settings_path, params: { settings_smtp: { delivery_enabled: value } }
+      post admin_settings_smtp_settings_path, params: { settings_smtp: { automatic_digests_enabled: value } }
 
       expect(response).to have_http_status(:ok)
-      expect(Settings::SMTP.delivery_enabled).to eq(value == "1")
+      expect(Settings::SMTP.automatic_digests_enabled).to eq(value == "1")
       expect(Settings::SMTP.settings).to eq(credentials)
       expect(ForemInstance.smtp_enabled?).to be(true)
       expect(build(:user, confirmed_at: nil).__send__(:confirmation_required?)).to be(true)
@@ -31,8 +31,8 @@ RSpec.describe "SMTP delivery settings" do
     sign_in create(:user, :admin)
 
     expect do
-      post admin_settings_smtp_settings_path, params: { settings_smtp: { delivery_enabled: "0" } }
+      post admin_settings_smtp_settings_path, params: { settings_smtp: { automatic_digests_enabled: "0" } }
     end.to raise_error(Pundit::NotAuthorizedError)
-    expect(Settings::SMTP.delivery_enabled).to be(true)
+    expect(Settings::SMTP.automatic_digests_enabled).to be(true)
   end
 end

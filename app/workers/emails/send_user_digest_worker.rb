@@ -7,6 +7,7 @@ module Emails
     def perform(user_id, options = {})
       options = options.with_indifferent_access
       attempt = ::EmailDigestTestAttempt.find_by(id: options[:test_attempt_id]) if options[:test_attempt_id]
+      return if !Settings::SMTP.automatic_digests_enabled && attempt.nil?
 
       attempt&.log_event(:info, I18n.t("admin.settings.email_digests_controller.logs.worker_started"), user_id: user_id)
 

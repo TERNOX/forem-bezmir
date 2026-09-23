@@ -12,14 +12,15 @@
       <fieldset class="grid gap-4">
 
         <div class="crayons-field crayons-field--checkbox mt-3">
-          <%= f.check_box :delivery_enabled,
-                          checked: Settings::SMTP.delivery_enabled,
+          <%= f.check_box :automatic_digests_enabled,
+                          checked: Settings::SMTP.automatic_digests_enabled,
                           class: "crayons-checkbox",
                           aria: { describedby: "smtp-delivery-description" } %>
           <div>
-            <%= f.label :delivery_enabled, t("views.admin.smtp.delivery_enabled"), class: "crayons-field__label" %>
+            <%= f.label :automatic_digests_enabled, t("views.admin.smtp.automatic_digests_enabled"),
+                        class: "crayons-field__label" %>
             <p id="smtp-delivery-description" class="crayons-field__description">
-              <%= t("views.admin.smtp.delivery_description") %>
+              <%= t("views.admin.smtp.automatic_digests_description") %>
             </p>
           </div>
         </div>

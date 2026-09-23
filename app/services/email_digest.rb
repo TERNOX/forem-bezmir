@@ -8,6 +8,8 @@ class EmailDigest
   end
 
   def send_periodic_digest_email
+    return unless Settings::SMTP.automatic_digests_enabled
+
     @users.select(:id).in_batches do |batch|
       batch.each do |user|
         # Temporary
