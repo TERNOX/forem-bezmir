@@ -21,6 +21,7 @@ jobs:
       RAILS_ENV: test
       NODE_ENV: test
       COVERAGE: 'false'
+      YARN_ENABLE_HARDENED_MODE: '0'
       DATABASE_URL_TEST: postgres://postgres:postgres@localhost:5432/Forem_test
       DATABASE_NAME_TEST: Forem_test
       REDIS_URL: redis://localhost:6379/0
@@ -48,10 +49,18 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Install native dependencies
-        run: sudo apt-get update && sudo apt-get install -y imagemagick libpq-dev libprotobuf-dev protobuf-compiler
+        run: >-
+          sudo apt-get update && sudo apt-get install -y
+          imagemagick libpq-dev libprotobuf-dev protobuf-compiler
+          libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+          cache: yarn
+      - run: yarn install --immutable
       - run: cp .env_sample .env
       - name: Prepare test database
         run: bundle exec rails db:create db:schema:load
