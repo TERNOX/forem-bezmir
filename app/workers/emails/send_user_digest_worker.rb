@@ -98,18 +98,20 @@ module Emails
                                                                    user_tags: tags,
                                                                    user_signed_in: true)
 
-      begin
-        delivery = DigestMailer.with(user: user, articles: articles.to_a, billboards: [first_billboard, second_billboard])
-          .digest_email
-        # Materialize the lazy message before claiming a slot: billboard queries
-        # and template rendering must not consume the interval before SMTP starts.
-        delivery.message
-        delivery_at = DigestDeliveryLimiter.call(reserved_at: options[:delivery_slot_at])
-        if delivery_at
-          self.class.perform_at(delivery_at, user_id, options.merge(delivery_slot_at: delivery_at).to_h)
-          return
-        end
+      delivery = DigestMailer.with(user: user, articles: articles.to_a, billboards: [first_billboard, second_billboard])
+        .digest_email
+      # Materialize the lazy message before claiming a slot: billboard queries
+      # and template rendering must not consume the interval before SMTP starts.
+      delivery.message
+      # Keep scheduling outside the delivery rescue so infrastructure failures
+      # reach Sidekiq's retry handler instead of acknowledging a lost digest.
+      delivery_at = DigestDeliveryLimiter.call(reserved_at: options[:delivery_slot_at])
+      if delivery_at
+        self.class.perform_at(delivery_at, user_id, options.merge(delivery_slot_at: delivery_at).to_h)
+        return
+      end
 
+      begin
         delivery.deliver_now
 
         # Track billboard impressions with relaxed durability — these are

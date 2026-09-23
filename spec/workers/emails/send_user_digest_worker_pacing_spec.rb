@@ -52,6 +52,21 @@ RSpec.describe Emails::SendUserDigestWorker, type: :worker do
     expect(Emails::DigestDeliveryLimiter).to have_received(:call).with(reserved_at: reserved_at)
   end
 
+  it "lets Sidekiq retry a Redis failure while claiming a delivery slot" do
+    allow(Emails::DigestDeliveryLimiter).to receive(:call).and_raise(Redis::CannotConnectError)
+
+    expect { described_class.new.perform(user.id) }.to raise_error(Redis::CannotConnectError)
+    expect(delivery).not_to have_received(:deliver_now)
+  end
+
+  it "lets Sidekiq retry when enqueueing a deferred delivery fails" do
+    allow(Emails::DigestDeliveryLimiter).to receive(:call).and_return(1.minute.from_now.to_i)
+    allow(described_class).to receive(:perform_at).and_raise(Redis::CannotConnectError)
+
+    expect { described_class.new.perform(user.id) }.to raise_error(Redis::CannotConnectError)
+    expect(delivery).not_to have_received(:deliver_now)
+  end
+
   it "finishes slow preparation before claiming the delivery slot" do
     started_at = Time.current
     claimed_at = nil
