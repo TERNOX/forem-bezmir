@@ -1,0 +1,7 @@
+---
+fr:
+  views:
+    admin:
+      smtp:
+        delivery_enabled: Envoyer des e-mails
+        delivery_description: Désactivez cette option pour arrêter tous les e-mails sortants, y compris ceux de connexion et de réinitialisation du mot de passe. Les paramètres SMTP sont conservés. Les messages ignorés ne sont pas envoyés automatiquement après la réactivation.

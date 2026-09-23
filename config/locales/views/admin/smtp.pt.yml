@@ -1,0 +1,7 @@
+---
+pt:
+  views:
+    admin:
+      smtp:
+        delivery_enabled: Enviar e-mails
+        delivery_description: Desative para interromper todos os e-mails enviados, incluindo os de acesso e redefinição de senha. As configurações de SMTP são mantidas. As mensagens ignoradas não são enviadas automaticamente após a reativação.

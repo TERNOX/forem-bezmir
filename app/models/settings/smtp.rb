@@ -3,6 +3,7 @@ module Settings
     self.table_name = :settings_smtp
     AUTHENTICATION_METHODS = %w[plain login cram_md5].freeze
 
+    setting :delivery_enabled, type: :boolean, default: true
     setting :address, type: :string, default: ApplicationConfig["SMTP_ADDRESS"].presence
     setting :authentication, type: :string, default: ApplicationConfig["SMTP_AUTHENTICATION"].presence,
                              validates: { inclusion: AUTHENTICATION_METHODS }
@@ -31,7 +32,7 @@ module Settings
       private
 
       def custom_provider_settings
-        to_h
+        to_h.except(:delivery_enabled)
       end
 
       def fallback_sendgrid_settings

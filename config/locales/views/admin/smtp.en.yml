@@ -1,0 +1,7 @@
+---
+en:
+  views:
+    admin:
+      smtp:
+        delivery_enabled: Send email
+        delivery_description: Turn off to stop all outgoing email, including sign-in and password reset messages. SMTP settings are kept. Messages skipped while sending is off are not sent automatically when you turn it back on.
