@@ -1,8 +1,25 @@
 module Emails
   class SendUserDigestWorker
     include Sidekiq::Job
+    include Sidekiq::Throttled::Job
 
     sidekiq_options queue: :low_priority, retry: 15, lock: :until_executing
+    sidekiq_throttle(
+      concurrency: { limit: 1 },
+      threshold: { limit: 1, period: [ENV.fetch("EMAIL_DIGEST_INTERVAL_SECONDS", 60).to_i, 1].max },
+      requeue: { with: :schedule },
+    )
+
+    SMTP_COOLDOWN_KEY = "email_digest/smtp_retry_at".freeze
+
+    def self.smtp_rate_limited?(error)
+      error.is_a?(Net::SMTPUnknownError) &&
+        error.message.include?("too many messages from sender in last 60 minutes")
+    end
+
+    sidekiq_retry_in do |_count, error|
+      1.hour.to_i + rand(5.minutes.to_i) if smtp_rate_limited?(error)
+    end
 
     def perform(user_id, options = {})
       options = options.with_indifferent_access
@@ -15,6 +32,12 @@ module Emails
         reason = I18n.t("admin.settings.email_digests_controller.skipped_unsubscribed")
         attempt&.log_event(:warn, reason)
         attempt&.mark_skipped!(reason)
+        return
+      end
+
+      retry_at = Rails.cache.read(SMTP_COOLDOWN_KEY)
+      if retry_at && retry_at > Time.current.to_i
+        self.class.perform_in(retry_at - Time.current.to_i + rand(60), user_id, options.to_h)
         return
       end
 
@@ -93,6 +116,15 @@ module Emails
         attempt&.mark_sent!(attempt&.status_note)
       rescue StandardError => e
         Honeybadger.context({ user_id: user.id, article_ids: articles.map(&:id), digest_test_attempt_id: attempt&.id })
+        if self.class.smtp_rate_limited?(e)
+          Rails.cache.write(SMTP_COOLDOWN_KEY, 1.hour.from_now.to_i, expires_in: 1.hour)
+          attempt&.log_event(:error, I18n.t("admin.settings.email_digests_controller.logs.delivery_failed"),
+                             error: e.message)
+          attempt&.mark_failed!(e)
+          # Let Sidekiq retain the failed delivery and retry after the provider's window.
+          raise
+        end
+
         notice_id = Honeybadger.notify(e)
         attempt&.log_event(:error, I18n.t("admin.settings.email_digests_controller.logs.delivery_failed"),
                            error: e.message, honeybadger_id: notice_id)

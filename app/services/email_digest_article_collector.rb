@@ -21,7 +21,7 @@ class EmailDigestArticleCollector
                    set_subforem_context
 
                    articles_query = @user.followed_articles
-                     .select(:title, :description, :path, :cached_user, :cached_tag_list, :subforem_id)
+                     .select(:id, :title, :description, :path, :cached_user, :cached_tag_list, :subforem_id)
                      .published
                      .full_posts
                      .where("published_at > ?", cutoff_date)
@@ -41,7 +41,7 @@ class EmailDigestArticleCollector
                    if @skip_subforem_filtering
                      # If skipping subforem filtering, get articles from anywhere
                      articles_query = Article.select(
-                       :title, :description, :path, :cached_user, :cached_tag_list, :subforem_id
+                       :id, :title, :description, :path, :cached_user, :cached_tag_list, :subforem_id
                      )
                        .published
                        .full_posts
@@ -55,7 +55,7 @@ class EmailDigestArticleCollector
                    else
                      # Normal logic with subforem filtering and tags
                      articles_query = Article.select(
-                       :title, :description, :path, :cached_user, :cached_tag_list, :subforem_id
+                       :id, :title, :description, :path, :cached_user, :cached_tag_list, :subforem_id
                      )
                        .published
                        .full_posts
@@ -74,7 +74,7 @@ class EmailDigestArticleCollector
       if articles.length < 3
         if @skip_subforem_filtering
           # If we're skipping subforem filtering, get articles from anywhere
-          articles_query = Article.select(:title, :description, :path, :cached_user, :cached_tag_list, :subforem_id)
+          articles_query = Article.select(:id, :title, :description, :path, :cached_user, :cached_tag_list, :subforem_id)
             .published
             .full_posts
             .where("published_at > ?", cutoff_date)
@@ -90,7 +90,7 @@ class EmailDigestArticleCollector
 
           fallback_subforem_ids << nil unless fallback_subforem_ids.include?(nil)
 
-          articles_query = Article.select(:title, :description, :path, :cached_user, :cached_tag_list, :subforem_id)
+          articles_query = Article.select(:id, :title, :description, :path, :cached_user, :cached_tag_list, :subforem_id)
             .published
             .full_posts
             .where("published_at > ?", cutoff_date)
@@ -122,7 +122,7 @@ class EmailDigestArticleCollector
   end
 
   def fallback_articles(limit: RESULTS_COUNT)
-    Article.select(:title, :description, :path, :cached_user, :cached_tag_list, :subforem_id)
+    Article.select(:id, :title, :description, :path, :cached_user, :cached_tag_list, :subforem_id)
       .published
       .full_posts
       .where(email_digest_eligible: true)

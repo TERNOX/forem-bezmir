@@ -19,9 +19,11 @@ RSpec.describe EmailDigestArticleCollector, type: :service do
   describe "#articles_to_send" do
     context "when user is brand new with no-follow" do
       it "provides top 3 articles from default subforem" do
-        create_list(:article, 3, public_reactions_count: 40, featured: true, score: 40, subforem: default_subforem)
+        expected_articles = create_list(:article, 3, public_reactions_count: 40, featured: true, score: 40,
+                                                   subforem: default_subforem)
         articles = described_class.new(user).articles_to_send
         expect(articles.length).to eq(3)
+        expect(articles.map(&:id)).to match_array(expected_articles.map(&:id))
         expect(articles.first.subforem_id).to eq(default_subforem.id)
       end
 
@@ -39,7 +41,9 @@ RSpec.describe EmailDigestArticleCollector, type: :service do
       end
 
       it "includes articles without a subforem when none are assigned" do
-        create_list(:article, 3, public_reactions_count: 40, featured: true, score: 40, subforem: nil)
+        legacy_articles = create_list(:article, 3, public_reactions_count: 40, featured: true, score: 40)
+        # New records receive a default subforem in before_validation; simulate legacy records.
+        legacy_articles.each { |article| article.update_column(:subforem_id, nil) }
 
         articles = described_class.new(user).articles_to_send
 
