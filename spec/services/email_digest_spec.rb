@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe EmailDigest, type: :service do
+  after { Settings::SMTP.clear_cache }
+
   describe "::send_digest_email" do
     it "does not enqueue automatic digests while disabled" do
       Settings::SMTP.automatic_digests_enabled = false

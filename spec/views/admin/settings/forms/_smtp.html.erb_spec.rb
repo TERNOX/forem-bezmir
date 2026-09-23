@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe "admin/settings/forms/_smtp" do
+  after { Settings::SMTP.clear_cache }
+
   it "keeps saved fields visible and editable when automatic digests are disabled" do
     Settings::SMTP.automatic_digests_enabled = false
     Settings::SMTP.user_name = "sender"

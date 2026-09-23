@@ -24,6 +24,7 @@ RSpec.describe Emails::SendUserDigestWorker, type: :worker do
   end
 
   after do
+    Settings::SMTP.clear_cache
     # Clean up RequestStore after each test
     RequestStore.store[:default_subforem_id] = nil
   end
