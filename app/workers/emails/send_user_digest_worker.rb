@@ -7,7 +7,8 @@ module Emails
     sidekiq_throttle(
       concurrency: { limit: 1 },
       threshold: { limit: 1, period: [ENV.fetch("EMAIL_DIGEST_INTERVAL_SECONDS", 60).to_i, 1].max },
-      requeue: { with: :schedule },
+      # Preserve the JID that owns the until_executing uniqueness lock.
+      requeue: { with: :enqueue },
     )
 
     SMTP_COOLDOWN_KEY = "email_digest/smtp_retry_at".freeze
