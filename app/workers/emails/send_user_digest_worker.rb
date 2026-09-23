@@ -98,11 +98,16 @@ module Emails
                                                                    user_tags: tags,
                                                                    user_signed_in: true)
 
-      delivery = DigestMailer.with(user: user, articles: articles.to_a, billboards: [first_billboard, second_billboard])
-        .digest_email
-      # Materialize the lazy message before claiming a slot: billboard queries
-      # and template rendering must not consume the interval before SMTP starts.
-      delivery.message
+      begin
+        delivery = DigestMailer.with(user: user, articles: articles.to_a, billboards: [first_billboard, second_billboard])
+          .digest_email
+        # Materialize the lazy message before claiming a slot: billboard queries
+        # and template rendering must not consume the interval before SMTP starts.
+        delivery.message
+      rescue StandardError => e
+        handle_delivery_error(e, user, articles, attempt)
+        return
+      end
       # Keep scheduling outside the delivery rescue so infrastructure failures
       # reach Sidekiq's retry handler instead of acknowledging a lost digest.
       delivery_at = DigestDeliveryLimiter.call(reserved_at: options[:delivery_slot_at])
@@ -127,21 +132,27 @@ module Emails
         attempt&.log_event(:info, I18n.t("admin.settings.email_digests_controller.logs.delivery_succeeded"))
         attempt&.mark_sent!(attempt&.status_note)
       rescue StandardError => e
-        Honeybadger.context({ user_id: user.id, article_ids: articles.map(&:id), digest_test_attempt_id: attempt&.id })
-        if self.class.smtp_rate_limited?(e)
-          Rails.cache.write(SMTP_COOLDOWN_KEY, 1.hour.from_now.to_i, expires_in: 1.hour)
-          attempt&.log_event(:error, I18n.t("admin.settings.email_digests_controller.logs.delivery_failed"),
-                             error: e.message)
-          attempt&.mark_failed!(e)
-          # Let Sidekiq retain the failed delivery and retry after the provider's window.
-          raise
-        end
-
-        notice_id = Honeybadger.notify(e)
-        attempt&.log_event(:error, I18n.t("admin.settings.email_digests_controller.logs.delivery_failed"),
-                           error: e.message, honeybadger_id: notice_id)
-        attempt&.mark_failed!(e, notice_id)
+        handle_delivery_error(e, user, articles, attempt)
       end
+    end
+
+    private
+
+    def handle_delivery_error(error, user, articles, attempt)
+      Honeybadger.context({ user_id: user.id, article_ids: articles.map(&:id), digest_test_attempt_id: attempt&.id })
+      if self.class.smtp_rate_limited?(error)
+        Rails.cache.write(SMTP_COOLDOWN_KEY, 1.hour.from_now.to_i, expires_in: 1.hour)
+        attempt&.log_event(:error, I18n.t("admin.settings.email_digests_controller.logs.delivery_failed"),
+                           error: error.message)
+        attempt&.mark_failed!(error)
+        # Let Sidekiq retain the failed delivery and retry after the provider's window.
+        raise error
+      end
+
+      notice_id = Honeybadger.notify(error)
+      attempt&.log_event(:error, I18n.t("admin.settings.email_digests_controller.logs.delivery_failed"),
+                         error: error.message, honeybadger_id: notice_id)
+      attempt&.mark_failed!(error, notice_id)
     end
   end
 end

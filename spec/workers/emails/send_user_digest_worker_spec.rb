@@ -165,6 +165,20 @@ RSpec.describe Emails::SendUserDigestWorker, type: :worker do
       context "with a tracked test attempt" do
         let(:attempt) { ::EmailDigestTestAttempt.create!(user: user) }
 
+        it "records rendering failures without claiming a delivery slot" do
+          create_list(:article, 3, user_id: author.id, public_reactions_count: 20, score: 20, tag_list: [tag.name])
+          allow(message_delivery).to receive(:message).and_raise(StandardError, "template failed")
+          allow(Honeybadger).to receive(:notify).and_return("render-notice")
+
+          worker.perform(user.id, test_attempt_id: attempt.id)
+
+          expect(attempt.reload.status).to eq("failed")
+          expect(attempt.error_message).to eq("template failed")
+          expect(attempt.honeybadger_id).to eq("render-notice")
+          expect(Emails::DigestDeliveryLimiter).not_to have_received(:call)
+          expect(message_delivery).not_to have_received(:deliver_now)
+        end
+
         it "marks the attempt as sent when delivery succeeds" do
           create_list(:article, 3, user_id: author.id, public_reactions_count: 20, score: 20, tag_list: [tag.name])
 
