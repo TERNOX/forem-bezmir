@@ -14,6 +14,7 @@ RSpec.describe Emails::SendUserDigestWorker, type: :worker do
     allow(EmailDigestArticleCollector).to receive(:new).and_return(collector)
     allow(DigestMailer).to receive(:with).and_return(mailer)
     allow(mailer).to receive(:digest_email).and_return(delivery)
+    allow(delivery).to receive(:message)
     allow(delivery).to receive(:deliver_now)
   end
 
@@ -51,6 +52,23 @@ RSpec.describe Emails::SendUserDigestWorker, type: :worker do
     expect(Emails::DigestDeliveryLimiter).to have_received(:call).with(reserved_at: reserved_at)
   end
 
+  it "finishes slow preparation before claiming the delivery slot" do
+    started_at = Time.current
+    claimed_at = nil
+    sent_at = nil
+    allow(delivery).to receive(:message) { Timecop.travel(started_at + (Emails::DigestDeliveryLimiter::INTERVAL * 2)) }
+    allow(Emails::DigestDeliveryLimiter).to receive(:call) do
+      claimed_at = Time.current
+      nil
+    end
+    allow(delivery).to receive(:deliver_now) { sent_at = Time.current }
+
+    Timecop.freeze(started_at) { described_class.new.perform(user.id) }
+
+    expect(claimed_at).to be >= started_at + Emails::DigestDeliveryLimiter::INTERVAL
+    expect(sent_at - claimed_at).to be < 1
+  end
+
   # The uniqueness Lua scripts require real Redis, not fakeredis.
   # Run with DIGEST_PACING_TEST_REDIS_URL pointing to an empty disposable database.
   context "with real Redis" do
@@ -84,6 +102,8 @@ RSpec.describe Emails::SendUserDigestWorker, type: :worker do
       end
     end
 
+    # Verify one job's complete lifecycle through the real client/server middleware.
+    # rubocop:disable RSpec/MultipleExpectations
     it "retains a deferred unique job and delivers it after the slot expires" do
       real_redis.set(limiter::ACTIVE_SLOT_KEY, "1", ex: interval)
       jid = described_class.perform_async(user.id)
@@ -113,6 +133,7 @@ RSpec.describe Emails::SendUserDigestWorker, type: :worker do
       expect(described_class.perform_async(user.id, "test_attempt_id" => 222)).to be_present
       expect(described_class.perform_async(user.id, "test_attempt_id" => 111)).to be_nil
     end
+    # rubocop:enable RSpec/MultipleExpectations
 
     it "allocates a different future slot to every eligible digest in a batch" do
       Timecop.freeze do

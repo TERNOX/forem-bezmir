@@ -83,14 +83,6 @@ module Emails
         )
       end
 
-      # Reserve an SMTP slot only after eligibility and article selection. Deferring
-      # inside perform also avoids throttling unrelated work on low_priority.
-      delivery_at = DigestDeliveryLimiter.call(reserved_at: options[:delivery_slot_at])
-      if delivery_at
-        self.class.perform_at(delivery_at, user_id, options.merge(delivery_slot_at: delivery_at).to_h)
-        return
-      end
-
       tags = user.cached_followed_tag_names&.first(12)
       first_billboard = Billboard.for_display(area: "digest_first",
                                               user_id: user.id,
@@ -107,8 +99,18 @@ module Emails
                                                                    user_signed_in: true)
 
       begin
-        DigestMailer.with(user: user, articles: articles.to_a, billboards: [first_billboard, second_billboard])
-          .digest_email.deliver_now
+        delivery = DigestMailer.with(user: user, articles: articles.to_a, billboards: [first_billboard, second_billboard])
+          .digest_email
+        # Materialize the lazy message before claiming a slot: billboard queries
+        # and template rendering must not consume the interval before SMTP starts.
+        delivery.message
+        delivery_at = DigestDeliveryLimiter.call(reserved_at: options[:delivery_slot_at])
+        if delivery_at
+          self.class.perform_at(delivery_at, user_id, options.merge(delivery_slot_at: delivery_at).to_h)
+          return
+        end
+
+        delivery.deliver_now
 
         # Track billboard impressions with relaxed durability — these are
         # low-priority analytics writes that don't need synchronous WAL flush.

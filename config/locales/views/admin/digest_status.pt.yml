@@ -1,0 +1,30 @@
+---
+pt:
+  views:
+    admin:
+      settings:
+        emails:
+          test_digest:
+            status:
+              heading: Estado do último resumo de teste
+              empty: Nenhum resumo de teste foi solicitado ainda.
+              labels:
+                status: Estado
+                email: Destinatário
+                updated_at: Atualizado
+                note: Nota de estado
+                details: Detalhes
+                honeybadger: ID do Honeybadger
+                job: ID da tarefa Sidekiq
+              logs:
+                toggle: Ver registo de envio
+                empty: Ainda não há entradas no registo.
+                levels:
+                  info: INFO
+                  warn: AVISO
+                  error: ERRO
+              statuses:
+                queued: Na fila para envio
+                sent: Enviado com sucesso
+                skipped: Ignorado
+                failed: Falhou

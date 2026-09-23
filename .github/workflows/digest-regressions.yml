@@ -73,3 +73,5 @@ jobs:
           spec/workers/emails/send_user_digest_worker_rate_limit_spec.rb
           spec/workers/emails/send_user_digest_worker_pacing_spec.rb
           --format progress
+      - name: Run admin test-digest request regressions
+        run: bundle exec rspec spec/requests/admin/configs_spec.rb --example 'Email digests' --format progress

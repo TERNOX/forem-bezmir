@@ -21,6 +21,7 @@ RSpec.describe Emails::SendUserDigestWorker, type: :worker do
 
     allow(DigestMailer).to receive(:with).and_return(mailer)
     allow(mailer).to receive(:digest_email).and_return(message_delivery)
+    allow(message_delivery).to receive(:message)
     allow(message_delivery).to receive(:deliver_now)
   end
 
