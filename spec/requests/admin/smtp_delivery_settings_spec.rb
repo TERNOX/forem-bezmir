@@ -35,4 +35,17 @@ RSpec.describe "SMTP delivery settings" do
     end.to raise_error(Pundit::NotAuthorizedError)
     expect(Settings::SMTP.automatic_digests_enabled).to be(true)
   end
+
+  it "saves globally from a subforem so background workers see the disabled switch" do
+    subforem = create(:subforem, domain: "community.example.com")
+    host! subforem.domain
+
+    post admin_settings_smtp_settings_path, params: { settings_smtp: { automatic_digests_enabled: "0" } }
+
+    expect(response).to have_http_status(:ok)
+    expect(Settings::SMTP.where(var: "automatic_digests_enabled").pluck(:subforem_id)).to eq([nil])
+    RequestStore.clear!
+    expect(Settings::SMTP.automatic_digests_enabled).to be(false)
+    expect(Settings::SMTP.automatic_digests_enabled(subforem_id: subforem.id)).to be(false)
+  end
 end

@@ -17,6 +17,25 @@ module Settings
                                      validates: { email: true, allow_blank: true }
 
     class << self
+      # Digest production runs without a request/subforem context. Keep this
+      # installation-wide switch global even when edited from a subforem domain.
+      def automatic_digests_enabled(**_options)
+        value = all_settings(nil)["automatic_digests_enabled"]
+        value.nil? ? get_default(:automatic_digests_enabled) : value
+      end
+
+      def set_automatic_digests_enabled(value, **_options)
+        record = find_or_initialize_by(var: "automatic_digests_enabled", subforem_id: nil)
+        record.value = convert_string_to_value_type(:boolean, value)
+        record.save!
+        clear_cache
+        value
+      end
+
+      def automatic_digests_enabled=(value)
+        set_automatic_digests_enabled(value)
+      end
+
       def settings
         if provided_minimum_settings?
           custom_provider_settings

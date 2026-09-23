@@ -4,4 +4,4 @@ pt:
     admin:
       smtp:
         automatic_digests_enabled: Enviar resumos automáticos
-        automatic_digests_description: Desative para interromper os resumos automáticos por e-mail. As mensagens de acesso, redefinição de senha e outras mensagens continuam sendo enviadas. As configurações de SMTP são mantidas e você ainda pode enviar um resumo de teste manualmente.
+        automatic_digests_description: Desative para interromper os resumos automáticos em todas as comunidades deste site. As mensagens de acesso, redefinição de senha e outras mensagens continuam sendo enviadas. As configurações de SMTP são mantidas e você ainda pode enviar um resumo de teste manualmente.

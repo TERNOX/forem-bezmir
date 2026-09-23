@@ -4,4 +4,4 @@ en:
     admin:
       smtp:
         automatic_digests_enabled: Send automatic digests
-        automatic_digests_description: Turn off to stop automatic email digests. Sign-in, password reset, and other messages continue to send. SMTP settings are kept, and you can still send a test digest manually.
+        automatic_digests_description: Turn off to stop automatic email digests across all communities on this site. Sign-in, password reset, and other messages continue to send. SMTP settings are kept, and you can still send a test digest manually.
