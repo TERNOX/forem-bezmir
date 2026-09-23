@@ -1,0 +1,77 @@
+name: Digest regressions
+
+on:
+  pull_request:
+    branches: [upstream-sync-2026]
+  push:
+    branches: [upstream-sync-2026]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: digest-regressions-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  digest-regressions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      RAILS_ENV: test
+      NODE_ENV: test
+      COVERAGE: 'false'
+      YARN_ENABLE_HARDENED_MODE: '0'
+      DATABASE_URL_TEST: postgres://postgres:postgres@localhost:5432/Forem_test
+      DATABASE_NAME_TEST: Forem_test
+      REDIS_URL: redis://localhost:6379/0
+      # This disposable database must stay separate from all application Redis clients.
+      DIGEST_PACING_TEST_REDIS_URL: redis://localhost:6379/15
+    services:
+      postgres:
+        image: postgres:13-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install native dependencies
+        run: >-
+          sudo apt-get update && sudo apt-get install -y
+          imagemagick libpq-dev libprotobuf-dev protobuf-compiler
+          libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+          cache: yarn
+      - run: yarn install --immutable
+      - run: cp .env_sample .env
+      - name: Prepare test database
+        run: bundle exec rails db:create db:schema:load
+      - name: Run digest regressions with real Redis
+        run: >-
+          bundle exec rspec
+          spec/services/email_digest_spec.rb
+          spec/services/email_digest_article_collector_spec.rb
+          spec/workers/emails/send_user_digest_worker_spec.rb
+          spec/workers/emails/send_user_digest_worker_rate_limit_spec.rb
+          spec/workers/emails/send_user_digest_worker_pacing_spec.rb
+          --format progress
+      - name: Run admin test-digest request regressions
+        run: bundle exec rspec spec/requests/admin/configs_spec.rb --example 'Email digests' --format progress

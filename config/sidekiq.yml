@@ -1,4 +1,5 @@
 :queues:
+  - ["email_digest", 1]
   - ["default", 1]
   - ["low_priority", 10]
   - ["medium_priority", 100]

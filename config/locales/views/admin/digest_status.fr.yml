@@ -1,0 +1,30 @@
+---
+fr:
+  views:
+    admin:
+      settings:
+        emails:
+          test_digest:
+            status:
+              heading: Statut du dernier récapitulatif de test
+              empty: Aucun récapitulatif de test n’a encore été demandé.
+              labels:
+                status: Statut
+                email: Destinataire
+                updated_at: Mis à jour
+                note: Note de statut
+                details: Détails
+                honeybadger: Identifiant Honeybadger
+                job: Identifiant de tâche Sidekiq
+              logs:
+                toggle: Voir le journal d’envoi
+                empty: Aucune entrée dans le journal.
+                levels:
+                  info: INFO
+                  warn: AVERTISSEMENT
+                  error: ERREUR
+              statuses:
+                queued: En attente d’envoi
+                sent: Envoyé avec succès
+                skipped: Ignoré
+                failed: Échec

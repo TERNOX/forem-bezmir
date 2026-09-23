@@ -1,0 +1,30 @@
+---
+en:
+  views:
+    admin:
+      settings:
+        emails:
+          test_digest:
+            status:
+              heading: Latest test digest status
+              empty: No test digest has been requested yet.
+              labels:
+                status: Status
+                email: Recipient
+                updated_at: Updated
+                note: Status note
+                details: Details
+                honeybadger: Honeybadger ID
+                job: Sidekiq job ID
+              logs:
+                toggle: View delivery log
+                empty: No log entries yet.
+                levels:
+                  info: INFO
+                  warn: WARNING
+                  error: ERROR
+              statuses:
+                queued: Queued for delivery
+                sent: Sent successfully
+                skipped: Skipped
+                failed: Failed

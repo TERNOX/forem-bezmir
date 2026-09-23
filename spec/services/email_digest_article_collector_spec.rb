@@ -19,9 +19,11 @@ RSpec.describe EmailDigestArticleCollector, type: :service do
   describe "#articles_to_send" do
     context "when user is brand new with no-follow" do
       it "provides top 3 articles from default subforem" do
-        create_list(:article, 3, public_reactions_count: 40, featured: true, score: 40, subforem: default_subforem)
+        expected_articles = create_list(:article, 3, public_reactions_count: 40, featured: true, score: 40,
+                                                   subforem: default_subforem)
         articles = described_class.new(user).articles_to_send
         expect(articles.length).to eq(3)
+        expect(articles.map(&:id)).to match_array(expected_articles.map(&:id))
         expect(articles.first.subforem_id).to eq(default_subforem.id)
       end
 
@@ -39,7 +41,9 @@ RSpec.describe EmailDigestArticleCollector, type: :service do
       end
 
       it "includes articles without a subforem when none are assigned" do
-        create_list(:article, 3, public_reactions_count: 40, featured: true, score: 40, subforem: nil)
+        legacy_articles = create_list(:article, 3, public_reactions_count: 40, featured: true, score: 40)
+        # New records receive a default subforem in before_validation; simulate legacy records.
+        legacy_articles.each { |article| article.update_column(:subforem_id, nil) }
 
         articles = described_class.new(user).articles_to_send
 
@@ -238,6 +242,9 @@ RSpec.describe EmailDigestArticleCollector, type: :service do
       it "bumps the second article to the front" do
         articles = create_list(:article, 5, public_reactions_count: 40, featured: true, score: 40,
                                             subforem: default_subforem)
+        articles.each_with_index do |article, index|
+          article.update_columns(score: 40 - index, feed_success_score: 0, clickbait_score: 0)
+        end
         Ahoy::Message.create(mailer: "DigestMailer#digest_email",
                              user_id: user.id, sent_at: 25.hours.ago,
                              clicked_at: 20.hours.ago,
@@ -253,6 +260,9 @@ RSpec.describe EmailDigestArticleCollector, type: :service do
       it "makes first article come first" do
         articles = create_list(:article, 5, public_reactions_count: 40, featured: true, score: 40,
                                             subforem: default_subforem)
+        articles.each_with_index do |article, index|
+          article.update_columns(score: 40 - index, feed_success_score: 0, clickbait_score: 0)
+        end
         Ahoy::Message.create(mailer: "DigestMailer#digest_email",
                              user_id: user.id, sent_at: 25.hours.ago,
                              clicked_at: 20.hours.ago,

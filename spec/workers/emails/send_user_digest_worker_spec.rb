@@ -14,12 +14,14 @@ RSpec.describe Emails::SendUserDigestWorker, type: :worker do
   let(:message_delivery) { double }
 
   before do
+    allow(Emails::DigestDeliveryLimiter).to receive(:call).and_return(nil)
     # Set up default subforem for testing
     RequestStore.store[:default_subforem_id] = default_subforem.id
     allow(Subforem).to receive(:cached_default_id).and_return(default_subforem.id)
 
     allow(DigestMailer).to receive(:with).and_return(mailer)
     allow(mailer).to receive(:digest_email).and_return(message_delivery)
+    allow(message_delivery).to receive(:message)
     allow(message_delivery).to receive(:deliver_now)
   end
 
@@ -28,7 +30,7 @@ RSpec.describe Emails::SendUserDigestWorker, type: :worker do
     RequestStore.store[:default_subforem_id] = nil
   end
 
-  include_examples "#enqueues_on_correct_queue", "low_priority"
+  include_examples "#enqueues_on_correct_queue", "email_digest"
 
   describe "perform" do
     context "when there's articles to be sent" do
@@ -162,6 +164,20 @@ RSpec.describe Emails::SendUserDigestWorker, type: :worker do
 
       context "with a tracked test attempt" do
         let(:attempt) { ::EmailDigestTestAttempt.create!(user: user) }
+
+        it "records rendering failures without claiming a delivery slot" do
+          create_list(:article, 3, user_id: author.id, public_reactions_count: 20, score: 20, tag_list: [tag.name])
+          allow(message_delivery).to receive(:message).and_raise(StandardError, "template failed")
+          allow(Honeybadger).to receive(:notify).and_return("render-notice")
+
+          worker.perform(user.id, test_attempt_id: attempt.id)
+
+          expect(attempt.reload.status).to eq("failed")
+          expect(attempt.error_message).to eq("template failed")
+          expect(attempt.honeybadger_id).to eq("render-notice")
+          expect(Emails::DigestDeliveryLimiter).not_to have_received(:call)
+          expect(message_delivery).not_to have_received(:deliver_now)
+        end
 
         it "marks the attempt as sent when delivery succeeds" do
           create_list(:article, 3, user_id: author.id, public_reactions_count: 20, score: 20, tag_list: [tag.name])
