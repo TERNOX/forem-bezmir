@@ -29,6 +29,7 @@ module Emails
       limit_options[:priority] = true if attempt
 
       attempt&.log_event(:info, I18n.t("admin.settings.email_digests_controller.logs.worker_started"), user_id: user_id)
+      return if !Settings::SMTP.automatic_digests_enabled && attempt.nil?
 
       user = User.find_by(id: user_id)
       unless user&.notification_setting&.email_digest_periodic? && user&.registered?

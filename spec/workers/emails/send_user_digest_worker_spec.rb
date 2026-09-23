@@ -26,6 +26,7 @@ RSpec.describe Emails::SendUserDigestWorker, type: :worker do
   end
 
   after do
+    Settings::SMTP.clear_cache
     # Clean up RequestStore after each test
     RequestStore.store[:default_subforem_id] = nil
   end
@@ -33,6 +34,33 @@ RSpec.describe Emails::SendUserDigestWorker, type: :worker do
   include_examples "#enqueues_on_correct_queue", "email_digest"
 
   describe "perform" do
+    context "when automatic digests are disabled" do
+      before do
+        Settings::SMTP.automatic_digests_enabled = false
+      end
+
+      it "skips already queued automatic jobs before collecting articles" do
+        allow(EmailDigestArticleCollector).to receive(:new)
+
+        worker.perform(user.id)
+
+        expect(EmailDigestArticleCollector).not_to have_received(:new)
+        expect(message_delivery).not_to have_received(:deliver_now)
+      end
+
+      it "still allows an explicitly requested test digest" do
+        attempt = EmailDigestTestAttempt.create!(user: user)
+        articles = create_list(:article, 3)
+        collector = instance_double(EmailDigestArticleCollector, articles_to_send: articles)
+        allow(EmailDigestArticleCollector).to receive(:new).and_return(collector)
+
+        worker.perform(user.id, test_attempt_id: attempt.id)
+
+        expect(message_delivery).to have_received(:deliver_now).once
+        expect(attempt.reload.status).to eq("sent")
+      end
+    end
+
     context "when there's articles to be sent" do
       before do
         user.follow(author)

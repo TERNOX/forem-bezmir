@@ -11,6 +11,20 @@
     <div class="p-6 pt-0">
       <fieldset class="grid gap-4">
 
+        <div class="crayons-field crayons-field--checkbox mt-3">
+          <%= f.check_box :automatic_digests_enabled,
+                          checked: Settings::SMTP.automatic_digests_enabled,
+                          class: "crayons-checkbox",
+                          aria: { describedby: "smtp-delivery-description" } %>
+          <div>
+            <%= f.label :automatic_digests_enabled, t("views.admin.smtp.automatic_digests_enabled"),
+                        class: "crayons-field__label" %>
+            <p id="smtp-delivery-description" class="crayons-field__description">
+              <%= t("views.admin.smtp.automatic_digests_description") %>
+            </p>
+          </div>
+        </div>
+
         <% if ForemInstance.sendgrid_enabled? %>
           <div class="crayons-field crayons-field--checkbox mt-3">
             <%= f.check_box :own_email_server,

@@ -1,0 +1,7 @@
+---
+fr:
+  views:
+    admin:
+      smtp:
+        automatic_digests_enabled: Envoyer les récapitulatifs automatiques
+        automatic_digests_description: Désactivez cette option pour arrêter les récapitulatifs automatiques dans toutes les communautés de ce site. Les messages de connexion, de réinitialisation du mot de passe et les autres messages restent envoyés. Les paramètres SMTP sont conservés et vous pouvez toujours envoyer un récapitulatif de test manuellement.
