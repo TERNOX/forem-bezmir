@@ -242,6 +242,9 @@ RSpec.describe EmailDigestArticleCollector, type: :service do
       it "bumps the second article to the front" do
         articles = create_list(:article, 5, public_reactions_count: 40, featured: true, score: 40,
                                             subforem: default_subforem)
+        articles.each_with_index do |article, index|
+          article.update_columns(score: 40 - index, feed_success_score: 0, clickbait_score: 0)
+        end
         Ahoy::Message.create(mailer: "DigestMailer#digest_email",
                              user_id: user.id, sent_at: 25.hours.ago,
                              clicked_at: 20.hours.ago,
@@ -257,6 +260,9 @@ RSpec.describe EmailDigestArticleCollector, type: :service do
       it "makes first article come first" do
         articles = create_list(:article, 5, public_reactions_count: 40, featured: true, score: 40,
                                             subforem: default_subforem)
+        articles.each_with_index do |article, index|
+          article.update_columns(score: 40 - index, feed_success_score: 0, clickbait_score: 0)
+        end
         Ahoy::Message.create(mailer: "DigestMailer#digest_email",
                              user_id: user.id, sent_at: 25.hours.ago,
                              clicked_at: 20.hours.ago,
