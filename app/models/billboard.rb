@@ -414,7 +414,7 @@ class Billboard < ApplicationRecord
   end
 
   def style_string
-    return "" if color.blank?
+    return "" unless show_border? && color.present?
 
     if placement_area.include?("fixed_")
       "border: 1px solid #{color}; border-bottom: none; border-top-width: 3px;"
@@ -486,7 +486,8 @@ class Billboard < ApplicationRecord
 
   def update_content_updated_at_if_needed
     # Only update content_updated_at when content-related fields change
-    content_fields = %w[body_markdown minimized_body_markdown name placement_area color template render_mode]
+    content_fields = %w[body_markdown minimized_body_markdown name placement_area color show_border
+                        template render_mode]
     
     return unless content_fields.any? { |field| will_save_change_to_attribute?(field) }
     
@@ -556,7 +557,8 @@ class Billboard < ApplicationRecord
   def should_bust_home_page_cache?
     return false unless HOME_PAGE_PLACEMENTS.include?(placement_area) || HOME_PAGE_PLACEMENTS.include?(placement_area_before_last_save)
 
-    content_fields = %w[body_markdown minimized_body_markdown name placement_area color template render_mode]
+    content_fields = %w[body_markdown minimized_body_markdown name placement_area color show_border
+                        template render_mode]
 
     was_active = approved_before_last_save && published_before_last_save
     is_active = approved && published

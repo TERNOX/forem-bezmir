@@ -448,6 +448,8 @@ The default maximum value can be overridden by \"API_PER_PAGE_MAX\" environment 
               id: { type: :integer, description: "The ID of the Billboard" },
               name: { type: :string, description: "For internal use, helps distinguish ads from one another" },
               body_markdown: { type: :string, description: "The text (in markdown) of the ad (required)" },
+              show_border: { type: :boolean, default: true,
+                             description: "Show the colored border while retaining the configured color when disabled" },
               approved: { type: :boolean, description: "Ad must be both published and approved to be in rotation" },
               published: { type: :boolean, description: "Ad must be both published and approved to be in rotation" },
               expires_at: { type: :string, format: :"date-time", nullable: true,

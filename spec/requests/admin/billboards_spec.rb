@@ -49,6 +49,17 @@ RSpec.describe "/admin/customization/billboards" do
     describe "GET /admin/customization/billboards/:id/edit" do
       let!(:billboard) { create(:billboard) }
 
+      it "shows a checked border toggle by default and an unchecked toggle when disabled" do
+        get edit_admin_billboard_path(billboard.id)
+        form = Nokogiri::HTML(response.body)
+        expect(form.at_css("input#show_border[checked]")).to be_present
+        expect(form.at_css('input[type="hidden"][name="show_border"][value="0"]')).to be_present
+
+        billboard.update!(show_border: false)
+        get edit_admin_billboard_path(billboard.id)
+        expect(Nokogiri::HTML(response.body).at_css("input#show_border:not([checked])")).to be_present
+      end
+
       it "allows the request" do
         get edit_admin_billboard_path(billboard.id)
         expect(response).to have_http_status(:ok)
@@ -74,6 +85,12 @@ RSpec.describe "/admin/customization/billboards" do
       it "sets creator to current_user" do
         post_resource
         expect(Billboard.last.creator_id).to eq(super_admin.id)
+      end
+
+      it "creates a billboard with the colored border disabled" do
+        post admin_billboards_path, params: params.merge(show_border: "0", color: "#aabbcc")
+        expect(Billboard.last).not_to be_show_border
+        expect(Billboard.last.color).to eq("#aabbcc")
       end
 
       it "saves targeted tags" do
@@ -140,6 +157,17 @@ RSpec.describe "/admin/customization/billboards" do
         billboard.reload
         expect(billboard.tag_list).to be_empty
         expect(billboard.cached_tag_list).to eq("")
+      end
+
+      it "disables and re-enables the border while retaining its color" do
+        billboard.update!(color: "#aabbcc")
+        put admin_billboard_path(billboard.id), params: { show_border: "0" }
+        expect(billboard.reload).not_to be_show_border
+        expect(billboard.color).to eq("#aabbcc")
+
+        put admin_billboard_path(billboard.id), params: { show_border: "1" }
+        expect(billboard.reload).to be_show_border
+        expect(billboard.color).to eq("#aabbcc")
       end
 
       it "updates cached targeted tags" do

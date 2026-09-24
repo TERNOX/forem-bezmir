@@ -1,0 +1,6 @@
+---
+fr:
+  views:
+    admin:
+      billboards:
+        show_border: Afficher la bordure colorée

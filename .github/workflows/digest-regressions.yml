@@ -77,5 +77,14 @@ jobs:
           --format progress
       - name: Run admin test-digest request regressions
         run: bundle exec rspec spec/requests/admin/configs_spec.rb --example 'Email digests' --format progress
+      - name: Run billboard appearance regressions
+        run: >-
+          bundle exec rspec
+          spec/models/billboard_spec.rb
+          spec/models/billboard_appearance_spec.rb
+          spec/requests/admin/billboards_spec.rb
+          spec/requests/api/v1/billboards_spec.rb
+          spec/views/shared/_billboard.html.erb_spec.rb
+          --format progress
       - name: Run unsubscribe link regressions
         run: bundle exec rspec spec/requests/email_subscriptions_spec.rb spec/views/email_subscriptions/unsubscribe.html.erb_spec.rb --format progress
