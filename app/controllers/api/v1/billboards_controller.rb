@@ -49,7 +49,7 @@ module Api
       def permitted_params
         params.permit :approved, :body_markdown, :minimized_body_markdown, :creator_id, :display_to, :page_id, :browser_context,
                       :name, :organization_id, :placement_area, :published, :dismissal_sku,
-                      :tag_list, :type_of, :exclude_article_ids, :weight, :requires_cookies, :color,
+                      :tag_list, :type_of, :exclude_article_ids, :weight, :requires_cookies, :color, :show_border,
                       :audience_segment_type, :audience_segment_id, :priority, :special_behavior,
                       :custom_display_label, :template, :render_mode, :preferred_article_ids,
                       :exclude_role_names, :target_role_names, :include_subforem_ids, :prefer_paired_with_billboard_id,

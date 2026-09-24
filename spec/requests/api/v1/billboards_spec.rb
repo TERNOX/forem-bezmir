@@ -40,6 +40,16 @@ RSpec.describe "Api::V1::Billboards" do
     end
 
     describe "POST /api/billboards" do
+      it "creates a billboard with its colored border disabled" do
+        post api_billboards_path,
+             params: billboard_params.merge(show_border: false, color: "#aabbcc").to_json,
+             headers: auth_header
+
+        expect(response).to have_http_status(:created)
+        expect(response.parsed_body).to include("show_border" => false, "color" => "#aabbcc")
+        expect(Billboard.find(response.parsed_body["id"])).not_to be_show_border
+      end
+
       it "creates a new billboard" do
         post api_billboards_path, params: billboard_params.to_json, headers: auth_header
 
@@ -48,7 +58,7 @@ RSpec.describe "Api::V1::Billboards" do
         expect(response.parsed_body.keys).to \
           contain_exactly("approved", "body_markdown", "cached_tag_list",
                           "clicks_count", "created_at", "display_to", "id",
-                          "impressions_count", "name", "organization_id",
+                          "impressions_count", "name", "organization_id", "target_organization_ids",
                           "placement_area", "processed_html", "published",
                           "success_rate", "tag_list", "type_of", "updated_at", "color",
                           "creator_id", "exclude_article_ids", "dismissal_sku", "browser_context",
@@ -57,7 +67,7 @@ RSpec.describe "Api::V1::Billboards" do
                           "custom_display_label", "template", "render_mode", "preferred_article_ids",
                           "priority", "weight", "target_geolocations", "requires_cookies", "special_behavior", "expires_at",
                           "exclude_survey_completions", "exclude_survey_ids", "content_updated_at", "tags_array", "event_id",
-                          "minimized_body_markdown", "minimized_processed_html", "seconds_visible")
+                          "minimized_body_markdown", "minimized_processed_html", "seconds_visible", "show_border")
         expect(response.parsed_body["target_geolocations"]).to contain_exactly("US-WA", "CA-BC")
       end
 
@@ -71,7 +81,7 @@ RSpec.describe "Api::V1::Billboards" do
         expect(response.parsed_body.keys).to \
           contain_exactly("approved", "body_markdown", "cached_tag_list",
                           "clicks_count", "created_at", "display_to", "id",
-                          "impressions_count", "name", "organization_id",
+                          "impressions_count", "name", "organization_id", "target_organization_ids",
                           "placement_area", "processed_html", "published", "counts_tabulated_at",
                           "success_rate", "tag_list", "type_of", "updated_at", "color",
                           "creator_id", "exclude_article_ids", "dismissal_sku", "browser_context",
@@ -80,7 +90,7 @@ RSpec.describe "Api::V1::Billboards" do
                           "custom_display_label", "template", "render_mode", "preferred_article_ids",
                           "priority", "weight", "target_geolocations", "requires_cookies", "special_behavior", "expires_at",
                           "exclude_survey_completions", "exclude_survey_ids", "content_updated_at", "tags_array", "event_id",
-                          "minimized_body_markdown", "minimized_processed_html", "seconds_visible")
+                          "minimized_body_markdown", "minimized_processed_html", "seconds_visible", "show_border")
         expect(response.parsed_body["target_geolocations"]).to contain_exactly("US-WA", "CA-BC")
       end
 
@@ -127,6 +137,18 @@ RSpec.describe "Api::V1::Billboards" do
     end
 
     describe "PUT /api/billboards/:id" do
+      it "toggles the border without losing the color" do
+        billboard1.update!(color: "#aabbcc")
+
+        [false, true].each do |show_border|
+          put api_billboard_path(billboard1.id), params: { show_border: show_border }.to_json, headers: auth_header
+
+          expect(response).to have_http_status(:success)
+          expect(response.parsed_body).to include("show_border" => show_border, "color" => "#aabbcc")
+          expect(billboard1.reload.show_border).to eq(show_border)
+        end
+      end
+
       it "updates an existing billboard" do
         put api_billboard_path(billboard1.id),
             params: billboard_params.merge(name: "Updated!", type_of: "external").to_json,
@@ -140,7 +162,7 @@ RSpec.describe "Api::V1::Billboards" do
         expect(response.parsed_body.keys).to \
           contain_exactly("approved", "body_markdown", "cached_tag_list",
                           "clicks_count", "created_at", "display_to", "id", "counts_tabulated_at",
-                          "impressions_count", "name", "organization_id", "color",
+                          "impressions_count", "name", "organization_id", "target_organization_ids", "color",
                           "placement_area", "processed_html", "published", "dismissal_sku",
                           "success_rate", "tag_list", "type_of", "updated_at", "browser_context",
                           "creator_id", "exclude_article_ids", "requires_cookies", "page_id",
@@ -149,7 +171,7 @@ RSpec.describe "Api::V1::Billboards" do
                           "custom_display_label", "template", "render_mode", "preferred_article_ids",
                           "priority", "weight", "target_geolocations", "prefer_paired_with_billboard_id", "expires_at",
                           "exclude_survey_completions", "exclude_survey_ids", "content_updated_at", "tags_array", "event_id",
-                          "minimized_body_markdown", "minimized_processed_html", "seconds_visible")
+                          "minimized_body_markdown", "minimized_processed_html", "seconds_visible", "show_border")
       end
 
       it "also accepts target geolocations as an array" do
