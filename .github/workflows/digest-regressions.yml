@@ -86,3 +86,5 @@ jobs:
           spec/requests/api/v1/billboards_spec.rb
           spec/views/shared/_billboard.html.erb_spec.rb
           --format progress
+      - name: Run unsubscribe link regressions
+        run: bundle exec rspec spec/requests/email_subscriptions_spec.rb spec/views/email_subscriptions/unsubscribe.html.erb_spec.rb --format progress
