@@ -1071,7 +1071,7 @@ class User < ApplicationRecord
   end
 
   def confirmation_required?
-    ForemInstance.smtp_enabled?
+    ForemInstance.smtp_enabled? && super
   end
 
   def update_user_roles_cache(role)
