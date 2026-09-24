@@ -64,6 +64,8 @@ jobs:
       - run: cp .env_sample .env
       - name: Prepare test database
         run: bundle exec rails db:create db:schema:load
+      - name: Build JavaScript assets for request views
+        run: bundle exec rails javascript:build
       - name: Run digest regressions with real Redis
         run: >-
           bundle exec rspec
