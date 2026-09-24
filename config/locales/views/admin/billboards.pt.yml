@@ -1,0 +1,6 @@
+---
+pt:
+  views:
+    admin:
+      billboards:
+        show_border: Mostrar borda colorida

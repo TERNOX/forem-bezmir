@@ -64,6 +64,8 @@ jobs:
       - run: cp .env_sample .env
       - name: Prepare test database
         run: bundle exec rails db:create db:schema:load
+      - name: Build JavaScript assets for request views
+        run: bundle exec rails javascript:build
       - name: Run digest regressions with real Redis
         run: >-
           bundle exec rspec
@@ -75,3 +77,11 @@ jobs:
           --format progress
       - name: Run admin test-digest request regressions
         run: bundle exec rspec spec/requests/admin/configs_spec.rb --example 'Email digests' --format progress
+      - name: Run billboard appearance regressions
+        run: >-
+          bundle exec rspec
+          spec/models/billboard_spec.rb
+          spec/models/billboard_appearance_spec.rb
+          spec/requests/admin/billboards_spec.rb
+          spec/views/shared/_billboard.html.erb_spec.rb
+          --format progress

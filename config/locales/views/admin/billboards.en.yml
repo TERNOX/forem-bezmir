@@ -1,0 +1,6 @@
+---
+en:
+  views:
+    admin:
+      billboards:
+        show_border: Show colored border

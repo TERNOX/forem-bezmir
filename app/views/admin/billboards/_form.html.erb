@@ -49,6 +49,11 @@
 
     <div class="crayons-field">
       <%# styles below are a hack to line this up properly%>
+      <div class="crayons-field crayons-field--checkbox mb-2">
+        <%= hidden_field_tag :show_border, "0", id: nil %>
+        <%= check_box_tag :show_border, "1", @billboard.show_border?, class: "crayons-checkbox" %>
+        <%= label_tag :show_border, t("views.admin.billboards.show_border"), class: "crayons-field__label" %>
+      </div>
       <%= label_tag :color, "Border hex color:", class: "crayons-field__label" %>
       <div class="flex items-center w-100" style="margin-top: -26px;">
         <style>

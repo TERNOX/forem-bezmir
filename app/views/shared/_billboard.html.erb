@@ -14,6 +14,7 @@
 
 <% if billboard.template == "plain" %>
   <div
+    class="<%= "mt-6" if billboard.placement_area == "post_body_bottom" %>"
     style="<%= billboard.style_string %>"
     data-display-unit data-id="<%= billboard.id %>"
     data-category-click="<%= BillboardEvent::CATEGORY_CLICK %>"
