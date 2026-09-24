@@ -75,3 +75,5 @@ jobs:
           --format progress
       - name: Run admin test-digest request regressions
         run: bundle exec rspec spec/requests/admin/configs_spec.rb --example 'Email digests' --format progress
+      - name: Run unsubscribe link regressions
+        run: bundle exec rspec spec/requests/email_subscriptions_spec.rb spec/views/email_subscriptions/unsubscribe.html.erb_spec.rb --format progress
