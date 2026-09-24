@@ -13,8 +13,13 @@ class ConfirmationsController < Devise::ConfirmationsController
       else
         respond_with_navigational(resource) { redirect_to after_confirmation_path_for(resource_name, resource) }
       end
+    elsif resource.errors.of_kind?(:email, :already_confirmed)
+      # Old confirmation links must not become reusable sign-in links.
+      redirect_to new_user_session_path, notice: resource.errors.full_messages.to_sentence
     else
-      respond_with_navigational(resource.errors, status: :unprocessable_entity) { render :new }
+      respond_with_navigational(resource.errors, status: :unprocessable_entity) do
+        render :new, status: :unprocessable_entity
+      end
     end
   end
 
