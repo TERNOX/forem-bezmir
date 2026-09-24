@@ -59,6 +59,15 @@ class Article < ApplicationRecord
 
   MAX_TAG_LIST_SIZE = 6
 
+  # Hosts a user may link as a cover video via `video_source_url`. Used by the
+  # web and API controllers' param whitelists; mirrored on the frontend in
+  # app/javascript/article-form/components/CoverVideoLink.jsx.
+  LINKED_VIDEO_SOURCE_PATTERNS = [
+    %r{\Ahttps?://(www\.)?(youtube\.com/watch\?v=|youtu\.be/)},
+    %r{\Ahttps?://player\.mux\.com/},
+    %r{\Ahttps?://(www\.)?twitch\.tv/videos/},
+  ].freeze
+
   # Filter out anything that isn't a word, space, punctuation mark,
   # recognized emoji, and other auxiliary marks.
   # See: https://github.com/forem/forem/pull/16787#issuecomment-1062044359
@@ -123,6 +132,14 @@ class Article < ApplicationRecord
 
   def self.unique_url_error
     I18n.t("models.article.unique_url", email: ForemInstance.contact_email)
+  end
+
+  # Whether a user-submitted `video_source_url` may be mass-assigned.
+  # A blank value is allowed so the cover video can be removed.
+  def self.permitted_video_source_url?(url)
+    return true if url.blank?
+
+    LINKED_VIDEO_SOURCE_PATTERNS.any? { |pattern| url.to_s.match?(pattern) }
   end
 
   enum :type_of, {
@@ -1139,6 +1156,16 @@ class Article < ApplicationRecord
   end
 
   def generate_video_embed_url
+    if video_source_url.blank? && video_source_url_was.present?
+      # The cover video was removed: drop the embed derived from it. Only Mux
+      # derives the thumbnail from the source URL, so user-provided thumbnails
+      # are kept.
+      self.video = nil
+      self.video_thumbnail_url = nil if video_thumbnail_url&.include?("image.mux.com")
+      self.video_source_url = nil
+      return
+    end
+
     return unless video_source_url.present? || video.present?
 
     get_youtube_embed_url
