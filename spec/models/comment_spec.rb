@@ -400,6 +400,13 @@ RSpec.describe Comment do
       expect(comment.title).to eq("[image]")
     end
 
+    it "keeps a caption written by the commenter in the title" do
+      comment.body_markdown = "![cat](https://myimage.com/cat.png)\n<figcaption>My own caption</figcaption>"
+      comment.validate!
+      expect(comment.processed_html).to include("<figcaption>My own caption</figcaption>")
+      expect(comment.title).to eq("My own caption")
+    end
+
     it "does not include image captions in the title of a comment with text" do
       comment.body_markdown = "Look at this\n\n![A cat sleeping on a keyboard](https://myimage.com/cat.png)"
       comment.validate!
