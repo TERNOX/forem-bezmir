@@ -1,0 +1,20 @@
+---
+uk:
+  admin:
+    surveys:
+      edit:
+        title: "Редагувати опитування"
+      index:
+        title: "Керування опитуваннями"
+        create: "Створити опитування"
+        table:
+          title: "Назва"
+          active: "Активне"
+          polls_count: "Запитання"
+          created_at: "Створено"
+          actions: "Дії"
+        empty: "Опитувань не знайдено."
+      new:
+        title: "Нове опитування"
+      show:
+        title: "Деталі опитування"

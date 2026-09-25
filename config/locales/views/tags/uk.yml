@@ -4,7 +4,7 @@ uk:
     tags:
       meta:
         title: Теґи
-        description: Теґи для підписки у спільноті Куток
+        description: "Теґи для підписки у спільноті %{community}"
         og:
           description: "%{community} — це чудово!"
       heading:

@@ -6,7 +6,7 @@ uk:
         title: Подкасти
         description: Відкрийте технічні подкасти для %{member}
         og:
-          title: Подкасти у спільноті Куток
+          title: "Подкасти у спільноті %{community}"
       browse: Переглянути
       heading: Подкасти
       close: "×"

@@ -97,6 +97,10 @@ search:
 ## Do not consider these keys missing:
 ignore_missing:
   - date.*
+  # Rails ships the English defaults for these; other locales override them in config/locales
+  - datetime.distance_in_words.*
+  - datetime.prompts.*
+  - time.formats.long
 
   # TODO: add translations for these
   - devise.*
@@ -122,8 +126,10 @@ ignore_missing:
 #     - common.brand
 
 ## Exclude these keys from the `i18n-tasks check-consistent-interpolations` report:
-# ignore_inconsistent_interpolations:
-# - 'activerecord.attributes.*'
+ignore_inconsistent_interpolations:
+  # The "one" plural form legitimately differs per language: English and French spell out
+  # the number ("1 hour ago", "hier"), while Ukrainian "one" also covers 21, 31… and needs %{count}.
+  - 'datetime.distance_in_words_ago.*.one'
 
 ## Ignore these keys completely:
 # ignore:

@@ -3,6 +3,9 @@ en:
   mailers:
     digest_mailer:
       from: Дайджест
+      additional_posts_label:
+        one: "%{count} інший допис, який може Вам сподобатися"
+        other: "%{count} інших дописів, які можуть Вам сподобатися"
       more_top_posts: більше найкращих дописів %{community}
       more_top_posts_based: більше найкращих дописів %{community} на основі Ваших інтересів
       more_top_posts_from: більше найпопулярніших матеріалів зі спільноти
@@ -15,10 +18,14 @@ en:
     custom_mailer:
       from: Розсилка
     notify_mailer:
+      parent_types:
+        comment: коментар
+        episode: епізод
+        post: допис
       account_deleted: "%{community} — Підтвердження видалення акаунта"
       deletion_requested: "%{community} — Запит на видалення акаунта"
       trusted: Вітаємо! Тепер Ви «довірений» користувач на %{community}!
-      base_subscriber: Вітаємо! Ви підписалися на DEV++
+      base_subscriber: "Вітаємо! Ви підписалися на %{subscription_name}"
       moderator: "Вітаємо! Тепер Ви модератор для #%{tag_name}"
       subforem_moderator: "Вітаємо! Тепер Ви модератор для %{subforem_name}"
       new_follower: щойно підписався на Вас на %{community}

@@ -14,6 +14,96 @@ uk:
           news_sitemap_organization_ids:
             description: "Укажіть ID організацій (через кому), чиї дописи можуть потрапити до News sitemap."
             placeholder: "2,5"
+          ahoy_tracking:
+            description: "Відстеження відвідувань і подій — дані зберігаються у вашій базі даних. Щоб зміни набули чинності, потрібен перезапуск."
+          billboard_enabled_countries:
+            description: "Країни, на які можна націлювати білборди. Натисніть на обрану країну, щоб увімкнути націлювання на рівні регіонів."
+          contact_email:
+            description: "Використовується в контактних посиланнях. Вкажіть адресу, за якою користувачі можуть зв’язатися з вами чи вашою командою."
+          credit:
+            small:
+              description: "Ціна малої покупки балів (<10 балів)."
+            medium:
+              description: "Ціна середньої покупки балів (10–99 балів)."
+            large:
+              description: "Ціна великої покупки балів (100–999 балів)."
+            xlarge:
+              description: "Ціна дуже великої покупки балів (1000 балів і більше)."
+          favicon:
+            description: "Використовується як фавікон сайту"
+          ga_tracking:
+            description: "Ідентифікатор відстеження Google Universal Analytics, напр. UA-XXXXXXXX-1"
+          ga_analytics_4:
+            description: "Ідентифікатор потоку Google Analytics 4, напр. G-XXXXXXXXX"
+          cookie_banner_user_context:
+            description: "Визначає, чи показувати банер cookie залежно від контексту користувача (увійшов чи ні)"
+          coolie_banner_platform_context:
+            description: "Визначає, чи показувати банер cookie залежно від платформи (веб чи мобільна)"
+          health:
+            description: "Використовується для автентифікації на ендпоінтах перевірки стану."
+            placeholder: "надійний токен"
+          logo_png:
+            description: "Додатковий логотип у вікнах входу, онбордингу, іконках Apple touch тощо. Рекомендовано щонайменше 512×512 пікселів"
+          logo_svg:
+            description: "Логотип, що зараз показується у верхньому лівому куті вашого Forem. Після релізу його замінить логотип вище."
+          main_social:
+            description: "Основне зображення для соцмереж і OpenGraph. Рекомендоване співвідношення сторін 16:9 (600×337, 1200×675 пікселів)"
+          mailchimp_api:
+            description: "API-ключ для під’єднання облікового запису Mailchimp. Його можна знайти в панелі Mailchimp"
+          mailchimp_news:
+            description: "ID основної розсилки, також відомий як Audience ID"
+          mailchimp_tag_mod:
+            description: "ID розсилки для модераторів тегів"
+          mailchimp_mod:
+            description: "ID розсилки для модераторів спільноти"
+          mascot_image:
+            description: "Використовується як зображення маскота."
+          mascot_user:
+            description: "Обліковий запис маскота"
+          meta_keywords:
+            description: "Список ключових слів: через кому, лише літери, напр. engineering, development"
+          onboarding_newsletter_content:
+            description: "Заголовок і підзаголовок кроку з пропозицією розсилки. Пишіть стисло."
+            placeholder: "Зображення, заголовок і підзаголовок можна налаштувати через markdown"
+          onboarding_newsletter_opt_in_head:
+            description: "Заголовок галочки підписки на розсилку"
+            placeholder: "Напр.: Так, підпишіть мене на щотижневу розсилку"
+          onboarding_newsletter_opt_in_subhead:
+            description: "Підзаголовок галочки підписки на розсилку"
+            placeholder: "Напр.: Не хвилюйтеся, ми поважаємо вашу приватність. Ваша адреса використовуватиметься лише для розсилки й не передаватиметься іншим."
+          geos_with_allowed_default_email_opt_in:
+            description: "Країни, в яких адміністратор дозволив підписку на листи за замовчуванням"
+            placeholder: "Список країн: через кому, лише літери, напр. US,CA"
+          payment:
+            description: "Використовується для вебмонетизації всього сайту. Див.: https://github.com/forem/forem/pull/6345"
+          periodic:
+            description: "Як часто надсилати періодичні дайджести (у днях)"
+          sidebar:
+            description: "Які теги показувати на правій бічній панелі головної сторінки"
+            placeholder: "Список тегів через кому, напр. help,discuss,explainlikeimfive,meta"
+          stripe_api:
+            description: "Секретний ключ Stripe для отримання платежів. Див.: https://stripe.com/docs/keys"
+          stripe_key:
+            description: "Публічний ключ Stripe для отримання платежів. Див.: https://stripe.com/docs/keys"
+          subscription_product_name:
+            description: "Назва вашої платної підписки, як її бачитимуть учасники"
+          subscription_landing_page_url:
+            description: "URL, де учасники можуть дізнатися більше або керувати платною підпискою"
+            placeholder: "/++"
+          subscriber_icon_url:
+            description: "URL зображення, яким позначаються передплатники поруч з іменем"
+          tags:
+            description: "Які теги пропонувати новим користувачам під час онбордингу (через кому, лише літери)"
+            placeholder: "Список тегів: через кому, лише літери, напр. beginners,javascript,ruby,swift,kotlin"
+          hashtag:
+            description: "Хештег спільноти в Twitter"
+            placeholder: "#DEVCommunity"
+          video:
+            description: "Секретний ключ, що дозволяє кодування відео в AWS через VideoStatesController"
+          display_sidebar_onboarding_checklist:
+            description: "Показувати чекліст онбордингу на правій бічній панелі новим користувачам, які ще не виконали всі кроки."
+          enable_agent_sessions:
+            description: "Увімкнути функцію сесій агентів для завантаження й вбудовування транскриптів сесій агентів програмування."
         rate_limit:
           spam:
             description: "Окремі фрази через кому (регістр не враховується), які вмикають позначку спаму. Вони шукаються будь-де в тексті, тому обирайте довші фрази: наприклад, «bet» спрацює і на «between»."
@@ -47,3 +137,160 @@ uk:
             title: "Білий список: організації"
             description: "Slug організацій через кому, як в адресі (наприклад, my-org у /my-org). Маскот ніколи не позначає як спам дописи, опубліковані від імені цих організацій."
             placeholder: "my-org, partner-team"
+        authentication:
+          allowed:
+            description: "Обмежити реєстрацію лише певними адресами? (список через кому)"
+            placeholder: "dev.to, forem.com, codenewbie.org"
+          apple_client:
+            description: "Код «App Bundle» сервісу автентифікації, налаштованого на Apple Developer Portal"
+          apple_team:
+            description: "«Team ID» вашого облікового запису Apple Developer"
+          apple_key:
+            description: "«Key ID» сервісу автентифікації, налаштованого на Apple Developer Portal"
+          apple_pem:
+            description: "Ключ «PEM» сервісу автентифікації, налаштованого на Apple Developer Portal"
+          blocked:
+            description: "Заблокувати реєстрацію з вказаних доменів? (список через кому)"
+          display_list:
+            description: "Показувати список дозволених доменів чи тримати його в таємниці?"
+          facebook_key:
+            description: "Значення «App ID» з розділу Basic Settings сторінки застосунку на Facebook Developer Portal"
+          facebook_secret:
+            description: "Значення «App Secret» з розділу Basic Settings сторінки застосунку на Facebook Developer Portal"
+          forem_key:
+            description: "Ключ Forem"
+          forem_secret:
+            description: "Секрет Forem"
+          github_key:
+            description: "Значення «Client ID» з порталу GitHub OAuth Apps"
+          github_secret:
+            description: "Значення «Client Secret» з порталу GitHub OAuth Apps"
+          google_key:
+            description: "Значення «Client ID» зі сторінки OAuth 2.0 на порталі Google Cloud Platform"
+          google_secret:
+            description: "Значення «Client Secret» зі сторінки OAuth 2.0 на порталі Google Cloud Platform"
+          google_ios_key:
+            description: "Client ID нативного iOS-застосунку, налаштований на порталі Google Cloud Platform"
+          google_android_key:
+            description: "Client ID нативного Android-застосунку, налаштований на порталі Google Cloud Platform"
+          invite_only:
+            description: "Приєднатися до спільноти можуть лише користувачі, запрошені електронною поштою."
+          new_user_status:
+            description: "Який статус призначати новим користувачам?"
+            placeholder: "Добра репутація"
+          mlh_key:
+            description: "Значення «Application ID» з порталу застосунків MyMLH"
+          mlh_secret:
+            description: "Значення «Secret» з порталу застосунків MyMLH"
+          recaptcha_site:
+            description: "Ключ сайту Google reCAPTCHA, який використовується для скарг на порушення"
+            placeholder: "Який ключ сайту Google reCAPTCHA?"
+          recaptcha_secret:
+            description: "Секретний ключ Google reCAPTCHA, який використовується для скарг на порушення"
+            placeholder: "Який секретний ключ Google reCAPTCHA?"
+          require_recaptcha:
+            description: "Під час створення облікового запису в спільноті потрібно буде пройти капчу"
+          twitter_key:
+            description: "Значення «API key» з ключів споживача на порталі розробників Twitter."
+          twitter_secret:
+            description: "Значення «API secret key» з ключів споживача на порталі розробників Twitter."
+          providers:
+            description: "Як користувачі можуть входити?"
+        campaign:
+          articles_expiry:
+            description: "Скільки тижнів статті показуються на бічній панелі кампанії"
+          articles_approval:
+            placeholder: "Показувати дописи кампанії на бічній панелі лише після схвалення?"
+          call_to_action:
+            description: "Текст кнопки заклику до дії на бічній панелі кампанії"
+            placeholder: "Поділіться своїм проєктом"
+          display_name:
+            description: "Назва кампанії, що показується в заголовках тощо."
+            placeholder: "Моя чудова кампанія"
+          featured:
+            description: "Дописи з якими тегами показувати на бічній панелі кампанії (через кому, лише літери)"
+            placeholder: "Список тегів кампанії: через кому, лише літери, напр. shecoded,theycoded"
+          hero_html:
+            description: "Назва HtmlVariant для головного банера"
+          sidebar_enabled:
+            placeholder: "Чи увімкнено бічну панель кампанії"
+          sidebar_image:
+            placeholder: "Показується вгорі бічної панелі кампанії"
+          url:
+            description: "https://url.com/lander"
+            placeholder: "URL, на який веде зображення бічної панелі кампанії"
+        community:
+          description:
+            description: "Використовується в мета-тегах description тощо."
+            placeholder: "Чудова спільнота доброзичливих і гостинних людей."
+          emoji:
+            description: "Показується в заголовках сторінок сайту поруч із назвою спільноти"
+          name:
+            description: "Основна назва вашого Forem, напр. DEV, DEV Community, The DEV Community тощо."
+            placeholder: "Новий Forem"
+          copyright:
+            description: "Рік заснування цього Forem."
+          member:
+            description: "Як називати учасника спільноти, напр. розробник, аматор тощо."
+            placeholder: "користувач"
+          staff:
+            description: "Обліковий запис, що діє як автоматизований «персонал» — переважно для вітальної гілки."
+          tagline:
+            description: "Показується у вікні реєстрації."
+            placeholder: "Ми — місце, де програмісти діляться знаннями, стежать за новинами й розвивають кар’єру."
+        smtp:
+          address:
+            description: "Адреса віддаленого поштового сервера"
+            placeholder: "напр. smtp.gmail.com"
+          port:
+            description: "Порт, на якому працює ваш поштовий сервер"
+            placeholder: "25"
+          authentication:
+            description: "Якщо ваш поштовий сервер вимагає автентифікації, вкажіть тут її тип"
+            placeholder: "напр. plain, login або cram_md5"
+          user_name:
+            description: "Якщо ваш поштовий сервер вимагає автентифікації, скопіюйте ім’я користувача з сервера"
+          password:
+            description: "Якщо ваш поштовий сервер вимагає автентифікації, скопіюйте пароль із сервера"
+          domain:
+            description: "Якщо потрібно вказати домен HELO, зробіть це тут"
+          from_email:
+            description: "Адреса, з якої надсилаються листи"
+          reply_to:
+            description: "Адреса, на яку користувачі можуть відповідати"
+        user_experience:
+          default_font:
+            description: "Шрифт для читання за замовчуванням (зареєстровані користувачі можуть змінити його у своїх налаштуваннях)"
+          default_locale:
+            description: "Мова й локалізація Forem за замовчуванням (поки експериментальна бета)"
+          feed_strategy:
+            description: "Алгоритм основної стрічки: basic або large_forem_experimental (лише для спільнот від 10 тис. учасників)"
+            placeholder: "basic"
+          feed_style:
+            description: "Яку стрічку користувачі бачать за замовчуванням (насичену, мінімалістичну тощо)"
+            placeholder: "basic, rich або compact"
+          cover_image_height:
+            description: "Висота обкладинок відносно ширини 1000 пікселів"
+            placeholder: "420"
+          cover_image_fit:
+            description: "Спосіб обрізання обкладинок"
+            placeholder: "crop, limit"
+          feed_lookback_days:
+            description: "За скільки днів стрічка шукає нові дописи"
+            placeholder: "10"
+          home_feed:
+            description: "Мінімальний рейтинг, щоб допис з’явився на головній сторінці для неавторизованих відвідувачів."
+          index_minimum_score:
+            description: "Мінімальний рейтинг, щоб допис індексували пошукові системи."
+          index_minimum_date:
+            description: "Мінімальна дата, щоб допис індексували пошукові системи (Unix Timestamp)."
+          primary_hex:
+            description: "Колір фону й рамок кнопок тощо. Має бути достатньо темним, щоб контрастувати з білим текстом."
+          tag_feed:
+            description: "Мінімальний рейтинг, щоб допис з’явився на сторінці тегу за замовчуванням."
+          head_content:
+            description: "Вміст, що додається в кінець тегу head на кожній сторінці (УВАГА — він кешується в межах запиту сторінки нерівномірно. Дійте обережно)."
+            placeholder: "Залиште порожнім, якщо нічого не потрібно додавати."
+          bottom_of_body_content:
+            description: "Вміст, що додається в кінець тегу body на кожній сторінці (УВАГА — він кешується в межах запиту сторінки нерівномірно. Дійте обережно)."
+            placeholder: "Залиште порожнім, якщо нічого не потрібно додавати."

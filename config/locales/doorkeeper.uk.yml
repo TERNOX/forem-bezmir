@@ -45,9 +45,113 @@ uk:
           unknown: 'У запиті бракує обовʼязкового параметра, або він некоректний.'
           missing_param: 'Бракує обовʼязкового параметра: %{value}.'
           request_not_authorized: 'Запит потребує авторизації: обовʼязковий параметр відсутній або недійсний.'
+          invalid_code_challenge: "Потрібен code challenge."
+          multiple_client_auth_methods: "Запит використовує більше ніж один механізм автентифікації клієнта."
         invalid_redirect_uri: 'Адреса повернення некоректна або не збігається з тією, що вказана для застосунку.'
         unauthorized_client: 'Застосунку не дозволено виконувати цей запит у такий спосіб.'
         access_denied: 'Ви відхилили запит.'
         invalid_scope: 'Запитано доступ, якого цей застосунок не має.'
         server_error: 'Сервер авторизації натрапив на неочікувану помилку.'
         temporarily_unavailable: 'Сервер авторизації тимчасово недоступний.'
+        invalid_code_challenge_method:
+          zero: "Сервер авторизації не підтримує PKCE, оскільки не приймає жодного значення code_challenge_method."
+          one: "code_challenge_method має бути %{challenge_methods}."
+          few: "code_challenge_method має бути одним із: %{challenge_methods}."
+          many: "code_challenge_method має бути одним із: %{challenge_methods}."
+          other: "code_challenge_method має бути одним із: %{challenge_methods}."
+        credential_flow_not_configured: "Потік Resource Owner Password Credentials не спрацював, бо Doorkeeper.configure.resource_owner_from_credentials не налаштовано."
+        resource_owner_authenticator_not_configured: "Пошук Resource Owner не вдався, бо Doorkeeper.configure.resource_owner_authenticator не налаштовано."
+        admin_authenticator_not_configured: "Доступ до панелі адміністратора заборонено, бо Doorkeeper.configure.admin_authenticator не налаштовано."
+        unsupported_response_type: "Сервер авторизації не підтримує цей тип відповіді."
+        unsupported_response_mode: "Сервер авторизації не підтримує цей режим відповіді."
+        invalid_client: "Не вдалося автентифікувати клієнта: клієнт невідомий, автентифікацію клієнта не передано або метод автентифікації не підтримується."
+        invalid_grant: "Наданий дозвіл на авторизацію недійсний, прострочений, відкликаний, не відповідає URI перенаправлення із запиту авторизації або виданий іншому клієнту."
+        unsupported_grant_type: "Сервер авторизації не підтримує цей тип дозволу."
+        invalid_token:
+          revoked: "Токен доступу відкликано"
+          expired: "Термін дії токена доступу минув"
+          unknown: "Токен доступу недійсний"
+        revoke:
+          unauthorized: "Ви не маєте права відкликати цей токен"
+        forbidden_token:
+          missing_scope: "Для доступу до цього ресурсу потрібна область доступу «%{oauth_scopes}»."
+    applications:
+      confirmations:
+        destroy: "Ви впевнені?"
+      buttons:
+        edit: "Редагувати"
+        destroy: "Видалити"
+        submit: "Надіслати"
+        cancel: "Скасувати"
+        authorize: "Авторизувати"
+      form:
+        error: "Ой! Перевірте форму на помилки"
+      help:
+        confidential: "Застосунок використовуватиметься там, де секрет клієнта можна зберегти в таємниці. Нативні мобільні застосунки й односторінкові застосунки не вважаються конфіденційними."
+        redirect_uri: "Один URI на рядок"
+        blank_redirect_uri: "Залиште порожнім, якщо ви налаштували провайдера на Client Credentials, Resource Owner Password Credentials або інший тип дозволу, що не потребує URI перенаправлення."
+        scopes: "Розділяйте області доступу пробілами. Залиште порожнім, щоб використати області за замовчуванням."
+      edit:
+        title: "Редагувати застосунок"
+      index:
+        title: "Ваші застосунки"
+        new: "Новий застосунок"
+        name: "Назва"
+        callback_url: "URL зворотного виклику"
+        confidential: "Конфіденційний?"
+        actions: "Дії"
+        confidentiality:
+          'yes': "Так"
+          'no': "Ні"
+      new:
+        title: "Новий застосунок"
+      show:
+        title: "Застосунок: %{name}"
+        application_id: "UID:"
+        secret: "Секрет:"
+        secret_hashed: "Хешований секрет"
+        scopes: "Області доступу:"
+        confidential: "Конфіденційний:"
+        callback_urls: "URL зворотного виклику:"
+        actions: "Дії"
+        not_defined: "Не визначено"
+    pre_authorization:
+      status: "Попередня авторизація"
+    flash:
+      applications:
+        create:
+          notice: "Застосунок створено."
+        destroy:
+          notice: "Застосунок видалено."
+        update:
+          notice: "Застосунок оновлено."
+      authorized_applications:
+        destroy:
+          notice: "Доступ застосунку відкликано."
+    layouts:
+      admin:
+        title: "Doorkeeper"
+        nav:
+          oauth2_provider: "Провайдер OAuth2"
+          applications: "Застосунки"
+          home: "Головна"
+      application:
+        title: "Потрібна авторизація OAuth"
+  activerecord:
+    attributes:
+      doorkeeper/application:
+        name: "Назва"
+        redirect_uri: "URI перенаправлення"
+    errors:
+      models:
+        doorkeeper/application:
+          attributes:
+            redirect_uri:
+              fragment_present: "не може містити фрагмент."
+              invalid_uri: "має бути дійсним URI."
+              unspecified_scheme: "має містити схему."
+              relative_uri: "має бути абсолютним URI."
+              secured_uri: "має бути URI з HTTPS/SSL."
+              forbidden_uri: "заборонений сервером."
+            scopes:
+              not_match_configured: "не відповідають налаштованим на сервері."

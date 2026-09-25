@@ -192,6 +192,19 @@ fr:
             description: Enable the Agent Sessions feature for uploading and embedding coding agent session transcripts.
           video:
             description: Secret key used to allow AWS video encoding through the VideoStatesController
+          news_sitemap_tags:
+            description: "Tags (séparés par des virgules) qui rendent un article éligible au sitemap Google News."
+            placeholder: "actualites,nouveautes"
+          news_sitemap_organization_ids:
+            description: "ID d'organisations (séparés par des virgules) dont les articles peuvent apparaître dans le sitemap Google News."
+            placeholder: "2,5"
+          subscription_product_name:
+            description: "Nom de votre abonnement payant tel qu'il doit apparaître aux membres"
+          subscription_landing_page_url:
+            description: "URL où les membres peuvent en savoir plus ou gérer l'abonnement payant"
+            placeholder: "/++"
+          subscriber_icon_url:
+            description: "URL de l'image utilisée pour mettre en valeur les abonnés à côté de leur nom"
         rate_limit:
           new_days:
             description: The number of days a user is considered new. The default is 3 days, but you can disable this entirely by inputting 0.

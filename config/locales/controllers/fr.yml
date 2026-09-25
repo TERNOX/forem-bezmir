@@ -10,6 +10,7 @@ fr:
     please_sign_in : Veuillez vous connecter
   articles_controller:
     deleted: L'article a été supprimé avec succès.
+    stale_edit: "Cette publication a été modifiée par quelqu'un d'autre depuis que vous l'avez ouverte. Pour charger la dernière version, rechargez la page puis cliquez sur le bouton « Annuler les modifications » en bas de l'éditeur."
   comments_controller:
     create:
       success: créé avec succès

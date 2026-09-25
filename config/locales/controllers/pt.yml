@@ -10,6 +10,7 @@ pt:
     please_sign_in: Por favor, faça login
   articles_controller:
     deleted: Artigo foi excluído com sucesso.
+    stale_edit: "Esta publicação foi alterada por outra pessoa desde que você a abriu. Para carregar a versão mais recente, recarregue a página e clique no botão \"Reverter alterações\" na parte inferior do editor."
   comments_controller:
     create:
       success: criado

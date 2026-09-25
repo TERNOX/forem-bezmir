@@ -2,7 +2,7 @@
 uk:
   views:
     auth:
-      welcome_to_subforem: "Вітаємо у спільноті Куток — частині мережі Forem!"
+      welcome_to_subforem: "Вітаємо у спільноті %{community_name} — частині мережі Forem!"
       create:
         text: Створити акаунт
         aria_label: Створити новий акаунт
@@ -59,13 +59,13 @@ uk:
       contact_mailto_html: Зв’яжіться з нами за адресою <a href="mailto:%{contact_email}">%{contact_email}</a>, якщо ми можемо ще чимось допомогти.
     onboardings:
       meta:
-        title: Вітаємо у спільноті Куток
+        title: "Вітаємо у спільноті %{community}"
       heading: Тепер ви — частина спільноти!
       subtitle: РЕКОМЕНДОВАНІ КРОКИ
       close: Закрити вітальне повідомлення
       settings_html: "<span class=\"emoji\">💅🏼</span>Налаштуйте свій профіль"
       welcome_html: "<span class=\"emoji\">😊</span>Приєднайтесь до вітальної теми"
-      write_html: "<span class=\"emoji\">✍🏾</span>Напишіть свій перший допис у спільноті Куток"
+      write_html: "<span class=\"emoji\">✍🏾</span>Напишіть свій перший допис у спільноті %{community}"
       join_subscription_html: "<span class=\"emoji\">🚀</span>Приєднайтесь до %{subscription_name}"
     pins:
       article: Закріплено
@@ -81,7 +81,7 @@ uk:
         title: Збережене
         description: Мої збережені дописи.
         og:
-          title: Список для читання — спільнота Куток
+          title: "Список для читання — спільнота %{community}"
     series:
       meta:
         description: Переглянути %{title} на %{site}
@@ -126,8 +126,8 @@ uk:
       meta:
         title: Відео
         og:
-          description: Усі відео спільноти Куток
-      heading: Відео спільноти Куток
+          description: "Усі відео спільноти %{community}"
+      heading: "Відео спільноти %{community}"
       beta_html: "<strong>Відео — бета-функція:</strong> %{contact}"
       upload: "🎥 Завантажити відеофайл 🙌"
       max_file_size: "Максимальний розмір файлу: %{size}."

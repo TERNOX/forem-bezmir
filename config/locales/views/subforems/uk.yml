@@ -4,7 +4,7 @@ uk:
     subforems:
       meta:
         title: Підсайти
-        description: Підсайти для підписки у спільноті Куток
+        description: "Підсайти для підписки у спільноті %{community}"
         og:
           description: "%{community} — це чудово!"
       heading:

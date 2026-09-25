@@ -194,6 +194,7 @@ pt:
         enqueued: 'Todos os artigos publicados serão salvos novamente em segundo plano. Os embeds serão reconstruídos em breve.'
       social_images_queued: 'Regeneração de imagens sociais em fila para @%{user}'
       user_not_found: 'Usuário não encontrado'
+      invalid_next_run_hour: "Hora inválida selecionada para o próximo envio do resumo"
     users_controller:
       role_removed: 'Função: %{role} foi removida com sucesso do usuário!'
       updated: Usuário foi atualizado

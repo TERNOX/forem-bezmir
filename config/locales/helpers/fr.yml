@@ -49,6 +49,8 @@ fr:
         email: Email
         username: Nom d'utilisateur
         profile_image: Image de profil
+        password: "Mot de passe"
+        remember_me: "Se souvenir de moi"
       users_notification_setting:
         email_newsletter: Envoyez-moi une newsletter hebdomadaire
         email_digest_periodic: Envoyez-moi un condensé périodique des meilleurs messages
@@ -173,46 +175,6 @@ fr:
           en ligne
         video_embed_html_5_with_loop_and_muted_and_controls_and_playsinline: HTML5
           d'intégration de la vidéo avec boucle, muet, contrôles et lecture en ligne
-        video_embed_html_5_with_caption_and_autoplay_and_muted_and_controls_and_playsinline: HTML5
-          d'intégration de la vidéo avec légende, lecture automatique, muet, contrôles
-          et lecture en ligne
-        video_embed_html_5_with_autoplay_and_muted_and_controls_and_playsinline: HTML5
-          d'intégration de la vidéo avec lecture automatique, muet, contrôles et lecture
-          en ligne
-        video_embed_html_5_with_caption_and_muted_and_controls_and_playsinline: HTML5
-          d'intégration de la vidéo avec légende, muet, contrôles et lecture en ligne
-        video_embed_html_5_with_muted_and_controls_and_playsinline: HTML5 d'intégration
-          de la vidéo avec muet, contrôles et lecture en ligne
-        video_embed_html_5_with_caption_and_autoplay_and_controls_and_playsinline: HTML5
-          d'intégration de la vidéo avec légende, lecture automatique, contrôles et
-          lecture en ligne
-        video_embed_html_5_with_autoplay_and_controls_and_playsinline: HTML5 d'intégration
-          de la vidéo avec lecture automatique, contrôles et lecture en ligne
-        video_embed_html_5_with_caption_and_controls_and_playsinline: HTML5 d'intégration
-          de la vidéo avec légende, contrôles et lecture en ligne
-        video_embed_html_5_with_controls_and_playsinline: HTML5 d'intégration de la
-          vidéo avec contrôles et lecture en ligne
-        video_embed_html_5_with_caption_and_autoplay_and_loop_and_controls_and_playsinline: HTML5
-          d'intégration de la vidéo avec légende, lecture automatique, boucle, contrôles
-          et lecture en ligne
-        video_embed_html_5_with_autoplay_and_loop_and_controls_and_playsinline: HTML5
-          d'intégration de la vidéo avec lecture automatique, boucle, contrôles et
-          lecture en ligne
-        video_embed_html_5_with_caption_and_loop_and_controls_and_playsinline: HTML5
-          d'intégration de la vidéo avec légende, boucle, contrôles et lecture en
-          ligne
-        video_embed_html_5_with_loop_and_controls_and_playsinline: HTML5 d'intégration
-          de la vidéo avec boucle, contrôles et lecture en ligne
-        video_embed_html_5_with_caption_and_autoplay_and_loop_and_muted_and_playsinline: HTML5
-          d'intégration de la vidéo avec légende, lecture automatique, boucle, muet
-          et lecture en ligne
-        video_embed_html_5_with_autoplay_and_loop_and_muted_and_playsinline: HTML5
-          d'intégration de la vidéo avec lecture automatique, boucle, muet et lecture
-          en ligne
-        video_embed_html_5_with_caption_and_loop_and_muted_and_playsinline: HTML5
-          d'intégration de la vidéo avec légende, boucle, muet et lecture en ligne
-        video_embed_html_5_with_loop_and_muted_and_playsinline: HTML5 d'intégration
-          de la vidéo avec boucle, muet et lecture en ligne
         video_embed_html_5_with_caption_and_autoplay_and_muted_and_playsinline: HTML5
           d'intégration de la vidéo avec légende, lecture automatique, muet et lecture
           en ligne
@@ -283,46 +245,6 @@ fr:
           et poster
         video_embed_html_5_with_loop_and_controls_and_playsinline_and_poster: HTML5
           d'intégration de la vidéo avec boucle, contrôles, lecture en ligne et poster
-        video_embed_html_5_with_caption_and_autoplay_and_loop_and_muted_and_playsinline_and_poster: HTML5
-          d'intégration de la vidéo avec légende, lecture automatique, boucle, muet,
-          lecture en ligne et poster
-        video_embed_html_5_with_autoplay_and_loop_and_muted_and_playsinline_and_poster: HTML5
-          d'intégration de la vidéo avec lecture automatique, boucle, muet, lecture
-          en ligne et poster
-        video_embed_html_5_with_caption_and_loop_and_muted_and_playsinline_and_poster: HTML5
-          d'intégration de la vidéo avec légende, boucle, muet, lecture en ligne et
-          poster
-        video_embed_html_5_with_loop_and_muted_and_playsinline_and_poster: HTML5 d'intégration
-          de la vidéo avec boucle, muet, lecture en ligne et poster
-        video_embed_html_5_with_caption_and_autoplay_and_muted_and_playsinline_and_poster: HTML5
-          d'intégration de la vidéo avec légende, lecture automatique, muet, lecture
-          en ligne et poster
-        video_embed_html_5_with_autoplay_and_muted_and_playsinline_and_poster: HTML5
-          d'intégration de la vidéo avec lecture automatique, muet, lecture en ligne
-          et poster
-        video_embed_html_5_with_caption_and_muted_and_playsinline_and_poster: HTML5
-          d'intégration de la vidéo avec légende, muet, lecture en ligne et poster
-        video_embed_html_5_with_muted_and_playsinline_and_poster: HTML5 d'intégration
-          de la vidéo avec muet, lecture en ligne et poster
-        video_embed_html_5_with_caption_and_autoplay_and_playsinline_and_poster: HTML5
-          d'intégration de la vidéo avec légende, lecture automatique, lecture en
-          ligne et poster
-        video_embed_html_5_with_autoplay_and_playsinline_and_poster: HTML5 d'intégration
-          de la vidéo avec lecture automatique, lecture en ligne et poster
-        video_embed_html_5_with_caption_and_playsinline_and_poster: HTML5 d'intégration
-          de la vidéo avec légende, lecture en ligne et poster
-        video_embed_html_5_with_playsinline_and_poster: HTML5 d'intégration de la
-          vidéo avec lecture en ligne et poster
-        video_embed_html_5_with_caption_and_autoplay_and_loop_and_playsinline_and_poster: HTML5
-          d'intégration de la vidéo avec légende, lecture automatique, boucle, lecture
-          en ligne et poster
-        video_embed_html_5_with_autoplay_and_loop_and_playsinline_and_poster: HTML5
-          d'intégration de la vidéo avec lecture automatique, boucle, lecture en ligne
-          et poster
-        video_embed_html_5_with_caption_and_loop_and_playsinline_and_poster: HTML5
-          d'intégration de la vidéo avec légende, boucle, lecture en ligne et poster
-        video_embed_html_5_with_loop_and_playsinline_and_poster: HTML5 d'intégration
-          de la vidéo avec boucle, lecture en ligne et poster
       admin:
         user_helper:
           today: Aujourd'hui
@@ -529,10 +451,8 @@ fr:
     authentication_helper:
       any_of_those: any of those
       email_password: Email & Password
-      reminder: You used %{method} to authenticate your account originally, so you
-        can use %{dem} — or send yourself a <a href="%{link}" style="color:black">magic
-        link</a>.
-      that: that to sign back into %{community}
+      reminder: "Vous vous êtes authentifié à l’origine avec %{method}. Vous pouvez aussi vous envoyer un <a href=\"%{link}\" style=\"color:black\">lien magique</a> pour vous connecter."
+      that: "cela"
       invite_only: You cannot do this until you disable Invite Only Mode
     comments_helper:
       ama: ama

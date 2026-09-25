@@ -1,0 +1,233 @@
+---
+uk:
+  admin:
+    articles_controller:
+      saved: "Статтю збережено!"
+      unpinned: "Статтю відкріплено!"
+      pinned: "Статтю закріплено!"
+      favorite_removed: "Платину знято."
+    badge_achievements_controller:
+      deleted: "Нагородження бейджем видалено!"
+      award: "Оберіть бейдж для нагородження"
+      rewarded: "Бейджі видаються. Завдання незабаром завершиться."
+      wrong: "Щось пішло не так."
+      congrats: "Вітаємо з отриманням бейджу! 🎉 Величезна подяка вам за те, що є частиною нашої спільноти %{community}!"
+    badges_controller:
+      created: "Бейдж створено!"
+      updated: "Бейдж оновлено!"
+    billboards_controller:
+      created: "Білборд створено!"
+      updated: "Білборд оновлено!"
+      deleted: "Білборд видалено!"
+      wrong: "Під час видалення білборда щось пішло не так."
+    broadcasts_controller:
+      created: "Трансляцію створено!"
+      updated: "Трансляцію оновлено!"
+      deleted: "Трансляцію видалено!"
+      wrong: "Під час видалення трансляції щось пішло не так."
+    bulk_assign_role_controller:
+      role_blank: "Оберіть роль, яку потрібно додати."
+      role_assigment: "Роль %{role} призначено користувачу."
+      success_message: "Ролі додаються. Завдання незабаром завершиться."
+    comments_controller:
+      favorite_removed: "Платину знято."
+    consumer_apps_controller:
+      created: "%{app} створено!"
+      updated: "%{app} оновлено!"
+      deleted: "%{app} видалено!"
+      wrong: "Під час видалення %{app} щось пішло не так."
+    emails_controller:
+      activated: "Лист активовано!"
+      drafted: "Лист збережено як чернетку!"
+      updated: "Лист оновлено!"
+      created: "Лист створено!"
+      deleted: "Лист видалено!"
+      wrong: "Під час видалення листа щось пішло не так."
+    extensions_controller:
+      update_success: "Розширення оновлено."
+    gdpr_delete_requests_controller:
+      deleted: "Успішно позначено як видалене"
+    html_variants_controller:
+      fork: "%{name} FORK-%{rand}"
+      created: "HTML-варіант створено!"
+      updated: "HTML-варіант оновлено!"
+      deleted: "HTML-варіант видалено!"
+      wrong: "Під час видалення HTML-варіанта щось пішло не так."
+    invitations_controller:
+      duplicate: "Запрошення не надіслано. Уже є зареєстрований користувач з адресою %{email}"
+      create_success: "Запрошення надіслано на електронну пошту користувача."
+      destroy_success: "Запрошення для %{email} скасовано."
+      resend_success: "Запрошення повторно надіслано на %{email}."
+    listing_categories_controller:
+      created: "Категорію оголошень створено!"
+      updated: "Категорію оголошень оновлено!"
+      deleted: "Категорію оголошень видалено!"
+    listings_controller:
+      updated: "Оголошення успішно оновлено"
+      destroyed: "«%{title}» успішно видалено"
+      no_credit: "Недостатньо доступних балів"
+    mods_controller:
+      trusted: "%{username} тепер має роль довіреного користувача!"
+    navigation_links_controller:
+      created: "Посилання навігації створено: %{link}"
+      updated: "Посилання навігації оновлено: %{link}"
+      deleted: "Посилання навігації %{link} видалено"
+    organization_memberships_controller:
+      added: "Користувача успішно додано до %{org}"
+      not_exist: "Проєкту #%{org_id} не існує."
+      updated: "Роль користувача успішно змінено на %{type}"
+      removed: "Користувача успішно вилучено з %{org}"
+      wrong: "Під час вилучення користувача з %{org} щось пішло не так"
+    organizations_controller:
+      credit_updated: "Бали успішно оновлено"
+      baseline_score_updated: "Базовий рейтинг оновлено!"
+      deletion_scheduled: "Видалення проєкту «%{organization_name}» заплановано."
+      error: "Не вдалося видалити ваш проєкт %{organization_name}: %{error}."
+      fully_trusted_enabled: "Для цього проєкту увімкнено статус повної довіри."
+      fully_trusted_disabled: "Для цього проєкту вимкнено статус повної довіри."
+      bulk_add_users:
+        empty_input: "Вкажіть принаймні одне ім’я користувача."
+        added: "До проєкту успішно додано користувачів: %{count} (%{usernames})."
+        already_members: "Уже учасники: %{usernames}."
+        not_found: "Користувачів не знайдено: %{usernames}."
+        failed: "Не вдалося додати користувачів (%{count}): %{errors}."
+    page_templates_controller:
+      created: "Шаблон сторінки успішно створено!"
+      updated: "Шаблон сторінки успішно оновлено!"
+      cannot_delete_with_pages: "Не можна видалити шаблон, поки до нього прив’язані сторінки. Спершу видаліть або перепризначте сторінки."
+      deleted: "Шаблон сторінки успішно видалено!"
+    pages_controller:
+      created: "Сторінку успішно створено."
+      updated: "Сторінку успішно оновлено."
+      deleted: "Сторінку успішно видалено."
+      code_of_conduct:
+        title: "Кодекс поведінки"
+        description: "Сторінка, що описує правила поведінки на платформі"
+      privacy_policy:
+        title: "Політика конфіденційності"
+        description: "Сторінка з політикою конфіденційності"
+      terms_of_use:
+        title: "Умови використання"
+        description: "Сторінка з умовами використання застосунку"
+    podcasts_controller:
+      updated: "Подкаст оновлено"
+      scheduled: "Завантаження епізодів подкасту заплановано (%{title}, #%{id})"
+      new_owner_added: "Нового власника додано!"
+      no_such_user: "Такого користувача немає"
+    profile_field_groups_controller:
+      created: "Групу створено: %{group}"
+      updated: "Групу %{group} оновлено"
+      deleted: "Групу %{group} видалено"
+    profile_fields_controller:
+      created: "Поле профілю %{field} створено"
+      updated: "Поле профілю %{field} оновлено"
+      deleted: "Поле профілю %{field} видалено"
+    response_templates_controller:
+      saved: "Шаблон відповіді «%{title}» успішно збережено."
+      updated: "Шаблон відповіді «%{title}» оновлено."
+      deleted: "Шаблон відповіді «%{title}» видалено."
+    secrets_controller:
+      not_in_vault: "Немає у Vault"
+      updated: "Секрет %{key} успішно оновлено у Vault."
+      value: "%{first8}******"
+    settings_controller:
+      confirmation: "Моє ім’я користувача @%{username}, і ця дія на 100% безпечна й доречна."
+    spaces_controller:
+      update_success: "Простір оновлено."
+    subforems_controller:
+      created_with_ai: "Підсайт створено! Подробиці генеруються у фоновому режимі."
+      created: "Підсайт створено!"
+      updated: "Підсайт оновлено!"
+      deleted: "Підсайт видалено!"
+      delete_failed: "Не вдалося видалити підсайт."
+    surveys_controller:
+      created: "Опитування створено!"
+      updated: "Опитування оновлено!"
+      deleted: "Опитування видалено!"
+      wrong: "Під час роботи з опитуванням щось пішло не так."
+    tags:
+      moderators_controller:
+        not_found: "Користувача «%{username}» не знайдено"
+        added: "%{username} тепер модератор тегу!"
+        not_found_or: "Користувача з ID #%{user_id} не знайдено, або в його обліковому записі є помилки: %{errors}"
+        removed: "@%{username} (ID #%{user_id}) більше не модератор тегу."
+    tags_controller:
+      created: "%{tag_name} створено!"
+      updated: "Тег %{tag_name} успішно оновлено!"
+      update_fail: "Не вдалося оновити тег: %{errors}"
+      form:
+        moderation_instructions: "Інструкції для модерації"
+        moderation_instructions_description: "Власні інструкції для ШІ-модерації дописів із цим тегом. Якщо їх вказано, вони додаються до запиту ШІ-модерації вмісту."
+    tools_controller:
+      top_articles_digest_updated: "Налаштування дайджесту найкращих статей оновлено"
+      top_articles_digest_missing: "Не вдалося оновити налаштування дайджесту: конфігурацію не знайдено"
+      link_busted: "Кеш для %{link} успішно скинуто"
+      user_busted: "Кеш користувача #%{user} успішно скинуто"
+      article_busted: "Кеш статті #%{article} успішно скинуто"
+      social_images_queued: "Повторне створення соціальних зображень для @%{user} поставлено в чергу"
+      user_not_found: "Користувача не знайдено"
+      resave_published_articles:
+        enqueued: "Усі опубліковані статті буде повторно збережено у фоновому режимі. Вбудований вміст незабаром перебудується."
+      invalid_next_run_hour: "Некоректну годину обрано для наступного запуску дайджесту"
+    users_controller:
+      role_removed: "Роль %{role} успішно знято з користувача!"
+      updated: "Користувача оновлено"
+      updated_json: "Готово! %{username} оновлено."
+      tag_not_found: "Тег «%{tag_name}» не знайдено"
+      exported: "Дані експортовано: %{receiver}. Завдання завершиться за мить."
+      banished: "Користувача вигнано у фоновому режимі. Завдання незабаром завершиться."
+      the_page: "сторінці"
+      full_delete_html: "@%{user} (email: %{email}, user_id: %{id}) повністю видалено. Якщо це видалення за GDPR, видаліть користувача з Mailchimp і Google Analytics та підтвердьте на %{the_page}."
+      no_email: "немає email"
+      unpublished: "Дописи знімаються з публікації у фоновому режимі. Завдання незабаром завершиться."
+      identity_removed: "Обліковий запис %{provider} успішно від’єднано, резервну копію збережено."
+      email_sent: "Лист надіслано!"
+      email_fail: "Не вдалося надіслати лист!"
+      parameter_missing: "Потрібні і тема, і текст листа!"
+      confirm_sent: "Лист для підтвердження надіслано!"
+      verify_sent: "Лист для верифікації надіслано!"
+      manual_verification_sent: "Email верифіковано вручну!"
+      email_confirmed: "Email підтверджено!"
+      email_confirm_fail: "Не вдалося підтвердити email."
+      pending_email_confirmed: "Зміну email підтверджено!"
+      pending_email_confirm_fail: "Немає зміни email, яку потрібно підтвердити."
+      unlocked: "Обліковий запис користувача розблоковано!"
+      credits_added: "Бали додано!"
+      credits_removed: "Бали вилучено."
+    welcome_controller:
+      thread_content: "---\ntitle: Вітальна гілка - v0\npublished: false\ndescription: Представтеся спільноті!\ntags: welcome\n---\n\nВітаємо! Ласкаво просимо до %{community}!\n\n![ЛАСКАВО ПРОСИМО В ІНТЕРНЕТ](https://slack-imgs.com/?c=1&url=http%3A%2F%2Fmedia0.giphy.com%2Fmedia%2FzhbrTTpmSCYog%2Fgiphy-downsized.gif)\n\nЗалиште коментар нижче й розкажіть спільноті про себе!✌️\n"
+  admin_controller:
+    dashboard:
+      title: "Панель адміністратора"
+      welcome: "Ласкаво просимо до панелі адміністратора"
+    users:
+      title: "Керування користувачами"
+      suspend: "Заблокувати"
+      unsuspend: "Розблокувати"
+      ban: "Забанити"
+      unban: "Розбанити"
+      delete: "Видалити"
+      edit: "Редагувати"
+      view: "Переглянути"
+    articles:
+      title: "Керування статтями"
+      delete: "Видалити"
+      edit: "Редагувати"
+      view: "Переглянути"
+      publish: "Опублікувати"
+      unpublish: "Зняти з публікації"
+    comments:
+      title: "Керування коментарями"
+      delete: "Видалити"
+      edit: "Редагувати"
+      view: "Переглянути"
+      moderate: "Модерувати"
+    reports:
+      title: "Керування скаргами"
+      view: "Переглянути"
+      resolve: "Вирішити"
+      dismiss: "Відхилити"
+    settings:
+      title: "Керування налаштуваннями"
+      save: "Зберегти"
+      cancel: "Скасувати"

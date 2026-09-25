@@ -39,8 +39,30 @@ uk:
       unread_notifications:
         one: "🔥 У Вас %{count} непрочитане сповіщення у %{community}"
         other: "🔥 У Вас %{count} непрочитаних сповіщень у %{community}"
+        few: "🔥 У Вас %{count} непрочитані сповіщення у %{community}"
+        many: "🔥 У Вас %{count} непрочитаних сповіщень у %{community}"
       new_badge: Ви щойно отримали значок
       video_upload: Ваше відео успішно завантажено
     verification_mailer:
       from: "%{community} — підтвердження електронної пошти <%{email}>"
       verify_ownership: Підтвердьте володіння акаунтом %{community}
+    organization_invitation_mailer:
+      subject: "Вас запрошено приєднатися до %{organization_name} на %{community}"
+      greeting: "Вітаємо, %{name}!"
+      invited_by_html: "<strong>%{inviter_name}</strong> запросив(ла) Вас приєднатися до <strong>%{organization_name}</strong> як учасника."
+      invited_html: "Вас запрошено приєднатися до <strong>%{organization_name}</strong> як учасника."
+      what_is_organization: "Проєкти на %{community} дозволяють командам і групам співпрацювати, ділитися контентом і будувати спільну присутність. Як учасник, Ви зможете публікувати статті від імені проєкту та співпрацювати зі своєю командою."
+      confirm_button: "Прийняти запрошення"
+      alternative_link: "Або скопіюйте та вставте це посилання у свій браузер:"
+      invited_by_text: "%{inviter_name} запросив(ла) Вас приєднатися до %{organization_name} як учасника."
+      invited_text: "Вас запрошено приєднатися до %{organization_name} як учасника."
+    organization_membership_notification_mailer:
+      subject: "Вас додано до %{organization_name} на %{community}"
+      greeting: "Вітаємо, %{name}!"
+      added_by_html: "<strong>%{inviter_name}</strong> додав(ла) Вас до <strong>%{organization_name}</strong> як учасника."
+      added_html: "Вас додано до <strong>%{organization_name}</strong> як учасника."
+      what_is_organization: "Проєкти на %{community} дозволяють командам і групам співпрацювати, ділитися контентом і будувати спільну присутність. Як учасник, Ви зможете публікувати статті від імені проєкту та співпрацювати зі своєю командою."
+      view_organization_button: "Переглянути проєкт"
+      organization_url: "Перейти на сторінку проєкту"
+      added_by_text: "%{inviter_name} додав(ла) Вас до %{organization_name} як учасника."
+      added_text: "Вас додано до %{organization_name} як учасника."

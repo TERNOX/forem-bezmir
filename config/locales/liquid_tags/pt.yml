@@ -140,3 +140,25 @@ pt:
       unpublished: Apenas o proprietário da sessão pode incorporar esta sessão
     youtube_tag:
       invalid_youtube_id: ID do YouTube inválido
+    col_tag:
+      invalid_span: "A largura deve estar entre 1 e 4"
+    invalid_url_scheme: "URL inválida para '%{option}': apenas URLs http e https são permitidas"
+    feature_tag:
+      missing_title: "A tag feature requer a opção title"
+    features_tag:
+      no_args: "A tag features não aceita argumentos"
+    netlify_tag:
+      invalid_url: "URL do Netlify inválida. Deve ser uma URL https://*.netlify.app"
+    offer_tag:
+      default_button: "Saiba mais"
+    quote_tag:
+      missing_author: "A tag quote requer a opção author"
+      invalid_rating: "A avaliação deve estar entre 1 e 5"
+      learn_more: "Saiba mais"
+    row_tag:
+      no_args: "A tag row não aceita argumentos"
+    slide_tag:
+      missing_content: "A tag slide requer pelo menos um destes: imagem, vídeo ou link"
+      missing_image: "A tag slide requer a opção image"
+    slides_tag:
+      invalid_mode: "O modo dos slides deve ser 'default' ou 'carousel'"

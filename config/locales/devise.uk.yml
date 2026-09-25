@@ -91,3 +91,5 @@ uk:
       not_saved:
         one: "1 помилка не дозволила зберегти %{resource}:"
         other: "%{count} помилок не дозволили зберегти %{resource}:"
+        few: "%{count} помилки не дозволили зберегти %{resource}:"
+        many: "%{count} помилок не дозволили зберегти %{resource}:"

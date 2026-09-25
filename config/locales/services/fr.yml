@@ -122,3 +122,14 @@ fr:
       remove_role:
         remove_self: Les administrateurs ne peuvent pas se retirer des rôles.
         error: Un problème est survenu lors de la suppression de ce rôle. %{e_message}
+      calculate_monthly_reputation:
+        badge_message: "Félicitations pour votre place dans le top 10 mensuel de %{month} !"
+    articles:
+      top_articles:
+        digest_publisher:
+          errors:
+            missing_api_key: "Ajoutez la clé API du bot de la communauté avant de publier le digest."
+            invalid_api_key: "La clé API configurée ne correspond à aucun bot de la communauté."
+            missing_bot_user: "La clé API sélectionnée n'appartient à aucun compte utilisateur."
+            missing_title_template: "Définissez un modèle de titre de publication avant de publier le digest."
+            no_articles: "Aucun article ne correspond à la période sélectionnée."

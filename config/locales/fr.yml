@@ -85,6 +85,9 @@ fr:
     following_everyone: "Vous suivez %{details} (toutes)"
     you_are_following: "Vous suivez"
     and: "et"
+    paste_embed_prompt: "Intégrer ce lien ?"
+    paste_embed_button: "Intégrer"
+    paste_embed_dismiss: "Ignorer"
   date:
     abbr_day_names:
     - dim.

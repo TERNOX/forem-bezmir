@@ -192,6 +192,19 @@ pt:
             description: Video settings
           payment:
             description: Payment settings
+          news_sitemap_tags:
+            description: "Tags (separadas por vírgula) que tornam um artigo elegível para o sitemap do Google Notícias."
+            placeholder: "noticias,novidades"
+          news_sitemap_organization_ids:
+            description: "IDs de organizações (separados por vírgula) cujos artigos podem aparecer no sitemap do Google Notícias."
+            placeholder: "2,5"
+          subscription_product_name:
+            description: "Nome da sua assinatura paga como deve aparecer para os membros"
+          subscription_landing_page_url:
+            description: "URL onde os membros podem saber mais ou gerenciar a assinatura paga"
+            placeholder: "/++"
+          subscriber_icon_url:
+            description: "URL da imagem usada para destacar assinantes ao lado de seus nomes"
         rate_limit:
           spam:
             description: "Frases individuais (sem diferenciar maiúsculas e minúsculas), separadas por vírgula, que disparam alertas de spam. Elas são procuradas em qualquer parte do texto, então prefira frases mais longas: \"bet\" também corresponde a \"between\"."

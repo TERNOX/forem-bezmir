@@ -46,7 +46,7 @@ en:
     badge_achievements_controller:
       deleted: Badge achievement has been deleted!
       rewarded: Badges are being rewarded. The task will finish shortly.
-      congrats: Вітаємо з отриманням бейджу! 🎉 Величезна подяка вам за те, що є частиної нашої спільноти %{community}!
+      congrats: Вітаємо з отриманням бейджу! 🎉 Величезна подяка вам за те, що є частиною нашої спільноти %{community}!
       award: Please choose a badge to award
       wrong: Something went wrong.
     badges_controller:

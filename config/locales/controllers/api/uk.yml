@@ -7,10 +7,13 @@ uk:
         start_missing: Обов’язковий параметр 'start' відсутній
       articles_controller:
         must_be_json: параметр article має бути об’єктом JSON. Ти надіслав article як %{type}
+        page_limit_exceeded: "Без API-ключа глибина сторінок обмежена 1000"
       follows_controller:
         followed:
           one: підписався на %{count} користувача
           other: підписався на %{count} користувачів
+          few: "підписався на %{count} користувачів"
+          many: "підписався на %{count} користувачів"
       health_checks_controller:
         app_is_up: Додаток працює!
         database_connected: Базу даних підключено
