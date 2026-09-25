@@ -158,7 +158,7 @@ class Comment < ApplicationRecord
     return self.class.title_deleted if deleted
     return self.class.title_hidden if hidden_by_commentable_user
 
-    text = ActionController::Base.helpers.strip_tags(processed_html).strip
+    text = ActionController::Base.helpers.strip_tags(html_without_image_captions).strip
     return self.class.title_image_only if only_contains_image?(text)
 
     truncated_text = ActionController::Base.helpers.truncate(text, length: length).gsub("&#39;", "'").gsub("&amp;", "&")
@@ -469,6 +469,26 @@ class Comment < ApplicationRecord
 
   def parent_exists?
     parent_id && Comment.exists?(id: parent_id)
+  end
+
+  # Captions generated from image alt text (Html::Parser#add_figcaptions_to_images) are not part of
+  # what the commenter wrote, so they are left out of the title. Hand-written captions are kept.
+  def html_without_image_captions
+    return processed_html unless processed_html&.include?("<figcaption")
+
+    fragment = Nokogiri::HTML.fragment(processed_html)
+    fragment.css("figure").each do |figure|
+      alt_texts = figure.css("img").map { |image| image_caption_source(image) }
+      figure.css("figcaption").each do |caption|
+        caption.remove if alt_texts.include?(caption.text.squish)
+      end
+    end
+    fragment.to_html
+  end
+
+  def image_caption_source(image)
+    raw_text = image["data-lightbox-caption"].presence || image["alt"].to_s
+    ActionController::Base.helpers.strip_tags(raw_text).squish
   end
 
   def only_contains_image?(stripped_text)
