@@ -393,6 +393,19 @@ RSpec.describe Comment do
       expect(comment.title).to eq("[image]")
     end
 
+    it "is converted to image text even when the image alt text is rendered as a caption" do
+      comment.body_markdown = "![A cat sleeping on a keyboard](https://myimage.com/cat.png)"
+      comment.validate!
+      expect(comment.processed_html).to include("<figcaption>A cat sleeping on a keyboard</figcaption>")
+      expect(comment.title).to eq("[image]")
+    end
+
+    it "does not include image captions in the title of a comment with text" do
+      comment.body_markdown = "Look at this\n\n![A cat sleeping on a keyboard](https://myimage.com/cat.png)"
+      comment.validate!
+      expect(comment.title).to eq("Look at this")
+    end
+
     it "does not contain the wrong encoding" do
       comment.body_markdown = "It's the best post ever. It's so great."
 

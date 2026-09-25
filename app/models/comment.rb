@@ -158,7 +158,7 @@ class Comment < ApplicationRecord
     return self.class.title_deleted if deleted
     return self.class.title_hidden if hidden_by_commentable_user
 
-    text = ActionController::Base.helpers.strip_tags(processed_html).strip
+    text = ActionController::Base.helpers.strip_tags(html_without_image_captions).strip
     return self.class.title_image_only if only_contains_image?(text)
 
     truncated_text = ActionController::Base.helpers.truncate(text, length: length).gsub("&#39;", "'").gsub("&amp;", "&")
@@ -467,6 +467,15 @@ class Comment < ApplicationRecord
 
   def parent_exists?
     parent_id && Comment.exists?(id: parent_id)
+  end
+
+  # Image captions are rendered from alt text, so they are not part of what the commenter wrote.
+  def html_without_image_captions
+    return processed_html unless processed_html&.include?("<figcaption")
+
+    fragment = Nokogiri::HTML.fragment(processed_html)
+    fragment.css("figcaption").remove
+    fragment.to_html
   end
 
   def only_contains_image?(stripped_text)
