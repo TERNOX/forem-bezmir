@@ -437,6 +437,8 @@ RSpec.describe "/admin/customization/config" do
       end
 
       describe "Rate Limits and spam" do
+        after { Settings::RateLimit.clear_cache }
+
         it "updates follow_count_daily" do
           default_value = Settings::RateLimit.get_default(:follow_count_daily)
           expect do
@@ -455,6 +457,31 @@ RSpec.describe "/admin/customization/config" do
           }
           expect(Settings::RateLimit.spam_exempt_usernames).to eq(%w[ben jess ann])
           expect(Settings::RateLimit.spam_exempt_organization_slugs).to eq(%w[my-org])
+        end
+
+        it "saves the spam controls globally from a subforem so background spam checks see them" do
+          subforem = create(:subforem, domain: "community.example.com")
+          host! subforem.domain
+
+          post admin_settings_rate_limits_path, params: {
+            settings_rate_limit: {
+              ai_spam_moderation_enabled: "0",
+              ai_moderation_model: "gemini-2.5-flash",
+              spam_exempt_usernames: "ben",
+              spam_exempt_organization_slugs: "my-org"
+            }
+          }
+
+          expect(response).to have_http_status(:ok)
+          keys = %w[ai_spam_moderation_enabled ai_moderation_model spam_exempt_usernames spam_exempt_organization_slugs]
+          expect(Settings::RateLimit.where(var: keys).pluck(:subforem_id).uniq).to eq([nil])
+
+          RequestStore.clear! # what Sidekiq::RequestStoreCleanup does before each job
+          expect(Settings::RateLimit.ai_spam_moderation_enabled).to be(false)
+          expect(Settings::RateLimit.ai_moderation_model).to eq("gemini-2.5-flash")
+          expect(Settings::RateLimit.spam_exempt_usernames).to eq(["ben"])
+          expect(Settings::RateLimit.spam_exempt_organization_slugs).to eq(["my-org"])
+          expect(Settings::RateLimit.spam_exempt_usernames(subforem_id: subforem.id)).to eq(["ben"])
         end
 
         it "toggles AI spam moderation and stores the moderation model" do

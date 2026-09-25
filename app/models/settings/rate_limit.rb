@@ -33,6 +33,34 @@ module Settings
     setting :spam_exempt_usernames, type: :array, default: []
     setting :spam_exempt_organization_slugs, type: :array, default: []
 
+    # Spam checks run in Sidekiq without a request/subforem context. Keep these
+    # installation-wide controls global even when edited from a subforem domain.
+    GLOBAL_SETTING_KEYS = %i[
+      ai_spam_moderation_enabled ai_moderation_model spam_exempt_usernames spam_exempt_organization_slugs
+    ].freeze
+
+    class << self
+      GLOBAL_SETTING_KEYS.each do |key|
+        define_method(key) do |**_options|
+          value = all_settings(nil)[key.to_s]
+          value = get_default(key) if value.nil?
+          convert_string_to_value_type(get_setting(key)[:type], value)
+        end
+
+        define_method(:"set_#{key}") do |value, **_options|
+          record = find_or_initialize_by(var: key.to_s, subforem_id: nil)
+          record.value = convert_string_to_value_type(get_setting(key)[:type], value)
+          record.save!
+          clear_cache
+          value
+        end
+
+        define_method(:"#{key}=") do |value|
+          public_send(:"set_#{key}", value)
+        end
+      end
+    end
+
     # A helper function to determine if we should consider the user a "new" user.
     #
     # @note A "new" user is more likely to start spamming than an "old" user.

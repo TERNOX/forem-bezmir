@@ -92,6 +92,31 @@ RSpec.describe Settings::RateLimit do
     end
   end
 
+  describe "global spam controls" do
+    after { described_class.clear_cache }
+
+    it "stores and reads them globally even inside a subforem request context" do
+      subforem = create(:subforem)
+      RequestStore.store[:subforem_id] = subforem.id
+
+      described_class.spam_exempt_usernames = "ben, jess"
+      described_class.ai_spam_moderation_enabled = "0"
+
+      expect(described_class.where(var: %w[spam_exempt_usernames ai_spam_moderation_enabled])
+        .pluck(:subforem_id).uniq).to eq([nil])
+
+      RequestStore.clear!
+      expect(described_class.spam_exempt_usernames).to eq(%w[ben jess])
+      expect(described_class.ai_spam_moderation_enabled).to be(false)
+    end
+
+    it "falls back to the defaults" do
+      expect(described_class.spam_exempt_usernames).to eq([])
+      expect(described_class.ai_spam_moderation_enabled).to be(true)
+      expect(described_class.ai_moderation_model).to be_nil
+    end
+  end
+
   describe ".ai_spam_moderation?" do
     it "is true when a Gemini key is present and the admin toggle is on" do
       stub_const("Ai::Base::DEFAULT_KEY", "present")
