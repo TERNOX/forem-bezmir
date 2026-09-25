@@ -378,6 +378,66 @@ RSpec.describe Spam::Handler, type: :service do
         expect(handler).to eq(:not_spam)
       end
     end
+
+    context "when the author is on the spam allowlist" do
+      before do
+        allow(Settings::RateLimit).to receive(:spam_exempt_usernames).and_return(["@#{article.user.username}"])
+        allow(Settings::RateLimit).to receive(:trigger_spam_for?).and_return(true)
+        allow(Ai::ArticleCheck).to receive_message_chain(:new, :spam?).and_return(true)
+        stub_const("Ai::Base::DEFAULT_KEY", "present")
+        allow_any_instance_of(Ai::ContentModerationLabeler).to receive(:evaluate)
+          .and_return({ label: "clear_and_obvious_spam", compellingness_score: 0.0 })
+      end
+
+      it "never flags the article or suspends the author" do
+        expect(handler).to eq(:not_spam)
+        expect(Reaction.where(reactable: article, category: "vomit")).to be_empty
+        expect(article.user.reload).not_to be_suspended
+      end
+
+      it "still stores the AI quality label" do
+        handler
+        expect(article.reload.automod_label).to eq("clear_and_obvious_spam")
+      end
+    end
+
+    context "when the organization is on the spam allowlist" do
+      let(:organization) { create(:organization) }
+
+      before do
+        article.update_column(:organization_id, organization.id)
+        allow(Settings::RateLimit).to receive(:spam_exempt_organization_slugs).and_return([organization.slug])
+        allow(Settings::RateLimit).to receive(:trigger_spam_for?).and_return(true)
+      end
+
+      it "never flags the article" do
+        expect(described_class.handle_article!(article: article.reload)).to eq(:not_spam)
+        expect(Reaction.where(reactable: article, category: "vomit")).to be_empty
+      end
+    end
+
+    context "when AI spam moderation is switched off in the admin" do
+      before do
+        stub_const("Ai::Base::DEFAULT_KEY", "present")
+        allow(Settings::RateLimit).to receive(:ai_spam_moderation_enabled).and_return(false)
+        allow(Settings::RateLimit).to receive(:trigger_spam_for?).and_return(false)
+        allow(article).to receive(:processed_html).and_return("<a href=\"https://example.com\">link</a>")
+        allow(Ai::ContentModerationLabeler).to receive(:new)
+        allow(Ai::ArticleCheck).to receive(:new)
+      end
+
+      it "does not call Gemini and does not flag the article" do
+        expect(handler).to eq(:not_spam)
+        expect(Ai::ContentModerationLabeler).not_to have_received(:new)
+        expect(Ai::ArticleCheck).not_to have_received(:new)
+        expect(Reaction.where(reactable: article, category: "vomit")).to be_empty
+      end
+
+      it "still flags articles matching spam trigger terms" do
+        allow(Settings::RateLimit).to receive(:trigger_spam_for?).and_return(true)
+        expect { handler }.to change { Reaction.where(reactable: article, category: "vomit").count }.by(1)
+      end
+    end
   end
 
   describe ".handle_comment!" do
@@ -549,6 +609,30 @@ RSpec.describe Spam::Handler, type: :service do
       context "for a multiple offender" do
         it_behaves_like "comment multiple spam offender"
       end
+
+      context "when AI spam moderation is switched off in the admin" do
+        before do
+          allow(Settings::RateLimit).to receive(:ai_spam_moderation_enabled).and_return(false)
+        end
+
+        it "does not call Gemini and does not flag the comment" do
+          expect(Ai::CommentCheck).not_to receive(:new)
+          expect(handler).to eq(:not_spam)
+          expect(Reaction.where(reactable: comment, category: "vomit")).to be_empty
+        end
+      end
+    end
+
+    context "when the author is on the spam allowlist" do
+      before do
+        allow(Settings::RateLimit).to receive(:spam_exempt_usernames).and_return([comment.user.username])
+        allow(Settings::RateLimit).to receive(:trigger_spam_for?).and_return(true)
+      end
+
+      it "never flags the comment" do
+        expect(handler).to eq(:not_spam)
+        expect(Reaction.where(reactable: comment, category: "vomit")).to be_empty
+      end
     end
   end
 
@@ -598,6 +682,12 @@ RSpec.describe Spam::Handler, type: :service do
 
       it "creates a reaction but does not suspend the user" do
         expect { handler }.to change { Reaction.where(reactable: user, category: "vomit").count }.by(1)
+      end
+
+      it "does not react when the user is on the spam allowlist" do
+        allow(Settings::RateLimit).to receive(:spam_exempt_usernames).and_return([user.username])
+        expect(handler).to eq(:not_spam)
+        expect(Reaction.where(reactable: user, category: "vomit")).to be_empty
       end
     end
   end
@@ -677,6 +767,30 @@ RSpec.describe Spam::Handler, type: :service do
       it "returns :not_spam without reactions" do
         expect(handler).to eq(:not_spam)
         expect { handler }.not_to(change { Reaction.count })
+      end
+    end
+
+    context "when the user is on the spam allowlist" do
+      before do
+        allow(Settings::RateLimit).to receive(:spam_exempt_usernames).and_return([user.username])
+        allow(Ai::ProfileModerationLabeler).to receive_message_chain(:new, :label).and_return("clear_and_obvious_spam")
+      end
+
+      it "skips without labeling or reactions" do
+        expect(handler).to eq(:skipped)
+        expect(Reaction.where(reactable: user)).to be_empty
+        expect(user.reload).not_to be_spam
+      end
+    end
+
+    context "when AI spam moderation is switched off in the admin" do
+      before do
+        allow(Settings::RateLimit).to receive(:ai_spam_moderation_enabled).and_return(false)
+      end
+
+      it "skips without calling Gemini" do
+        expect(Ai::ProfileModerationLabeler).not_to receive(:new)
+        expect(handler).to eq(:skipped)
       end
     end
   end

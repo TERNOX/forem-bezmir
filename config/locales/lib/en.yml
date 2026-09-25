@@ -209,11 +209,35 @@ en:
           new_days:
             description: The number of days a user is considered new. The default is 3 days, but you can disable this entirely by inputting 0.
           spam:
-            description: Individual (case insensitive) phrases that trigger spam alerts, comma separated.
+            description: "Individual (case insensitive) phrases that trigger spam alerts, comma separated. They match anywhere inside the text, so prefer longer phrases: \"bet\" also matches \"between\"."
             placeholder: used cars near you, pokemon go hack
           content_spec:
             description: Internal description of content which is considered generally "on-topic" — be very descriptive to best differentiate from other communities..
             placeholder: e.g. "A place for developers to share their work, ask questions, and learn from each other.... But much longer and more specific"
+          ai_moderation:
+            title: "AI spam moderation (Gemini)"
+            description: "When enabled, Gemini labels every new or edited post and double-checks posts and comments that contain links. Clear spam, harmful or inciting content gets flagged by the mascot (−50 score). When disabled, only the spam trigger terms and the bad-domain check remain, and AI quality labels (the score bonus for great posts) are turned off too."
+            key_present: "Gemini API key detected — AI moderation can run."
+            key_missing: "No Gemini API key (GEMINI_API_KEY) is configured — AI moderation stays off whatever this checkbox says."
+          ai_model:
+            title: "Gemini model for moderation"
+            description: "Leave blank to use the server default (%{model}). Recommended: a Flash model such as gemini-2.5-flash — cheap, fast and accurate enough for a yes/no spam decision. Flash-Lite models are the cheapest but miss more borderline cases; Pro models are the most accurate but cost several times more. Current model names: ai.google.dev/gemini-api/docs/models."
+            placeholder: "gemini-2.5-flash"
+          ai_setup:
+            title: "How to connect Gemini"
+            steps:
+              - "Create an API key at https://aistudio.google.com/apikey."
+              - "Add GEMINI_API_KEY=<your key> to the server environment (the .env file or your Docker/hosting variables). For security the key is not stored in the admin panel."
+              - "Restart both the web server and Sidekiq so they pick up the key."
+              - "Fill in the content description above: the AI uses it to decide what is on-topic, and a vague description is the main cause of false spam flags."
+          exempt_users:
+            title: "Spam allowlist: users"
+            description: "Usernames, comma separated. The mascot never flags their posts, comments or profiles as spam and never auto-suspends them. AI still rates the quality of their posts, but never lowers their score because of it."
+            placeholder: "ben, jess"
+          exempt_orgs:
+            title: "Spam allowlist: organizations"
+            description: "Organization slugs as they appear in the URL, comma separated. The mascot never flags posts published under these organizations as spam."
+            placeholder: "my-org, partner-team"
         smtp:
           address:
             description: Address of the remote mail server

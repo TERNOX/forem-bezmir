@@ -60,4 +60,64 @@ RSpec.describe Settings::RateLimit do
       it { is_expected.to be_falsey }
     end
   end
+
+  describe ".spam_exempt?" do
+    let(:user) { create(:user, username: "trusted_author") }
+    let(:organization) { create(:organization, slug: "trusted-org") }
+
+    before do
+      allow(described_class).to receive_messages(spam_exempt_usernames: [" @Trusted_Author "],
+                                                 spam_exempt_organization_slugs: ["Trusted-Org"])
+    end
+
+    it "matches allowlisted usernames ignoring case, spaces and a leading @" do
+      expect(described_class.spam_exempt?(user: user)).to be(true)
+    end
+
+    it "matches allowlisted organization slugs ignoring case" do
+      expect(described_class.spam_exempt?(user: create(:user), organization: organization)).to be(true)
+    end
+
+    it "does not match other users or organizations" do
+      expect(described_class.spam_exempt?(user: create(:user), organization: create(:organization))).to be(false)
+    end
+
+    it "handles a missing user and organization" do
+      expect(described_class.spam_exempt?(user: nil)).to be(false)
+    end
+
+    it "is false by default" do
+      allow(described_class).to receive_messages(spam_exempt_usernames: [], spam_exempt_organization_slugs: [])
+      expect(described_class.spam_exempt?(user: user, organization: organization)).to be(false)
+    end
+  end
+
+  describe ".ai_spam_moderation?" do
+    it "is true when a Gemini key is present and the admin toggle is on" do
+      stub_const("Ai::Base::DEFAULT_KEY", "present")
+      expect(described_class.ai_spam_moderation?).to be(true)
+    end
+
+    it "is false when the admin toggle is off" do
+      stub_const("Ai::Base::DEFAULT_KEY", "present")
+      allow(described_class).to receive(:ai_spam_moderation_enabled).and_return(false)
+      expect(described_class.ai_spam_moderation?).to be(false)
+    end
+
+    it "is false without a Gemini key" do
+      stub_const("Ai::Base::DEFAULT_KEY", nil)
+      expect(described_class.ai_spam_moderation?).to be(false)
+    end
+  end
+
+  describe ".ai_moderation_model_or" do
+    it "returns the fallback when no model is configured" do
+      expect(described_class.ai_moderation_model_or("fallback-model")).to eq("fallback-model")
+    end
+
+    it "returns the configured model" do
+      allow(described_class).to receive(:ai_moderation_model).and_return("gemini-2.5-flash")
+      expect(described_class.ai_moderation_model_or("fallback-model")).to eq("gemini-2.5-flash")
+    end
+  end
 end

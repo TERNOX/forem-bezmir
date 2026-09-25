@@ -446,6 +446,26 @@ RSpec.describe "/admin/customization/config" do
           end.to change(Settings::RateLimit, :follow_count_daily).from(default_value).to(3)
         end
 
+        it "updates the spam allowlists" do
+          post admin_settings_rate_limits_path, params: {
+            settings_rate_limit: {
+              spam_exempt_usernames: "ben, jess\nann",
+              spam_exempt_organization_slugs: "my-org"
+            }
+          }
+          expect(Settings::RateLimit.spam_exempt_usernames).to eq(%w[ben jess ann])
+          expect(Settings::RateLimit.spam_exempt_organization_slugs).to eq(%w[my-org])
+        end
+
+        it "toggles AI spam moderation and stores the moderation model" do
+          expect do
+            post admin_settings_rate_limits_path, params: {
+              settings_rate_limit: { ai_spam_moderation_enabled: "0", ai_moderation_model: "gemini-2.5-flash" }
+            }
+          end.to change(Settings::RateLimit, :ai_spam_moderation_enabled).from(true).to(false)
+          expect(Settings::RateLimit.ai_moderation_model).to eq("gemini-2.5-flash")
+        end
+
         it "updates comment_creation" do
           default_value = Settings::RateLimit.get_default(:comment_creation)
           expect do

@@ -375,6 +375,8 @@ class Comment < ApplicationRecord
   end
 
   def synchronous_spam_score_check
+    return if Settings::RateLimit.spam_exempt?(user: user)
+
     self.score = -3 if user.registered_at > 48.hours.ago && body_markdown.include?("http")
     self.score = -5 if Settings::RateLimit.trigger_spam_for?(text: [title, body_markdown].join("\n"))
   end

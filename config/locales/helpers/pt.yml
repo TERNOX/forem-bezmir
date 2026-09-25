@@ -562,6 +562,9 @@ pt:
       upload:
         title: Limit number of images uploaded
         description: How many images can someone upload within any 30 second period?
+      video:
+        title: Limit number of videos uploaded
+        description: How many videos can someone upload within any 60 second period?
       user:
         title: Limit number of changes someone can make to their account
         description: How many changes can someone make to their user account within

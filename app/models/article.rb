@@ -1011,15 +1011,17 @@ class Article < ApplicationRecord
     # Context notes are currently only a positive indicator. In the future, they could be negative and this should be changed.
     context_note_adjustment = context_notes.size
 
-    # Content moderation label adjustments
+    # Content moderation label adjustments (allowlisted authors never get a negative one)
+    automod_exempt = Settings::RateLimit.spam_exempt?(user: user, organization: organization)
     automod_label_adjustment = AUTOMOD_SCORE_ADJUSTMENTS[automod_label.to_sym] || 0
+    automod_label_adjustment = 0 if automod_exempt && automod_label_adjustment.negative?
 
     badge_bonus_weight_sum = user.badges.sum(:bonus_weight)
     badge_reputation_bonus = Math.sqrt(badge_bonus_weight_sum).to_i
 
     organization_baseline_score = organization&.baseline_score || 0
 
-    established_user_adjustment = (user.score.to_i > 100 && !clear_and_obvious_spam? && !likely_spam?) ? Settings::UserExperience.index_minimum_score.to_i : 0
+    established_user_adjustment = (user.score.to_i > 100 && (automod_exempt || (!clear_and_obvious_spam? && !likely_spam?))) ? Settings::UserExperience.index_minimum_score.to_i : 0
 
     self.score = reactions.sum(:points) + spam_adjustment + negative_reaction_adjustment + base_subscriber_adjustment + user_featured_count_adjustment + user_negative_count_adjustment + context_note_adjustment + automod_label_adjustment + badge_reputation_bonus + organization_baseline_score + established_user_adjustment
     self.score = (score * 1.1).to_i + 10 if favorited?

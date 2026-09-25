@@ -22,7 +22,8 @@ module Ai
     ].freeze
 
     # @param user [User] The user whose profile we are labeling.
-    def initialize(user, ai_client: Ai::Base.new)
+    def initialize(user,
+                   ai_client: Ai::Base.new(model: Settings::RateLimit.ai_moderation_model_or(Ai::Base::DEFAULT_MODEL)))
       @ai_client = ai_client
       @user = user
     end

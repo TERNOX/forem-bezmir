@@ -46,6 +46,55 @@
                           value: Settings::RateLimit.internal_content_description_spec,
                           placeholder: Constants::Settings::RateLimit.details[:internal_content_description_spec][:placeholder] %>
         </div>
+
+        <% rate_limit_details = Constants::Settings::RateLimit.details %>
+        <div class="crayons-field crayons-field--checkbox">
+          <%= f.check_box :ai_spam_moderation_enabled,
+                          checked: Settings::RateLimit.ai_spam_moderation_enabled,
+                          class: "crayons-checkbox" %>
+          <div class="mt-0">
+            <%= admin_config_label :ai_spam_moderation_enabled, rate_limit_details[:ai_spam_moderation_enabled][:title], model: Settings::RateLimit %>
+            <%= admin_config_description rate_limit_details[:ai_spam_moderation_enabled][:description] %>
+            <% if Ai::Base::DEFAULT_KEY.present? %>
+              <%= admin_config_description rate_limit_details[:ai_spam_moderation_enabled][:key_present], class: "crayons-field__description color-accent-success" %>
+            <% else %>
+              <%= admin_config_description rate_limit_details[:ai_spam_moderation_enabled][:key_missing], class: "crayons-field__description color-accent-danger" %>
+            <% end %>
+          </div>
+        </div>
+        <div class="crayons-field">
+          <%= admin_config_label :ai_moderation_model, rate_limit_details[:ai_moderation_model][:title], model: Settings::RateLimit %>
+          <%= admin_config_description rate_limit_details[:ai_moderation_model][:description] %>
+          <%= f.text_field :ai_moderation_model,
+                           class: "crayons-textfield",
+                           value: Settings::RateLimit.ai_moderation_model,
+                           placeholder: rate_limit_details[:ai_moderation_model][:placeholder] %>
+        </div>
+        <details class="crayons-field__description">
+          <summary class="fw-medium"><%= rate_limit_details[:ai_setup][:title] %></summary>
+          <ol class="pl-6 pt-2">
+            <% rate_limit_details[:ai_setup][:steps].each do |step| %>
+              <li><%= step %></li>
+            <% end %>
+          </ol>
+        </details>
+
+        <div class="crayons-field">
+          <%= admin_config_label :spam_exempt_usernames, rate_limit_details[:spam_exempt_usernames][:title], model: Settings::RateLimit %>
+          <%= admin_config_description rate_limit_details[:spam_exempt_usernames][:description] %>
+          <%= f.text_area :spam_exempt_usernames,
+                          class: "crayons-textfield",
+                          value: Settings::RateLimit.spam_exempt_usernames.join(", "),
+                          placeholder: rate_limit_details[:spam_exempt_usernames][:placeholder] %>
+        </div>
+        <div class="crayons-field">
+          <%= admin_config_label :spam_exempt_organization_slugs, rate_limit_details[:spam_exempt_organization_slugs][:title], model: Settings::RateLimit %>
+          <%= admin_config_description rate_limit_details[:spam_exempt_organization_slugs][:description] %>
+          <%= f.text_area :spam_exempt_organization_slugs,
+                          class: "crayons-textfield",
+                          value: Settings::RateLimit.spam_exempt_organization_slugs.join(", "),
+                          placeholder: rate_limit_details[:spam_exempt_organization_slugs][:placeholder] %>
+        </div>
       </fieldset>
       <%= render "update_setting_button", f: f %>
     </div>

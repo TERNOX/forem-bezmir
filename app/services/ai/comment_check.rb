@@ -8,7 +8,7 @@ module Ai
     # @param comment [Object] The comment object to be checked.
     #   It should respond to `body_markdown`, `commentable`, and `user`.
     def initialize(comment)
-      @ai_client = Ai::Base.new
+      @ai_client = Ai::Base.new(model: Settings::RateLimit.ai_moderation_model_or(Ai::Base::DEFAULT_MODEL))
       @comment = comment
     end
 

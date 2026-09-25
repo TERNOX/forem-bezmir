@@ -28,6 +28,10 @@ module Settings
 
     # Moderation
     setting :internal_content_description_spec, type: :string
+    setting :ai_spam_moderation_enabled, type: :boolean, default: true
+    setting :ai_moderation_model, type: :string
+    setting :spam_exempt_usernames, type: :array, default: []
+    setting :spam_exempt_organization_slugs, type: :array, default: []
 
     # A helper function to determine if we should consider the user a "new" user.
     #
@@ -55,5 +59,42 @@ module Settings
       regexp = Regexp.new("(#{spam_trigger_terms.map { |term| Regexp.escape(term) }.join('|')})", true)
       regexp.match?(text)
     end
+
+    # Whether the Gemini-powered spam/content moderation checks should run.
+    #
+    # @return [Boolean] true only when a Gemini API key is configured and the
+    #   admin has not switched AI moderation off.
+    def self.ai_spam_moderation?
+      Ai::Base::DEFAULT_KEY.present? && ai_spam_moderation_enabled
+    end
+
+    # The Gemini model used by the moderation checks.
+    #
+    # @param default [String] the model to use when the admin has not picked one
+    #
+    # @return [String]
+    def self.ai_moderation_model_or(default)
+      ai_moderation_model.presence || default
+    end
+
+    # Whether the given author is exempt from automatic spam flagging.
+    #
+    # @param user [User, nil] the author
+    # @param organization [Organization, nil] the organization the content was published under
+    #
+    # @return [Boolean]
+    def self.spam_exempt?(user:, organization: nil)
+      if user && normalized_list(spam_exempt_usernames).include?(user.username.to_s.downcase)
+        return true
+      end
+
+      organization.present? &&
+        normalized_list(spam_exempt_organization_slugs).include?(organization.slug.to_s.downcase)
+    end
+
+    def self.normalized_list(values)
+      values.map { |value| value.to_s.strip.delete_prefix("@").downcase }.compact_blank
+    end
+    private_class_method :normalized_list
   end
 end

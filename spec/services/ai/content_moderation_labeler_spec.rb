@@ -36,6 +36,12 @@ RSpec.describe Ai::ContentModerationLabeler, type: :service do
         )
       end
 
+      it "uses the moderation model chosen in the admin instead" do
+        allow(Settings::RateLimit).to receive(:ai_moderation_model).and_return("gemini-2.5-flash")
+        described_class.new(article).evaluate
+        expect(Ai::Base).to have_received(:new).with(hash_including(model: "gemini-2.5-flash"))
+      end
+
       it "truncates body_markdown to 2000 characters" do
         allow(article).to receive(:body_markdown).and_return("a" * 3000)
         labeler = described_class.new(article)

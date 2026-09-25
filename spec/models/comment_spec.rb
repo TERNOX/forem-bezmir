@@ -550,6 +550,13 @@ RSpec.describe Comment do
       comment = create(:comment, user: user, commentable: article)
       expect(comment.score).to eq(-5)
     end
+
+    it "does not lower the score when the author is on the spam allowlist" do
+      allow(Settings::RateLimit).to receive(:trigger_spam_for?).and_return(true)
+      allow(Settings::RateLimit).to receive(:spam_exempt_usernames).and_return([user.username])
+      comment = create(:comment, user: user, commentable: article)
+      expect(comment.score).to eq(0)
+    end
   end
 
   describe "#privileged_reaction_counts" do
