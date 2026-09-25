@@ -49,7 +49,7 @@ uk:
         code: 123
         placeholder: "через кому, пробіли необов’язкові. Приклад: 1,2,3"
       published:
-        one: 1 допис
+        one: "%{count} допис"
         other: "%{count} дописів"
       sidebar:
         about: 'про #%{tag}'
@@ -61,5 +61,5 @@ uk:
         new: Створити допис
         older: 'Старіші дописи #%{tag}'
         published:
-          one: 1 допис опубліковано
+          one: "%{count} допис опубліковано"
           other: "%{count} дописів опубліковано"

@@ -31,12 +31,12 @@ uk:
         post:
           icon: Допис
           text:
-            one: 1 допис опубліковано
+            one: "%{count} допис опубліковано"
             other: "%{count} дописів опубліковано"
         member:
           icon: Учасник
           text:
-            one: 1 учасник
+            one: "%{count} учасник"
             other: "%{count} учасників"
       support: Електронна пошта підтримки
       team: Команда

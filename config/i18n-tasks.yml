@@ -129,7 +129,7 @@ ignore_missing:
 ignore_inconsistent_interpolations:
   # The "one" plural form legitimately differs per language: English and French spell out
   # the number ("1 hour ago", "hier"), while Ukrainian "one" also covers 21, 31… and needs %{count}.
-  - 'datetime.distance_in_words_ago.*.one'
+  - '*.one'
 
 ## Ignore these keys completely:
 # ignore:

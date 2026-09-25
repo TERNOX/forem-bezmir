@@ -87,7 +87,7 @@ uk:
         inbetween:
           num: "..."
           text:
-            one: ще одна частина...
+            one: "ще %{count} частина..."
             other: ще %{count} частин...
           title: Переглянути більше
       unlock:
@@ -116,6 +116,6 @@ uk:
       sign_in_for_full_latest_html: Деякі нові пости доступні лише учасникам. <a href="%{link}">Увійдіть</a>, щоб побачити всі.
       read_next: Читайте далі
       reading_time:
-        one: "1 хвилина читання"
+        one: "%{count} хвилина читання"
         other: "%{count} хвилин читання"
       right_nav: Дані про автора
