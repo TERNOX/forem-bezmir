@@ -2619,6 +2619,38 @@ RSpec.describe Article do
       allow(BlackBox).to receive(:article_hotness_score).and_return(0)
     end
 
+    context "when the author is on the spam allowlist" do
+      before do
+        allow(Settings::RateLimit).to receive(:spam_exempt_usernames).and_return([article.user.username.upcase])
+      end
+
+      it "ignores a negative label adjustment" do
+        article.update_column(:automod_label, "clear_and_obvious_spam")
+        article.update_score
+        expect(article.reload.score).to eq(0)
+      end
+
+      it "keeps a positive label adjustment" do
+        article.update_column(:automod_label, "great_and_on_topic")
+        article.update_score
+        expect(article.reload.score).to eq(20)
+      end
+    end
+
+    context "when the organization is on the spam allowlist" do
+      let(:organization) { create(:organization) }
+
+      before do
+        article.update_columns(organization_id: organization.id, automod_label: "likely_spam")
+        allow(Settings::RateLimit).to receive(:spam_exempt_organization_slugs).and_return([organization.slug])
+      end
+
+      it "ignores a negative label adjustment" do
+        article.reload.update_score
+        expect(article.reload.score).to eq(0)
+      end
+    end
+
     context "when automod_label is no_moderation_label" do
       before { article.update_column(:automod_label, "no_moderation_label") }
 

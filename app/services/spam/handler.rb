@@ -45,6 +45,12 @@ module Spam
     # @param article [Article] the article to check for spamminess
     # @param attributes [Array<Symbol>] test these attributes of the article.
     def self.handle_article!(article:, attributes: %i[title body_markdown])
+      # Allowlisted authors/organizations still get a quality label, but are never flagged.
+      if Settings::RateLimit.spam_exempt?(user: article.user, organization: article.organization)
+        label_article_content!(article)
+        return :not_spam
+      end
+
       if article_linked_domain_spam?(article)
         article.update_column(:automod_label, "clear_and_obvious_spam")
         article.automod_label = "clear_and_obvious_spam"
@@ -81,7 +87,7 @@ module Spam
 
       # Check if we should trigger spam detection
       should_check = Settings::RateLimit.trigger_spam_for?(text: text) ||
-        (article.processed_html.include?("<a") && Ai::Base::DEFAULT_KEY.present? &&
+        (article.processed_html.include?("<a") && Settings::RateLimit.ai_spam_moderation? &&
          (bypass_restrictions || article.user.badge_achievements_count < 4) &&
          Ai::ArticleCheck.new(article).spam?)
 
@@ -104,6 +110,7 @@ module Spam
     # @param comment [Comment] the comment to check for spamminess
     def self.handle_comment!(comment:)
       # Existing checks for trusted users.
+      return :not_spam if Settings::RateLimit.spam_exempt?(user: comment.user)
       return :not_spam if comment.user.badge_achievements_count > 6
       return :not_spam if comment.user.base_subscriber?
 
@@ -118,7 +125,8 @@ module Spam
 
       # Return if neither of the spam conditions are met.
       return :not_spam unless rate_limit_spam ||
-        (comment.processed_html.include?("<a") && Ai::Base::DEFAULT_KEY.present? && Ai::CommentCheck.new(comment).spam?)
+        (comment.processed_html.include?("<a") && Settings::RateLimit.ai_spam_moderation? &&
+         Ai::CommentCheck.new(comment).spam?)
 
       issue_spam_reaction_for!(reactable: comment)
       suspend_if_user_is_repeat_offender(user: comment.user)
@@ -130,6 +138,8 @@ module Spam
     #
     # @param user [User] the user to check for spamminess
     def self.handle_user!(user:)
+      return :not_spam if Settings::RateLimit.spam_exempt?(user: user)
+
       text = [user.name]
 
       if more_rigorous_user_profile_spam_checking?
@@ -156,8 +166,9 @@ module Spam
     # @param user [User] the user to check for spamminess
     def self.handle_profile_update!(user:)
       return :skipped if user.spam_or_suspended?
+      return :skipped if Settings::RateLimit.spam_exempt?(user: user)
       return :skipped unless eligible_for_profile_spam_check?(user: user)
-      return :skipped unless Ai::Base::DEFAULT_KEY.present?
+      return :skipped unless Settings::RateLimit.ai_spam_moderation?
 
       label = Ai::ProfileModerationLabeler.new(user).label
       return :not_spam unless clear_profile_violation_label?(label)
@@ -245,7 +256,7 @@ module Spam
 
     # NEW/private: Label article content using AI moderation and calculate compellingness.
     def self.label_article_content!(article)
-      return unless Ai::Base::DEFAULT_KEY.present?
+      return unless Settings::RateLimit.ai_spam_moderation?
 
       begin
         labeler = Ai::ContentModerationLabeler.new(article)

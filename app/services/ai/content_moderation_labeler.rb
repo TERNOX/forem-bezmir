@@ -10,7 +10,9 @@ module Ai
     def initialize(article)
       @article = article
       @is_negative = @article.score.to_i.negative?
-      model = @is_negative ? Ai::Base::DEFAULT_LITE_MODEL : Ai::Base::DEFAULT_MODEL
+      model = Settings::RateLimit.ai_moderation_model_or(
+        @is_negative ? Ai::Base::DEFAULT_LITE_MODEL : Ai::Base::DEFAULT_MODEL,
+      )
       @ai_client = Ai::Base.new(model: model, wrapper: self, affected_content: article, affected_user: article.user)
     end
 

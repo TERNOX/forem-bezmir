@@ -196,11 +196,35 @@ fr:
           new_days:
             description: The number of days a user is considered new. The default is 3 days, but you can disable this entirely by inputting 0.
           spam:
-            description: Individual (case insensitive) phrases that trigger spam alerts, comma separated.
+            description: "Expressions individuelles (insensibles à la casse), séparées par des virgules, qui déclenchent une alerte spam. Elles sont recherchées n'importe où dans le texte, préférez donc des expressions longues : « bet » correspond aussi à « between »."
             placeholder: used cars near you, pokemon go hack
           content_spec:
             description: Internal description of content which is considered generally "on-topic" — be very descriptive to best differentiate from other communities..
             placeholder: e.g. "A place for developers to share their work, ask questions, and learn from each other.... But much longer and more specific"
+          ai_moderation:
+            title: "Modération anti-spam par IA (Gemini)"
+            description: "Lorsqu'elle est activée, Gemini évalue chaque publication nouvelle ou modifiée et vérifie en plus les publications et commentaires contenant des liens. Le spam évident et les contenus nuisibles ou incitatifs reçoivent un signalement de la mascotte (−50 au score). Désactivée, seuls les termes déclencheurs et la vérification des domaines malveillants restent actifs, et les étiquettes de qualité IA (bonus de score pour les bonnes publications) sont aussi désactivées."
+            key_present: "Clé API Gemini détectée — la modération IA peut fonctionner."
+            key_missing: "Aucune clé API Gemini (GEMINI_API_KEY) n'est configurée — la modération IA reste inactive quel que soit l'état de cette case."
+          ai_model:
+            title: "Modèle Gemini pour la modération"
+            description: "Laissez vide pour utiliser le modèle par défaut du serveur (%{model}). Recommandé : un modèle Flash, par exemple gemini-2.5-flash — peu coûteux, rapide et assez précis pour décider « spam ou non ». Les modèles Flash-Lite sont les moins chers mais se trompent plus souvent sur les cas limites ; les modèles Pro sont les plus précis mais coûtent plusieurs fois plus cher. Noms actuels des modèles : ai.google.dev/gemini-api/docs/models."
+            placeholder: "gemini-2.5-flash"
+          ai_setup:
+            title: "Comment connecter Gemini"
+            steps:
+              - "Créez une clé API sur https://aistudio.google.com/apikey."
+              - "Ajoutez GEMINI_API_KEY=<votre clé> aux variables d'environnement du serveur (fichier .env ou variables Docker/hébergeur). Pour des raisons de sécurité, la clé n'est pas stockée dans l'administration."
+              - "Redémarrez le serveur web et Sidekiq pour qu'ils prennent la clé en compte."
+              - "Remplissez la description du contenu ci-dessus : l'IA s'en sert pour juger ce qui est dans le sujet, et une description vague est la principale cause de faux signalements."
+          exempt_users:
+            title: "Liste blanche anti-spam : utilisateurs"
+            description: "Noms d'utilisateur séparés par des virgules. La mascotte ne signale jamais leurs publications, commentaires ou profils comme spam et ne les suspend jamais automatiquement. L'IA continue d'évaluer la qualité de leurs publications, mais ne baisse jamais leur score pour autant."
+            placeholder: "ben, jess"
+          exempt_orgs:
+            title: "Liste blanche anti-spam : organisations"
+            description: "Identifiants (slugs) d'organisations tels qu'ils apparaissent dans l'URL, séparés par des virgules. La mascotte ne signale jamais comme spam les publications faites au nom de ces organisations."
+            placeholder: "my-org, partner-team"
         smtp:
           address:
             description: Address of the remote mail server

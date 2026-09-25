@@ -9,7 +9,7 @@ module Ai
     # @param article [Object] The article object to be checked.
     #   It should respond to `title`, `body_markdown`, `user`, and `subforem_id`.
     def initialize(article)
-      @ai_client = Ai::Base.new
+      @ai_client = Ai::Base.new(model: Settings::RateLimit.ai_moderation_model_or(Ai::Base::DEFAULT_MODEL))
       @article = article
     end
 

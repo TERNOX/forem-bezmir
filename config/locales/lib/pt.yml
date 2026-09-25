@@ -194,13 +194,37 @@ pt:
             description: Payment settings
         rate_limit:
           spam:
-            description: Spam rate limit settings
+            description: "Frases individuais (sem diferenciar maiúsculas e minúsculas), separadas por vírgula, que disparam alertas de spam. Elas são procuradas em qualquer parte do texto, então prefira frases mais longas: \"bet\" também corresponde a \"between\"."
             placeholder: Spam rate limit settings
           new_days:
             description: New days rate limit settings
           content_spec:
             description: Content specification rate limit settings
             placeholder: Content specification rate limit settings
+          ai_moderation:
+            title: "Moderação de spam por IA (Gemini)"
+            description: "Quando ativada, o Gemini avalia cada publicação nova ou editada e verifica adicionalmente publicações e comentários com links. Spam evidente e conteúdo nocivo ou de incitação recebem uma sinalização do mascote (−50 na pontuação). Desativada, restam apenas os termos de gatilho e a verificação de domínios maliciosos, e os rótulos de qualidade por IA (bônus de pontuação para boas publicações) também são desligados."
+            key_present: "Chave da API do Gemini detectada — a moderação por IA pode funcionar."
+            key_missing: "Nenhuma chave da API do Gemini (GEMINI_API_KEY) está configurada — a moderação por IA fica desligada independentemente desta opção."
+          ai_model:
+            title: "Modelo Gemini para moderação"
+            description: "Deixe em branco para usar o modelo padrão do servidor (%{model}). Recomendado: um modelo Flash, como gemini-2.5-flash — barato, rápido e preciso o suficiente para decidir \"spam ou não\". Os modelos Flash-Lite são os mais baratos, mas erram mais em casos duvidosos; os modelos Pro são os mais precisos, mas custam várias vezes mais. Nomes atuais dos modelos: ai.google.dev/gemini-api/docs/models."
+            placeholder: "gemini-2.5-flash"
+          ai_setup:
+            title: "Como conectar o Gemini"
+            steps:
+              - "Crie uma chave de API em https://aistudio.google.com/apikey."
+              - "Adicione GEMINI_API_KEY=<sua chave> às variáveis de ambiente do servidor (arquivo .env ou variáveis do Docker/hospedagem). Por segurança, a chave não é armazenada no painel de administração."
+              - "Reinicie o servidor web e o Sidekiq para que carreguem a chave."
+              - "Preencha a descrição de conteúdo acima: a IA a usa para decidir o que está dentro do tema, e uma descrição vaga é a principal causa de sinalizações falsas."
+          exempt_users:
+            title: "Lista de permissões anti-spam: usuários"
+            description: "Nomes de usuário separados por vírgula. O mascote nunca sinaliza as publicações, comentários ou perfis deles como spam e nunca os suspende automaticamente. A IA continua avaliando a qualidade das publicações, mas nunca reduz a pontuação por isso."
+            placeholder: "ben, jess"
+          exempt_orgs:
+            title: "Lista de permissões anti-spam: organizações"
+            description: "Slugs de organizações como aparecem na URL, separados por vírgula. O mascote nunca sinaliza como spam as publicações feitas em nome dessas organizações."
+            placeholder: "my-org, partner-team"
         smtp:
           address:
             description: SMTP server address

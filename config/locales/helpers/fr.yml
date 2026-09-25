@@ -597,6 +597,9 @@ fr:
       upload:
         title: Limiter le nombre d'images téléchargées
         description: Combien d'images peut-on télécharger sur une période de 30 secondes
+      video:
+        title: Limiter le nombre de vidéos téléchargées
+        description: Combien de vidéos peut-on télécharger sur une période de 60 secondes
           ?
       user:
         title: Limiter le nombre de modifications qu'une personne peut apporter à
