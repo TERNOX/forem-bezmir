@@ -329,6 +329,10 @@ class Article < ApplicationRecord
   after_save :generate_social_image
   after_save :generate_context_notes
 
+  after_update_commit :notify_co_author_changes, if: proc { |article|
+    article.published? && article.saved_change_to_co_author_ids?
+  }
+
   after_update_commit :update_notifications, if: proc { |article|
                                                    article.notifications.any? && !article.saved_changes.empty?
                                                  }
@@ -1422,7 +1426,7 @@ class Article < ApplicationRecord
   end
 
   def update_notifications
-    Notification.update_notifications(self, I18n.t("models.article.published"))
+    Notification.update_notifications(self, %w[Published CoAuthor])
   end
 
   def update_notification_subscriptions
@@ -1859,5 +1863,12 @@ class Article < ApplicationRecord
        saved_change_to_main_image?
       Articles::UpdateDependentEmbedsWorker.perform_async(id)
     end
+  end
+
+  def notify_co_author_changes
+    before, after = saved_change_to_co_author_ids
+    removed_user_ids = Array.wrap(before).map(&:to_i) - Array.wrap(after).map(&:to_i)
+
+    Notification.send_to_co_authors(self, removed_user_ids)
   end
 end
