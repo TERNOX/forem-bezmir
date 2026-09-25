@@ -85,6 +85,9 @@ pt:
     following_everyone: "Você está seguindo %{details} (todos)"
     you_are_following: "Você está seguindo"
     and: "e"
+    paste_embed_prompt: "Incorporar este link?"
+    paste_embed_button: "Incorporar"
+    paste_embed_dismiss: "Dispensar"
   date:
     abbr_day_names:
     - dom

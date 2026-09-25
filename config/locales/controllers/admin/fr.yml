@@ -233,6 +233,7 @@ fr:
         enqueued: "Tous les articles publiés seront réenregistrés en arrière-plan. Les contenus embarqués seront reconstruits sous peu."
       social_images_queued: "Régénération des images sociales mise en file d'attente pour @%{user}"
       user_not_found: 'Utilisateur introuvable'
+      invalid_next_run_hour: "Heure invalide sélectionnée pour le prochain envoi du digest"
     users_controller:
       exported: Données exportées vers le %{receiver}. Le travail sera terminé dans un instant.
       email_fail: L'envoi de l'e-mail a échoué !

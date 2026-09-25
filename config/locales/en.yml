@@ -59,11 +59,6 @@ en:
     article_form_co_authors_description: Add up to 4 co-authors from %{org_name}.
     article_form_co_authors_placeholder: Add up to 4...
     comments_preview: Preview
-  views:
-    youtube:
-      play_video: "Play YouTube video"
-      video_title: "YouTube video player"
-      thumbnail_alt: "Preview image for the video"
     comments_continue_editing: Continue editing
     survey_enter_response: Enter your response here...
     survey_thank_you_response: Thank you for your response.
@@ -98,6 +93,11 @@ en:
     following_everyone: "You're following %{details} (everyone)"
     you_are_following: "You're following"
     and: "and"
+  views:
+    youtube:
+      play_video: "Play YouTube video"
+      video_title: "YouTube video player"
+      thumbnail_alt: "Preview image for the video"
   datetime:
     distance_in_words_ago: # https://github.com/openstreetmap/openstreetmap-website/issues/2255
       about_x_hours:

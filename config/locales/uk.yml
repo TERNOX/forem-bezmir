@@ -81,9 +81,13 @@ uk:
     counted_organization:
       one: "%{count} проєкт"
       other: "%{count} проєкти"
+      few: "%{count} проєкти"
+      many: "%{count} проєктів"
     counted_user:
       one: "%{count} людина"
       other: "%{count} людей"
+      few: "%{count} людини"
+      many: "%{count} людей"
     not_following: Ви ні на кого не підписані
     following_everyone: Ви підписані на %{details} (усіх)
     you_are_following: Ви підписані на
@@ -217,80 +221,128 @@ uk:
         other: "%{count} років тому"
     expired_ago:
       about_x_hours:
-        one: Прострочено приблизно годину тому
+        one: "Прострочено приблизно %{count} годину тому"
         other: Прострочено приблизно %{count} годин тому
+        few: "Прострочено приблизно %{count} години тому"
+        many: "Прострочено приблизно %{count} годин тому"
       about_x_months:
-        one: Прострочено приблизно місяць тому
+        one: "Прострочено приблизно %{count} місяць тому"
         other: Прострочено приблизно %{count} місяців тому
+        few: "Прострочено приблизно %{count} місяці тому"
+        many: "Прострочено приблизно %{count} місяців тому"
       about_x_years:
-        one: Прострочено приблизно рік тому
+        one: "Прострочено приблизно %{count} рік тому"
         other: Прострочено приблизно %{count} років тому
+        few: "Прострочено приблизно %{count} роки тому"
+        many: "Прострочено приблизно %{count} років тому"
       almost_x_years:
-        one: Прострочено майже рік тому
+        one: "Прострочено майже %{count} рік тому"
         other: Прострочено майже %{count} років тому
+        few: "Прострочено майже %{count} роки тому"
+        many: "Прострочено майже %{count} років тому"
       half_a_minute: Прострочено пів хвилини тому
       less_than_x_seconds:
-        one: Прострочено менше секунди тому
+        one: "Прострочено менше %{count} секунди тому"
         other: Прострочено менше %{count} секунд тому
+        few: "Прострочено менше %{count} секунд тому"
+        many: "Прострочено менше %{count} секунд тому"
       less_than_x_minutes:
-        one: Прострочено менше хвилини тому
+        one: "Прострочено менше %{count} хвилини тому"
         other: Прострочено менше %{count} хвилин тому
+        few: "Прострочено менше %{count} хвилин тому"
+        many: "Прострочено менше %{count} хвилин тому"
       over_x_years:
-        one: Прострочено понад рік тому
+        one: "Прострочено понад %{count} рік тому"
         other: Прострочено понад %{count} років тому
+        few: "Прострочено понад %{count} роки тому"
+        many: "Прострочено понад %{count} років тому"
       x_seconds:
-        one: Прострочено секунду тому
+        one: "Прострочено %{count} секунду тому"
         other: Прострочено %{count} секунд тому
+        few: "Прострочено %{count} секунди тому"
+        many: "Прострочено %{count} секунд тому"
       x_minutes:
-        one: Прострочено хвилину тому
+        one: "Прострочено %{count} хвилину тому"
         other: Прострочено %{count} хвилин тому
+        few: "Прострочено %{count} хвилини тому"
+        many: "Прострочено %{count} хвилин тому"
       x_days:
-        one: Прострочено день тому
+        one: "Прострочено %{count} день тому"
         other: Прострочено %{count} днів тому
+        few: "Прострочено %{count} дні тому"
+        many: "Прострочено %{count} днів тому"
       x_months:
-        one: Прострочено місяць тому
+        one: "Прострочено %{count} місяць тому"
         other: Прострочено %{count} місяців тому
+        few: "Прострочено %{count} місяці тому"
+        many: "Прострочено %{count} місяців тому"
       x_years:
-        one: Прострочено рік тому
+        one: "Прострочено %{count} рік тому"
         other: Прострочено %{count} років тому
+        few: "Прострочено %{count} роки тому"
+        many: "Прострочено %{count} років тому"
     expires_in:
       about_x_hours:
-        one: Мине приблизно година
+        one: "Мине приблизно %{count} година"
         other: Минуть приблизно %{count} годин
+        few: "Минуть приблизно %{count} години"
+        many: "Минуть приблизно %{count} годин"
       about_x_months:
-        one: Мине приблизно місяць
+        one: "Мине приблизно %{count} місяць"
         other: Минуть приблизно %{count} місяців
+        few: "Минуть приблизно %{count} місяці"
+        many: "Минуть приблизно %{count} місяців"
       about_x_years:
-        one: Мине приблизно рік
+        one: "Мине приблизно %{count} рік"
         other: Минуть приблизно %{count} років
+        few: "Минуть приблизно %{count} роки"
+        many: "Минуть приблизно %{count} років"
       almost_x_years:
-        one: Мине майже рік
+        one: "Мине майже %{count} рік"
         other: Минуть майже %{count} років
+        few: "Минуть майже %{count} роки"
+        many: "Минуть майже %{count} років"
       half_a_minute: Мине пів хвилини
       less_than_x_seconds:
-        one: Мине менш ніж секунда
+        one: "Мине менш ніж %{count} секунда"
         other: Мине менш ніж %{count} секунд
+        few: "Мине менш ніж %{count} секунди"
+        many: "Мине менш ніж %{count} секунд"
       less_than_x_minutes:
-        one: Мине менш ніж хвилина
+        one: "Мине менш ніж %{count} хвилина"
         other: Мине менш ніж %{count} хвилин
+        few: "Мине менш ніж %{count} хвилини"
+        many: "Мине менш ніж %{count} хвилин"
       over_x_years:
-        one: Мине понад рік
+        one: "Мине понад %{count} рік"
         other: Мине понад %{count} років
+        few: "Мине понад %{count} роки"
+        many: "Мине понад %{count} років"
       x_seconds:
-        one: Мине секунда
+        one: "Мине %{count} секунда"
         other: Минуть %{count} секунд
+        few: "Минуть %{count} секунди"
+        many: "Минуть %{count} секунд"
       x_minutes:
-        one: Мине хвилина
+        one: "Мине %{count} хвилина"
         other: Минуть %{count} хвилин
+        few: "Минуть %{count} хвилини"
+        many: "Минуть %{count} хвилин"
       x_days:
-        one: Мине день
+        one: "Мине %{count} день"
         other: Минуть %{count} днів
+        few: "Минуть %{count} дні"
+        many: "Минуть %{count} днів"
       x_months:
-        one: Мине місяць
+        one: "Мине %{count} місяць"
         other: Минуть %{count} місяців
+        few: "Минуть %{count} місяці"
+        many: "Минуть %{count} місяців"
       x_years:
-        one: Мине рік
+        one: "Мине %{count} рік"
         other: Минуть %{count} років
+        few: "Минуть %{count} роки"
+        many: "Минуть %{count} років"
     distance_in_words:
       half_a_minute: півхвилини
       less_than_x_seconds:
@@ -393,15 +445,22 @@ uk:
       required: має існувати
       taken: уже зайнято
       too_long:
-        one: надто довге (максимум 1 символ)
+        one: "надто довге (максимум %{count} символ)"
         other: надто довге (максимум %{count} символів)
+        few: "надто довге (максимум %{count} символи)"
+        many: "надто довге (максимум %{count} символів)"
       too_short:
-        one: надто коротке (мінімум 1 символ)
+        one: "надто коротке (мінімум %{count} символ)"
         other: надто коротке (мінімум %{count} символів)
+        few: "надто коротке (мінімум %{count} символи)"
+        many: "надто коротке (мінімум %{count} символів)"
       try_again_email: 'Сталася помилка. Спробуйте ще раз або напишіть на: %{email}'
       wrong_length:
-        one: неправильна довжина (має бути 1 символ)
+        one: "неправильна довжина (має бути %{count} символ)"
         other: неправильна довжина (має бути %{count} символів)
+        few: "неправильна довжина (має бути %{count} символи)"
+        many: "неправильна довжина (має бути %{count} символів)"
+      integer_only: "Лише ціле число, без знака."
   time:
     formats:
       admin_user: "%Y-%m-%d, %H:%M"
@@ -419,40 +478,6 @@ uk:
       short_with_year: "%-e %b, %Y"
       stackexchange: "%e %b '%y"
   views:
-    comments_continue_editing: Продовжити редагування
-    survey_enter_response: Введіть свою відповідь тут...
-    survey_thank_you_response: Дякуємо за вашу відповідь.
-    survey_thank_you_completing: Дякуємо за проходження опитування!
-    dashboard_analytics_readers: Читачі
-    dashboard_analytics_avg_read_time: сер. час читання %{seconds}с
-    dashboard_analytics_comments: Коментарі
-    dashboard_analytics_reactions: Реакції
-    dashboard_analytics_unique_reactors: від %{count} унікальних користувачів
-    dashboard_analytics_bookmarks: Закладки
-    dashboard_analytics_followers: Нові підписники
-    dashboard_analytics_no_data: Немає даних за цей період
-    dashboard_analytics_no_referrers: Поки немає джерел трафіку
-    top_contributors_empty: Залучених користувачів за цей період не знайдено.
-    top_contributors_reactions: реакцій
-    top_contributors_comments: коментарів
-    top_contributors_weight_note: Коментарі важать більше
-    follower_engagement_ratio: "%{ratio}% підписників взаємодіяли"
-    follower_engagement_detail: "(%{engaged} з %{total})"
-    stats_by: від
-    editor_new_title: Заголовок
-    editor_body_placeholder: Напишіть текст вашого допису тут...
-    tags_field_label: Додайте до 6 теґів
-    tags_field_placeholder: Додайте до 6 теґів...
-    counted_organization:
-      one: "%{count} проєкт"
-      other: "%{count} проєкти"
-    counted_user:
-      one: "%{count} людина"
-      other: "%{count} людей"
-    not_following: Ви ні на кого не підписані
-    following_everyone: Ви підписані на %{details} (усіх)
-    you_are_following: Ви підписані на
-    and: та
     youtube:
       play_video: Відтворити відео YouTube
       thumbnail_alt: Зображення попереднього перегляду відео
@@ -463,3 +488,16 @@ uk:
       next: Далі &rsaquo;
       previous: "&lsaquo; Назад"
       truncate: "&hellip;"
+  admin_api:
+    errors:
+      unknown_provider: "Провайдера «%{provider}» не налаштовано"
+      identity_not_found: "Обліковий запис провайдера для користувача не знайдено"
+      user_already_has_identity_for_provider: "Користувач уже має обліковий запис провайдера «%{provider}»"
+      identity_uid_taken: "UID %{uid} (%{provider}) уже прив’язаний до іншого користувача"
+      email_invalid: "Недійсна адреса електронної пошти"
+      email_taken: "Ця адреса електронної пошти вже використовується"
+      invalid_status: "Недозволений статус"
+      cannot_merge_user_into_itself: "Не можна об’єднати користувача із самим собою"
+      merge_identity_conflict: "Не вдалося завершити об’єднання: %{reason}"
+      user_not_found: "Користувача не знайдено"
+      validation_failed: "Помилка валідації"

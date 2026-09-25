@@ -49,6 +49,8 @@ pt:
         email: E-mail
         username: Nome de usuário
         profile_image: Imagem do perfil
+        password: "Senha"
+        remember_me: "Lembrar de mim"
       users_notification_setting:
         email_newsletter: Envie-me e-mails de newsletter semanais
         email_digest_periodic: Envie-me um resumo periódico dos principais posts das
@@ -194,38 +196,6 @@ pt:
           embed HTML5 with caption, loop, muted, controls and playsinline
         video_embed_html_5_with_loop_and_muted_and_controls_and_playsinline: Video
           embed HTML5 with loop, muted, controls and playsinline
-        video_embed_html_5_with_caption_and_autoplay_and_muted_and_controls_and_playsinline: Video
-          embed HTML5 with caption, autoplay, muted, controls and playsinline
-        video_embed_html_5_with_autoplay_and_muted_and_controls_and_playsinline: Video
-          embed HTML5 with autoplay, muted, controls and playsinline
-        video_embed_html_5_with_caption_and_muted_and_controls_and_playsinline: Video
-          embed HTML5 with caption, muted, controls and playsinline
-        video_embed_html_5_with_muted_and_controls_and_playsinline: Video embed HTML5
-          with muted, controls and playsinline
-        video_embed_html_5_with_caption_and_autoplay_and_controls_and_playsinline: Video
-          embed HTML5 with caption, autoplay, controls and playsinline
-        video_embed_html_5_with_autoplay_and_controls_and_playsinline: Video embed
-          HTML5 with autoplay, controls and playsinline
-        video_embed_html_5_with_caption_and_controls_and_playsinline: Video embed
-          HTML5 with caption, controls and playsinline
-        video_embed_html_5_with_controls_and_playsinline: Video embed HTML5 with controls
-          and playsinline
-        video_embed_html_5_with_caption_and_autoplay_and_loop_and_controls_and_playsinline: Video
-          embed HTML5 with caption, autoplay, loop, controls and playsinline
-        video_embed_html_5_with_autoplay_and_loop_and_controls_and_playsinline: Video
-          embed HTML5 with autoplay, loop, controls and playsinline
-        video_embed_html_5_with_caption_and_loop_and_controls_and_playsinline: Video
-          embed HTML5 with caption, loop, controls and playsinline
-        video_embed_html_5_with_loop_and_controls_and_playsinline: Video embed HTML5
-          with loop, controls and playsinline
-        video_embed_html_5_with_caption_and_autoplay_and_loop_and_muted_and_playsinline: Video
-          embed HTML5 with caption, autoplay, loop, muted and playsinline
-        video_embed_html_5_with_autoplay_and_loop_and_muted_and_playsinline: Video
-          embed HTML5 with autoplay, loop, muted and playsinline
-        video_embed_html_5_with_caption_and_loop_and_muted_and_playsinline: Video
-          embed HTML5 with caption, loop, muted and playsinline
-        video_embed_html_5_with_loop_and_muted_and_playsinline: Video embed HTML5
-          with loop, muted and playsinline
         video_embed_html_5_with_caption_and_autoplay_and_muted_and_playsinline: Video
           embed HTML5 with caption, autoplay, muted and playsinline
         video_embed_html_5_with_autoplay_and_muted_and_playsinline: Video embed HTML5
@@ -282,38 +252,6 @@ pt:
           embed HTML5 with caption, loop, controls, playsinline and poster
         video_embed_html_5_with_loop_and_controls_and_playsinline_and_poster: Video
           embed HTML5 with loop, controls, playsinline and poster
-        video_embed_html_5_with_caption_and_autoplay_and_loop_and_muted_and_playsinline_and_poster: Video
-          embed HTML5 with caption, autoplay, loop, muted, playsinline and poster
-        video_embed_html_5_with_autoplay_and_loop_and_muted_and_playsinline_and_poster: Video
-          embed HTML5 with autoplay, loop, muted, playsinline and poster
-        video_embed_html_5_with_caption_and_loop_and_muted_and_playsinline_and_poster: Video
-          embed HTML5 with caption, loop, muted, playsinline and poster
-        video_embed_html_5_with_loop_and_muted_and_playsinline_and_poster: Video embed
-          HTML5 with loop, muted, playsinline and poster
-        video_embed_html_5_with_caption_and_autoplay_and_muted_and_playsinline_and_poster: Video
-          embed HTML5 with caption, autoplay, muted, playsinline and poster
-        video_embed_html_5_with_autoplay_and_muted_and_playsinline_and_poster: Video
-          embed HTML5 with autoplay, muted, playsinline and poster
-        video_embed_html_5_with_caption_and_muted_and_playsinline_and_poster: Video
-          embed HTML5 with caption, muted, playsinline and poster
-        video_embed_html_5_with_muted_and_playsinline_and_poster: Video embed HTML5
-          with muted, playsinline and poster
-        video_embed_html_5_with_caption_and_autoplay_and_playsinline_and_poster: Video
-          embed HTML5 with caption, autoplay, playsinline and poster
-        video_embed_html_5_with_autoplay_and_playsinline_and_poster: Video embed HTML5
-          with autoplay, playsinline and poster
-        video_embed_html_5_with_caption_and_playsinline_and_poster: Video embed HTML5
-          with caption, playsinline and poster
-        video_embed_html_5_with_playsinline_and_poster: Video embed HTML5 with playsinline
-          and poster
-        video_embed_html_5_with_caption_and_autoplay_and_loop_and_playsinline_and_poster: Video
-          embed HTML5 with caption, autoplay, loop, playsinline and poster
-        video_embed_html_5_with_autoplay_and_loop_and_playsinline_and_poster: Video
-          embed HTML5 with autoplay, loop, playsinline and poster
-        video_embed_html_5_with_caption_and_loop_and_playsinline_and_poster: Video
-          embed HTML5 with caption, loop, playsinline and poster
-        video_embed_html_5_with_loop_and_playsinline_and_poster: Video embed HTML5
-          with loop, playsinline and poster
       admin:
         user_helper:
           today: Today
@@ -494,10 +432,8 @@ pt:
     authentication_helper:
       any_of_those: any of those
       email_password: Email & Password
-      reminder: You used %{method} to authenticate your account originally, so you
-        can use %{dem} — or send yourself a <a href="%{link}" style="color:black">magic
-        link</a>.
-      that: that to sign back into %{community}
+      reminder: "Você se autenticou originalmente com %{method}. Você também pode enviar a si mesmo um <a href=\"%{link}\" style=\"color:black\">link mágico</a> para entrar."
+      that: "isso"
       invite_only: You cannot do this until you disable Invite Only Mode
     comments_helper:
       ama: ama

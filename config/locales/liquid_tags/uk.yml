@@ -87,8 +87,6 @@ uk:
       invalid_reddit_link: 'Неправильне посилання Reddit: %{url}'
     replit_tag:
       invalid_replit_id: Неправильний Replit URL або @user/slug
-    runkit_tag:
-      runkit_tag_is_invalid: Неправильний тег Runkit
     legacy_code_tag:
       invalid_tag: Недійсний застарілий код-тег
     slideshare_tag:
@@ -156,3 +154,9 @@ uk:
       missing_content: 'Тег slide потребує принаймні одне з: image, video або link'
     slides_tag:
       invalid_mode: Режим slides має бути «default» або «carousel»
+    agent_session_tag:
+      invalid: "Неправильний синтаксис agent_session. Використовуйте: {% agent_session ID %}, {% agent_session ID start..end %} або {% agent_session ID slice_name %}"
+      not_found: "Сесію агента не знайдено"
+      unpublished: "Вбудувати цю сесію може лише її власник"
+    mux_tag:
+      invalid_mux_url: "Неправильний URL Mux."

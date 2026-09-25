@@ -1,0 +1,24 @@
+---
+fr:
+  doorkeeper:
+    errors:
+      messages:
+        login_required: "Le serveur d'autorisation exige l'authentification de l'utilisateur final"
+        consent_required: "Le serveur d'autorisation exige le consentement de l'utilisateur final"
+        interaction_required: "Le serveur d'autorisation exige une interaction de l'utilisateur final"
+        account_selection_required: "Le serveur d'autorisation exige que l'utilisateur final sélectionne un compte"
+    scopes:
+      address: "Voir votre adresse postale"
+      phone: "Voir votre numéro de téléphone"
+    openid_connect:
+      errors:
+        messages:
+          resource_owner_from_access_token_not_configured: "Échec dû à l'absence de configuration de Doorkeeper::OpenidConnect.configure.resource_owner_from_access_token."
+          auth_time_from_resource_owner_not_configured: "Échec dû à l'absence de configuration de Doorkeeper::OpenidConnect.configure.auth_time_from_resource_owner."
+          reauthenticate_resource_owner_not_configured: "Échec dû à l'absence de configuration de Doorkeeper::OpenidConnect.configure.reauthenticate_resource_owner."
+          select_account_for_resource_owner_not_configured: "Échec dû à l'absence de configuration de Doorkeeper::OpenidConnect.configure.select_account_for_resource_owner."
+          subject_not_configured: "La génération de l'ID Token a échoué en raison de l'absence de configuration de Doorkeeper::OpenidConnect.configure.subject."
+          signing_key_not_configured: "Doorkeeper::OpenidConnect.configure.signing_key doit correspondre à au moins une clé."
+          issuer_not_configured: "Doorkeeper::OpenidConnect.configure.issuer doit correspondre à une valeur non vide."
+          dynamic_client_registration_unauthorized: "Autorisation requise pour l'enregistrement du client"
+          missing_required_claim: "La revendication `%{claim}` requise de l'ID Token est manquante ou vide"

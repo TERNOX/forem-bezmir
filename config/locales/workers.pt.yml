@@ -1,0 +1,6 @@
+---
+pt:
+  workers:
+    articles:
+      top_articles_digest:
+        publication_failed: "Não foi possível publicar o artigo do resumo."

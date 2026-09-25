@@ -44,9 +44,111 @@ fr:
           unknown: "La requête est incomplète ou mal formée."
           missing_param: 'Paramètre obligatoire manquant : %{value}.'
           request_not_authorized: "La requête doit être autorisée : un paramètre obligatoire est manquant ou invalide."
+          invalid_code_challenge: "Le code challenge est requis."
+          multiple_client_auth_methods: "La requête utilise plus d'un mécanisme d'authentification du client."
         invalid_redirect_uri: "L'URI de redirection est mal formée ou ne correspond pas à celle de l'application."
         unauthorized_client: "L'application n'est pas autorisée à effectuer cette requête de cette manière."
         access_denied: 'Vous avez refusé la demande.'
         invalid_scope: "L'accès demandé n'est pas accordé à cette application."
         server_error: "Le serveur d'autorisation a rencontré une erreur inattendue."
         temporarily_unavailable: "Le serveur d'autorisation est temporairement indisponible."
+        invalid_code_challenge_method:
+          zero: "Le serveur d'autorisation ne prend pas en charge PKCE, car aucune valeur code_challenge_method n'est acceptée."
+          one: "Le code_challenge_method doit être %{challenge_methods}."
+          other: "Le code_challenge_method doit être l'un des suivants : %{challenge_methods}."
+        credential_flow_not_configured: "Le flux Resource Owner Password Credentials a échoué car Doorkeeper.configure.resource_owner_from_credentials n'est pas configuré."
+        resource_owner_authenticator_not_configured: "La recherche du Resource Owner a échoué car Doorkeeper.configure.resource_owner_authenticator n'est pas configuré."
+        admin_authenticator_not_configured: "L'accès au panneau d'administration est interdit car Doorkeeper.configure.admin_authenticator n'est pas configuré."
+        unsupported_response_type: "Le serveur d'autorisation ne prend pas en charge ce type de réponse."
+        unsupported_response_mode: "Le serveur d'autorisation ne prend pas en charge ce mode de réponse."
+        invalid_client: "L'authentification du client a échoué : client inconnu, aucune authentification du client fournie ou méthode d'authentification non prise en charge."
+        invalid_grant: "L'autorisation fournie est invalide, expirée, révoquée, ne correspond pas à l'URI de redirection utilisée dans la requête d'autorisation, ou a été émise pour un autre client."
+        unsupported_grant_type: "Le type d'autorisation n'est pas pris en charge par le serveur d'autorisation."
+        invalid_token:
+          revoked: "Le jeton d'accès a été révoqué"
+          expired: "Le jeton d'accès a expiré"
+          unknown: "Le jeton d'accès est invalide"
+        revoke:
+          unauthorized: "Vous n'êtes pas autorisé à révoquer ce jeton"
+        forbidden_token:
+          missing_scope: "L'accès à cette ressource nécessite la portée « %{oauth_scopes} »."
+    applications:
+      confirmations:
+        destroy: "Êtes-vous sûr ?"
+      buttons:
+        edit: "Modifier"
+        destroy: "Supprimer"
+        submit: "Envoyer"
+        cancel: "Annuler"
+        authorize: "Autoriser"
+      form:
+        error: "Oups ! Vérifiez votre formulaire pour d'éventuelles erreurs"
+      help:
+        confidential: "L'application sera utilisée là où le secret client peut rester confidentiel. Les applications mobiles natives et les applications monopages ne sont pas considérées comme confidentielles."
+        redirect_uri: "Utilisez une ligne par URI"
+        blank_redirect_uri: "Laissez vide si vous avez configuré votre fournisseur pour utiliser Client Credentials, Resource Owner Password Credentials ou tout autre type d'autorisation ne nécessitant pas d'URI de redirection."
+        scopes: "Séparez les portées par des espaces. Laissez vide pour utiliser les portées par défaut."
+      edit:
+        title: "Modifier l'application"
+      index:
+        title: "Vos applications"
+        new: "Nouvelle application"
+        name: "Nom"
+        callback_url: "URL de rappel"
+        confidential: "Confidentielle ?"
+        actions: "Actions"
+        confidentiality:
+          'yes': "Oui"
+          'no': "Non"
+      new:
+        title: "Nouvelle application"
+      show:
+        title: "Application : %{name}"
+        application_id: "UID :"
+        secret: "Secret :"
+        secret_hashed: "Secret haché"
+        scopes: "Portées :"
+        confidential: "Confidentielle :"
+        callback_urls: "URL de rappel :"
+        actions: "Actions"
+        not_defined: "Non défini"
+    pre_authorization:
+      status: "Pré-autorisation"
+    flash:
+      applications:
+        create:
+          notice: "Application créée."
+        destroy:
+          notice: "Application supprimée."
+        update:
+          notice: "Application mise à jour."
+      authorized_applications:
+        destroy:
+          notice: "Application révoquée."
+    layouts:
+      admin:
+        title: "Doorkeeper"
+        nav:
+          oauth2_provider: "Fournisseur OAuth2"
+          applications: "Applications"
+          home: "Accueil"
+      application:
+        title: "Autorisation OAuth requise"
+  activerecord:
+    attributes:
+      doorkeeper/application:
+        name: "Nom"
+        redirect_uri: "URI de redirection"
+    errors:
+      models:
+        doorkeeper/application:
+          attributes:
+            redirect_uri:
+              fragment_present: "ne peut pas contenir de fragment."
+              invalid_uri: "doit être une URI valide."
+              unspecified_scheme: "doit spécifier un schéma."
+              relative_uri: "doit être une URI absolue."
+              secured_uri: "doit être une URI HTTPS/SSL."
+              forbidden_uri: "est interdite par le serveur."
+            scopes:
+              not_match_configured: "ne correspondent pas à ceux configurés sur le serveur."

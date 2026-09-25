@@ -105,6 +105,8 @@ uk:
         option:
           one: "%{count} опція"
           other: "%{count} опції"
+          few: "%{count} опції"
+          many: "%{count} опцій"
       video:
         title: Заголовок
         description: Опис
@@ -189,6 +191,8 @@ uk:
           org_overflow:
             one: "%{count} інший"
             other: "%{count} інших"
+            few: "%{count} інші"
+            many: "%{count} інших"
       application_helper:
         subtitle:
           week: тиждень
@@ -230,6 +234,8 @@ uk:
         nbsp_likes_html:
           one: "&nbsp;%{count} вподобання"
           other: "&nbsp;%{count} вподобань"
+          few: "&nbsp;%{count} вподобання"
+          many: "&nbsp;%{count} вподобань"
       feedback_messages_helper:
         offender:
           body: Тіло повідомлення для порушника
@@ -246,6 +252,8 @@ uk:
         day:
           one: "%{count} день"
           other: "%{count} днів"
+          few: "%{count} дні"
+          many: "%{count} днів"
         general: Загальне
         published:
           title: Обмежити кількість створених постів
@@ -371,6 +379,8 @@ uk:
       nbsp_likes_html:
         one: "&nbsp;вподобання"
         other: "&nbsp;вподобань"
+        few: "&nbsp;вподобання"
+        many: "&nbsp;вподобань"
     feedback_messages_helper:
       offender:
         body: |
@@ -407,12 +417,16 @@ uk:
       option:
         one: "%{cl_name} (%{count} бал)"
         other: "%{cl_name} (%{count} балів)"
+        few: "%{cl_name} (%{count} бали)"
+        many: "%{cl_name} (%{count} балів)"
     organization_helper:
       option: "%{org_name} (%{unspent})"
     rate_limit_checker_helper:
       day:
         one: день
         other: дні
+        few: "дні"
+        many: "днів"
       general: Скільки %{thing} може створити новий учасник (%{timeframe} або менше) протягом будь-якого 5-хвилинного періоду?
       published:
         title: Обмежити кількість створених постів
@@ -480,3 +494,5 @@ uk:
         org_overflow:
           one: "%{orgs} і ще %{count} інший"
           other: "%{orgs} і ще %{count} інших"
+          few: "%{orgs} і ще %{count} інші"
+          many: "%{orgs} і ще %{count} інших"

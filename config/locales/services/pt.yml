@@ -121,6 +121,17 @@ pt:
       remove_role:
         error: 'Houve um problema ao remover esta função. %{e_message}'
         remove_self: Você não pode remover sua própria função
+      calculate_monthly_reputation:
+        badge_message: "Parabéns por entrar no top 10 mensal de %{month}!"
     spam:
       article_handler:
         suspended_too_many: Muitos artigos suspensos
+    articles:
+      top_articles:
+        digest_publisher:
+          errors:
+            missing_api_key: "Adicione a chave de API do bot da comunidade antes de publicar o resumo."
+            invalid_api_key: "A chave de API configurada não corresponde a nenhum bot da comunidade."
+            missing_bot_user: "A chave de API selecionada não pertence a uma conta de usuário."
+            missing_title_template: "Defina um modelo de título da publicação antes de publicar o resumo."
+            no_articles: "Nenhum artigo corresponde ao período selecionado."

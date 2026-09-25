@@ -3,3 +3,7 @@ en:
   decorators:
     article_decorator:
       tagged_with: " Теги %{cached_tag_list}."
+uk:
+  decorators:
+    article_decorator:
+      tagged_with: " Теги: %{cached_tag_list}."

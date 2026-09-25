@@ -1,0 +1,24 @@
+---
+pt:
+  doorkeeper:
+    errors:
+      messages:
+        login_required: "O servidor de autorização exige a autenticação do usuário final"
+        consent_required: "O servidor de autorização exige o consentimento do usuário final"
+        interaction_required: "O servidor de autorização exige interação do usuário final"
+        account_selection_required: "O servidor de autorização exige que o usuário final selecione uma conta"
+    scopes:
+      address: "Ver seu endereço físico"
+      phone: "Ver seu número de telefone"
+    openid_connect:
+      errors:
+        messages:
+          resource_owner_from_access_token_not_configured: "Falha devido à ausência de configuração de Doorkeeper::OpenidConnect.configure.resource_owner_from_access_token."
+          auth_time_from_resource_owner_not_configured: "Falha devido à ausência de configuração de Doorkeeper::OpenidConnect.configure.auth_time_from_resource_owner."
+          reauthenticate_resource_owner_not_configured: "Falha devido à ausência de configuração de Doorkeeper::OpenidConnect.configure.reauthenticate_resource_owner."
+          select_account_for_resource_owner_not_configured: "Falha devido à ausência de configuração de Doorkeeper::OpenidConnect.configure.select_account_for_resource_owner."
+          subject_not_configured: "A geração do ID Token falhou devido à ausência de configuração de Doorkeeper::OpenidConnect.configure.subject."
+          signing_key_not_configured: "Doorkeeper::OpenidConnect.configure.signing_key deve resultar em pelo menos uma chave."
+          issuer_not_configured: "Doorkeeper::OpenidConnect.configure.issuer deve resultar em um valor não vazio."
+          dynamic_client_registration_unauthorized: "Autorização necessária para o registro do cliente"
+          missing_required_claim: "A claim obrigatória `%{claim}` do ID Token está ausente ou vazia"

@@ -4,7 +4,7 @@ uk:
     users:
       meta:
         og:
-          title: "%{user} — Профіль у спільноті Куток"
+          title: "%{user} — Профіль у спільноті %{community}"
       comments_locked_cta:
         title: Хочете зв’язатися з %{user}?
         description: Створіть обліковий запис, щоб зв’язатися з %{user}. Якщо вже маєте акаунт — увійдіть нижче, щоб продовжити.
@@ -30,7 +30,7 @@ uk:
         heading: Репозиторії GitHub
         fork: Форк
         stars:
-          one: 1 зірка
+          one: "%{count} зірка"
           other: "%{count} зірок"
       pin_icon: Закріпити
       pinned: Закріплено
@@ -55,18 +55,18 @@ uk:
         comment:
           icon: Коментар
           text:
-            one: 1 коментар
+            one: "%{count} коментар"
             other: "%{count} коментарів"
         org: Проєкти
         post:
           icon: Допис
           text:
-            one: 1 допис опубліковано
+            one: "%{count} допис опубліковано"
             other: "%{count} дописів опубліковано"
         tag:
           icon: Теґ
           text:
-            one: 1 теґ відстежується
+            one: "%{count} теґ відстежується"
             other: "%{count} теґів відстежується"
       reputation:
         title: Репутація
@@ -93,7 +93,7 @@ uk:
             details_html: "%{percentage} від загалу (%{points} очок)"
       signout:
         meta:
-          title: Підтвердити вихід — Куток
+          title: "Підтвердити вихід — %{community}"
         heading: Ви впевнені, що хочете вийти?
         'yes': Так, вийти
       block: Заблокувати @%{user}

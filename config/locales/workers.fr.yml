@@ -1,0 +1,6 @@
+---
+fr:
+  workers:
+    articles:
+      top_articles_digest:
+        publication_failed: "L'article du digest n'a pas pu être publié."

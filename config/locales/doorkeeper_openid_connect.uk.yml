@@ -1,0 +1,24 @@
+---
+uk:
+  doorkeeper:
+    errors:
+      messages:
+        login_required: "Сервер авторизації вимагає автентифікації користувача"
+        consent_required: "Сервер авторизації вимагає згоди користувача"
+        interaction_required: "Сервер авторизації вимагає дії від користувача"
+        account_selection_required: "Сервер авторизації вимагає, щоб користувач обрав обліковий запис"
+    scopes:
+      address: "Переглядати вашу поштову адресу"
+      phone: "Переглядати ваш номер телефону"
+    openid_connect:
+      errors:
+        messages:
+          resource_owner_from_access_token_not_configured: "Помилка: не налаштовано Doorkeeper::OpenidConnect.configure.resource_owner_from_access_token."
+          auth_time_from_resource_owner_not_configured: "Помилка: не налаштовано Doorkeeper::OpenidConnect.configure.auth_time_from_resource_owner."
+          reauthenticate_resource_owner_not_configured: "Помилка: не налаштовано Doorkeeper::OpenidConnect.configure.reauthenticate_resource_owner."
+          select_account_for_resource_owner_not_configured: "Помилка: не налаштовано Doorkeeper::OpenidConnect.configure.select_account_for_resource_owner."
+          subject_not_configured: "Не вдалося створити ID Token: не налаштовано Doorkeeper::OpenidConnect.configure.subject."
+          signing_key_not_configured: "Doorkeeper::OpenidConnect.configure.signing_key має повертати принаймні один ключ."
+          issuer_not_configured: "Doorkeeper::OpenidConnect.configure.issuer має повертати непорожнє значення."
+          dynamic_client_registration_unauthorized: "Для реєстрації клієнта потрібна авторизація"
+          missing_required_claim: "Обов’язкова claim ID Token `%{claim}` відсутня або порожня"
