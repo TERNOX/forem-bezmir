@@ -125,6 +125,7 @@ en:
     spam:
       article_handler:
         suspended_too_many: Користувача заблоковано за надмірну кількість спам-статей, автоматично виявлено системою.
+        marked_spam_repeat_auto_flags: User marked as spam after %{count} of their articles from the last month were auto-flagged as clear violations, triggered by autovomit.
     user_subscriptions:
       create_from_controller_params:
         source_not_found: Джерело не знайдено.
