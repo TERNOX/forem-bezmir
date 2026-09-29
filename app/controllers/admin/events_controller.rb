@@ -87,6 +87,7 @@ module Admin
         :event_name_slug,
         :event_variation_slug,
         :description,
+        :body_markdown,
         :full_details,
         :primary_stream_url,
         :published,
