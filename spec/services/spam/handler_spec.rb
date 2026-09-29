@@ -96,6 +96,26 @@ RSpec.describe Spam::Handler, type: :service do
       end
     end
 
+    context "when Gemini blocks the article as PROHIBITED_CONTENT" do
+      let(:blocked_response) do
+        instance_double(HTTParty::Response,
+                        success?: true, code: 200,
+                        parsed_response: { "promptFeedback" => { "blockReason" => "PROHIBITED_CONTENT" } })
+      end
+
+      before do
+        stub_const("Ai::Base::DEFAULT_KEY", "present")
+        allow(Ai::Base).to receive(:post).and_return(blocked_response)
+      end
+
+      it "flags the article, labels it harmful, and marks the author as spam" do
+        expect(handler).to eq(:spam)
+        expect(Reaction.where(reactable: article, category: "vomit", user: mascot_user)).to exist
+        expect(article.reload.automod_label).to eq("clear_and_obvious_harmful")
+        expect(article.user.reload).to be_spam
+      end
+    end
+
     context "when spam is triggered by linked domain net_score check" do
       let(:spam_domain) { "bad-seo-site.com" }
       let!(:linked_domain) { LinkedDomain.create!(host: spam_domain, net_score: -2000) }
@@ -773,6 +793,34 @@ RSpec.describe Spam::Handler, type: :service do
           expect(handler).to eq(:not_spam)
           expect(Reaction.where(reactable: comment, category: "vomit")).to be_empty
         end
+      end
+    end
+
+    context "when Gemini blocks the comment as PROHIBITED_CONTENT" do
+      let(:blocked_response) do
+        instance_double(HTTParty::Response,
+                        success?: true, code: 200,
+                        parsed_response: { "promptFeedback" => { "blockReason" => "PROHIBITED_CONTENT" } })
+      end
+
+      before do
+        allow(Settings::RateLimit).to receive(:trigger_spam_for?).and_return(false)
+        allow(comment).to receive(:processed_html).and_return("<a href=\"spam.com\">spam</a>")
+        allow(Ai::Base).to receive(:post).and_return(blocked_response)
+      end
+
+      it "flags the comment and marks the author as spam" do
+        expect(handler).to eq(:spam)
+        expect(Reaction.where(reactable: comment, category: "vomit", user: mascot_user)).to exist
+        expect(comment.user.reload).to be_spam
+      end
+
+      it "leaves the comment alone when only the surrounding context was blocked" do
+        answer = { "candidates" => [{ "content" => { "parts" => [{ "text" => "NO" }] } }] }
+        allowed_response = instance_double(HTTParty::Response, success?: true, code: 200, parsed_response: answer)
+        allow(Ai::Base).to receive(:post).and_return(blocked_response, allowed_response)
+        expect(handler).to eq(:not_spam)
+        expect(comment.user.reload).not_to be_spam
       end
     end
 
