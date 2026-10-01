@@ -427,12 +427,6 @@ RSpec.describe "StoriesIndex" do
         allow(Settings::UserExperience).to receive(:default_locale).and_return("fr")
         get "/"
       end
-	  
-    context "with default_locale configured to uk" do
-      before do
-        allow(Settings::UserExperience).to receive(:default_locale).and_return("uk")
-        get "/"
-      end
 
       it "names proper locale" do
         expect(I18n.locale).to eq(:fr)
@@ -557,6 +551,19 @@ RSpec.describe "StoriesIndex" do
         expect(response.headers["Set-Cookie"].to_s).not_to include(ENV["SESSION_KEY"])
         expect(response.headers["Set-Cookie"].to_s).not_to include("remember_user_token")
       end
+    end
+  end
+
+  describe "GET /:username with a non-HTML Accept header" do
+    let(:user) { create(:user) }
+
+    it "returns a 404 that cannot be edge cached for browsers" do
+      get "/#{user.username}", headers: { "Accept" => "application/json" }
+
+      expect(response).to have_http_status(:not_found)
+      expect(response.headers["Cache-Control"]).to include("no-store")
+      expect(response.headers["Surrogate-Control"]).to be_nil
+      expect(response.headers["Vary"]).to include("Accept")
     end
   end
 
