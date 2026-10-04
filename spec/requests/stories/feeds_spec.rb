@@ -46,6 +46,8 @@ RSpec.describe "Stories::Feeds" do
       get stories_feed_path
 
       expect(response_article).not_to have_key("first_paragraph_text")
+    end
+
     context "when article belongs to an organization with a custom domain" do
       let(:custom_org) { create(:organization, name: "MLH", slug: "mlh", custom_domain: "blog.mlh.com") }
       let!(:custom_org_article) { create(:article, title: "MLH Post", slug: "mlh-post", organization: custom_org, featured: true) }
