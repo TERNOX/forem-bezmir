@@ -471,6 +471,11 @@ uk:
           github: GitHub
           twitter: Twitter
       organizations:
+        name:
+          heading: Назва проєкту
+          description: Оновіть назву, під якою відображається цей проєкт.
+          label: Назва проєкту
+          submit: Оновити назву
         profile:
           id: ID %{organizationid}
           since_html: Organization since %{time}
