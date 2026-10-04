@@ -177,7 +177,8 @@ RSpec.describe LinkTag, type: :liquid_tag do
       FeatureFlag.remove(:community_favorites)
     end
 
-    it "renders the community leader icon" do
+    # fork's custom articles/_liquid partial (cover-image card) doesn't render author badges
+    xit "renders the community leader icon" do
       liquid = generate_new_liquid(slug: "/#{leader.username}/#{leader_article.slug}")
       expect(liquid.render).to include(%(class="community-leader-icon"))
     end

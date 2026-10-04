@@ -1177,6 +1177,7 @@ class Article < ApplicationRecord
       return
     end
 
+    self.video_source_url = nil if video_source_url.blank?
     return unless video_source_url.present? || video.present?
 
     get_youtube_embed_url
