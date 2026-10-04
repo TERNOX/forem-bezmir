@@ -477,6 +477,7 @@ fr:
           "Resource Admin: Config": "Resource Admin: Config"
           "Resource Admin: Billboard": "Resource Admin: Billboard"
           "Resource Admin: DataUpdateScript": "Resource Admin: DataUpdateScript"
+          "Resource Admin: Event": "Resource Admin: Event"
           "Resource Admin: FeedbackMessage": "Resource Admin: FeedbackMessage"
           "Resource Admin: HtmlVariant": "Resource Admin: HtmlVariant"
           "Resource Admin: ListingCategory": "Resource Admin: ListingCategory"

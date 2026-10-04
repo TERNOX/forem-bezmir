@@ -20,7 +20,9 @@ module MonthlyUserReputationFormatter
   def components_for(period)
     date = period.to_date.beginning_of_month
 
-    month_names = I18n.t("date.month_names_standalone", default: [])
+    # Only some locales (uk) define standalone month names; `default: []` would be read as an
+    # empty list of fallback keys and still raise for the others.
+    month_names = I18n.exists?("date.month_names_standalone") ? I18n.t("date.month_names_standalone") : nil
     month_name = month_names.is_a?(Array) ? month_names[date.month] : nil
 
     period_label =
@@ -32,7 +34,7 @@ module MonthlyUserReputationFormatter
           year: date.year,
         )
       else
-        I18n.l(date, format: :long_month)
+        I18n.l(date, format: I18n.exists?("date.formats.long_month") ? :long_month : "%B %Y")
       end
 
     standalone_month =

@@ -80,6 +80,7 @@ pt:
           options:
             edit_profile: Editar perfil
             update_email: Atualizar e-mail do usuário
+            update_avatar: Update user avatar
         password:
           title: Acesso por senha
           description: Defina uma nova senha diretamente ou envie ao usuário um e-mail de redefinição explicando que isso foi acionado por um administrador.
