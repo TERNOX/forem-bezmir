@@ -52,6 +52,19 @@ RSpec.describe "Events" do
         end
       end
 
+      context "when the event has chat_url data" do
+        it "renders the chat iframe and dark mode synchronization script" do
+          published_event.update!(data: { "chat_url" => "https://www.youtube.com/live_chat?v=12345" })
+
+          get event_path(published_event.event_name_slug, published_event.event_variation_slug)
+
+          expect(response).to have_http_status(:success)
+          expect(response.body).to include("id=\"chat-frame\"")
+          expect(response.body).to include("dark_theme")
+          expect(response.body).to include("darkpopout")
+        end
+      end
+
       context "when the event has associated articles via tags" do
         let(:tag) { create(:tag, name: "awstest") }
         let(:article) { create(:article, title: "A Custom Event Article", tag_list: tag.name, published: true) }
@@ -84,6 +97,19 @@ RSpec.describe "Events" do
 
     context "when requesting a challenge event" do
       let!(:challenge_event) { create(:event, published: true, type_of: :challenge, title: "Game Jam Challenge") }
+
+      it "renders legacy data body_markdown when the body column is blank" do
+        challenge_event.update!(data: { "body_markdown" => "Legacy **rules**" })
+        get event_path(challenge_event.event_name_slug, challenge_event.event_variation_slug)
+        expect(response.body).to include("<strong>rules</strong>")
+      end
+
+      it "prefers the body_markdown column over legacy data" do
+        challenge_event.update!(body_markdown: "New **agenda**", data: { "body_markdown" => "Legacy **rules**" })
+        get event_path(challenge_event.event_name_slug, challenge_event.event_variation_slug)
+        expect(response.body).to include("<strong>agenda</strong>")
+        expect(response.body).not_to include("Legacy")
+      end
 
       it "renders the challenge template" do
         get event_path(challenge_event.event_name_slug, challenge_event.event_variation_slug)

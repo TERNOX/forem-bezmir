@@ -134,6 +134,7 @@ uk:
     spam:
       article_handler:
         suspended_too_many: Користувача заблоковано за надмірну кількість спам-статей, автоматично виявлено системою.
+        marked_spam_repeat_auto_flags: Користувача позначено як спамера, бо %{count} його дописів за останній місяць система автоматично позначила як спам або явні порушення.
     user_subscriptions:
       create_from_controller_params:
         source_not_found: Джерело не знайдено.

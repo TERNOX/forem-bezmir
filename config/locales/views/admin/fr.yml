@@ -477,6 +477,7 @@ fr:
           "Resource Admin: Config": "Resource Admin: Config"
           "Resource Admin: Billboard": "Resource Admin: Billboard"
           "Resource Admin: DataUpdateScript": "Resource Admin: DataUpdateScript"
+          "Resource Admin: Event": "Resource Admin: Event"
           "Resource Admin: FeedbackMessage": "Resource Admin: FeedbackMessage"
           "Resource Admin: HtmlVariant": "Resource Admin: HtmlVariant"
           "Resource Admin: ListingCategory": "Resource Admin: ListingCategory"
@@ -573,6 +574,11 @@ fr:
             created_at: Créé le
             actions: Actions
       organizations:
+        name:
+          heading: Nom de l'organisation
+          description: Mettre à jour le nom affiché de cette organisation.
+          label: Nom de l'organisation
+          submit: Mettre à jour le nom
         profile:
           id: ID %{organizationid}
           since_html: Organization since %{time}

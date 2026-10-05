@@ -46,6 +46,8 @@ RSpec.describe "Stories::Feeds" do
       get stories_feed_path
 
       expect(response_article).not_to have_key("first_paragraph_text")
+    end
+
     context "when article belongs to an organization with a custom domain" do
       let(:custom_org) { create(:organization, name: "MLH", slug: "mlh", custom_domain: "blog.mlh.com") }
       let!(:custom_org_article) { create(:article, title: "MLH Post", slug: "mlh-post", organization: custom_org, featured: true) }
@@ -597,6 +599,20 @@ RSpec.describe "Stories::Feeds" do
       end
     end
 
+    context "when requesting 'curated' feed" do
+      let(:leader) { create(:user) }
+      let!(:favorited_article) { create(:article, favorited_by_user: leader, favorited_at: Time.current) }
+      let!(:unfavorited_article) { create(:article) }
+
+      it "returns only favorited articles" do
+        get stories_feed_path(type_of: "curated")
+
+        response_article_ids = response.parsed_body.map { |a| a["id"] }
+        expect(response_article_ids).to include(favorited_article.id)
+        expect(response_article_ids).not_to include(unfavorited_article.id)
+      end
+    end
+
     context "when user is not signed in and requests 'following' feed" do
       let(:followed_user) { create(:user) }
       let!(:followed_article) { create(:article, user: followed_user) }
@@ -789,6 +805,31 @@ RSpec.describe "Stories::Feeds" do
       get stories_feed_path(page: 1, item: feed_config.id)
       response_article = response.parsed_body.find { |item| item["id"] == article.id }
       expect(response_article["feed_config"]).to eq(feed_config.id)
+    end
+
+    it "renders configured feed payload using limited_column_select with preloaded comments" do
+      feed_config = create(:feed_config)
+      sign_in user
+      create(:comment, commentable: article, user: user, score: 5)
+      article.update_columns(comments_count: 1)
+
+      allow(Settings::UserExperience).to receive(:feed_strategy).and_return("configured")
+      get stories_feed_path(page: 1, item: feed_config.id)
+
+      expect(response).to have_http_status(:ok)
+      response_article = response.parsed_body.find { |item| item["id"] == article.id }
+      expect(response_article).to include(
+        "id" => article.id,
+        "title" => article.title,
+        "path" => article.path,
+        "comments_count" => 1,
+        "feed_config" => feed_config.id,
+      )
+      expect(response_article["top_comments"]).not_to be_empty
+      expect(response_article["top_comments"].first).to include(
+        "user_id" => user.id,
+        "username" => user.username,
+      )
     end
   end
 

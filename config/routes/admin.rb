@@ -119,6 +119,7 @@ namespace :admin do
     end
     resources :organizations, only: %i[index show destroy] do
       member do
+        patch "update_name"
         patch "update_org_credits"
         patch "update_fully_trusted"
         patch "update_baseline_score"
@@ -133,6 +134,14 @@ namespace :admin do
       end
       collection do
         post :validate
+      end
+    end
+    resources :audience_segments do
+      member do
+        post :add_users
+        delete :remove_user
+        post :remove_users
+        put :remove_users
       end
     end
     resources :read_only_database, only: [:show] do
@@ -197,7 +206,9 @@ namespace :admin do
     resources :moderator_actions, only: %i[index]
     resources :privileged_reactions, only: %i[index]
     resources :blocked_email_domains, only: %i[index new create destroy]
-    resources :linked_domains, only: %i[index edit update]
+    resources :linked_domains, only: %i[index edit update] do
+      patch :spam_threshold, on: :collection, action: :update_spam_threshold
+    end
   end
 
   scope :advanced do

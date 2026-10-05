@@ -142,6 +142,24 @@ RSpec.describe Article do
       end
     end
 
+    describe "#before_destroy_actions" do
+      include ActiveSupport::Testing::TimeHelpers
+      let(:user) { create(:user) }
+      let(:article) { create(:article, user: user, published: true, type_of: "full_post") }
+
+      it "touches the author's last_article_at when the article is destroyed" do
+        old_last_article_at = user.reload.last_article_at
+        travel_to 1.minute.from_now do
+          expect { article.destroy }.to change { user.reload.last_article_at }.from(old_last_article_at)
+        end
+      end
+
+      it "does not raise an error when the article has no associated user" do
+        article.update_column(:user_id, nil)
+        expect { article.reload.destroy }.not_to raise_error
+      end
+    end
+
     describe "#validate_video" do
       let(:new_user) { create(:user, created_at: 1.week.ago) }
       let(:old_user) { create(:user, created_at: 3.weeks.ago) }
@@ -1591,6 +1609,89 @@ RSpec.describe Article do
         expect(article.video).to be_nil
       end
     end
+
+    context "when clearing video_source_url" do
+      it "clears video and video_source_url when set to blank" do
+        saved_article = create(:article, user: user, video_source_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+        expect(saved_article.video).to start_with("https://www.youtube.com/embed/dQw4w9WgXcQ")
+
+        saved_article.video_source_url = ""
+        saved_article.valid?
+        expect(saved_article.video_source_url).to be_nil
+        expect(saved_article.video).to be_nil
+      end
+
+      # fork's player is YouTube-only, so Mux sources never derive a thumbnail
+      xit "clears video_thumbnail_url for Mux video when cleared" do
+        saved_article = create(:article, user: user, video_source_url: "https://player.mux.com/nw5QrgIQS02FEx5BJEQH8CdcLmXXRvCNACZKQ01kLoKEI")
+        expect(saved_article.video_thumbnail_url).to be_present
+
+        saved_article.video_source_url = nil
+        saved_article.valid?
+        expect(saved_article.video_source_url).to be_nil
+        expect(saved_article.video).to be_nil
+        expect(saved_article.video_thumbnail_url).to be_nil
+      end
+
+      it "does not clear an existing video embed on unrelated updates when video_source_url is untouched" do
+        saved_article = create(:article, user: user, video_source_url: nil)
+        saved_article.update_column(:video, "https://www.youtube.com/embed/dQw4w9WgXcQ")
+
+        saved_article.title = "Updated title"
+        saved_article.valid?
+        expect(saved_article.video).to start_with("https://www.youtube.com/embed/dQw4w9WgXcQ")
+      end
+
+      it "does not clear a legacy uploaded video on unrelated updates" do
+        saved_article = create(:article, :video, user: user)
+        expect(saved_article.video).to be_present
+        expect(saved_article.video_source_url).to include(".m3u8")
+
+        saved_article.title = "Updated title"
+        saved_article.valid?
+        expect(saved_article.video).to be_present
+        expect(saved_article.video_thumbnail_url).to be_present
+      end
+
+      it "keeps a user-provided thumbnail when a non-Mux video is cleared" do
+        saved_article = create(:article, user: user,
+                                         video_source_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                                         video_thumbnail_url: "https://i.imgur.com/HPiu7N4.jpg")
+
+        saved_article.video_source_url = ""
+        saved_article.valid?
+        expect(saved_article.video).to be_nil
+        expect(saved_article.video_thumbnail_url).to eq("https://i.imgur.com/HPiu7N4.jpg")
+      end
+
+      it "does not clear video on a new record with a blank video_source_url" do
+        new_article = build(:article, user: user, video: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+                                      video_source_url: "")
+        new_article.valid?
+        expect(new_article.video).to start_with("https://www.youtube.com/embed/dQw4w9WgXcQ")
+        expect(new_article.video_source_url).to be_nil
+      end
+    end
+  end
+
+  describe ".permitted_video_source_url?" do
+    it "permits blank values so the cover video can be removed" do
+      expect(described_class.permitted_video_source_url?(nil)).to be(true)
+      expect(described_class.permitted_video_source_url?("")).to be(true)
+    end
+
+    it "permits YouTube, Mux and Twitch video URLs" do
+      expect(described_class.permitted_video_source_url?("https://www.youtube.com/watch?v=dQw4w9WgXcQ")).to be(true)
+      expect(described_class.permitted_video_source_url?("https://youtu.be/dQw4w9WgXcQ")).to be(true)
+      expect(described_class.permitted_video_source_url?("https://player.mux.com/abc123")).to be(true)
+      expect(described_class.permitted_video_source_url?("https://www.twitch.tv/videos/1234567890")).to be(true)
+    end
+
+    it "rejects other URLs" do
+      expect(described_class.permitted_video_source_url?("https://example.com/video")).to be(false)
+      expect(described_class.permitted_video_source_url?("https://www.twitch.tv/somechannel")).to be(false)
+      expect(described_class.permitted_video_source_url?("javascript:alert(1)")).to be(false)
+    end
   end
 
   describe "#fetch_video_duration" do
@@ -1721,6 +1822,34 @@ RSpec.describe Article do
     it "returns false when favorited_by_user_id is nil" do
       article = build(:article, favorited_by_user_id: nil)
       expect(article.favorited?).to be false
+    end
+  end
+
+  describe ".with_at_least_home_feed_minimum_score" do
+    let(:leader) { create(:user, :community_leader_level_1) }
+
+    before do
+      allow(Settings::UserExperience).to receive(:home_feed_minimum_score).and_return(10)
+    end
+
+    it "includes articles with score at or above the minimum score" do
+      article = create(:article, score: 10, featured: false, favorited_by_user: nil)
+      expect(described_class.with_at_least_home_feed_minimum_score).to include(article)
+    end
+
+    it "excludes articles with score below the minimum score when not featured or favorited" do
+      article = create(:article, score: 5, featured: false, favorited_by_user: nil)
+      expect(described_class.with_at_least_home_feed_minimum_score).not_to include(article)
+    end
+
+    it "includes featured articles even if score is below the minimum score" do
+      article = create(:article, score: -5, featured: true, favorited_by_user: nil)
+      expect(described_class.with_at_least_home_feed_minimum_score).to include(article)
+    end
+
+    it "includes favorited (gemmed) articles even if score is below the minimum score" do
+      article = create(:article, score: -5, featured: false, favorited_by_user: leader, favorited_at: Time.current)
+      expect(described_class.with_at_least_home_feed_minimum_score).to include(article)
     end
   end
 
@@ -1966,6 +2095,29 @@ RSpec.describe Article do
       end
     end
 
+    describe "notification updates" do
+      before { create(:notification, notifiable: article, action: "Published") }
+
+      it "refreshes notifications when a field they show changes" do
+        new_title = "A brand new title"
+        sidekiq_assert_enqueued_jobs(1, only: Notifications::UpdateWorker) do
+          article.update(title: new_title, body_markdown: article.body_markdown.gsub(article.title, new_title))
+        end
+      end
+
+      it "refreshes notifications when crossposted_at changes (it drives readable_publish_date)" do
+        sidekiq_assert_enqueued_jobs(1, only: Notifications::UpdateWorker) do
+          article.update(crossposted_at: 1.day.ago)
+        end
+      end
+
+      it "does not refresh notifications when only last_comment_at is touched" do
+        sidekiq_assert_no_enqueued_jobs(only: Notifications::UpdateWorker) do
+          article.touch(:last_comment_at)
+        end
+      end
+    end
+
     describe "spam" do
       it "enqueues Articles::HandleSpamWorker on save" do
         sidekiq_assert_enqueued_jobs(1, only: Articles::HandleSpamWorker) do
@@ -2064,6 +2216,53 @@ RSpec.describe Article do
             draft.save
             draft.update(title: "still draft")
           end
+        end
+      end
+
+      # The worker runs on another connection, so it must not be enqueued before the save commits.
+      context "when saved inside a transaction" do
+        it "waits for the outermost transaction to commit before enqueueing" do
+          new_article = nil
+          sidekiq_assert_enqueued_jobs(1, only: worker) do
+            described_class.transaction do
+              new_article = create(:article, published: true)
+              expect(worker.jobs.pluck("args")).not_to include([new_article.id])
+            end
+          end
+          expect(worker.jobs.pluck("args")).to include([new_article.id])
+        end
+
+        it "does not enqueue when the transaction is rolled back" do
+          sidekiq_assert_no_enqueued_jobs(only: worker) do
+            described_class.transaction do
+              article.update(title: "rolled back title")
+              raise ActiveRecord::Rollback
+            end
+          end
+        end
+      end
+
+      context "when a draft is published" do
+        let(:mascot_user) { create(:user) }
+        let(:draft) { create(:article, published: false) }
+
+        before do
+          allow(Settings::General).to receive(:mascot_user_id).and_return(mascot_user.id)
+          stub_const("Ai::Base::DEFAULT_KEY", "present")
+          labeler = instance_double(Ai::ContentModerationLabeler,
+                                    evaluate: { label: "clear_and_obvious_spam", compellingness_score: 0.5 })
+          allow(Ai::ContentModerationLabeler).to receive(:new).and_return(labeler)
+        end
+
+        it "lets the worker issue the mascot's vomit on the now-published article" do
+          sidekiq_assert_enqueued_with(job: worker, args: [draft.id]) do
+            draft.update!(body_markdown: draft.body_markdown.sub("published: false", "published: true"))
+          end
+
+          sidekiq_perform_enqueued_jobs(only: worker)
+
+          expect(draft.reload.automod_label).to eq("clear_and_obvious_spam")
+          expect(Reaction.where(user: mascot_user, reactable: draft, category: "vomit")).to exist
         end
       end
     end
@@ -3864,6 +4063,37 @@ RSpec.describe Article do
       # Ensure reading `tags_array` doesn't inadvertently trigger sync_tags_array
       article.sync_tags_array
       expect(article.instance_variable_defined?(:@tag_list)).to be_falsey
+    end
+  end
+
+  describe "#notify_co_author_changes" do
+    let(:author) { create(:user) }
+    let(:co_author1) { create(:user) }
+    let(:co_author2) { create(:user) }
+
+    before do
+      allow(Notification).to receive(:send_to_co_authors)
+    end
+
+    it "notifies co-authors when co_author_ids changes on a published article" do
+      article = create(:article, user: author, published: true, co_author_ids: [co_author1.id])
+      article.update!(co_author_ids: [co_author1.id, co_author2.id])
+
+      expect(Notification).to have_received(:send_to_co_authors).with(article, [])
+    end
+
+    it "passes removed user ids when a co-author is dropped from a published article" do
+      article = create(:article, user: author, published: true, co_author_ids: [co_author1.id, co_author2.id])
+      article.update!(co_author_ids: [co_author1.id])
+
+      expect(Notification).to have_received(:send_to_co_authors).with(article, [co_author2.id])
+    end
+
+    it "does not notify when co_author_ids changes on an unpublished draft" do
+      article = create(:article, user: author, published: false, co_author_ids: [co_author1.id])
+      article.update!(co_author_ids: [co_author1.id, co_author2.id])
+
+      expect(Notification).not_to have_received(:send_to_co_authors)
     end
   end
 end

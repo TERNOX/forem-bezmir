@@ -59,6 +59,20 @@ class Article < ApplicationRecord
 
   MAX_TAG_LIST_SIZE = 6
 
+  # Hosts a user may link as a cover video via `video_source_url`. Used by the
+  # web and API controllers' param whitelists; mirrored on the frontend in
+  # app/javascript/article-form/components/CoverVideoLink.jsx.
+  LINKED_VIDEO_SOURCE_PATTERNS = [
+    %r{\Ahttps?://(www\.)?(youtube\.com/watch\?v=|youtu\.be/)},
+    %r{\Ahttps?://player\.mux\.com/},
+    %r{\Ahttps?://(www\.)?twitch\.tv/videos/},
+  ].freeze
+
+  # Fields embedded in Published/CoAuthor notifications (see Notifications.article_data).
+  # crossposted_at feeds readable_publish_date via displayable_published_at.
+  NOTIFICATION_DATA_ATTRIBUTES = %w[title path cached_tag_list published_at crossposted_at reading_time
+                                    user_id organization_id].freeze
+
   # Filter out anything that isn't a word, space, punctuation mark,
   # recognized emoji, and other auxiliary marks.
   # See: https://github.com/forem/forem/pull/16787#issuecomment-1062044359
@@ -123,6 +137,14 @@ class Article < ApplicationRecord
 
   def self.unique_url_error
     I18n.t("models.article.unique_url", email: ForemInstance.contact_email)
+  end
+
+  # Whether a user-submitted `video_source_url` may be mass-assigned.
+  # A blank value is allowed so the cover video can be removed.
+  def self.permitted_video_source_url?(url)
+    return true if url.blank?
+
+    LINKED_VIDEO_SOURCE_PATTERNS.any? { |pattern| url.to_s.match?(pattern) }
   end
 
   enum :type_of, {
@@ -312,9 +334,15 @@ class Article < ApplicationRecord
   after_save :generate_social_image
   after_save :generate_context_notes
 
+  after_update_commit :notify_co_author_changes, if: proc { |article|
+    article.published? && article.saved_change_to_co_author_ids?
+  }
+
+  # Notifications embed these fields (see Notifications.article_data and user/organization data),
+  # so refresh them only when one changes, not on every touch (e.g. last_comment_at on each comment).
   after_update_commit :update_notifications, if: proc { |article|
-                                                   article.notifications.any? && !article.saved_changes.empty?
-                                                 }
+    article.saved_changes.keys.intersect?(NOTIFICATION_DATA_ATTRIBUTES) && article.notifications.any?
+  }
   after_update_commit :update_notification_subscriptions, if: proc { |article|
     article.saved_change_to_user_id?
   }
@@ -531,12 +559,11 @@ class Article < ApplicationRecord
     end
   }
 
-  # @note This includes the `featured` scope, which may or may not be
-  #       something we expose going forward.  However, it was
-  #       something used in two of the three queries we had that
-  #       included the where `score > Settings::UserExperience.home_feed_minimum_score`
+  # @note This includes the `featured` and `favorited` scopes, which allows
+  #       featured and community favorite (gemmed) articles to bypass the
+  #       home feed minimum score threshold.
   scope :with_at_least_home_feed_minimum_score, lambda {
-    featured.or(
+    featured.or(favorited).or(
       where(score: Settings::UserExperience.home_feed_minimum_score..),
     )
   }
@@ -1140,6 +1167,17 @@ class Article < ApplicationRecord
   end
 
   def generate_video_embed_url
+    if video_source_url.blank? && video_source_url_was.present?
+      # The cover video was removed: drop the embed derived from it. Only Mux
+      # derives the thumbnail from the source URL, so user-provided thumbnails
+      # are kept.
+      self.video = nil
+      self.video_thumbnail_url = nil if video_thumbnail_url&.include?("image.mux.com")
+      self.video_source_url = nil
+      return
+    end
+
+    self.video_source_url = nil if video_source_url.blank?
     return unless video_source_url.present? || video.present?
 
     get_youtube_embed_url
@@ -1396,7 +1434,7 @@ class Article < ApplicationRecord
   end
 
   def update_notifications
-    Notification.update_notifications(self, I18n.t("models.article.published"))
+    Notification.update_notifications(self, %w[Published CoAuthor])
   end
 
   def update_notification_subscriptions
@@ -1405,7 +1443,8 @@ class Article < ApplicationRecord
 
   def before_destroy_actions
     bust_cache(destroying: true)
-    article_ids = user.article_ids.dup
+    user&.touch(:last_article_at)
+    article_ids = user ? user.article_ids.dup : []
     if organization
       organization.touch(:last_article_at)
       article_ids.concat organization.article_ids
@@ -1671,7 +1710,7 @@ class Article < ApplicationRecord
   def touch_actor_latest_article_updated_at(destroying: false)
     return unless destroying || saved_changes.keys.intersection(%w[title cached_tag_list published archived]).present?
 
-    user.touch(:latest_article_updated_at)
+    user&.touch(:latest_article_updated_at)
     organization&.touch(:latest_article_updated_at)
   end
 
@@ -1701,7 +1740,8 @@ class Article < ApplicationRecord
                   saved_change_to_published? ||
                   published_at > 1.minute.ago
 
-    Articles::HandleSpamWorker.perform_async(id)
+    # Enqueue after commit so the worker sees the saved article (and its published state).
+    ActiveRecord.after_all_transactions_commit { Articles::HandleSpamWorker.perform_async(id) }
   end
 
   def async_bust
@@ -1832,5 +1872,12 @@ class Article < ApplicationRecord
        saved_change_to_main_image?
       Articles::UpdateDependentEmbedsWorker.perform_async(id)
     end
+  end
+
+  def notify_co_author_changes
+    before, after = saved_change_to_co_author_ids
+    removed_user_ids = Array.wrap(before).map(&:to_i) - Array.wrap(after).map(&:to_i)
+
+    Notification.send_to_co_authors(self, removed_user_ids)
   end
 end

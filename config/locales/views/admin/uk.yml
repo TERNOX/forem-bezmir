@@ -448,6 +448,7 @@ uk:
           "Resource Admin: Config": "Resource Admin: Config"
           "Resource Admin: Billboard": "Resource Admin: Billboard"
           "Resource Admin: DataUpdateScript": "Resource Admin: DataUpdateScript"
+          "Resource Admin: Event": "Resource Admin: Event"
           "Resource Admin: FeedbackMessage": "Resource Admin: FeedbackMessage"
           "Resource Admin: HtmlVariant": "Resource Admin: HtmlVariant"
           "Resource Admin: ListingCategory": "Resource Admin: ListingCategory"
@@ -471,6 +472,11 @@ uk:
           github: GitHub
           twitter: Twitter
       organizations:
+        name:
+          heading: Назва проєкту
+          description: Оновіть назву, під якою відображається цей проєкт.
+          label: Назва проєкту
+          submit: Оновити назву
         profile:
           id: ID %{organizationid}
           since_html: Organization since %{time}

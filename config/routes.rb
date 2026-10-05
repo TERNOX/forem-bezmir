@@ -206,6 +206,7 @@ Rails.application.routes.draw do
     end
     namespace :feeds do
       resources :sources, only: %i[create update destroy]
+      resources :xml_imports, only: %i[create]
     end
     resources :users, only: %i[update]
     resources :reactions, only: %i[index create]
@@ -527,7 +528,7 @@ Rails.application.routes.draw do
     get "/:feed_type/:timeframe", to: "stories#index", constraints: { feed_type: /following/, timeframe: /latest/ }
 
     get "/:timeframe", to: "stories#index", constraints: { timeframe: /latest/ }
-    get "/:feed_type", to: "stories#index", constraints: { feed_type: /discover|following/ }
+    get "/:feed_type", to: "stories#index", constraints: { feed_type: /discover|following|curated/ }
     get "/s/:id", to: "stories#short_link", as: :short_article, constraints: { id: /\d+/ }
 
     get "/:username/series", to: "collections#index", as: "user_series"
