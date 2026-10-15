@@ -1,5 +1,5 @@
 import * as actions from '../actions';
-import { processPayload } from '../actions';
+import { processPayload, acceptedCoAuthorInvitees } from '../actions';
 import { validateFileInputs } from '../../packs/validateFileInputs';
 import { getVideoConfig, formatTemplate } from '../components/mediaConfig';
 
@@ -114,9 +114,7 @@ describe('processPayload', () => {
       { id: 2, name: 'Org Two', fetch_users_url: '/api/users?org=2' },
     ],
     authorId: 99,
-    coAuthorsData: [
-      { id: 1, name: 'Co Author', username: 'coauthor' },
-    ],
+    coAuthorsData: [{ id: 1, name: 'Co Author', username: 'coauthor' }],
   };
 
   it('preserves article content fields in the output', () => {
@@ -164,6 +162,71 @@ describe('processPayload', () => {
     expect(result).not.toHaveProperty('coAuthorsData');
   });
 
+  describe('co-author invitations', () => {
+    const invitationFields = {
+      coAuthorInvitationsEnabled: true,
+      coAuthorInvitationsMax: 4,
+      coAuthorInvitations: [
+        { id: 10, status: 'pending', user: { id: 7, username: 'ada' } },
+      ],
+      coAuthorInvitees: [
+        { id: 7, username: 'ada' },
+        { id: 8, username: 'grace' },
+      ],
+    };
+
+    it('sends the invitee ids for a personal post', () => {
+      const result = processPayload({
+        ...basePayload,
+        ...invitationFields,
+        organizationId: null,
+      });
+
+      expect(result.coAuthorInviteeIds).toEqual([7, 8]);
+    });
+
+    it('sends an empty list when every invitee was removed', () => {
+      const result = processPayload({
+        ...basePayload,
+        ...invitationFields,
+        organizationId: '',
+        coAuthorInvitees: [],
+      });
+
+      expect(result.coAuthorInviteeIds).toEqual([]);
+    });
+
+    it('leaves the list out for an organization post', () => {
+      const result = processPayload({ ...basePayload, ...invitationFields });
+
+      expect(result).not.toHaveProperty('coAuthorInviteeIds');
+    });
+
+    it('leaves the list out when invitations are disabled', () => {
+      const result = processPayload({
+        ...basePayload,
+        ...invitationFields,
+        organizationId: null,
+        coAuthorInvitationsEnabled: false,
+      });
+
+      expect(result).not.toHaveProperty('coAuthorInviteeIds');
+    });
+
+    it('strips the invitation UI state', () => {
+      const result = processPayload({
+        ...basePayload,
+        ...invitationFields,
+        organizationId: null,
+      });
+
+      expect(result).not.toHaveProperty('coAuthorInvitationsEnabled');
+      expect(result).not.toHaveProperty('coAuthorInvitationsMax');
+      expect(result).not.toHaveProperty('coAuthorInvitations');
+      expect(result).not.toHaveProperty('coAuthorInvitees');
+    });
+  });
+
   it('returns an empty-ish object when given only UI fields', () => {
     const result = processPayload(uiOnlyFields);
 
@@ -179,6 +242,23 @@ describe('processPayload', () => {
     const result = processPayload({ ...basePayload });
 
     expect(result).toEqual(basePayload);
+  });
+
+  describe('acceptedCoAuthorInvitees', () => {
+    const ada = { id: 7, name: 'Ada Lovelace', username: 'ada' };
+    const grace = { id: 8, name: 'Grace Hopper', username: 'grace' };
+
+    it('keeps only selected invitees whose invitation is accepted', () => {
+      const invitations = [
+        { id: 10, status: 'accepted', user: ada },
+        { id: 11, status: 'pending', user: grace },
+      ];
+
+      expect(acceptedCoAuthorInvitees(invitations, [ada, grace])).toEqual([
+        ada,
+      ]);
+      expect(acceptedCoAuthorInvitees(invitations, [grace])).toEqual([]);
+    });
   });
 });
 

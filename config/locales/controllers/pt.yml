@@ -11,6 +11,8 @@ pt:
   articles_controller:
     deleted: Artigo foi excluído com sucesso.
     stale_edit: "Esta publicação foi alterada por outra pessoa desde que você a abriu. Para carregar a versão mais recente, recarregue a página e clique no botão \"Reverter alterações\" na parte inferior do editor."
+  co_author_invitations_controller:
+    not_updated: Não foi possível atualizar este convite de coautoria. Ele pode já ter sido respondido ou retirado.
   comments_controller:
     create:
       success: criado

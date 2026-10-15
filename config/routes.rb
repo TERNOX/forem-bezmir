@@ -231,6 +231,13 @@ Rails.application.routes.draw do
       end
     end
     resources :notifications, only: [:index]
+    resources :co_author_invitations, only: [] do
+      get :candidates, on: :collection, defaults: { format: :json }
+      member do
+        patch :accept
+        patch :decline
+      end
+    end
     resources :tags, only: [:index] do
       collection do
         get "/suggest", to: "tags#suggest", defaults: { format: :json }

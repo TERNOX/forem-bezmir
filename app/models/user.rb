@@ -86,6 +86,7 @@ class User < ApplicationRecord
                             inverse_of: :blocked, dependent: :delete_all
   has_many :blocker_blocks, class_name: "UserBlock", foreign_key: :blocker_id,
                             inverse_of: :blocker, dependent: :delete_all
+  has_many :co_author_invitations, dependent: :destroy
   has_many :collections, dependent: :destroy
   has_many :comments, dependent: :destroy
   has_many :created_podcasts, class_name: "Podcast", foreign_key: :creator_id, inverse_of: :creator, dependent: :nullify
