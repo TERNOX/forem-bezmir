@@ -159,10 +159,10 @@ export const Feed = ({ timeFrame, feedView, renderFeed, afterRender }) => {
   }, [timeFrame, feedView, onError]);
 
   useEffect(() => {
-    if (feedItems.length > 0) {
+    if (!isLoading && feedItems.length > 0 && typeof afterRender === 'function') {
       afterRender();
     }
-  }, [afterRender, feedItems.length]);
+  }, [afterRender, feedItems, isLoading]);
 
   function getImagePost(feedPosts) {
     return feedPosts.find((post) => post.main_image !== null);
