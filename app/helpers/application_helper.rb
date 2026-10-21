@@ -453,7 +453,7 @@ module ApplicationHelper
   end
 
   def estimated_user_count
-    User.registered.estimated_count
+    @estimated_user_count ||= User.registered.estimated_count
   end
 
   def display_estimated_user_count?
