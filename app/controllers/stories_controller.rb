@@ -248,6 +248,7 @@ class StoriesController < ApplicationController
       .includes(:distinct_reaction_categories, :subforem)
       .limited_column_select
       .order(published_at: :desc).page(@page).per(8))
+    preload_context_notes(@stories)
     @organization_article_index = true
     # Get active users ordered by badge achievements
     # For find_each_respecting_scope compatibility, we get ordered IDs first (with order column in select)
@@ -525,6 +526,15 @@ class StoriesController < ApplicationController
       .limited_column_select
       .where.not(id: @pinned_stories.map(&:id))
       .order(published_at: :desc).page(@page).per(user_signed_in? ? 2 : SIGNED_OUT_RECORD_COUNT))
+    preload_context_notes(@pinned_stories + @stories)
+  end
+
+  # articles/_single_story calls `story.context_notes.first` per story. Preload them in one
+  # query, ordered by id so `.first` picks the same note as the unloaded association would.
+  def preload_context_notes(stories)
+    ActiveRecord::Associations::Preloader.new(
+      records: stories.map(&:object), associations: :context_notes, scope: ContextNote.order(:id),
+    ).call
   end
 
   def community_feed?
