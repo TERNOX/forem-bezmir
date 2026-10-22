@@ -30,6 +30,7 @@ module Constants
       "Resource Admin: DataUpdateScript" => { name: "single_resource_admin", resource_type: "DataUpdateScript" },
       "Resource Admin: Event" => { name: "single_resource_admin", resource_type: "Event" },
       "Resource Admin: FeedbackMessage" => { name: "single_resource_admin", resource_type: "FeedbackMessage" },
+      "Resource Admin: FlagAppeal" => { name: "single_resource_admin", resource_type: "FlagAppeal" },
       "Resource Admin: HtmlVariant" => { name: "single_resource_admin", resource_type: "HtmlVariant" },
       "Resource Admin: ListingCategory" => { name: "single_resource_admin", resource_type: "ListingCategory" },
       "Resource Admin: Page" => { name: "single_resource_admin", resource_type: "Page" },

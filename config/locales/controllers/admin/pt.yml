@@ -232,6 +232,11 @@ pt:
       social_images_queued: 'Regeneração de imagens sociais em fila para @%{user}'
       user_not_found: 'Usuário não encontrado'
       invalid_next_run_hour: "Hora inválida selecionada para o próximo envio do resumo"
+    flag_appeals_controller:
+      approved: "Recurso aprovado e usuário/conteúdo restabelecido com sucesso."
+      rejected: "Recurso rejeitado."
+      invalid_action: "Ação de resolução inválida."
+      already_resolved: "Este recurso já foi resolvido."
     users_controller:
       role_removed: 'Função: %{role} foi removida com sucesso do usuário!'
       updated: Usuário foi atualizado

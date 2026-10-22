@@ -271,6 +271,11 @@ en:
         enqueued: 'All published articles will be resaved in the background. Embeds will be rebuilt shortly.'
       social_images_queued: 'Social image regeneration queued for @%{user}'
       user_not_found: 'User not found'
+    flag_appeals_controller:
+      approved: Appeal approved and user/content successfully reinstated.
+      rejected: Appeal rejected.
+      invalid_action: Invalid resolution action.
+      already_resolved: This appeal has already been resolved.
     users_controller:
       exported: Data exported to the %{receiver}. The job will complete momentarily.
       email_fail: Email failed to send!
