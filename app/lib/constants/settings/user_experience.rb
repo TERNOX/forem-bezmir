@@ -1,6 +1,17 @@
 module Constants
   module Settings
     module UserExperience
+      SUPPORTED_LOCALES = {
+        "en" => "English",
+        "fr" => "Français",
+        "pt" => "Português",
+        "uk" => "Українська"
+      }.freeze
+
+      def self.locale_options
+        SUPPORTED_LOCALES.map { |code, label| [label, code] }
+      end
+
       def self.details
         {
           default_font: {
