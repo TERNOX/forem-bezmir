@@ -59,6 +59,9 @@ module Stories
       # Now, apply the filter.
       stories = stories_by_timeframe(stories: stories)
       stories = stories.full_posts.from_subforem
+      # Signed-out renders go through URL.article, which reads each org story's
+      # organization (custom domain check); batch those into one query.
+      stories = stories.preload(:organization) unless user_signed_in?
       @stories = stories.decorate
     end
 
