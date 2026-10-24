@@ -250,6 +250,7 @@ class StoriesController < ApplicationController
       .limited_column_select
       .order(published_at: :desc).page(@page).per(8))
     preload_context_notes(@stories)
+    preload_reaction_counts(@stories)
     @organization_article_index = true
     # Get active users ordered by badge achievements
     # For find_each_respecting_scope compatibility, we get ordered IDs first (with order column in select)
@@ -417,6 +418,8 @@ class StoriesController < ApplicationController
     @featured_story = Article.new.decorate if excluded_organization?(@featured_story)
 
     @stories = ArticleDecorator.decorate_collection(@stories)
+    # Featured and pinned last: the feed renders those instances, not their @stories duplicates.
+    preload_reaction_counts([*@stories, @featured_story, @pinned_article].compact)
   end
 
   def assign_article_show_variables
@@ -528,6 +531,7 @@ class StoriesController < ApplicationController
       .where.not(id: @pinned_stories.map(&:id))
       .order(published_at: :desc).page(@page).per(user_signed_in? ? 2 : SIGNED_OUT_RECORD_COUNT))
     preload_context_notes(@pinned_stories + @stories)
+    preload_reaction_counts(@pinned_stories + @stories)
   end
 
   # articles/_single_story calls `story.context_notes.first` per story. Preload them in one
@@ -538,6 +542,7 @@ class StoriesController < ApplicationController
     ).call
   end
 
+<<<<<<< HEAD
   def community_feed?
     params[:feed_view] == "community"
   end
@@ -557,6 +562,14 @@ class StoriesController < ApplicationController
     return false unless article
 
     COMMUNITY_ORGANIZATION_IDS.include?(article.organization_id)
+=======
+  # articles/_single_story reads public_reaction_categories for every story with reactions;
+  # fetch those cached counts in one round-trip instead of one cache.get per story.
+  def preload_reaction_counts(stories)
+    Article.preload_reaction_counts_for_reactable(
+      stories.map(&:object).select { |story| story.public_reactions_count.positive? },
+    )
+>>>>>>> df56bb56e (perf(stories): fetch profile, org, and homepage reaction counts in one cache round-trip (#24103))
   end
 
   def assign_user_github_repositories
