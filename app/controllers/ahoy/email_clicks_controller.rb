@@ -44,7 +44,8 @@ module Ahoy
       BillboardEvent.create(billboard_id: ahoy_params[:bb].to_i,
                             category: "click",
                             user_id: current_user&.id,
-                            context_type: "email")
+                            context_type: "email",
+                            user_agent: request.user_agent)
       update_billboard_counts
     rescue StandardError => e
       Rails.logger.error "Error processing billboard click: #{e.message}"
