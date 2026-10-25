@@ -44,6 +44,8 @@ xml.rss(:version => "2.0",
     end
     xml.tag! "atom:link", rel: "self", type: "application/rss+xml", href: request.original_url
     xml.language "uk" # TODO: [yheuhtozr] support localized feeds (see #15136)
+    descriptions = feed_item_descriptions(articles, tags: allowed_tags, attributes: allowed_attributes,
+                                                    scrubber: scrubber)
     articles.each do |article|
       xml.item do
         xml.title article.title
@@ -56,8 +58,7 @@ xml.rss(:version => "2.0",
                        end
         xml.link article_link
         xml.guid article_link
-        xml.description sanitize(article.plain_html,
-                                 tags: allowed_tags, attributes: allowed_attributes, scrubber: scrubber)
+        xml.description descriptions[article.id]
         image_url = article_social_image_url(article, width: 1600, height: 900)
         if image_url.present?
           image_url = app_url(image_url) unless image_url.start_with?("http://", "https://")
