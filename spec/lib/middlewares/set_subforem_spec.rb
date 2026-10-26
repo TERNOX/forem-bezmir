@@ -123,6 +123,27 @@ RSpec.describe Middlewares::SetSubforem do
       end
     end
 
+    context "when the request host is a bare hostname or a subdomain" do
+      before do
+        allow(Subforem).to receive(:cached_id_by_domain).and_return(nil)
+        allow(Subforem).to receive(:cached_id_by_domain).with("example.com").and_return(1)
+        allow(Subforem).to receive(:cached_id_by_domain).with("community.example.com").and_return(2)
+        allow(Subforem).to receive_messages(cached_default_id: 1, cached_root_id: nil, cached_root_domain: nil,
+                                            cached_default_domain: "example.com",
+                                            cached_id_to_domain_hash: { 1 => "example.com",
+                                                                        2 => "community.example.com" },
+                                            cached_all_domains: ["example.com", "community.example.com"])
+        allow(Settings::General).to receive(:app_domain).and_return("example.com")
+        allow(Rack::Utils).to receive(:delete_cookie_header!)
+      end
+
+      it "falls back to the request host when passed_domain is not valid UTF-8" do
+        env = Rack::MockRequest.env_for("https://community.example.com/auth_pass/iframe?passed_domain=%C0%AF")
+        expect { middleware.call(env) }.not_to raise_error
+        expect(RequestStore.store[:subforem_id]).to eq(2)
+      end
+    end
+
     context "when a request has an empty body and a multipart Content-Type header" do
       let(:env) do
         Rack::MockRequest.env_for(
