@@ -178,6 +178,10 @@ module Constants
           enable_agent_sessions: {
             description: I18n.t("lib.constants.settings.general.enable_agent_sessions.description",
                                 default: "Enable the Agent Sessions feature for uploading and embedding coding agent session transcripts.")
+          },
+          appeal_auto_unflag_threshold: {
+            description: I18n.t("lib.constants.settings.general.appeal_auto_unflag_threshold.description"),
+            placeholder: 1.01
           }
         }
       end

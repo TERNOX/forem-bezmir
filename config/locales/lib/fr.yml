@@ -193,6 +193,8 @@ fr:
             description: "Afficher la liste des premiers pas dans la barre latérale droite pour les nouveaux utilisateurs."
           enable_agent_sessions:
             description: Enable the Agent Sessions feature for uploading and embedding coding agent session transcripts.
+          appeal_auto_unflag_threshold:
+            description: "Score de confiance minimal de l'IA (de 0,0 à 1,0) requis pour approuver automatiquement un recours lorsque l'IA recommande auto_unflag (s'applique uniquement aux restrictions automatisées, jamais aux suspensions par un modérateur humain). Définissez une valeur supérieure à 1,0 (par ex. 1,01) pour désactiver le désignalement automatique."
           video:
             description: Secret key used to allow AWS video encoding through the VideoStatesController
           news_sitemap_tags:
