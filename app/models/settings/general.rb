@@ -67,6 +67,8 @@ module Settings
     setting :enable_video_upload, type: :boolean, default: false
     setting :video_upload_max_file_size_mb, type: :integer, default: 50
     setting :enable_agent_sessions, type: :boolean, default: true
+    # Quote-card share images for posts without a cover; off falls back to the classic title card.
+    setting :quote_card_social_images, type: :boolean, default: true
 
     # Mascot
     setting :mascot_user_id, type: :integer, default: nil

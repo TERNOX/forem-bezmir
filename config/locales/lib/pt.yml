@@ -191,6 +191,8 @@ pt:
             description: Exibir a lista de primeiros passos na barra lateral direita para novos usuários.
           enable_agent_sessions:
             description: Enable the Agent Sessions feature for uploading and embedding coding agent session transcripts.
+          quote_card_social_images:
+            description: "Gerar imagens de compartilhamento em cartão de citação (um trecho da publicação em um cartão) para publicações sem imagem de capa, e cartões de perfil para usuários e organizações. Desative para usar o cartão de título clássico."
           appeal_auto_unflag_threshold:
             description: "Pontuação mínima de confiança da IA (0,0 a 1,0) necessária para aprovar automaticamente um recurso quando a IA recomendar auto_unflag (aplica-se apenas a restrições automatizadas, nunca a bloqueios de moderadores humanos). Defina acima de 1,0 (por ex. 1,01) para desativar a remoção automática de sinalização."
           video:
