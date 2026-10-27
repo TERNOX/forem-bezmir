@@ -136,6 +136,8 @@ en:
       invalid: 'Invalid agent_session syntax. Use: {% agent_session ID %}, {% agent_session ID start..end %}, or {% agent_session ID slice_name %}'
       not_found: Agent session not found
       unpublished: Only the session owner can embed this session
+    vimeo_tag:
+      invalid_vimeo_id: Invalid Vimeo ID
     youtube_tag:
       invalid_youtube_id: Invalid YouTube ID or URL
     invalid_url_scheme: 'Invalid URL for ''%{option}'': only http and https URLs are allowed'

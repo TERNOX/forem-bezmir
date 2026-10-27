@@ -92,6 +92,24 @@ RSpec.describe "Quote liquid tag", type: :liquid_tag do
         parse('{% quote role="CTO" %}No author{% endquote %}')
       end.to raise_error(StandardError, /requires an author/)
     end
+
+    it "rejects an invalid avatar URL" do
+      expect do
+        parse('{% quote author="Jane" image="javascript:alert(1)" %}Nope{% endquote %}')
+      end.to raise_error(StandardError, /Invalid URL for 'image'/)
+    end
+
+    it "rejects an invalid external link URL" do
+      expect do
+        parse('{% quote author="Jane" link="javascript:alert(1)" %}Nope{% endquote %}')
+      end.to raise_error(StandardError, /Invalid URL for 'link'/)
+    end
+
+    it "rejects a hostless external link URL" do
+      expect do
+        parse('{% quote author="Jane" link="https:javascript:alert(1)" %}Nope{% endquote %}')
+      end.to raise_error(StandardError, /Invalid URL for 'link'/)
+    end
   end
 
   describe "combined options" do
