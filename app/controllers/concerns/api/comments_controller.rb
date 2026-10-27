@@ -41,6 +41,19 @@ module Api
       set_surrogate_key_header Comment.table_key, edge_cache_keys(tree_with_root_comment)
     end
 
+    def preview
+      comment_param = params[:comment]
+      comment_hash = comment_param.is_a?(ActionController::Parameters) || comment_param.is_a?(Hash) ? comment_param : {}
+      body_markdown = params.key?(:body_markdown) ? params[:body_markdown] : comment_hash[:body_markdown]
+
+      renderer = ContentRenderer.new(body_markdown.to_s, source: Comment.new(user: @user), user: @user)
+      processed_html = renderer.process(link_attributes: { rel: "nofollow" }).processed_html
+
+      render json: { processed_html: processed_html }, status: :ok
+    rescue ContentRenderer::ContentParsingError => e
+      error_unprocessable_entity(ErrorMessages::Clean.call(e.message))
+    end
+
     private
 
     # ancestry wraps a single or multiple trees of comments into a single hash,
