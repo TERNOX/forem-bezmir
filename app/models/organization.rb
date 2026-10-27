@@ -173,11 +173,13 @@ class Organization < ApplicationRecord
 
   private
 
+  SOCIAL_IMAGE_TRIGGER_ATTRIBUTES = %i[
+    name slug profile_image bg_color_hex summary tag_line location url
+  ].freeze
+
   def generate_social_images
     return if previously_new_record?
-
-    change = saved_change_to_attribute?(:name) || saved_change_to_attribute?(:profile_image)
-    return unless change && articles.published.from_subforem.size.positive?
+    return unless SOCIAL_IMAGE_TRIGGER_ATTRIBUTES.any? { |attr| saved_change_to_attribute?(attr) }
 
     Images::SocialImageWorker.perform_async(id, self.class.name)
   end
