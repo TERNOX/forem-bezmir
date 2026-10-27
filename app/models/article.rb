@@ -613,7 +613,7 @@ class Article < ApplicationRecord
   scope :featured, -> { where(featured: true) }
 
   scope :feed, lambda {
-                 published.includes(:taggings)
+                 published
                    .select(
                      :id,
                      :published_at,
@@ -629,6 +629,10 @@ class Article < ApplicationRecord
                      :slug
                    )
                }
+
+  def cached_tag_list_array
+    (cached_tag_list || "").split(", ")
+  end
 
   scope :with_video, lambda {
                        published

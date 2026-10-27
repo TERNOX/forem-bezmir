@@ -65,7 +65,7 @@ xml.rss(:version => "2.0",
           xml.tag!("media:content", url: image_url, medium: "image")
           xml.tag!("media:thumbnail", url: image_url)
         end
-        article.tag_list.each do |tag_name|
+        article.cached_tag_list_array.each do |tag_name|
           xml.category tag_name
         end
       end
