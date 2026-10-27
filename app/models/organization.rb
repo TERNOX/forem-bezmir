@@ -174,6 +174,8 @@ class Organization < ApplicationRecord
   private
 
   def generate_social_images
+    return if previously_new_record?
+
     change = saved_change_to_attribute?(:name) || saved_change_to_attribute?(:profile_image)
     return unless change && articles.published.from_subforem.size.positive?
 
