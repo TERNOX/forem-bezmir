@@ -48,7 +48,7 @@ gem "gemoji", "~> 4.1.0" # Character information and metadata for standard and c
 gem "gibbon", "~> 3.4" # API wrapper for MailChimp's API
 gem "hairtrigger", "~> 1.3.1" # HairTrigger lets you create and manage database triggers in a concise, db-agnostic, Rails-y way.
 gem "honeybadger", "~> 5.1" # Used for tracking application errors
-gem "honeycomb-beeline", "~> 2.11.0" # Monitoring and Observability gem
+gem "honeycomb-beeline", "~> 2.11.0", require: false # Monitoring and Observability gem
 gem "html_truncator", "~> 0.4" # Truncate an HTML string properly
 gem "httparty", "~> 0.24" # Makes http fun! Also, makes consuming restful web services dead easy
 gem "httpclient", "~> 2.9.0" # Gives something like the functionality of libwww-perl (LWP) in Ruby
