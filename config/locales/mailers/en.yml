@@ -39,6 +39,23 @@ en:
         other: "🔥 У Вас %{count} непрочитаних сповіщень на %{community}"
       new_badge: Ви щойно отримали бейдж
       video_upload: Завантаження Вашого відео завершено
+      gem_received:
+        article_subject: "🏆 Your post was awarded platinum"
+        comment_subject: "🏆 Your comment was awarded platinum"
+        article_heading: Your post earned platinum!
+        comment_heading: Your comment earned platinum!
+        untitled: a post
+        greeting: "Hi %{name},"
+        article_intro: Community Experts awarded platinum to your post, "%{title}".
+        comment_intro: Community Experts awarded platinum to your comment on "%{title}".
+        why: Platinum is rare. Experts only have a little to give, and they save it for the posts and comments that teach something new, start a great discussion, or make someone's day a little better. Yours stood out, and platinum helps more people on %{community} find it. That's a big deal, so thank you!
+        view_article: View your post
+        view_comment: View your comment
+        pay_forward_heading: You have platinum to give
+        pay_forward: Every platinum you receive adds one to your own wallet to pass on. When you find a post or comment on %{community} that deserves more love, select the platinum icon to award it. Share the love!
+        pay_forward_cta: Find something to award
+        sign_off: Thanks for making %{community} better,
+        team: The %{community} Team
     verification_mailer:
       from: "Підтвердження електронної пошти %{community} <%{email}>"
       verify_ownership: Підтвердьте право власності на акаунт %{community}

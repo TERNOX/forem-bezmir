@@ -92,6 +92,35 @@ class NotifyMailer < ApplicationMailer
     mail(to: @user.email, subject: I18n.t("mailers.notify_mailer.new_badge"))
   end
 
+  # Celebrates a post or comment being picked as a gem (a favorite) and, for
+  # members who spend earned gems, invites them to pass the one they just
+  # earned on to someone else. Rendered by Forem rather than a Customer.io
+  # template, so Customer.io recipients get this body as a passthrough send.
+  def gem_received_email
+    @favoritable = params[:favoritable]
+    @user = @favoritable.user
+    return if @user.email.blank?
+    # Checked here as well as in the worker, because Deliverable#hold_until_linked
+    # replays this action directly.
+    return unless @user.notification_setting.email_badge_notifications
+    return if RateLimitChecker.new.limit_by_email_recipient_address(@user.email)
+
+    @comment = @favoritable.is_a?(Comment)
+    use_favoritable_subforem_context
+    @title = (@comment ? @favoritable.commentable&.title : @favoritable.title).presence ||
+      I18n.t("mailers.notify_mailer.gem_received.untitled")
+    @favoritable_url = @comment ? URL.comment(@favoritable) : URL.article(@favoritable)
+    # Every platinum received tops up the recipient's wallet (see Favorites::Create),
+    # including Experts, so everyone in good standing can pass one on.
+    @can_pay_forward = !@user.spam_or_suspended?
+    @community_name = Settings::Community.community_name(subforem_id: @subforem_id)
+    @unsubscribe = generate_unsubscribe_token(@user.id, :email_badge_notifications)
+    add_unsubscribe_headers(@unsubscribe)
+
+    subject_key = @comment ? "comment_subject" : "article_subject"
+    mail(to: @user.email, subject: I18n.t("mailers.notify_mailer.gem_received.#{subject_key}"))
+  end
+
   def feedback_response_email
     mail(to: params[:email_to],
          subject: I18n.t("mailers.notify_mailer.feedback",
@@ -191,5 +220,15 @@ class NotifyMailer < ApplicationMailer
 
   def localized_parent_type(parent_type)
     I18n.t("mailers.notify_mailer.parent_types.#{parent_type}", default: parent_type)
+  end
+
+  # setup_subforem_context resolves the community from the recipient before the
+  # action runs, and gem_received_email has no recipient param. Brand the email
+  # for the community where the gem was given, falling back to the author's.
+  def use_favoritable_subforem_context
+    subforem_id = @comment ? @favoritable.commentable.try(:subforem_id) : @favoritable.subforem_id
+    @subforem_id = subforem_id || @user.onboarding_subforem_id || @subforem_id
+    @subforem_domain = determine_subforem_domain(@subforem_id)
+    ActionMailer::Base.default_url_options[:host] = @subforem_domain
   end
 end
