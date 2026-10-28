@@ -1,5 +1,10 @@
 module Html
   class Parser
+    ALERT_TYPES = %w[note tip important warning caution].freeze
+    # The marker must be followed by whitespace or the end of the text node, so
+    # `[!NOTE]worthy` stays an ordinary blockquote.
+    ALERT_TOKEN = /\A\[!(#{ALERT_TYPES.join('|')})\](?=\s|\z)\s*/i
+
     # Each of the instance methods should return self to support chaining of
     # methods
     # For example:
@@ -130,6 +135,31 @@ module Html
         link["class"] = "article-body-image-wrapper"
         image.replace(link)
         link.add_child(image)
+      end
+
+      @html = doc.to_html
+
+      self
+    end
+
+    def transform_markdown_alerts
+      doc = Nokogiri::HTML.fragment(@html)
+
+      doc.css("blockquote").each do |blockquote|
+        first = blockquote.element_children.first
+        next unless first&.name == "p"
+
+        leading = first.children.first
+        next unless leading&.text?
+
+        match = leading.content.match(ALERT_TOKEN)
+        next unless match
+
+        alert_type = match[1].downcase
+        strip_alert_token(first)
+
+        blockquote["data-alert"] = alert_type
+        blockquote.prepend_child(alert_label_node(doc, alert_type))
       end
 
       @html = doc.to_html
@@ -383,6 +413,27 @@ module Html
     # so fall through to the full parse in that case.
     def may_contain?(marker)
       @html.include?(marker) || @html.include?("&")
+    end
+
+    def strip_alert_token(paragraph)
+      text_node = paragraph.children.detect { |child| child.text? && child.content.match?(ALERT_TOKEN) }
+      return unless text_node
+
+      text_node.content = text_node.content.sub(ALERT_TOKEN, "")
+
+      # the newline after the token leaves a leading <br> behind
+      while (leading = paragraph.children.first) && blank?(leading)
+        leading.remove
+      end
+
+      paragraph.remove if all_children_are_blank?(paragraph)
+    end
+
+    def alert_label_node(doc, alert_type)
+      label = Nokogiri::XML::Node.new("p", doc)
+      label["data-alert-label"] = alert_type
+      label.content = I18n.t("services.html.parser.alerts.#{alert_type}")
+      label
     end
 
     def img_of_size(source, width = 1500, quality: 81)
