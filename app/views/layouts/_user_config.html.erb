@@ -1,25 +1,20 @@
+<%# Inlined so the color mode is resolved before first paint. The theme style blocks live in layouts/_theme_styles. %>
+<script>
+  <%= Rails.application.assets["utilities/applyColorMode.js"].to_s.html_safe %>
+</script>
 <script>
   try {
     const bodyClass = localStorage.getItem('config_body_class');
     const userString = localStorage.getItem('current_user');
 
+    watchColorModeChanges();
+
     if (bodyClass) {
       document.body.className = bodyClass;
 
-      if (bodyClass.includes('dark-theme')) {
-        document.getElementById('body-styles').innerHTML = '<style>'+document.getElementById('dark-mode-style').innerHTML+'</style>';
-        document.cookie = 'preferred_theme=dark_theme; path=/; max-age=31536000; SameSite=Lax';
-        document.documentElement.style.colorScheme = 'dark';
-        if (window && window.ReactNativeWebView) {
-          window.ReactNativeWebView.postMessage(JSON.stringify({ action: 'update_color_mode', value: 'dark' }));
-        }
-      } else {
-        document.cookie = 'preferred_theme=light_theme; path=/; max-age=31536000; SameSite=Lax';
-        document.documentElement.style.colorScheme = 'light';
-        if (window && window.ReactNativeWebView) {
-          window.ReactNativeWebView.postMessage(JSON.stringify({ action: 'update_color_mode', value: 'light' }));
-        }
-      }
+      var isDarkMode = applyColorMode(bodyClass);
+      document.cookie = 'preferred_theme=' + (isDarkMode ? 'dark_theme' : 'light_theme') + '; path=/; max-age=31536000; SameSite=Lax';
+      document.documentElement.style.colorScheme = isDarkMode ? 'dark' : 'light';
 
       if (bodyClass.includes('open-dyslexic-article-body')) { // Preloading custom font for anticipated use
         const link = document.createElement('link');
