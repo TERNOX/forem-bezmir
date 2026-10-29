@@ -437,6 +437,8 @@ Rails.application.routes.draw do
     get "/search", to: "stories/articles_search#index"
     get "/community", to: "community#index", as: :community
     get "/:slug/members", to: "organizations#members", as: :organization_members
+    post "/:slug/profile_pins", to: "organization_profile_pins#create", as: :organization_profile_pins
+    delete "/:slug/profile_pins/:id", to: "organization_profile_pins#destroy", as: :organization_profile_pin
     post "articles/preview", to: "articles#preview"
     post "comments/preview", to: "comments#preview"
     post "comments/subscribe", to: "notification_subscriptions#create"
