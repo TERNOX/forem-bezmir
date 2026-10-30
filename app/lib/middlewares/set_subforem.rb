@@ -51,6 +51,7 @@ module Middlewares
         headers.delete("X-Frame-Options")
         allowed_domains = Subforem.cached_all_domains + [Settings::General.app_domain]
         subforem_sources = allowed_domains.map { |d| "https://#{d}" }
+        subforem_sources.unshift("'self'") if Rails.env.development?
         existing_csp = headers["Content-Security-Policy"].to_s
         directives = existing_csp.split(";").map(&:strip).reject(&:blank?)
         # Preserve any frame-ancestors a controller set explicitly (e.g. the
