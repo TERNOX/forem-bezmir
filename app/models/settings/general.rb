@@ -240,6 +240,15 @@ module Settings
     setting :algolia_search_only_api_key, type: :string, default: ApplicationConfig["ALGOLIA_SEARCH_ONLY_API_KEY"]
     setting :display_algolia_branding, type: :boolean, default: ApplicationConfig["ALGOLIA_DISPLAY_BRANDING"] == "true"
 
+    # High-water mark (ISO8601 date string) for Badges::AwardContributorFromGithub.
+    # It records the most recent "merged before" date the job has already scanned
+    # for candidate PR authors. Hourly runs only scan merged PRs from this date
+    # forward, then advance it, so the job never re-reads the full repo history.
+    # Blank means "not yet backfilled" - the rake task does the one-time full
+    # history walk and sets this; until then, hourly runs fall back to a short
+    # recent window so a fresh instance still works.
+    setting :github_contributor_prs_scanned_through, type: :string, default: ""
+
     def self.algolia_search_enabled?
       algolia_application_id.present? && algolia_search_only_api_key.present? && algolia_api_key.present?
     end
