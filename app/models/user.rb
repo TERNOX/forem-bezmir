@@ -1009,7 +1009,8 @@ class User < ApplicationRecord
   end
 
   def create_users_settings_and_notification_settings_records
-    self.setting = Users::Setting.create
+    # Keep a setting built before save (e.g. registration's preferred theme); has_one saves it after create.
+    self.setting = Users::Setting.create unless setting&.new_record?
     self.notification_setting = Users::NotificationSetting.create
   end
 
