@@ -27,6 +27,9 @@ uk:
         settings: налаштування
       event:
         reminder_html: "Нагадування: %{event_link} починається за %{time}!"
+      co_author:
+        if_org_html: " у проєкті %{org}"
+        verb_html: "%{user} опублікував допис, у якому Вас зазначено співавтором%{if_org}"
       comment:
         commented_html: "%{user} прокоментував %{title}"
         first_html: "%{user} залишив свій перший коментар до %{title}"

@@ -531,6 +531,13 @@ class User < ApplicationRecord
     end
   end
 
+  def cached_languages
+    cache_name = "user-#{id}/languages"
+    Rails.cache.fetch(cache_name, expires_in: 24.hours) do
+      languages.pluck(:language)
+    end
+  end
+
   def refresh_auto_audience_segments
     if ENV["ENABLE_REFRESH_SEGMENT_WORKERS"]  == "true"
       SegmentedUserRefreshWorker.perform_async(id)
@@ -1085,7 +1092,9 @@ class User < ApplicationRecord
     
     # Check for spam patterns when user gets spam or suspended role
     if role.name.in?(%w[spam suspended])
-      Spam::DomainDetector.new(self).check_and_block_domain!
+      # The domain scan can hit the statement timeout, so keep it out of this
+      # callback: an error here rolls back the role grant (and aborts a banish).
+      Spam::DomainDetectorWorker.perform_async(id)
       calculate_score
     end
 

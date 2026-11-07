@@ -51,6 +51,8 @@ module Stories
                   latest_following_feed
                 elsif params[:type_of] == "following" && user_signed_in?
                   relevant_following_feed
+                elsif params[:type_of] == "curated"
+                  curated_feed
                 elsif timeframe == Timeframe::LATEST_TIMEFRAME
                   latest_feed
                 elsif user_signed_in?
@@ -71,11 +73,11 @@ module Stories
              elsif feed_strategy == "configured" && params[:type_of] != "following"
 
                @feed_config = if params[:item]
-                                FeedConfig.find_by(id: params[:item]) || FeedConfig.order("feed_success_score DESC").limit(rand(15)).sample || FeedConfig.first_or_create
+                                FeedConfig.find_by(id: params[:item]) || FeedConfig.order("feed_success_score DESC").limit(rand(1..15)).sample || FeedConfig.first_or_create
                               elsif rand(20) == 0 # 5% of the time, we'll just pick a random feed config
-                                FeedConfig.where("feed_impressions_count < 100").order("RANDOM()").limit(1).first || FeedConfig.order("feed_success_score DESC").limit(rand(15)).sample || FeedConfig.first_or_create
+                                FeedConfig.where("feed_impressions_count < 100").order("RANDOM()").limit(1).first || FeedConfig.order("feed_success_score DESC").limit(rand(1..15)).sample || FeedConfig.first_or_create
                               else
-                                FeedConfig.order("feed_success_score DESC").limit(rand(15)).sample || FeedConfig.first_or_create
+                                FeedConfig.order("feed_success_score DESC").limit(rand(1..15)).sample || FeedConfig.first_or_create
                               end
                Articles::Feeds::Custom.new(user: current_user, page: @page, tag: params[:tag],
                                            feed_config: @feed_config)
@@ -130,6 +132,15 @@ module Stories
 
     def latest_feed
       Articles::Feeds::Latest.call(tag: params[:tag], page: @page)
+    end
+
+    def curated_feed
+      Articles::Feeds::Curated.call(
+        user: current_user,
+        tag: params[:tag],
+        page: @page,
+        number_of_articles: 25,
+      )
     end
 
     def latest_following_feed

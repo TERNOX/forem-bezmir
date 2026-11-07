@@ -169,6 +169,17 @@ en:
           submit: Update email
           success: Email updated successfully.
           error: Failed to update email.
+        update_avatar:
+          heading: Update User Avatar
+          current: Current avatar URL
+          none: No avatar on file
+          new_url: New avatar URL
+          placeholder: https://example.com/avatar.png
+          helper: Leave blank to remove the current avatar. External URLs will be fetched and stored.
+          submit: Update avatar
+          success: Avatar updated successfully.
+          removed: Avatar removed successfully.
+          error: Failed to update avatar.
         export:
           heading: Export %{user}'s data
           desc1_html: Choose between sending the exported data to either your Admin contact email, %{contact}, or to %{user}'s %{user_email} directly.
@@ -369,6 +380,7 @@ en:
             icon: Options
             edit_profile: Edit profile
             update_email: Update User Email
+            update_avatar: Update user avatar
             export: Export data
             merge: Merge users
             unpublish: Unpublished all posts
@@ -488,6 +500,7 @@ en:
           "Resource Admin: Config": "Resource Admin: Config"
           "Resource Admin: Billboard": "Resource Admin: Billboard"
           "Resource Admin: DataUpdateScript": "Resource Admin: DataUpdateScript"
+          "Resource Admin: Event": "Resource Admin: Event"
           "Resource Admin: FeedbackMessage": "Resource Admin: FeedbackMessage"
           "Resource Admin: HtmlVariant": "Resource Admin: HtmlVariant"
           "Resource Admin: ListingCategory": "Resource Admin: ListingCategory"
@@ -584,6 +597,11 @@ en:
             created_at: Created At
             actions: Actions
       organizations:
+        name:
+          heading: Organization Name
+          description: Update this organization's display name.
+          label: Organization name
+          submit: Update Name
         profile:
           id: ID %{organizationid}
           since_html: Organization since %{time}

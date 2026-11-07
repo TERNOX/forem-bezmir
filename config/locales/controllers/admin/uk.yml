@@ -1,6 +1,42 @@
 ---
 uk:
   admin:
+    audience_segments_controller:
+      created: "Сегмент аудиторії створено."
+      updated: "Сегмент аудиторії оновлено."
+      deleted: "Сегмент аудиторії видалено."
+      cannot_delete_in_use: "Не можна видалити сегмент аудиторії, поки його використовують листи або білборди."
+      users_added: "До сегмента додано користувачів: %{count}."
+      user_removed: "Користувача видалено із сегмента."
+      users_removed: "Із сегмента видалено користувачів: %{count}."
+      system_segment_protected: "Системні сегменти аудиторії не можна змінювати."
+      no_valid_users_found: "За введеними даними не знайдено жодного користувача."
+      no_users_selected: "Не вибрано користувачів для видалення."
+      no_users_removed: "У цьому сегменті не знайдено відповідних користувачів для видалення."
+      user_not_in_segment: "Не вдалося видалити користувача, бо його немає в цьому сегменті."
+      segment_created_with_users: "Сегмент створено, користувачів: %{count}."
+      could_not_resolve: "Не вдалося знайти: %{unresolved}."
+      already_in_segment: "Уже в цьому сегменті користувачів: %{count}."
+      ineligible_users_warning: "Увага: користувачів у цьому сегменті, яким зараз не можна надсилати листи: %{count}."
+    user_queries_controller:
+      created: "Запит користувачів створено."
+      updated: "Запит користувачів оновлено."
+      deleted: "Запит користувачів видалено."
+      activated: "Запит користувачів активовано."
+      deactivated: "Запит користувачів деактивовано."
+    emails:
+      override_footer_html: Замінити HTML футера листа
+      override_footer_description: Увімкніть, щоб замінити загальний футер листів для цього листа.
+      custom_footer_html: "Власний HTML футера:"
+      custom_footer_placeholder: '<p style="text-align: center; color: #666;">Власний текст футера для цього листа</p>'
+      custom_footer_description: Вкажіть власний HTML для футера цього листа. Залиште порожнім, якщо футер не потрібен.
+      footer: "Футер:"
+      no_footer: "(Без футера)"
+      invalid_footer_preview: "(Неможливо показати некоректний футер)"
+      override_footer_label: "Заміна футера:"
+      custom_footer_label: "Власний HTML футера:"
+      status_yes: "Так"
+      status_no: "Ні"
     articles_controller:
       saved: "Статтю збережено!"
       unpinned: "Статтю відкріплено!"
@@ -79,6 +115,7 @@ uk:
       removed: "Користувача успішно вилучено з %{org}"
       wrong: "Під час вилучення користувача з %{org} щось пішло не так"
     organizations_controller:
+      name_updated: "Назву проєкту оновлено."
       credit_updated: "Бали успішно оновлено"
       baseline_score_updated: "Базовий рейтинг оновлено!"
       deletion_scheduled: "Видалення проєкту «%{organization_name}» заплановано."

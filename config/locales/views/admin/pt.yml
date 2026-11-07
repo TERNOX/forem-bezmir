@@ -80,6 +80,7 @@ pt:
           options:
             edit_profile: Editar perfil
             update_email: Atualizar e-mail do usuário
+            update_avatar: Update user avatar
         password:
           title: Acesso por senha
           description: Defina uma nova senha diretamente ou envie ao usuário um e-mail de redefinição explicando que isso foi acionado por um administrador.
@@ -502,6 +503,11 @@ pt:
             created_at: Criado Em
             actions: Ações
       organizations:
+        name:
+          heading: Nome da organização
+          description: Atualize o nome de exibição desta organização.
+          label: Nome da organização
+          submit: Atualizar nome
         profile:
           id: ID %{organizationid}
           since_html: Organização desde %{time}

@@ -24,7 +24,16 @@ export const Feed = ({ timeFrame, feedView, renderFeed, afterRender }) => {
 
   useEffect(() => {
     async function fetchFeedItems(timeFrame = '', page = 1, currentFeedView = '') {
-      const feedTypeOf = localStorage?.getItem('current_feed') || 'discover';
+      let feedTypeOf = localStorage?.getItem('current_feed');
+      if (window.location.pathname === '/curated') {
+        feedTypeOf = 'curated';
+      } else if (window.location.pathname === '/following' || window.location.pathname === '/following/latest') {
+        feedTypeOf = 'following';
+      } else if (window.location.pathname === '/discover') {
+        feedTypeOf = 'discover';
+      } else if (feedTypeOf !== 'discover' && feedTypeOf !== 'following' && feedTypeOf !== 'curated') {
+        feedTypeOf = 'discover';
+      }
       const billboardUrlComponent = document.body.dataset.dynamicUrlComponent || 'bb';
       const feedViewParam =
         currentFeedView && currentFeedView.length > 0

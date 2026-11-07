@@ -176,6 +176,16 @@ uk:
         credits: Доступні бали
         lt_500: "< 500"
       feed_imports:
+        xml_import:
+          heading: Імпорт із XML (одноразовий)
+          description: Якщо URL Вашої стрічки заблоковано захистом від ботів (наприклад, Cloudflare), можна вставити сирий XML RSS/Atom нижче. Статті буде створено як чернетки.
+          url_blocked_hint_html: "URL стрічки не працює? %{link}."
+          url_blocked_link: Вставте XML напряму
+          note_label: "Лише одноразово:"
+          note: Статті, опубліковані після цього імпорту, не з'являться автоматично — щоб імпортувати нові дописи, вставте оновлений XML ще раз.
+          textarea_label: "Вміст XML RSS/Atom"
+          placeholder: Вставте сюди XML RSS/Atom...
+          submit: Імпортувати з XML
         all_sources: Усі джерела
         counts:
           duration: 'Тривалість: %{seconds}с'

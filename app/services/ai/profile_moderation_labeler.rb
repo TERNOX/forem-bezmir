@@ -35,6 +35,8 @@ module Ai
     def label
       response = @ai_client.call(build_prompt)
       parse_response(response)
+    rescue Ai::Base::ProhibitedContentError
+      raise
     rescue StandardError => e
       Rails.logger.error("Profile Moderation Labeling failed: #{e}")
       "no_moderation_label"

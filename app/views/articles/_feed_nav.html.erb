@@ -22,6 +22,11 @@
           <%= t("views.stories.feed.following") %>
         </a>
       </li>
+      <li>
+        <a data-feed-nav="curated" href="/curated" class="crayons-navigation__item p-1 px-4 <%= "crayons-navigation__item--current" if params[:feed_type] == "curated" %>">
+          <%= t("views.stories.feed.curated") %>
+        </a>
+      </li>
     </div>
     <div class="flex gap-1 relative">
       <li>
@@ -94,7 +99,7 @@
       var currentPath = window.location.pathname;
       var currentFeedNav = "";
 
-      if (currentPath === "/following" || currentPath === "/discover") {
+      if (currentPath === "/following" || currentPath === "/discover" || currentPath === "/curated") {
         currentFeedNav = currentPath.substring(1);
         localStorage.setItem("current_feed", currentFeedNav);
       } else if (currentPath === "/" && localStorage.getItem("current_feed") === null) {
@@ -111,6 +116,11 @@
           item.classList.remove("crayons-navigation__item--current");
         }
       });
+
+      var feedDropdownTrigger = document.getElementById("feed-dropdown-trigger");
+      if (feedDropdownTrigger) {
+        feedDropdownTrigger.classList.toggle("hidden", currentFeedNav === "curated");
+      }
 
       var subMenuItems = document.querySelectorAll("[data-feed-submenu-item]");
       subMenuItems.forEach(function(item) {

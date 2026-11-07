@@ -173,6 +173,17 @@ RSpec.describe "StoriesIndex" do
       expect(response.body).not_to include(CGI.escapeHTML(article.title))
     end
 
+    it "renders a favorited (gemmed) article even if below home feed minimum score" do
+      allow(Settings::UserExperience).to receive(:home_feed_minimum_score).and_return(50)
+      favorited_article = create(:article, score: 5, favorited_by_user: create(:user), favorited_at: Time.current)
+      unfavorited_low_score = create(:article, score: 5, featured: false, favorited_by_user: nil)
+
+      get "/"
+
+      expect(response.body).to include(CGI.escapeHTML(favorited_article.title))
+      expect(response.body).not_to include(CGI.escapeHTML(unfavorited_low_score.title))
+    end
+
     def renders_proper_description
       expect(response.body).to include(Settings::Community.community_description)
     end
@@ -316,6 +327,25 @@ RSpec.describe "StoriesIndex" do
       end
     end
 
+    context "with the onboarding task card" do
+      before { sign_in create(:user) }
+
+      it "renders the task card by default" do
+        get "/"
+
+        expect(response.body).to include("onboarding-task-card")
+      end
+
+      it "does not render the task card when :hide_onboarding_task_card is enabled" do
+        allow(FeatureFlag).to receive(:enabled?).and_call_original
+        allow(FeatureFlag).to receive(:enabled?).with(:hide_onboarding_task_card).and_return(true)
+
+        get "/"
+
+        expect(response.body).not_to include("onboarding-task-card")
+      end
+    end
+
     def sets_fastly_headers
       expected_surrogate_key_headers = %w[main_app_home_page]
       expect(response.headers["Surrogate-Key"].split(", ")).to match_array(expected_surrogate_key_headers)
@@ -397,12 +427,6 @@ RSpec.describe "StoriesIndex" do
         allow(Settings::UserExperience).to receive(:default_locale).and_return("fr")
         get "/"
       end
-	  
-    context "with default_locale configured to uk" do
-      before do
-        allow(Settings::UserExperience).to receive(:default_locale).and_return("uk")
-        get "/"
-      end
 
       it "names proper locale" do
         expect(I18n.locale).to eq(:fr)
@@ -448,6 +472,31 @@ RSpec.describe "StoriesIndex" do
 
         expected_tag = "<a data-text=\"Relevant\" href=\"/\""
         expect(response.body).to include(expected_tag)
+      end
+    end
+
+    describe "/curated" do
+      let(:leader) { create(:user) }
+      let!(:favorited_article) { create(:article, favorited_by_user: leader, favorited_at: Time.current) }
+
+      it "renders the curated feed with 200 OK and sidebar containers" do
+        get "/curated"
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include(CGI.escapeHTML(favorited_article.title))
+        expect(response.body).to include('id="sidebar-wrapper-left"')
+        expect(response.body).to include('id="sidebar-wrapper-right"')
+      end
+
+      it "renders preload tags for curated feed and sidebar when signed in" do
+        sign_in leader
+        get "/curated"
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include('id="sidebar-wrapper-left"')
+        expect(response.body).to include('id="sidebar-wrapper-right"')
+        expect(response.body).to include('href="/stories/feed/?page=1&type_of=curated"')
+        expect(response.body).to include('href="/sidebars/home"')
       end
     end
   end
@@ -502,6 +551,19 @@ RSpec.describe "StoriesIndex" do
         expect(response.headers["Set-Cookie"].to_s).not_to include(ENV["SESSION_KEY"])
         expect(response.headers["Set-Cookie"].to_s).not_to include("remember_user_token")
       end
+    end
+  end
+
+  describe "GET /:username with a non-HTML Accept header" do
+    let(:user) { create(:user) }
+
+    it "returns a 404 that cannot be edge cached for browsers" do
+      get "/#{user.username}", headers: { "Accept" => "application/json" }
+
+      expect(response).to have_http_status(:not_found)
+      expect(response.headers["Cache-Control"]).to include("no-store")
+      expect(response.headers["Surrogate-Control"]).to be_nil
+      expect(response.headers["Vary"]).to include("Accept")
     end
   end
 
