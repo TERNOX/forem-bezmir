@@ -539,7 +539,6 @@ class StoriesController < ApplicationController
     ).call
   end
 
-<<<<<<< HEAD
   def community_feed?
     params[:feed_view] == "community"
   end
@@ -559,14 +558,14 @@ class StoriesController < ApplicationController
     return false unless article
 
     COMMUNITY_ORGANIZATION_IDS.include?(article.organization_id)
-=======
+  end
+
   # articles/_single_story reads public_reaction_categories for every story with reactions;
   # fetch those cached counts in one round-trip instead of one cache.get per story.
   def preload_reaction_counts(stories)
     Article.preload_reaction_counts_for_reactable(
       stories.map(&:object).select { |story| story.public_reactions_count.positive? },
     )
->>>>>>> df56bb56e (perf(stories): fetch profile, org, and homepage reaction counts in one cache round-trip (#24103))
   end
 
   def assign_user_github_repositories
