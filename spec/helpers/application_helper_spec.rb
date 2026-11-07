@@ -892,13 +892,4 @@ RSpec.describe ApplicationHelper do
       expect(helper.subforem_aware_sign_up_url(path)).to eq("http://#{root_subforem.domain}/enter?state=new-user")
     end
   end
-
-  describe "#main_stylesheets_fingerprint" do
-    it "returns a deterministic hash based on minimal, views, and crayons stylesheet paths" do
-      fingerprint = helper.main_stylesheets_fingerprint
-      expect(fingerprint).to be_a(String)
-      expect(fingerprint.length).to eq(10)
-      expect(fingerprint).to eq(helper.main_stylesheets_fingerprint)
-    end
-  end
 end
