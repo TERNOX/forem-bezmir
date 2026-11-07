@@ -142,9 +142,9 @@ describe('<Options />', () => {
         />,
       );
       await userEvent.click(
-        utils.getByRole('button', { name: 'Advanced Post options' }),
+        utils.getByRole('button', { name: 'Розширені налаштування допису' }),
       );
-      await utils.findByText('Done');
+      await utils.findByText('Готово');
       return utils;
     };
 

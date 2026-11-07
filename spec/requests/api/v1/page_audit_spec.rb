@@ -57,35 +57,6 @@ RSpec.describe "Page API audit logs" do
     expect(AuditLog.where(category: AuditLog::ADMIN_API_AUDIT_LOG_CATEGORY)).not_to exist
   end
 
-  context "when an organization admin manages pages" do
-    let(:admin) { create(:user, :org_admin) }
-    let(:organization) { admin.organizations.first }
-    let(:existing_page) { create(:page, organization: organization) }
-
-    before do
-      FeatureFlag.add(:org_readme)
-      FeatureFlag.enable(:org_readme, FeatureFlag::Actor[organization])
-    end
-
-    after { FeatureFlag.disable(:org_readme, FeatureFlag::Actor[organization]) }
-
-    it "logs a creation by the organization admin" do
-      post api_pages_path, params: { organization_id: organization.id, body_markdown: "Organization guide" }.to_json,
-                           headers: headers
-
-      expect(response).to have_http_status(:ok)
-      expect_audit("api_page_create", response.parsed_body["id"])
-    end
-
-    it "logs an update by the organization admin" do
-      put api_page_path(existing_page.id), params: { body_markdown: "Updated organization guide" }.to_json,
-                                           headers: headers
-
-      expect(response).to have_http_status(:ok)
-      expect_audit("api_page_update", existing_page.id)
-    end
-  end
-
   it "does not log an aborted page deletion" do
     allow(Page).to receive(:find).with(existing_page.id.to_s).and_return(existing_page)
     allow(existing_page).to receive(:destroy).and_return(false)

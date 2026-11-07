@@ -19,14 +19,14 @@ RSpec.describe "Articles::Manage pinning sections" do
       it "still offers to pin the article to the author's own profile" do
         get "#{article.path}/manage"
 
-        expect(response.body).to include("Pin to Profile")
-        expect(response.body).not_to include("This post is currently pinned to your profile.")
+        expect(response.body).to include("Закріпити у профілі")
+        expect(response.body).not_to include("Ця публікація наразі закріплена у вашому профілі.")
       end
 
       it "shows the article as pinned to the organization" do
         get "#{article.path}/manage"
 
-        expect(response.body).to include("This post is currently pinned to #{organization.name}.")
+        expect(response.body).to include("Цей допис зараз закріплено в проєкті «#{CGI.escapeHTML(organization.name)}».")
       end
     end
 
@@ -39,7 +39,7 @@ RSpec.describe "Articles::Manage pinning sections" do
       it "reports the article as pinned to the author's profile, not the org pin" do
         get "#{article.path}/manage"
 
-        expect(response.body).to include("This post is currently pinned to your profile.")
+        expect(response.body).to include("Ця публікація наразі закріплена у вашому профілі.")
       end
     end
   end

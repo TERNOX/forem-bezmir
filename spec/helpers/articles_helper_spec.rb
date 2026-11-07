@@ -93,7 +93,9 @@ describe ArticlesHelper do
     end
 
     it "returns false when no supported video is present" do
-      article = instance_double(Article, processed_html: "<p>No video</p>", comments_blob: "")
+      article = instance_double(Article, processed_html: "<p>No video</p>", comments_blob: "",
+                                         loaded_comment_trees: [], displayed_comments_count: 0,
+                                         comments_count: 0)
 
       expect(helper.has_vid?(article)).to be_falsey
     end

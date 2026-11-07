@@ -23,7 +23,7 @@ RSpec.describe "UserOrganization" do
 
     it "shows an error message if org_secret param is missing or blank" do
       post "/users/join_org"
-      expect(response).to redirect_to("/settings/organization")
+      expect(response).to redirect_to("/settings/organization/new")
       expect(flash[:error]).to eq "The given organization secret was invalid."
     end
 

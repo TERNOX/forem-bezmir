@@ -209,7 +209,7 @@ RSpec.describe "ArticlesCreate" do
       attributes[:timezone] = "Europe/Moscow"
       post "/articles", params: { article: attributes }
       a = Article.find_by(title: new_title)
-      published_at_utc = a.published_at.in_time_zone("Kyiv").strftime("%m/%d/%Y %H:%M")
+      published_at_utc = a.published_at.utc.strftime("%m/%d/%Y %H:%M")
       expect(published_at_utc).to eq("#{tomorrow.strftime('%m/%d/%Y')} 15:00")
     end
 
@@ -218,7 +218,7 @@ RSpec.describe "ArticlesCreate" do
       attributes[:timezone] = "Pacific/Honolulu"
       post "/articles", params: { article: attributes }
       a = Article.find_by(title: new_title)
-      published_at_utc = a.published_at.in_time_zone("Kyiv").strftime("%m/%d/%Y %H:%M")
+      published_at_utc = a.published_at.utc.strftime("%m/%d/%Y %H:%M")
       expect(published_at_utc).to eq("#{(tomorrow + 1.day).strftime('%m/%d/%Y')} 04:00")
     end
 
@@ -229,7 +229,7 @@ RSpec.describe "ArticlesCreate" do
       post "/articles", params: { article: attributes }
       a = Article.find_by(title: new_title)
       # 00:00 in user timezone (attributes[:timezone])
-      published_at_utc = a.published_at.in_time_zone("Kyiv").strftime("%m/%d/%Y %H:%M")
+      published_at_utc = a.published_at.utc.strftime("%m/%d/%Y %H:%M")
       expect(published_at_utc).to eq("#{tomorrow.strftime('%m/%d/%Y')} 21:00")
     end
 

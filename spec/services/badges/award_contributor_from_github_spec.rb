@@ -25,6 +25,8 @@ RSpec.describe Badges::AwardContributorFromGithub, type: :service do
     it "paces consecutive searches by the remaining SEARCH_MIN_INTERVAL" do
       service = described_class.new("thanks")
       elapsed = 1.5
+      # Bullet also reads the clock (with a unit argument) while the example runs.
+      allow(Process).to receive(:clock_gettime).and_call_original
       allow(Process).to receive(:clock_gettime)
         .with(Process::CLOCK_MONOTONIC)
         .and_return(100.0, 100.0, 100.0 + elapsed, 100.0 + described_class::SEARCH_MIN_INTERVAL.to_f)

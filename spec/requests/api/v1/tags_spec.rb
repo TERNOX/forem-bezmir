@@ -280,7 +280,8 @@ RSpec.describe "Api::V1::Tags" do
         end.to raise_error(ActiveRecord::RecordNotUnique)
       end
 
-      ["bad-name", "x" * 31, ""].each do |name|
+      # The fork allows hyphens and unicode letters in tag names, so use a space instead.
+      ["bad name", "x" * 31, ""].each do |name|
         it "rejects the invalid name #{name.inspect} with model validation errors" do
           expect do
             post api_tags_path, params: tag_params.merge(name: name).to_json, headers: auth_headers
