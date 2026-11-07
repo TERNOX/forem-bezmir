@@ -68,7 +68,12 @@
   data-scheduling-enabled="true"
   data-video-enabled="<%= Settings::General.enable_video_upload %>"
   data-video-upload-max="<%= Settings::General.video_upload_max_file_size_mb %>"
-  data-video-too-large-message="<%= h t('views.editor.video.too_large_client', size: '%{size}', max: Settings::General.video_upload_max_file_size_mb) %>">
+  data-video-too-large-message="<%= h t('views.editor.video.too_large_client', size: '%{size}', max: Settings::General.video_upload_max_file_size_mb) %>"
+  <% if co_author_invitations_enabled_for?(article) %>
+    data-co-author-invitations-enabled="true"
+    data-co-author-invitations="<%= co_author_invitations_editor_data(article).to_json %>"
+    data-co-author-invitations-max="<%= CoAuthorInvitation::MAX_PER_ARTICLE %>"
+  <% end %>>
 
   
 

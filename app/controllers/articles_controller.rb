@@ -33,13 +33,13 @@ class ArticlesController < ApplicationController
     #              do with a comment.
     skip_authorization
 
-    @articles = Article.feed.order(published_at: :desc).page(params[:page].to_i).per(12)
+    @articles = Article.feed.select(:cached_user_name).order(published_at: :desc).page(params[:page].to_i).per(12)
     @latest = request.path == latest_feed_path
 
     @organization = custom_domain_org
     if @organization
       @user = @organization
-      @articles = @articles.where(organization_id: @organization.id).includes(:user)
+      @articles = @articles.where(organization_id: @organization.id)
       if params[:tag]
         handle_tag_feed
       end
@@ -51,15 +51,14 @@ class ArticlesController < ApplicationController
                   elsif @latest
                     @articles
                       .where("score > ?", Articles::Feeds::Latest::MINIMUM_SCORE)
-                      .includes(:user)
                   else
                     @articles
                       .with_at_least_home_feed_minimum_score
-                      .includes(:user)
                   end
     end
 
-    not_found unless @articles&.any?
+    # Load once up front; `any?` on an unloaded relation would issue an extra EXISTS query.
+    not_found unless @articles&.load&.any?
 
     user_keys = if @user&.respond_to?(:profile_identity_cache_keys)
                   @user.profile_identity_cache_keys
@@ -142,7 +141,8 @@ class ArticlesController < ApplicationController
           if front_matter["tags"]
             tags = Article.new.tag_list.add(front_matter["tags"], parser: ActsAsTaggableOn::TagParser)
           end
-          if front_matter["cover_image"]
+          # A YAML list or number in front matter isn't an image URL; skip it instead of raising.
+          if front_matter["cover_image"].is_a?(String)
             cover_image = ApplicationController.helpers.cloud_cover_url(front_matter["cover_image"])
           end
 
@@ -161,7 +161,7 @@ class ArticlesController < ApplicationController
     authorize Article
     @user = current_user
     article_params_json[:subforem_id] ||= RequestStore.store[:subforem_id]
-    article = Articles::Creator.call(@user, article_params_json)
+    article = Articles::Creator.call(@user, article_params_json, co_author_invitee_ids: co_author_invitee_ids)
 
     if article.persisted?
       if article.type_of == "status"
@@ -188,7 +188,7 @@ class ArticlesController < ApplicationController
       }, status: :conflict
     end
 
-    updated = Articles::Updater.call(@user, @article, article_params_json)
+    updated = Articles::Updater.call(@user, @article, article_params_json, co_author_invitee_ids: co_author_invitee_ids)
 
     respond_to do |format|
       format.html do
@@ -315,7 +315,8 @@ class ArticlesController < ApplicationController
     @user = current_user
     @version = @user.setting.editor_version if @user
     @organizations = @user&.member_organizations
-    @tag = Tag.find_by(name: params[:template])
+    # Tag names are required, so a blank template can never match; skip the lookup.
+    @tag = Tag.find_by(name: params[:template]) if params[:template].present?
     @prefill = params[:prefill].to_s.gsub("\\n ", "\n").gsub("\\n", "\n")
     @user_approved_liquid_tags = Users::ApprovedLiquidTags.call(@user)
   end
@@ -324,15 +325,16 @@ class ArticlesController < ApplicationController
     if (@user = User.find_by(username: params[:username]))
       @articles = @articles.where(user_id: @user.id)
     elsif (@user = Organization.find_by(slug: params[:username]))
-      @articles = @articles.where(organization_id: @user.id).includes(:user)
+      @articles = @articles.where(organization_id: @user.id)
     end
   end
 
   def handle_tag_feed
-    tag_name = Tag.aliased_name(params[:tag])
-    return unless tag_name
+    tag = Tag.select(:id, :name, :alias_for).find_by(name: params[:tag].to_s.downcase)
+    return unless tag
 
-    @tag = Tag.find_by(name: tag_name)
+    tag_name = tag.alias_for.presence || tag.name
+    @tag = tag.alias_for.present? ? Tag.select(:id, :name).find_by(name: tag_name) : tag
     @articles = @articles.cached_tagged_with(tag_name)
   end
 
@@ -387,6 +389,18 @@ class ArticlesController < ApplicationController
     manage_published_at_params
 
     @article_params_json = params.require(:article).permit(allowed_params)
+  end
+
+  # The editor's co-author invitee list, or nil to leave the article's invitations untouched (the
+  # list wasn't sent, or invitations aren't enabled). Invitees must follow the author, so only the
+  # author manages them; an admin editing someone else's post leaves them alone.
+  def co_author_invitee_ids
+    article_params_json # normalizes the editor's camelCased keys
+    return unless params["article"].key?("co_author_invitee_ids")
+    return if @article && @article.user_id != current_user.id
+    return unless feature_flag_enabled?(:co_author_invitations)
+
+    params.require(:article).permit(co_author_invitee_ids: [])[:co_author_invitee_ids] || []
   end
 
   def manage_published_at_params

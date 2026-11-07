@@ -242,6 +242,24 @@ RSpec.describe "StoriesIndex" do
       expect(response.body).to include(ad.processed_html)
     end
 
+    it "renders billboards hidden when their placement area is hidden by default" do
+      ad = create(:billboard, published: true, approved: true, placement_area: "sidebar_right",
+                              organization: org)
+      BillboardPlacementAreaConfig.create!(placement_area: "sidebar_right", hidden_by_default: true)
+
+      get "/"
+      expect(response.body).to include(ad.processed_html)
+      expect(response.body).to include('data-placement-area="sidebar_right" data-placement-hidden="true"')
+    end
+
+    it "lets server-rendered billboard scripts queue placement reveals before the application pack loads" do
+      get "/"
+      queue_stub_position = response.body.index("window.Forem.queuedBillboardPlacementReveals")
+
+      expect(queue_stub_position).to be_present
+      expect(queue_stub_position).to be < response.body.index('id="page-content"')
+    end
+
     it "does not render billboards when not approved" do
       ad = create(:billboard, published: true, approved: false, placement_area: "sidebar_right",
                               organization: org)
@@ -567,6 +585,173 @@ RSpec.describe "StoriesIndex" do
     end
   end
 
+  describe "GET /:username flagged state isolation on cached profile path" do
+    let(:user) { create(:user) }
+
+    it "does not query user flag reactions for signed-out or signed-in visitors" do
+      flagger = create(:user, :trusted)
+      create(:vomit_reaction, user: flagger, reactable: user)
+
+      reaction_queries = []
+      callback = lambda do |_name, _start, _finish, _id, payload|
+        reaction_queries << payload[:sql] if payload[:sql].include?('FROM "reactions"')
+      end
+
+      ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+        get "/#{user.username}"
+        sign_in flagger
+        get "/#{user.username}"
+      end
+
+      expect(response).to have_http_status(:ok)
+      expect(reaction_queries.grep(/"reactable_type" = 'User'/)).to be_empty
+      expect(response.body).not_to include("data-is-user-flagged")
+    end
+  end
+
+  describe "GET /:username story list reaction preloading" do
+    let(:user) { create(:user) }
+    let!(:article) { create(:article, user: user, published: true) }
+
+    it "renders the profile without preloading distinct reaction categories" do
+      create(:reaction, reactable: article, category: "like")
+      distinct_category_queries = []
+      callback = lambda do |_name, _start, _finish, _id, payload|
+        distinct_category_queries << payload[:sql] if payload[:sql].include?("distinct(reactions.category)")
+      end
+
+      ActiveSupport::Notifications.subscribed(callback, "sql.active_record") { get "/#{user.username}" }
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include(article.title)
+      expect(distinct_category_queries).to be_empty
+    end
+
+    it "fetches story reaction counts in one cache round-trip" do
+      other_article = create(:article, user: user, published: true)
+      create(:reaction, reactable: article, category: "like")
+      create(:reaction, reactable: other_article, category: "unicorn")
+      [article, other_article].each { |story| story.update_column(:public_reactions_count, 1) }
+
+      allow(Rails.cache).to receive(:read_multi).and_call_original
+      allow(Rails.cache).to receive(:fetch).and_call_original
+      get "/#{user.username}"
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("sparkle-heart", "multi-unicorn")
+      expect(Rails.cache).to have_received(:read_multi)
+        .with(a_string_starting_with("reaction_counts_for_reactable"), any_args).once
+      expect(Rails.cache).not_to have_received(:fetch).with(/reaction_counts_for_reactable/, anything)
+    end
+
+    it "does not query organizations once per org story when signed out", :aggregate_failures do
+      org = create(:organization)
+      count_org_queries = lambda do
+        org_queries = 0
+        callback = lambda do |*, payload|
+          org_queries += 1 if payload[:sql].include?("FROM \"organizations\"")
+        end
+        ActiveSupport::Notifications.subscribed(callback, "sql.active_record") { get "/#{user.username}" }
+        org_queries
+      end
+
+      create(:article, user: user, organization: org, published: true)
+      # Warm-up render: the first request pays one-off lookups unrelated to stories.
+      count_org_queries.call
+      baseline = count_org_queries.call
+      expect(response).to have_http_status(:ok)
+
+      create_list(:article, 2, user: user, organization: org, published: true)
+      2.times { create(:article, user: user, organization: create(:organization), published: true) }
+
+      expect(count_org_queries.call).to be <= baseline
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include(CGI.escapeHTML(org.name))
+    end
+  end
+
+  describe "edge-cached pages with a pending flash message" do
+    let(:user) { create(:user) }
+    let(:reset_notice) { I18n.t("devise.passwords.reset_instructions_sent") }
+
+    {
+      "GET /:username" => ->(user) { "/#{user.username}" },
+      "GET / (home page)" => ->(_user) { "/" }
+    }.each do |description, path_for|
+      context "with #{description}" do
+        let(:page_path) { path_for.call(user) }
+        let(:page_url) { "http://www.example.com#{page_path}" }
+
+        before do
+          get "/users/password/new", headers: { "Referer" => page_url }
+          post "/users/password", params: { user: { email: user.email } }
+        end
+
+        it "does not edge cache the response that renders the flash", :aggregate_failures do
+          expect(response).to redirect_to(page_url)
+          follow_redirect!
+
+          expect(response).to have_http_status(:ok)
+          expect(response.body).to include(reset_notice)
+          expect(response.headers["Surrogate-Control"]).to be_nil
+          expect(response.headers["X-Accel-Expires"]).to be_nil
+          expect(response.headers["Cache-Control"]).not_to eq("public, no-cache")
+        end
+
+        it "consumes the flash so the next request is cacheable again", :aggregate_failures do
+          follow_redirect!
+          get page_path
+
+          expect(response).to have_http_status(:ok)
+          expect(response.body).not_to include(reset_notice)
+          expect(response.headers["Surrogate-Control"]).to be_present
+        end
+      end
+    end
+  end
+
+  describe "GET /:slug (organization page)" do
+    let(:organization) { create(:organization) }
+    let(:user) { create(:user) }
+
+    before do
+      create(:organization_membership, organization: organization, user: user, type_of_user: "member")
+      create(:article, organization: organization, user: user, published: true)
+    end
+
+    context "when the organization has a pinned post" do
+      let(:pinned_article) { create(:article, organization: organization, user: user, published: true) }
+
+      before do
+        create(:profile_pin, :for_organization, pinnable: pinned_article, profile: organization)
+      end
+
+      it "renders a dedicated pinned section above the regular feed" do
+        get "/#{organization.slug}"
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include(CGI.escapeHTML(pinned_article.title))
+        expect(response.body).to include(I18n.t("views.users.pinned"))
+      end
+
+      it "does not repeat the pinned post in the regular feed" do
+        # A rendered story card references its own "article-link-<id>" DOM id twice
+        # (once as the id= attribute itself, once as an aria-labelledby reference to
+        # it), so scanning for that bare string gives 2 per card. Match the id=
+        # attribute specifically to count actual card instances.
+        get "/#{organization.slug}"
+        expect(response.body.scan(/id="article-link-#{pinned_article.id}"/).size).to eq(1)
+      end
+
+      it "stops showing the pin once the article moves to a different organization" do
+        other_org = create(:organization)
+        pinned_article.update_column(:organization_id, other_org.id)
+
+        get "/#{organization.slug}"
+        expect(response.body).not_to include(%(id="article-link-#{pinned_article.id}"))
+      end
+    end
+  end
+
   describe "InstantClick stylesheet alignment" do
     it "does not render the alignment script under normal navigation" do
       get "/"
@@ -590,6 +775,143 @@ RSpec.describe "StoriesIndex" do
       expect(response.body).to include("replaceChild")
       # Internal navigation excludes the outer layout, so the outer shell links should not be rendered
       expect(response.body).not_to include('id="main-minimal-stylesheet"')
+    end
+  end
+
+  describe "GET /:username top-level entity lookup short-circuiting" do
+    it "skips podcast, organization, and top-level page slug queries when a user matches", :aggregate_failures do
+      user = create(:user)
+      queries = []
+      callback = ->(*, payload) { queries << payload[:sql] unless payload[:name] == "SCHEMA" }
+
+      ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+        get "/#{user.username}"
+      end
+
+      expect(response).to have_http_status(:ok)
+      expect(queries.grep(/FROM "podcasts"/)).to be_empty
+      expect(queries.grep(/FROM "organizations" WHERE "organizations"\."slug"/)).to be_empty
+      expect(queries.grep(/FROM "pages" WHERE "pages"\."slug"/)).to be_empty
+    end
+
+    it "skips top-level page and podcast slug queries when an organization matches", :aggregate_failures do
+      organization = create(:organization)
+      user = create(:user)
+      create(:organization_membership, organization: organization, user: user, type_of_user: "member")
+      create(:article, organization: organization, user: user, published: true)
+      queries = []
+      callback = ->(*, payload) { queries << payload[:sql] unless payload[:name] == "SCHEMA" }
+
+      ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+        get "/#{organization.slug}"
+      end
+
+      expect(response).to have_http_status(:ok)
+      expect(queries.grep(/FROM "podcasts"/)).to be_empty
+      expect(queries.grep(/FROM "pages" WHERE "pages"\."slug" = '#{organization.slug}'/)).to be_empty
+    end
+
+    it "skips article, profile pin, and followed tag queries when articles_count and following_tags_count are zero",
+       :aggregate_failures do
+      user = create(:user)
+      queries = []
+      callback = ->(*, payload) { queries << payload[:sql] unless payload[:name] == "SCHEMA" }
+
+      ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+        get "/#{user.username}"
+      end
+
+      expect(response).to have_http_status(:ok)
+      expect(queries.grep(/FROM "articles"/)).to be_empty
+      expect(queries.grep(/FROM "profile_pins"/)).to be_empty
+      expect(queries.grep(/FROM "tags" INNER JOIN "follows"/)).to be_empty
+    end
+
+    it "queries member organizations only once when rendering the profile sidebar", :aggregate_failures do
+      organization = create(:organization)
+      user = create(:user)
+      create(:organization_membership, organization: organization, user: user, type_of_user: "member")
+      queries = []
+      callback = ->(*, payload) { queries << payload[:sql] unless payload[:name] == "SCHEMA" }
+
+      ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+        get "/#{user.username}"
+      end
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include(CGI.escapeHTML(organization.name))
+      expect(queries.grep(/FROM "organization_memberships" WHERE "organization_memberships"\."user_id"/))
+        .to have_attributes(size: 1)
+      expect(queries.grep(/FROM "organizations" INNER JOIN "organization_memberships"/))
+        .to have_attributes(size: 1)
+    end
+
+    it "skips JSON-LD generation for internal navigation and signed-in profile requests", :aggregate_failures do
+      user = create(:user)
+
+      get "/#{user.username}"
+      expect(response.body).to include('type="application/ld+json"')
+
+      get "/#{user.username}", params: { i: "i" }
+      expect(response.body).not_to include('type="application/ld+json"')
+
+      sign_in user
+      get "/#{user.username}"
+      expect(response.body).not_to include('type="application/ld+json"')
+    end
+  end
+
+  describe "GET / home feed context note and organization preloading" do
+    let(:user) { create(:user) }
+
+    it "preloads context notes in one query across featured, pinned, and feed stories", :aggregate_failures do
+      stories = create_list(:article, 3, user: user, published: true, score: 10, hotness_score: 100)
+      pinned = create(:article, user: user, published: true, score: 10, hotness_score: 50)
+      PinnedArticle.set(pinned)
+      create(:context_note, article: stories.first, content: "first home note")
+      create(:context_note, article: stories.first, content: "second home note")
+      create(:context_note, article: pinned, content: "pinned home note")
+
+      context_note_queries = 0
+      callback = lambda do |*, payload|
+        context_note_queries += 1 if payload[:sql].include?('FROM "context_notes"')
+      end
+
+      ActiveSupport::Notifications.subscribed(callback, "sql.active_record") { get "/" }
+
+      expect(response).to have_http_status(:ok)
+      expect(context_note_queries).to eq(1)
+      expect(response.body).to include("first home note", "pinned home note")
+      expect(response.body).not_to include("second home note")
+    ensure
+      PinnedArticle.remove
+    end
+
+    it "batches organization lookups for signed-out home feed renders", :aggregate_failures do
+      org = create(:organization)
+      count_org_queries = lambda do
+        org_queries = 0
+        callback = lambda do |*, payload|
+          org_queries += 1 if payload[:sql].include?('FROM "organizations"')
+        end
+        ActiveSupport::Notifications.subscribed(callback, "sql.active_record") { get "/" }
+        org_queries
+      end
+
+      create(:article, user: user, organization: org, published: true, score: 10, hotness_score: 100)
+      count_org_queries.call
+      baseline = count_org_queries.call
+      expect(response).to have_http_status(:ok)
+
+      create_list(:article, 2, user: user, organization: org, published: true, score: 10, hotness_score: 90)
+      2.times do
+        create(:article, user: user, organization: create(:organization),
+                         published: true, score: 10, hotness_score: 80)
+      end
+
+      expect(count_org_queries.call).to be <= baseline
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include(CGI.escapeHTML(org.name))
     end
   end
 end

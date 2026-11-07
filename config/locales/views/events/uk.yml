@@ -35,6 +35,8 @@ uk:
         live: НАЖИВО
         ended: ЗАВЕРШЕНО
       challenge:
+        upcoming: НЕЗАБАРОМ
+        starts_on: "Початок %{date}"
         breadcrumb: Челенджі
         status: "Статус челенджу:"
         prompt_default: Завдання челенджу

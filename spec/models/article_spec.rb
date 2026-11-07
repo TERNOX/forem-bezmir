@@ -1047,6 +1047,47 @@ RSpec.describe Article do
         sanitized_html = ActionView::Base.full_sanitizer.sanitize(test_article.processed_html)
         expect(test_article.body_text).to eq(sanitized_html)
       end
+
+      it "sanitizes processed_html only once while it is unchanged" do
+        article = build(:article)
+        article.processed_html = "<p>Some text</p>"
+        sanitizer = ActionView::Base.full_sanitizer
+        allow(ActionView::Base).to receive(:full_sanitizer).and_return(sanitizer)
+        allow(sanitizer).to receive(:sanitize).and_call_original
+
+        3.times { article.body_text }
+
+        expect(sanitizer).to have_received(:sanitize).once
+      end
+
+      it "recomputes when processed_html changes" do
+        article = build(:article)
+        article.processed_html = "<p>Old text</p>"
+        expect(article.body_text).to eq("Old text")
+
+        article.processed_html = "<p>New text</p>"
+        expect(article.body_text).to eq("New text")
+      end
+
+      it "recomputes when processed_html is mutated in place" do
+        article = build(:article)
+        article.processed_html = "<p>Old text</p>"
+        expect(article.body_text).to eq("Old text")
+
+        article.processed_html.sub!("Old", "New")
+        expect(article.body_text).to eq("New text")
+      end
+
+      it "sanitizes once when saving a draft with a blank description" do
+        article = build(:article, published: false, description: nil)
+        sanitizer = ActionView::Base.full_sanitizer
+        allow(ActionView::Base).to receive(:full_sanitizer).and_return(sanitizer)
+        allow(sanitizer).to receive(:sanitize).and_call_original
+
+        article.save!
+
+        expect(sanitizer).to have_received(:sanitize).with(article.processed_html).once
+      end
     end
 
     context "when a main_image does not already exist" do
@@ -2572,7 +2613,7 @@ RSpec.describe Article do
     end
 
     let(:reactions) { double("reactions", sum: 10, privileged_category: double("privileged_category", sum: 5)) } # rubocop:disable RSpec/VerifiedDoubles
-    let(:comments) { double("comments", sum: 3) } # rubocop:disable RSpec/VerifiedDoubles
+    let(:comments) { double("comments", pluck: [3]) } # rubocop:disable RSpec/VerifiedDoubles
 
     it "stably sets the correct blackbox values" do
       article.update_score
@@ -2760,6 +2801,17 @@ RSpec.describe Article do
         # Total: -1 + -1 + 10 + -1 = 7
         expect(article.reload.comment_score).to eq(7)
       end
+
+      it "reads only comment scores instead of loading full comment rows" do
+        create(:comment, commentable: article, score: 4)
+        queries = []
+        callback = ->(*, payload) { queries << payload[:sql] if payload[:sql].include?('FROM "comments"') }
+
+        ActiveSupport::Notifications.subscribed(callback, "sql.active_record") { article.update_score }
+
+        expect(queries).to all(start_with('SELECT "comments"."score"'))
+        expect(article.reload.comment_score).to eq(4)
+      end
     end
 
     context "triggering LinkedDomains::UpdateScoreWorker" do
@@ -2814,7 +2866,7 @@ RSpec.describe Article do
   describe "automod_label adjustments" do
     before do
       allow(article).to receive(:reactions).and_return(double(sum: 0, privileged_category: double(sum: 0)))
-      allow(article).to receive(:comments).and_return(double(sum: 0))
+      allow(article).to receive(:comments).and_return(double(pluck: []))
       allow(BlackBox).to receive(:article_hotness_score).and_return(0)
     end
 
@@ -2989,7 +3041,7 @@ RSpec.describe Article do
   describe "established_user_adjustment in update_score" do
     before do
       allow(article).to receive(:reactions).and_return(double(sum: 0, privileged_category: double(sum: 0)))
-      allow(article).to receive(:comments).and_return(double(sum: 0))
+      allow(article).to receive(:comments).and_return(double(pluck: []))
       allow(BlackBox).to receive(:article_hotness_score).and_return(0)
       allow(Settings::UserExperience).to receive(:index_minimum_score).and_return(12)
     end
@@ -3133,6 +3185,72 @@ RSpec.describe Article do
       expect(reaction_counts[categories.first.slug.to_s]).to eq(3) # like has 3 reactions
       expect(reaction_counts[categories.second.slug.to_s]).to eq(2) # unicorn has 2 reactions
       expect(reaction_counts[categories.third.slug.to_s]).to eq(1) # exploding_head has 1 reaction
+    end
+  end
+
+  describe ".preload_reaction_counts_for_reactable" do
+    let(:other_article) { create(:article, user: user) }
+
+    before do
+      create(:reaction, reactable: article, category: "like")
+      create(:reaction, reactable: article, category: "unicorn")
+      create(:reaction, reactable: other_article, category: "fire")
+    end
+
+    it "returns the same categories as the per-record lookup with a single cache call" do
+      expected = [article, other_article].map { |a| Article.find(a.id).public_reaction_categories }
+      stories = [Article.find(article.id), Article.find(other_article.id)]
+
+      allow(Rails.cache).to receive(:read_multi).and_call_original
+      allow(Rails.cache).to receive(:fetch).and_call_original
+      described_class.preload_reaction_counts_for_reactable(stories)
+
+      expect(stories.map(&:public_reaction_categories)).to eq(expected)
+      expect(Rails.cache).to have_received(:read_multi).once
+      expect(Rails.cache).not_to have_received(:fetch).with(/reaction_counts_for_reactable/, anything)
+    end
+
+    it "computes all cache misses with one reactions query and caches the per-record values" do
+      empty_article = create(:article, user: user)
+      stories = [article, other_article, empty_article].map { |a| described_class.find(a.id) }
+      expected = stories.to_h do |story|
+        [story.reaction_counts_cache_key, story.send(:compute_reaction_counts_for_reactable)]
+      end
+
+      reaction_queries = []
+      callback = lambda do |_name, _start, _finish, _id, payload|
+        reaction_queries << payload[:sql] if payload[:sql].include?('FROM "reactions"')
+      end
+      allow(Rails.cache).to receive(:write_multi).and_call_original
+      ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+        described_class.preload_reaction_counts_for_reactable(stories)
+      end
+
+      expect(reaction_queries.size).to eq(1)
+      expect(Rails.cache).to have_received(:write_multi).with(anything, expires_in: 10.hours).once
+      expect(Rails.cache).to have_received(:write_multi) do |written|
+        expect(written.transform_values { |counts| counts.sort_by { |c| c[:category] } })
+          .to eq(expected.transform_values { |counts| counts.sort_by { |c| c[:category] } })
+        expect(written[empty_article.reaction_counts_cache_key]).to eq([])
+      end
+    end
+
+    it "does not recompute or rewrite records that are already cached" do
+      cached = [{ category: "like", count: 7 }]
+      allow(Rails.cache).to receive(:read_multi).and_return(article.reaction_counts_cache_key => cached)
+      allow(Rails.cache).to receive(:write_multi)
+      story = described_class.find(article.id)
+
+      described_class.preload_reaction_counts_for_reactable([story])
+
+      expect(story.send(:reaction_counts_for_reactable)).to eq(cached)
+      expect(Rails.cache).not_to have_received(:write_multi)
+    end
+
+    it "is a no-op for an empty list" do
+      allow(Rails.cache).to receive(:read_multi)
+      described_class.preload_reaction_counts_for_reactable([])
+      expect(Rails.cache).not_to have_received(:read_multi)
     end
   end
 
@@ -3297,9 +3415,100 @@ RSpec.describe Article do
     end
 
     context "when title or published_at attribute changes but published is false" do
-      it "does not trigger the Images::SocialImageWorker" do
+      it "does not trigger the Images::SocialImageWorker or parse the quote" do
+        allow(Images::SocialImageQuote).to receive(:from_html)
         article.body_markdown = "---\ntitle: New Title #{rand(1_000)}\npublished: false\n---\n\n# Hello World"
         article.save
+        expect(Images::SocialImageQuote).not_to have_received(:from_html)
+        expect(Images::SocialImageWorker).not_to have_received(:perform_async)
+      end
+    end
+
+    context "when the generated image's quote or reading time could change" do
+      # Long enough (80+ characters) that the quote doesn't also pull in the next paragraph.
+      let(:opening) { "The opening paragraph is quoted on the generated social image, so changing it matters." }
+      let(:article) do
+        body = "---\ntitle: Quote Trigger\npublished: true\n---\n\n#{opening}\n\nLater text here."
+        create(:article, title: "Quote Trigger", body_markdown: body)
+      end
+
+      before do
+        article.update_columns(main_image: nil, social_image: "https://example.com/social.png")
+      end
+
+      it "triggers the Images::SocialImageWorker when the opening paragraph changes" do
+        article.update(body_markdown: article.body_markdown.sub(opening, "A brand new opening for this post."))
+        expect(Images::SocialImageWorker).to have_received(:perform_async).with(article.id, "Article")
+      end
+
+      it "does not trigger the Images::SocialImageWorker when only later text changes" do
+        article.update(body_markdown: article.body_markdown.sub("Later text here.", "Later words here."))
+        expect(Images::SocialImageWorker).not_to have_received(:perform_async)
+      end
+
+      it "triggers the Images::SocialImageWorker when the reading time changes" do
+        article.update(body_markdown: "#{article.body_markdown}\n\n#{'word ' * 600}")
+        expect(Images::SocialImageWorker).to have_received(:perform_async).with(article.id, "Article")
+      end
+    end
+
+    context "when the author changes on a published article with a generated social image" do
+      before do
+        article.update_columns(main_image: nil, social_image: "https://example.com/social.png")
+      end
+
+      it "triggers the Images::SocialImageWorker" do
+        article.update(user: create(:user))
+        expect(Images::SocialImageWorker).to have_received(:perform_async).with(article.id, "Article")
+      end
+
+      it "does not trigger the Images::SocialImageWorker when the author is unchanged" do
+        article.save
+        expect(Images::SocialImageWorker).not_to have_received(:perform_async)
+      end
+    end
+
+    context "when saved inside an open transaction" do
+      self.use_transactional_tests = false
+
+      let!(:article) { create(:article, user: user, with_tags: false, with_main_image: false) }
+
+      after do
+        described_class.where(id: article.id).delete_all
+        Users::Setting.where(user_id: user.id).delete_all
+        Users::NotificationSetting.where(user_id: user.id).delete_all
+        Profile.where(user_id: user.id).delete_all
+        User.where(id: user.id).delete_all
+      end
+
+      it "waits until the transaction commits before enqueuing Images::SocialImageWorker" do
+        # Clear any call from the initial `let!(:article)` creation outside our test transaction
+        RSpec::Mocks.space.proxy_for(Images::SocialImageWorker).reset
+        allow(Images::SocialImageWorker).to receive(:perform_async)
+
+        article.body_markdown = "---\ntitle: New Title #{rand(1_000)}\npublished: true\n---\n\n# Hello World"
+        article.main_image = nil
+
+        described_class.transaction do
+          article.save!
+          expect(Images::SocialImageWorker).not_to have_received(:perform_async)
+        end
+
+        expect(Images::SocialImageWorker).to have_received(:perform_async).with(article.id, "Article")
+      end
+
+      it "does not enqueue Images::SocialImageWorker if the transaction rolls back" do
+        RSpec::Mocks.space.proxy_for(Images::SocialImageWorker).reset
+        allow(Images::SocialImageWorker).to receive(:perform_async)
+
+        article.body_markdown = "---\ntitle: New Title #{rand(1_000)}\npublished: true\n---\n\n# Hello World"
+        article.main_image = nil
+
+        described_class.transaction do
+          article.save!
+          raise ActiveRecord::Rollback
+        end
+
         expect(Images::SocialImageWorker).not_to have_received(:perform_async)
       end
     end
@@ -3817,6 +4026,13 @@ RSpec.describe Article do
       article.title = "Line one\n  \n  Line two"
       expect(article.title_finalized).to eq("<p class=\"quickie-paragraph\">Line one</p><p class=\"quickie-paragraph\">Line two</p>")
     end
+
+    it "escapes angle brackets in the title" do
+      article.title = "<img src=x onerror=alert(1)>\nSecond line"
+      expected = "<p class=\"quickie-paragraph\">&lt;img src=x onerror=alert(1)&gt;<br>Second line</p>"
+      expect(article.title_finalized).to eq(expected)
+      expect(article.title_finalized).not_to include("<img")
+    end
   end
 
   describe "#extract_url_from_status_title" do
@@ -4094,6 +4310,192 @@ RSpec.describe Article do
       article.update!(co_author_ids: [co_author1.id, co_author2.id])
 
       expect(Notification).not_to have_received(:send_to_co_authors)
+    end
+  end
+
+  describe "co-author invitations" do
+    let(:author) { create(:user) }
+    let(:article) { create(:article, user: author) }
+    let(:invitee) { create(:user) }
+
+    it "removes an accepted invitation when its co-author is dropped from co_author_ids", :aggregate_failures do
+      invitation = create(:co_author_invitation, :accepted, article: article, user: invitee)
+      pending_invitation = create(:co_author_invitation, article: article)
+
+      article.reload.update!(co_author_ids: [])
+
+      expect(CoAuthorInvitation.exists?(invitation.id)).to be(false)
+      expect(CoAuthorInvitation.exists?(pending_invitation.id)).to be(true)
+    end
+
+    it "keeps accepted invitations whose co-author is still credited" do
+      invitation = create(:co_author_invitation, :accepted, article: article, user: invitee)
+
+      article.reload.update!(title: "A new title")
+
+      expect(CoAuthorInvitation.exists?(invitation.id)).to be(true)
+    end
+
+    it "destroys its invitations and their notifications along with the article", :aggregate_failures do
+      invitation = create(:co_author_invitation, article: article, user: invitee)
+      Notifications::CoAuthorInvitations::Send.call(invitation)
+
+      article.destroy
+
+      expect(CoAuthorInvitation.exists?(invitation.id)).to be(false)
+      expect(Notification.where(notifiable: invitation)).to be_empty
+    end
+
+    it "refreshes invitation notification titles and paths when a draft is published", :aggregate_failures do
+      draft = create(:unpublished_article, user: author, title: "Initial draft title")
+      invitation = create(:co_author_invitation, article: draft, user: invitee)
+      notification = Notifications::CoAuthorInvitations::Send.call(invitation)
+
+      expect(notification.json_data.dig("article", "path")).to include("-temp-slug-", "preview=")
+
+      draft.update!(title: "Published final title", published: true)
+
+      expect(notification.reload.json_data["article"]).to eq(
+        "id" => draft.id,
+        "title" => "Published final title",
+        "path" => draft.current_state_path,
+      )
+      expect(notification.json_data.dig("article", "path")).not_to include("-temp-slug-")
+      expect(notification.json_data.dig("article", "path")).not_to include("preview=")
+    end
+
+    describe "organization membership" do
+      let(:organization) { create(:organization) }
+
+      it "allows a co-author who accepted an invitation even if they're not an org member" do
+        create(:co_author_invitation, :accepted, article: article, user: invitee)
+        create(:organization_membership, user: author, organization: organization)
+
+        expect(article.reload.update(organization: organization)).to be(true)
+      end
+
+      it "withdraws pending invitations when the post moves under the organization", :aggregate_failures do
+        pending_invitation = create(:co_author_invitation, article: article)
+        accepted_invitation = create(:co_author_invitation, :accepted, article: article, user: invitee)
+        Notifications::CoAuthorInvitations::Send.call(pending_invitation)
+        create(:organization_membership, user: author, organization: organization)
+
+        article.reload.update!(organization: organization)
+
+        expect(CoAuthorInvitation.exists?(pending_invitation.id)).to be(false)
+        expect(Notification.where(notifiable: pending_invitation)).to be_empty
+        expect(CoAuthorInvitation.exists?(accepted_invitation.id)).to be(true)
+      end
+
+      it "still requires org membership for co-authors credited without an invitation" do
+        create(:organization_membership, user: author, organization: organization)
+        article.update_columns(co_author_ids: [invitee.id])
+
+        expect(article.reload.update(organization: organization)).to be(false)
+      end
+    end
+  end
+
+  describe "#comments_blob" do
+    let(:article) { create(:article) }
+
+    it "returns an empty string when there are no comments" do
+      expect(article.comments_blob).to eq("")
+    end
+
+    it "joins plain-text comment markdown and truncates to 2200 characters without invoking HTML sanitizer" do
+      create(:comment, commentable: article, body_markdown: "a" * 3000)
+      sanitizer = ActionView::Base.full_sanitizer
+      allow(ActionView::Base).to receive(:full_sanitizer).and_return(sanitizer)
+      allow(sanitizer).to receive(:sanitize).and_call_original
+
+      blob = article.comments_blob
+
+      expect(blob.length).to eq(2201)
+      expect(blob).to eq("a" * 2201)
+      expect(sanitizer).not_to have_received(:sanitize)
+    end
+
+    it "sanitizes the full markup before truncating" do
+      create(:comment, commentable: article, body_markdown: "#{'<b>x</b>' * 600} youtube")
+
+      expect(article.comments_blob).to include("youtube")
+    end
+
+    it "entity-encodes ampersands as before" do
+      create(:comment, commentable: article, body_markdown: "Tom & Jerry")
+
+      expect(article.comments_blob).to eq("Tom &amp; Jerry")
+    end
+
+    it "strips HTML tags when comments contain markup" do
+      create(:comment, commentable: article, body_markdown: "<p>Hello <b>youtube</b> world</p>")
+
+      expect(article.comments_blob).to eq("Hello youtube world")
+    end
+  end
+
+  describe ".search_articles" do
+    it "pre-unaccents terms into an immutable to_tsquery expression without a self-join", :aggregate_failures do
+      relation = described_class.search_articles("Café")
+      sql = relation.to_sql
+
+      expect(sql).to include("articles.reading_list_document @@ to_tsquery('simple'::regconfig, ''' cafe '':*')")
+      expect(sql).not_to include("unaccent(")
+      expect(sql).not_to include("INNER JOIN")
+    end
+
+    it "uses prefix matching only on single-token queries with at least 3 alphanumeric characters",
+       :aggregate_failures do
+      expect(described_class.sanitize_search_articles_tsquery("ruby")).to eq(
+        "to_tsquery('simple'::regconfig, ''' ruby '':*')",
+      )
+      expect(described_class.sanitize_search_articles_tsquery("go")).to eq(
+        "to_tsquery('simple'::regconfig, ''' go ''')",
+      )
+    end
+
+    it "uses exact lexemes and strips common stopwords on multi-token queries", :aggregate_failures do
+      tsquery_sql = described_class.sanitize_search_articles_tsquery("why I switched to ruby")
+
+      expect(tsquery_sql).to eq(
+        "to_tsquery('simple'::regconfig, ''' switched '' & '' ruby ''')",
+      )
+    end
+
+    it "splits non-alphanumeric separators so to_tsquery never emits phrase (<->) operators",
+       :aggregate_failures do
+      expect(described_class.sanitize_search_articles_tsquery("OPENAI_API_KEY")).to eq(
+        "to_tsquery('simple'::regconfig, ''' openai '' & '' api '' & '' key ''')",
+      )
+      expect(described_class.sanitize_search_articles_tsquery("bevy-where-was-i")).to eq(
+        "to_tsquery('simple'::regconfig, ''' bevy ''')",
+      )
+      expect(described_class.sanitize_search_articles_tsquery("idea+cash")).to eq(
+        "to_tsquery('simple'::regconfig, ''' idea '' & '' cash ''')",
+      )
+    end
+
+    it "retains stopword tokens when the entire query consists of stopwords" do
+      expect(described_class.sanitize_search_articles_tsquery("to be or not")).to eq(
+        "to_tsquery('simple'::regconfig, ''' to '' & '' be '' & '' or '' & '' not ''')",
+      )
+    end
+
+    it "matches accented and unaccented queries against reading_list_document", :aggregate_failures do
+      matching_article = create(:article, title: "São Paulo intermedica guide")
+      create(:article, title: "Unrelated article")
+
+      expect(described_class.search_articles("sao paulo").ids).to eq([matching_article.id])
+      expect(described_class.search_articles("SÃO").ids).to eq([matching_article.id])
+    end
+
+    it "returns an empty relation when given blank or punctuation-only input", :aggregate_failures do
+      create(:article, title: "Sample article")
+
+      expect(described_class.search_articles(nil)).to be_empty
+      expect(described_class.search_articles("   ")).to be_empty
+      expect(described_class.search_articles("??? ::: '''")).to be_empty
     end
   end
 end

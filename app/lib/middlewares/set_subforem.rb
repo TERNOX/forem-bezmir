@@ -8,7 +8,7 @@ module Middlewares
     def call(env)
       request = Rack::Request.new(env)
 
-      domain = request.GET["passed_domain"].presence || request.host
+      domain = valid_passed_domain(request).presence || request.host
       RequestStore.store[:default_subforem_id]     = Subforem.cached_default_id
       RequestStore.store[:subforem_id]             = Subforem.cached_id_by_domain(domain)
       RequestStore.store[:root_subforem_id]        = Subforem.cached_root_id
@@ -51,6 +51,7 @@ module Middlewares
         headers.delete("X-Frame-Options")
         allowed_domains = Subforem.cached_all_domains + [Settings::General.app_domain]
         subforem_sources = allowed_domains.map { |d| "https://#{d}" }
+        subforem_sources.unshift("'self'") if Rails.env.development?
         existing_csp = headers["Content-Security-Policy"].to_s
         directives = existing_csp.split(";").map(&:strip).reject(&:blank?)
         # Preserve any frame-ancestors a controller set explicitly (e.g. the
@@ -68,6 +69,16 @@ module Middlewares
       end
 
       [status, headers, body]
+    end
+
+    private
+
+    # A passed_domain with invalid UTF-8 can't name a subforem (and raises in String#blank?), so ignore it.
+    def valid_passed_domain(request)
+      passed_domain = request.GET["passed_domain"]
+      return if passed_domain.is_a?(String) && !passed_domain.valid_encoding?
+
+      passed_domain
     end
   end
 end

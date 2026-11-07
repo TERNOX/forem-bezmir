@@ -65,12 +65,12 @@ function feedConstruct(
     sendFeaturedArticleAnalyticsGA4(imageItem.id);
   }
 
-  return feedItems.map((item) => {
+  return feedItems.map((item, index) => {
     // billboard is an html string
     if (typeof item === 'string') {
       return (
         <div
-          key={item.id}
+          key={`billboard-${index}`}
           // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{
             __html: item,

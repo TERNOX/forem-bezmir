@@ -138,8 +138,7 @@ module Articles
         scope = Article.joins(join_fragment)
           .from_subforem
           .minimal_feed_column_select
-          .includes(:distinct_reaction_categories, :context_notes)
-          .includes(:subforem)
+          .includes(:context_notes)
           .order(config.order_by.to_sql)
 
         scope = case comments_variant
@@ -287,9 +286,9 @@ module Articles
         where_clauses += " AND articles.published_at < :now"
         where_clauses += " AND articles.score >= 0"
         if @type_of == "discover"
-          where_clauses += " AND ((articles.published_at > :oldest_published_at)
-            OR (articles.published_at > :conditional_lookback
-            AND articles.last_comment_at > :conditional_comment_timeframe))"
+          where_clauses += " AND articles.published_at > :conditional_lookback
+            AND ((articles.published_at > :oldest_published_at)
+            OR (articles.last_comment_at > :conditional_comment_timeframe))"
         elsif @user
           user_ids = @user.cached_following_users_ids + @user.cached_following_organizations_ids + [0] # Adding one that will never be reached so we can have a valid SQL statement
           where_clauses += " AND articles.user_id IN (#{user_ids.join(',')})"

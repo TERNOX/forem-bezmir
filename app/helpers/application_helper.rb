@@ -165,19 +165,35 @@ module ApplicationHelper
     CloudCoverUrl.new(url, subforem_id).call
   end
 
+  DEFAULT_TAG_COLORS = { background: "#d6d9e0", color: "#606570" }.freeze
+  private_constant :DEFAULT_TAG_COLORS
+
   def tag_colors(tag)
     if tag.respond_to?(:bg_color_hex) && tag.respond_to?(:text_color_hex)
-      { background: tag.bg_color_hex, color: tag.text_color_hex }
+      colors = { background: tag.bg_color_hex, color: tag.text_color_hex }
+      preloaded_tag_colors[tag.name] = colors if tag.respond_to?(:name) && tag.name.present?
+      colors
     else
       tag_name = tag.respond_to?(:name) ? tag.name : tag.to_s
-      Rails.cache.fetch("view-helper-#{tag_name}/tag_colors", expires_in: 5.hours) do
-        if (found_tag = Tag.select(%i[bg_color_hex text_color_hex]).find_by(name: tag_name))
-          { background: found_tag.bg_color_hex, color: found_tag.text_color_hex }
-        else
-          { background: "#d6d9e0", color: "#606570" }
-        end
-      end
+      preloaded_tag_colors[tag_name] ||=
+        Rails.cache.fetch(tag_colors_cache_key(tag_name), expires_in: 5.hours) { find_tag_colors(tag_name) }
     end
+  end
+
+  # Reads the cached colors for every tag shown in a story list in one cache round-trip,
+  # and batches any cache misses into a single Tag query instead of one per tag.
+  def preload_tag_colors(stories)
+    tag_names = Array(stories).compact.reject { |story| story.type_of == "status" }
+      .flat_map(&:cached_tag_list_array).uniq - preloaded_tag_colors.keys
+    return if tag_names.empty?
+
+    names_by_key = tag_names.index_by { |tag_name| tag_colors_cache_key(tag_name) }
+    missing_colors = nil
+    colors_by_key = Rails.cache.fetch_multi(*names_by_key.keys, expires_in: 5.hours) do |key|
+      missing_colors ||= find_tag_colors_by_name(tag_names)
+      missing_colors[names_by_key[key]]
+    end
+    colors_by_key.each { |key, colors| preloaded_tag_colors[names_by_key[key]] = colors }
   end
 
   def any_enabled_auth_providers?
@@ -260,8 +276,8 @@ module ApplicationHelper
   end
 
   def community_leader_icon(user)
-    return unless user.try(:cached_community_leader?)
     return unless FeatureFlag.enabled?(:community_favorites)
+    return unless user.try(:cached_community_leader?)
 
     image_tag("community-leader-icon.svg",
               alt: t("views.leadership.icon.leader_alt"),
@@ -330,7 +346,9 @@ module ApplicationHelper
 
   def root_unless_default_subforem
     if RequestStore.store[:subforem_id].present? && (RequestStore.store[:subforem_id] == RequestStore.store[:default_subforem_id])
-      Subforem.first
+      # Domain string instead of a record to avoid an uncached query on every logged-out render;
+      # URL.url accepts either.
+      Subforem.cached_default_domain
     elsif RequestStore.store[:subforem_id].present?
       Subforem.where(root: true).first
     end
@@ -359,8 +377,9 @@ module ApplicationHelper
     "#{start_year} - #{current_year}"
   end
 
-  def collection_link(collection, **kwargs)
-    size_string = I18n.t("views.articles.series.size", count: collection.articles.published.from_subforem.size)
+  def collection_link(collection, size: nil, **kwargs)
+    size ||= collection.articles.published.from_subforem.size
+    size_string = I18n.t("views.articles.series.size", count: size)
     body = if collection.slug.present?
              I18n.t("views.articles.series.subtitle", slug: collection.slug,
                                                       size: size_string)
@@ -450,8 +469,12 @@ module ApplicationHelper
     URL.organization(organization)
   end
 
+  # The pg_class estimate only moves when VACUUM/ANALYZE refreshes table stats,
+  # so serve it from the in-process cache instead of querying on every auth render.
   def estimated_user_count
-    User.registered.estimated_count
+    @estimated_user_count ||= MemoryFirstCache.fetch("estimated_user_count", redis_expires_in: 10.minutes) do
+      User.registered.estimated_count
+    end
   end
 
   def display_estimated_user_count?
@@ -571,6 +594,30 @@ module ApplicationHelper
                 end
 
     URL.url("#{main_path}#{query}")
+  end
+
+  private
+
+  def preloaded_tag_colors
+    @preloaded_tag_colors ||= {}
+  end
+
+  def tag_colors_cache_key(tag_name)
+    "view-helper-#{tag_name}/tag_colors"
+  end
+
+  def find_tag_colors(tag_name)
+    if (found_tag = Tag.select(%i[bg_color_hex text_color_hex]).find_by(name: tag_name))
+      { background: found_tag.bg_color_hex, color: found_tag.text_color_hex }
+    else
+      DEFAULT_TAG_COLORS.dup
+    end
+  end
+
+  def find_tag_colors_by_name(tag_names)
+    found = Tag.where(name: tag_names).pluck(:name, :bg_color_hex, :text_color_hex)
+      .to_h { |name, bg, text| [name, { background: bg, color: text }] }
+    tag_names.index_with { |name| found[name] || DEFAULT_TAG_COLORS.dup }
   end
 end
 

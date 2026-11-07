@@ -162,6 +162,9 @@ pt:
           onboarding_newsletter_opt_in_subhead:
             description: Onboarding newsletter opt-in subheadline
             placeholder: Onboarding newsletter opt-in subheadline
+          geos_with_allowed_anonymous_tracking:
+            description: 'Países ou regiões (ex. US, CA, US-CA) onde visitantes não conectados recebem um identificador anônimo no navegador, junto com um registro das tags que leem, para que possamos oferecer um conteúdo melhor. Liste apenas locais onde armazenar isso sem consentimento prévio é permitido (ex. não a UE nem o Reino Unido). Se esses dados forem usados para anúncios, isso também precisa ser permitido para publicidade nesses locais e/ou ser compatível com o seu banner de cookies. Deixe vazio para desativar em todos os lugares.'
+            placeholder: 'Códigos de país ou região separados por vírgula, ex. US,CA'
           geos_with_allowed_default_email_opt_in:
             description: Geos with allowed default email opt-in
             placeholder: Geos with allowed default email opt-in
@@ -188,6 +191,10 @@ pt:
             description: Exibir a lista de primeiros passos na barra lateral direita para novos usuários.
           enable_agent_sessions:
             description: Enable the Agent Sessions feature for uploading and embedding coding agent session transcripts.
+          quote_card_social_images:
+            description: "Gerar imagens de compartilhamento em cartão de citação (um trecho da publicação em um cartão) para publicações sem imagem de capa, e cartões de perfil para usuários e organizações. Desative para usar o cartão de título clássico."
+          appeal_auto_unflag_threshold:
+            description: "Pontuação mínima de confiança da IA (0,0 a 1,0) necessária para aprovar automaticamente um recurso quando a IA recomendar auto_unflag (aplica-se apenas a restrições automatizadas, nunca a bloqueios de moderadores humanos). Defina acima de 1,0 (por ex. 1,01) para desativar a remoção automática de sinalização."
           video:
             description: Video settings
           payment:

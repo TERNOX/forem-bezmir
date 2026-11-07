@@ -130,6 +130,8 @@ uk:
       section_not_found: Не вдалося знайти розділ статті у Вікіпедії — %{input}
       article_not_found: 'Не вдалося знайти статтю у Вікіпедії — %{input}: %{response_detail}'
       invalid_wikipedia_url: Неправильний URL Вікіпедії
+    vimeo_tag:
+      invalid_vimeo_id: Недійсний ID Vimeo
     youtube_tag:
       invalid_youtube_id: Неправильний YouTube ID або URL
     invalid_url_scheme: 'Недійсний URL для ''%{option}'': дозволені лише http та https'

@@ -960,6 +960,46 @@ RSpec.describe "Stories::Feeds" do
         get stories_feed_path
         expect(response_article).to include("favorited_by_user_id" => nil)
       end
+
+      it "reuses story fragments from read_multi without per-story cache.read round-trips" do
+        get stories_feed_path
+        first_payload = response_article
+
+        allow(Rails.cache).to receive(:read_multi).and_call_original
+        allow(Rails.cache).to receive(:read).and_call_original
+
+        get stories_feed_path
+        expect(response_article).to eq(first_payload)
+        expect(Rails.cache).to have_received(:read_multi).once
+        expect(Rails.cache).not_to have_received(:read).with(a_string_starting_with("jbuilder/"), anything)
+      end
+    end
+  end
+
+  describe "N+1 query prevention" do
+    it "batch-preloads context_notes, comments, reaction counts, and caches org custom domains across stories" do
+      org_two = create(:organization, name: "OrgTwo")
+      second_article = create(:article, featured: true, user: user, organization: org_two)
+      create(:comment, commentable: article, user: user, score: 10)
+      create(:comment, commentable: second_article, user: user, score: 10)
+      create(:reaction, reactable: article, category: "like", user: user)
+      create(:reaction, reactable: second_article, category: "unicorn", user: user)
+
+      # Warm host and org custom domain caches with an initial request
+      get stories_feed_path(timeframe: "latest")
+
+      queries = []
+      callback = ->(_name, _start, _finish, _id, payload) { queries << payload[:sql] unless payload[:name] == "SCHEMA" }
+      ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+        get stories_feed_path(timeframe: "latest")
+      end
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body.map { |a| a["id"] }).to include(article.id, second_article.id)
+      expect(queries.grep(/FROM "organizations"/).size).to eq(0)
+      expect(queries.grep(/FROM "context_notes"/).size).to eq(1)
+      expect(queries.grep(/FROM "comments"/).size).to eq(1)
+      expect(queries.grep(/FROM "reactions"/).size).to be <= 1
     end
   end
 end

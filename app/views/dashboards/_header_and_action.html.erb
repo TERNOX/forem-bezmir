@@ -1,4 +1,5 @@
 <header class="crayons-page-header block">
+    <%= render "flag_appeals/suspended_notice" %>
     <h1 class="crayons-title"><%= page_title %></h1>
     <div id="dashboard-mobile-sidebar-wrapper">
       <div class="block m:hidden pt-3">
@@ -73,21 +74,25 @@
 
   <script>
     fetch('/dashboard/sidebar?state=<%= params[:action] %>&which=<%= params[:which] %>')
-      .then(response => response.text())
+      .then(response => (response.ok ? response.text() : ''))
       .then(html => {
-        document.getElementById('dashboard-main-sidebar-wrapper').innerHTML = html;
+        if (html) {
+          document.getElementById('dashboard-main-sidebar-wrapper').innerHTML = html;
+        }
       });
     window.fetch('/dashboard/sidebar?type_of=mobile&state=<%= params[:action] %>&which=<%= params[:which] %>')
-      .then(response => response.text())
+      .then(response => (response.ok ? response.text() : ''))
       .then(html => {
-        document.getElementById('dashboard-mobile-sidebar-wrapper').innerHTML = html;
-        let navtrigger = document.getElementById('mobile_nav_dashboard');
-        if (navtrigger) {
-          navtrigger.addEventListener('change', (event) => {
-            let url = event.target.value;
-            InstantClick.preload(url);
-            InstantClick.display(url);
-          });
+        if (html) {
+          document.getElementById('dashboard-mobile-sidebar-wrapper').innerHTML = html;
+          let navtrigger = document.getElementById('mobile_nav_dashboard');
+          if (navtrigger) {
+            navtrigger.addEventListener('change', (event) => {
+              let url = event.target.value;
+              InstantClick.preload(url);
+              InstantClick.display(url);
+            });
+          }
         }
       });
   </script>

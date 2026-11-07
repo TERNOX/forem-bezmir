@@ -2,8 +2,8 @@
   <div id="sidebar-wrapper-right" class="sidebar-wrapper sidebar-wrapper-right">
     <div class="sidebar-bg" id="sidebar-bg-right"></div>
     <aside class="side-bar sidebar-additional showing fs-s" id="sidebar-additional">
-      <% active_threads = active_threads(tags: [@tag.name, "discuss"], time_ago: Timeframe.datetime(params[:timeframe])) %>
-      <% if user_signed_in? && active_threads.present? %>
+      <% active_threads = user_signed_in? ? active_threads(tags: [@tag.name, "discuss"], time_ago: Timeframe.datetime(params[:timeframe])) : [] %>
+      <% if active_threads.present? %>
         <div class="widget">
           <header>
             <h4 class="fs-base fw-medium"><%= t("views.stories.discuss") %></h4>

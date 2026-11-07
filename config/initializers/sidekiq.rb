@@ -90,7 +90,7 @@ Sidekiq.configure_server do |config|
     # it registers `Sidekiq::Throttled::Middlewares::Server` via its own
     # `Sidekiq.configure_server` block (see the gem's `lib/sidekiq/throttled.rb`).
     chain.add Sidekiq::TransactionSafeRescue
-    chain.add Sidekiq::HoneycombMiddleware
+    chain.add Sidekiq::HoneycombMiddleware if ApplicationConfig["HONEYCOMB_API_KEY"].present?
     chain.add SidekiqUniqueJobs::Middleware::Client
     chain.add SidekiqUniqueJobs::Middleware::Server
     chain.add Sidekiq::SidekiqConnectionCleanup

@@ -11,6 +11,12 @@ module Settings
     # Forem Team
     # [forem-fix] Remove channel name from Settings::General
     setting :article_published_slack_channel, type: :string, default: "activity"
+    # AI confidence needed to auto-approve an appeal. Scores are capped at 1.0, so the 1.01 default
+    # disables auto-approval and routes every appeal to human review; lower it to opt in.
+    setting :appeal_auto_unflag_threshold,
+            type: :float,
+            default: 1.01,
+            validates: { numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 1.01 } }
 
     # Meta
     setting :admin_action_taken_at, type: :datetime, default: Time.current
@@ -61,6 +67,8 @@ module Settings
     setting :enable_video_upload, type: :boolean, default: false
     setting :video_upload_max_file_size_mb, type: :integer, default: 50
     setting :enable_agent_sessions, type: :boolean, default: true
+    # Quote-card share images for posts without a cover; off falls back to the classic title card.
+    setting :quote_card_social_images, type: :boolean, default: true
 
     # Mascot
     setting :mascot_user_id, type: :integer, default: nil
@@ -95,6 +103,30 @@ module Settings
     setting :billboard_enabled_countries, type: :hash, default: Geolocation::DEFAULT_ENABLED_COUNTRIES, validates: {
       enabled_countries_hash: true
     }
+
+    # Regions (ISO 3166 codes such as "US", "CA" or "US-CA") where signed-out visitors may be
+    # given an anonymous identifier in their browser's localStorage, along with a tally of the
+    # tags on the articles they read. Delivered to the browser through billboard responses
+    # (see BillboardsController#anonymous_tracking_allowed? and
+    # app/javascript/utilities/anonymousVisitor.js).
+    #
+    # This exists so we can serve better content to anonymous readers. It is empty (off
+    # everywhere) by default, and admins are responsible for only listing regions where it is
+    # lawful to store an identifier on a visitor's device without asking first:
+    #
+    # - Many jurisdictions (e.g. the EU/EEA and UK under GDPR + ePrivacy) treat a persistent
+    #   localStorage identifier like a cookie: it needs prior consent unless strictly necessary.
+    #   Do NOT list such regions unless the flow is first gated on the cookie banner
+    #   (localStorage "cookie_status" === "allowed"), which this setting alone does not do.
+    # - If this data is ever used for ads (e.g. billboard targeting), it must be allowed for
+    #   advertising in each listed region and/or compatible with the cookie banner, and the
+    #   privacy policy should say so.
+    # - Removing a region stops new identifiers from being created there, but does not clear
+    #   identifiers browsers already have; that needs a client-side change.
+    # - Signed-out visitors are only geolocated to countries in Fastly's
+    #   `active_geofencing_regions` edge dictionary (config/fastly/snippets/client_geolocation.vcl).
+    #   A region missing from that dictionary never matches here.
+    setting :geos_with_allowed_anonymous_tracking, type: :array, default: %w[]
 
     # Newsletter
     # <https://mailchimp.com/developer/>
@@ -208,6 +240,15 @@ module Settings
     setting :algolia_search_only_api_key, type: :string, default: ApplicationConfig["ALGOLIA_SEARCH_ONLY_API_KEY"]
     setting :display_algolia_branding, type: :boolean, default: ApplicationConfig["ALGOLIA_DISPLAY_BRANDING"] == "true"
 
+    # High-water mark (ISO8601 date string) for Badges::AwardContributorFromGithub.
+    # It records the most recent "merged before" date the job has already scanned
+    # for candidate PR authors. Hourly runs only scan merged PRs from this date
+    # forward, then advance it, so the job never re-reads the full repo history.
+    # Blank means "not yet backfilled" - the rake task does the one-time full
+    # history walk and sets this; until then, hourly runs fall back to a short
+    # recent window so a fresh instance still works.
+    setting :github_contributor_prs_scanned_through, type: :string, default: ""
+
     def self.algolia_search_enabled?
       algolia_application_id.present? && algolia_search_only_api_key.present? && algolia_api_key.present?
     end
@@ -246,6 +287,23 @@ module Settings
     
         # c) return the raw value
         value
+      end
+
+      # Appeal assessments run in Sidekiq (Appeals::AiReviewWorker), where RequestStore has no
+      # subforem_id, so store the threshold globally (subforem_id: nil) even when saved from a
+      # subforem-scoped admin request.
+      def set_appeal_auto_unflag_threshold(value, subforem_id: nil) # rubocop:disable Lint/UnusedMethodArgument
+        record = find_by(var: "appeal_auto_unflag_threshold", subforem_id: nil) ||
+          new(var: "appeal_auto_unflag_threshold", subforem_id: nil)
+        record.value = convert_string_to_value_type(:float, value)
+        record.save!
+        where(var: "appeal_auto_unflag_threshold").where.not(subforem_id: nil).delete_all
+        clear_cache
+        value
+      end
+
+      def appeal_auto_unflag_threshold=(value)
+        set_appeal_auto_unflag_threshold(value)
       end
     end
   end

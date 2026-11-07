@@ -1,0 +1,34 @@
+---
+uk:
+  co_author_invitations_controller:
+    not_updated: Не вдалося оновити запрошення до співавторства. Можливо, на нього вже відповіли або його відкликали.
+  core:
+    article_form_co_author_invitation_accepted: Прийнято
+    article_form_co_author_invitation_edit: Змінити %{name}
+    article_form_co_author_invitation_new: Запросити після збереження
+    article_form_co_author_invitation_pending: Очікує
+    article_form_co_author_invitation_remove: Прибрати %{name}
+    article_form_co_author_invitations_declined: "Відхилили: %{names}"
+    article_form_co_author_invitations_description: Запросіть людей, які на Вас підписані. Їх буде зазначено співавторами, щойно вони приймуть запрошення у сповіщеннях.
+    article_form_co_author_invitations_placeholder: Шукайте серед підписників...
+  models:
+    co_author_invitation:
+      declined: "@%{username} відхилив запрошення бути співавтором цього допису."
+      must_follow_author: "@%{username} має підписатися на Вас, перш ніж Ви зможете запросити його у співавтори."
+      personal_posts_only: Запрошувати співавторів можна лише в особисті дописи.
+      too_many:
+        one: Можна запросити до %{count} співавтора.
+        few: Можна запросити до %{count} співавторів.
+        many: Можна запросити до %{count} співавторів.
+        other: Можна запросити до %{count} співавтора.
+  views:
+    notifications:
+      co_author_invitation:
+        accept: Прийняти
+        accepted_html: "%{user} прийняв Ваше запрошення бути співавтором %{title}"
+        credited: Вас зазначено співавтором цього допису.
+        decline: Відхилити
+        declined: Ви відхилили це запрошення.
+        invited_html: "%{user} запрошує Вас стати співавтором %{title}"
+        pending: Якщо приймете, Вас буде зазначено співавтором цього допису.
+        remove: Прибрати мене зі співавторів

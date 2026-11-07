@@ -113,6 +113,10 @@ module Constants
             description: I18n.t("lib.constants.settings.general.geos_with_allowed_default_email_opt_in.description"),
             placeholder: I18n.t("lib.constants.settings.general.geos_with_allowed_default_email_opt_in.placeholder")
           },
+          geos_with_allowed_anonymous_tracking: {
+            description: I18n.t("lib.constants.settings.general.geos_with_allowed_anonymous_tracking.description"),
+            placeholder: I18n.t("lib.constants.settings.general.geos_with_allowed_anonymous_tracking.placeholder")
+          },
           periodic_email_digest: {
             description: I18n.t("lib.constants.settings.general.periodic.description"),
             placeholder: 2
@@ -174,6 +178,13 @@ module Constants
           enable_agent_sessions: {
             description: I18n.t("lib.constants.settings.general.enable_agent_sessions.description",
                                 default: "Enable the Agent Sessions feature for uploading and embedding coding agent session transcripts.")
+          },
+          quote_card_social_images: {
+            description: I18n.t("lib.constants.settings.general.quote_card_social_images.description")
+          },
+          appeal_auto_unflag_threshold: {
+            description: I18n.t("lib.constants.settings.general.appeal_auto_unflag_threshold.description"),
+            placeholder: 1.01
           }
         }
       end

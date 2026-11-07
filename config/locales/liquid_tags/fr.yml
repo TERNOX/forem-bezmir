@@ -162,3 +162,7 @@ fr:
       missing_image: "Le tag slide nécessite une option image"
     slides_tag:
       invalid_mode: "Le mode des diapositives doit être « default » ou « carousel »"
+    vimeo_tag:
+      invalid_vimeo_id: ID Vimeo non valide
+    youtube_tag:
+      invalid_youtube_id: ID ou URL YouTube non valide

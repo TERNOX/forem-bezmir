@@ -192,6 +192,7 @@ class Article < ApplicationRecord
   has_one :discussion_lock, dependent: :delete
 
   has_many :mentions, as: :mentionable, inverse_of: :mentionable, dependent: :delete_all
+  has_many :co_author_invitations, dependent: :destroy
   has_many :comments, as: :commentable, inverse_of: :commentable, dependent: :nullify
   has_many :context_notifications, as: :context, inverse_of: :context, dependent: :delete_all
   has_many :context_notifications_published, -> { where(context_notifications_published: { action: "Published" }) },
@@ -205,6 +206,8 @@ class Article < ApplicationRecord
   #     the poll votes, options, and skips.
   has_many :polls, dependent: :destroy
   has_many :profile_pins, as: :pinnable, inverse_of: :pinnable, dependent: :delete_all
+  has_many :user_profile_pins, -> { where(profile_type: "User") }, as: :pinnable, inverse_of: :pinnable,
+                                                                     class_name: "ProfilePin"
   # `dependent: :destroy` because in RatingVote we're relying on
   #     counter_culture to do some additional tallies
   has_many :rating_votes, dependent: :destroy
@@ -326,6 +329,13 @@ class Article < ApplicationRecord
   before_save :set_caches
   before_save :detect_language
   before_create :create_password
+  after_update :remove_uncredited_co_author_invitations, if: :saved_change_to_co_author_ids?
+  after_update :withdraw_pending_co_author_invitations, if: lambda {
+    saved_change_to_organization_id? && organization_id.present?
+  }
+  after_update :refresh_co_author_invitation_notifications, if: lambda {
+    saved_change_to_title? || saved_change_to_path? || saved_change_to_published?
+  }
   before_destroy :before_destroy_actions, prepend: true
 
   after_save :create_conditional_autovomits
@@ -345,6 +355,9 @@ class Article < ApplicationRecord
   }
   after_update_commit :update_notification_subscriptions, if: proc { |article|
     article.saved_change_to_user_id?
+  }
+  after_update_commit :remove_stale_organization_pin, if: proc { |article|
+    article.saved_change_to_organization_id?
   }
 
   after_commit :async_score_calc, :touch_collection, :enrich_image_attributes, :detect_code_block_languages,
@@ -397,19 +410,75 @@ class Article < ApplicationRecord
   # @see https://api.rubyonrails.org/classes/ActiveRecord/AttributeMethods/Serialization/ClassMethods.html#method-i-serialize
   serialize :cached_organization, coder: YAML
 
+  DISALLOWED_TSQUERY_CHARACTERS = /['?\\:‘’ʻʼ"\u0000]/
+  MAX_SEARCH_TSQUERY_TERMS = 10
+  MIN_PREFIX_SEARCH_TERM_LENGTH = 3
+  # Common English stopwords that appear in nearly every article's `'simple'` tsvector.
+  # In multi-word queries, stripping these (unless the query is all stopwords) avoids
+  # intersecting huge low-selectivity GIN posting trees on `reading_list_document`.
+  SEARCH_STOPWORDS = Set.new(
+    %w[
+      a about an and are as at be but by can do for from had has have how i if
+      in into is it its my no not of on or our out so than that the their them
+      then there these they this to up was we were what when where which who
+      why will with would you your
+    ],
+  ).freeze
+
   # TODO: [@rhymes] Rename the article column and the trigger name.
   # What was initially meant just for the reading list (filtered using the `reactions` table),
   # is also used for the article search page.
   # The name of the `tsvector` column and its related trigger should be adapted.
-  pg_search_scope :search_articles,
-                  against: :reading_list_document,
-                  using: {
-                    tsearch: {
-                      prefix: true,
-                      tsvector_column: :reading_list_document
-                    }
-                  },
-                  ignoring: :accents
+  #
+  # NOTE: We build the full-text query directly instead of using `pg_search_scope` because:
+  # 1. `pg_search` wraps each term in SQL `unaccent(...)` (which is `STABLE`), preventing
+  #    PostgreSQL from constant-folding the `tsquery` and inspecting `pg_statistic` lexeme
+  #    frequencies. Pre-unaccenting in Ruby produces a single `IMMUTABLE` `to_tsquery` call.
+  # 2. Prefix wildcards (`:*`) force PostgreSQL GIN (`startScanEntry` -> `collectMatchBitmap`)
+  #    to scan every matching dictionary entry and materialize a combined TIDBitmap upfront
+  #    before intersecting terms, which overflows `work_mem` into lossy heap rechecks (`pg_toast`
+  #    decompression) on multi-word queries. We only use `:*` on single-token searches with
+  #    at least 3 alphanumeric characters.
+  # 3. Splitting on non-alphanumeric characters prevents `to_tsquery` from turning hyphenated,
+  #    underscored, or plus-separated tokens (e.g. `OPENAI_API_KEY`, `bevy-where-was-i`) into
+  #    `<->` phrase operators, which GIN cannot verify without lossy heap rechecks.
+  # 4. Avoiding `pg_search`'s `INNER JOIN (SELECT id, ts_rank(...) FROM articles)` self-join
+  #    lets callers that `.reorder(...)`, `.count`, or `.exists?` skip de-TOASTing
+  #    `reading_list_document` for `ts_rank`.
+  scope :search_articles, lambda { |term|
+    tsquery_sql = sanitize_search_articles_tsquery(term)
+    return none if tsquery_sql.nil?
+
+    where("articles.reading_list_document @@ #{tsquery_sql}")
+      .order(Arel.sql("ts_rank(articles.reading_list_document, #{tsquery_sql}, 0) DESC, articles.id ASC"))
+  }
+
+  def self.sanitize_search_articles_tsquery(term)
+    normalized = Unaccent.unaccent(term.to_s)
+      .downcase
+      .gsub(DISALLOWED_TSQUERY_CHARACTERS, " ")
+
+    raw_tokens = normalized
+      .scan(/[[:alnum:]]+/)
+      .uniq
+
+    return if raw_tokens.empty?
+
+    tokens = if raw_tokens.many?
+               non_stopwords = raw_tokens.reject { |token| SEARCH_STOPWORDS.include?(token) }
+               (non_stopwords.presence || raw_tokens).first(MAX_SEARCH_TSQUERY_TERMS)
+             else
+               raw_tokens
+             end
+
+    use_prefix = raw_tokens.one? && tokens.first.length >= MIN_PREFIX_SEARCH_TERM_LENGTH
+    query_expression = tokens.map do |token|
+      prefix_suffix = use_prefix ? ":*" : ""
+      "' #{token} '#{prefix_suffix}"
+    end.join(" & ")
+
+    sanitize_sql_array(["to_tsquery('simple'::regconfig, ?)", query_expression])
+  end
 
   # [@jgaskins] We use an index on `published`, but since it's a boolean value
   #   the Postgres query planner often skips it due to lack of diversity of the
@@ -571,7 +640,7 @@ class Article < ApplicationRecord
   scope :featured, -> { where(featured: true) }
 
   scope :feed, lambda {
-                 published.includes(:taggings)
+                 published
                    .select(
                      :id,
                      :published_at,
@@ -587,6 +656,10 @@ class Article < ApplicationRecord
                      :slug
                    )
                }
+
+  def cached_tag_list_array
+    (cached_tag_list || "").split(", ")
+  end
 
   scope :with_video, lambda {
                        published
@@ -712,8 +785,9 @@ class Article < ApplicationRecord
   def title_finalized
     return title unless title.present?
 
+    source_title = title.to_s.gsub("<", "&lt;").gsub(">", "&gt;")
     # First handle line breaks and paragraphs
-    processed_title = title.dup
+    processed_title = source_title.dup
 
     # Convert double line breaks to paragraph breaks (with optional whitespace)
     processed_title.gsub!(/\n\s*\n/, "</p><p class=\"quickie-paragraph\">")
@@ -772,8 +846,9 @@ class Article < ApplicationRecord
   def truncate_title_for_feed
     return title_finalized unless title.present?
 
+    source_title = title.to_s.gsub("<", "&lt;").gsub(">", "&gt;")
     # Split the title into lines to find a good truncation point
-    lines = title.split("\n")
+    lines = source_title.split("\n")
 
     # Take first 6 lines (leaving room for "read more" indicator)
     truncated_lines = lines.first(6)
@@ -903,7 +978,13 @@ class Article < ApplicationRecord
   end
 
   def body_text
-    ActionView::Base.full_sanitizer.sanitize(processed_html)[0..7000]
+    # Sanitizing processed_html is slow on long posts and a single save asks for it
+    # several times (description, language detection), so reuse it until the HTML changes.
+    html = processed_html
+    return @body_text if defined?(@body_text) && @body_text_html == html
+
+    @body_text_html = html.dup
+    @body_text = ActionView::Base.full_sanitizer.sanitize(html)[0..7000]
   end
 
   def touch_by_reaction
@@ -913,7 +994,23 @@ class Article < ApplicationRecord
   def comments_blob
     return "" if comments_count.zero?
 
-    ActionView::Base.full_sanitizer.sanitize(comments.pluck(:body_markdown).join(" "))[0..2200]
+    raw_markdown = comments.pluck(:body_markdown).join(" ")
+    # The sanitizer strips tags and entity-encodes &, < and >; without those characters it is a no-op.
+    return raw_markdown[0..2200] unless raw_markdown.match?(/[<>&]/)
+
+    ActionView::Base.full_sanitizer.sanitize(raw_markdown)[0..2200]
+  end
+
+  # Request-local memo of comment trees loaded for this instance, keyed by query options, so
+  # articles#show can share one tree between its JSON-LD and the rendered comment area.
+  def comment_tree(limit:, order:, include_negative:)
+    @comment_trees ||= {}
+    @comment_trees[[limit, order, include_negative]] ||=
+      Comments::Tree.for_commentable(self, limit: limit, order: order, include_negative: include_negative)
+  end
+
+  def loaded_comment_trees
+    @comment_trees&.values || []
   end
 
   def url
@@ -1058,7 +1155,7 @@ class Article < ApplicationRecord
 
     # Calculate comment_score and apply max_score limits
     # Each comment can contribute a minimum of -1 to the total score
-    calculated_comment_score = comments.sum { |comment| [comment.score, -1].max }
+    calculated_comment_score = comments.pluck(:score).sum { |value| [value, -1].max }
     comment_score = if accepted_max.positive? && accepted_max < calculated_comment_score
                       accepted_max
                     else
@@ -1414,7 +1511,7 @@ class Article < ApplicationRecord
   def set_tag_list(tags)
     self.tag_list = [] # overwrite any existing tag with those from the front matter
     tag_list.add(tags, parse: true)
-    self.tag_list = tag_list.map { |tag| Tag.find_preferred_alias_for(tag) }
+    self.tag_list = Tag.find_preferred_aliases_for(tag_list)
   end
 
   def fetch_video_duration
@@ -1501,12 +1598,14 @@ class Article < ApplicationRecord
   #
   # @return [String] an array of tag names.
   def validate_tag
-    distinct_tag_adjustments = TagAdjustment.where(article_id: id, status: "committed")
-      .select('DISTINCT ON ("tag_id") *')
-      .order(:tag_id, updated_at: :desc, id: :desc)
+    if id.present?
+      distinct_tag_adjustments = TagAdjustment.where(article_id: id, status: "committed")
+        .select('DISTINCT ON ("tag_id") *')
+        .order(:tag_id, updated_at: :desc, id: :desc)
 
-    remove_tag_adjustments_from_tag_list(distinct_tag_adjustments)
-    add_tag_adjustments_to_tag_list(distinct_tag_adjustments)
+      remove_tag_adjustments_from_tag_list(distinct_tag_adjustments)
+      add_tag_adjustments_to_tag_list(distinct_tag_adjustments)
+    end
 
     # check there are not too many tags
     return errors.add(:tag_list, I18n.t("models.article.too_many_tags")) if tag_list.size > MAX_TAG_LIST_SIZE
@@ -1524,7 +1623,7 @@ class Article < ApplicationRecord
     return if tags_to_add.blank?
 
     tag_list.add(tags_to_add, parse: true)
-    self.tag_list = tag_list.map { |tag| Tag.find_preferred_alias_for(tag) }
+    self.tag_list = Tag.find_preferred_aliases_for(tag_list)
   end
 
   def validate_video
@@ -1581,8 +1680,16 @@ class Article < ApplicationRecord
     errors.add(:co_author_ids, I18n.t("models.article.invalid_coauthor"))
   end
 
+  # Co-authors who accepted an invitation consented to the credit themselves, so they don't need
+  # to be members of the organization (e.g. a co-authored personal post moved under an org).
   def validate_co_authors_belong_to_organization
-    return if OrganizationMembership.active.where(organization_id: organization_id, user_id: co_author_ids).count == co_author_ids.count
+    accepted_ids = new_record? ? [] : co_author_invitations.accepted.pluck(:user_id)
+    org_credited_ids = co_author_ids - accepted_ids
+    return if org_credited_ids.empty?
+
+    org_member_count = OrganizationMembership.active
+      .where(organization_id: organization_id, user_id: org_credited_ids).count
+    return if org_member_count == org_credited_ids.count
 
     errors.add(:co_author_ids, I18n.t("models.article.invalid_coauthor"))
   end
@@ -1721,12 +1828,27 @@ class Article < ApplicationRecord
   end
 
   def generate_social_image
-    return if main_image.present?
+    return if main_image.present? || !published
 
-    change = saved_change_to_attribute?(:title) || saved_change_to_attribute?(:published_at)
-    return unless (change || social_image.blank?) && published
+    change = social_image.blank? ||
+      saved_change_to_attribute?(:title) ||
+      saved_change_to_attribute?(:published_at) ||
+      saved_change_to_attribute?(:user_id) || # the image shows the author's name, avatar, and brand color
+      saved_change_to_attribute?(:reading_time) || # the image shows the reading time
+      social_image_quote_changed?
+    return unless change
 
-    Images::SocialImageWorker.perform_async(id, self.class.name)
+    # Enqueue after commit so the worker sees the saved article (and its published state).
+    ActiveRecord.after_all_transactions_commit { Images::SocialImageWorker.perform_async(id, self.class.name) }
+  end
+
+  # The generated image quotes the opening of the post, so only body edits that
+  # change that quote need a new image.
+  def social_image_quote_changed?
+    return false unless saved_change_to_attribute?(:processed_html)
+
+    Images::SocialImageQuote.from_html(attribute_before_last_save(:processed_html), title) !=
+      Images::SocialImageQuote.call(self)
   end
 
   def calculate_base_scores
@@ -1779,6 +1901,17 @@ class Article < ApplicationRecord
     return if published_at.blank?
 
     self.published_at = nil if published_at > 5.years.from_now
+  end
+
+  # When an article's organization changes (or is cleared), any Organization-type
+  # ProfilePin pointing at it is pinning a post the org no longer has. Remove it so
+  # it stops counting toward that org's 5-pin cap and doesn't linger on its page.
+  def remove_stale_organization_pin
+    old_organization_id = organization_id_before_last_save
+    return if old_organization_id.blank?
+
+    ProfilePin.where(profile_type: "Organization", profile_id: old_organization_id,
+                      pinnable_type: "Article", pinnable_id: id).delete_all
   end
 
 
@@ -1879,5 +2012,25 @@ class Article < ApplicationRecord
     removed_user_ids = Array.wrap(before).map(&:to_i) - Array.wrap(after).map(&:to_i)
 
     Notification.send_to_co_authors(self, removed_user_ids)
+  end
+
+  # Keeps accepted invitations in step with co_author_ids when the credit list is edited directly
+  # (org co-author picker, admin tools), so an accepted invitation always means a credited co-author.
+  def remove_uncredited_co_author_invitations
+    co_author_invitations.accepted.where.not(user_id: co_author_ids).destroy_all
+  end
+
+  # Invitations are only for personal posts, so any still pending lapse when the post moves under
+  # an organization. Co-authors who already accepted stay credited.
+  def withdraw_pending_co_author_invitations
+    co_author_invitations.pending.destroy_all
+  end
+
+  def refresh_co_author_invitation_notifications
+    article_data = { "id" => id, "title" => title, "path" => current_state_path }
+    Notification.where(notifiable_type: "CoAuthorInvitation", notifiable_id: co_author_invitations.select(:id))
+      .find_each do |notification|
+        notification.update!(json_data: notification.json_data.merge("article" => article_data))
+      end
   end
 end

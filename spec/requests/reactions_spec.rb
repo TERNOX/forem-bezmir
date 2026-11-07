@@ -31,9 +31,21 @@ RSpec.describe "Reactions" do
           { "category" => "exploding_head", "count" => 0 },
           { "category" => "raised_hands", "count" => 0 },
           { "category" => "fire", "count" => 0 },
+          { "category" => "hehe", "count" => 0 },
         ]
         expect(result["article_reaction_counts"]).to match_array(expected_reactions_counts)
         expect(result["reactions"].to_json).to eq(user.reactions.where(reactable: article).to_json)
+      end
+
+      it "returns public reactions followed by the readinglist reaction" do
+        create(:reaction, reactable: article, user: user, category: "readinglist")
+        create(:reaction, reactable: article, user: user, category: "unicorn")
+
+        get reactions_path(article_id: article.id)
+
+        categories = response.parsed_body["reactions"].pluck("category")
+        expect(categories).to contain_exactly("like", "unicorn", "readinglist")
+        expect(categories.last).to eq("readinglist")
       end
 
       it "does not set Surrogate-Key cache control headers" do
@@ -66,6 +78,7 @@ RSpec.describe "Reactions" do
           { "category" => "exploding_head", "count" => 0 },
           { "category" => "raised_hands", "count" => 0 },
           { "category" => "fire", "count" => 0 },
+          { "category" => "hehe", "count" => 0 },
         ]
         expect(result["article_reaction_counts"]).to match_array(expected_reactions)
         expect(result["reactions"]).to be_empty
@@ -85,6 +98,20 @@ RSpec.describe "Reactions" do
           "Surrogate-Control" => "max-age=#{max_age}, stale-if-error=#{stale_if_error}",
         )
       end
+    end
+
+    it "looks up only the article id, once, for the signed-out surrogate key" do
+      queries = []
+      callback = lambda do |*, payload|
+        queries << payload[:sql] if payload[:sql].include?('FROM "articles"')
+      end
+      ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+        get reactions_path(article_id: article.id)
+      end
+
+      expect(response.headers["Surrogate-Key"]).to eq(Reaction.surrogate_key_for_article(article.id))
+      expect(queries.size).to eq(1)
+      expect(queries.first).to start_with('SELECT "articles"."id" FROM "articles"')
     end
   end
 

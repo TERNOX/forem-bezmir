@@ -4,6 +4,7 @@ module Api
 
     included do
       before_action :validate_page_limit, only: %i[index search]
+      before_action -> { set_cache_control_headers(1.hour.to_i) }, only: %i[search]
     end
 
     INDEX_ATTRIBUTES_FOR_SERIALIZATION = %i[
@@ -78,14 +79,18 @@ module Api
     end
 
     def update
-      articles_relation = @user.super_admin? ? Article.includes(:user) : @user.articles
-      article = articles_relation.find(params[:id])
+      # Set @article before #article_params so #allowed_to_change_org_id? checks the
+      # post's author, not the editor, when an org admin edits someone else's post.
+      @article = find_updatable_article
+      editor_is_author = @article.user_id == @user.id
+      organization_id = @article.organization_id
 
-      result = Articles::Updater.call(@user, article, article_params)
+      result = Articles::Updater.call(@user, @article, article_params)
 
       @article = result.article
 
       if result.success
+        log_non_author_update(organization_id) unless editor_is_author
         render "show", status: :ok
       else
         message = @article.errors_as_sentence
@@ -136,18 +141,83 @@ module Api
       # I temporarily added a new search endpoint in the interest of getting the chatGPT plugin live without changing
       # the existing index endpoint. There are some experiments which we want to conduct which I think makes sense on
       # a new endpoint rather than an existing one. We may want to refactor the index one in the future.
-      @articles = Articles::ApiSearchQuery.call(params)
+      articles = Articles::ApiSearchQuery.call(params)
 
       # This adds some inconsistency where we omit the body markdown when the response has more than 1 article because
       # ChatGPT cannot process the long body request.
-      @articles = if @articles.count > 1
-                    @articles.select(INDEX_ATTRIBUTES_FOR_SERIALIZATION).decorate
-                  else
-                    @articles.select(ADDITIONAL_SEARCH_ATTRIBUTES_FOR_SERIALIZATION).decorate
-                  end
+      # Load the page once and only re-query (with body_markdown) when it has at most one article, rather than
+      # running a separate COUNT over the full search before every load.
+      @articles = articles.select(INDEX_ATTRIBUTES_FOR_SERIALIZATION).decorate
+      if @articles.size == 1
+        # Re-fetch the single hit by primary key rather than re-running the full-text search (rare terms that
+        # return 0-1 results are the slowest searches, so repeating them doubled their cost).
+        @articles = Article.includes([{ user: :profile }, :organization])
+          .where(id: @articles.first.id)
+          .select(ADDITIONAL_SEARCH_ATTRIBUTES_FOR_SERIALIZATION)
+          .decorate
+      end
+
+      set_surrogate_key_header Article.table_key, @articles.map(&:record_key)
+    end
+
+    def preview
+      authorize(Article)
+
+      article_hash = extract_preview_article_hash
+      markdown = preview_markdown(article_hash)
+      result = ContentRenderer.new(markdown, source: Article.new, user: @user).process_article
+      front_matter = result.front_matter.to_h
+
+      render json: {
+        processed_html: result.processed_html,
+        body_html: result.processed_html,
+        title: front_matter["title"] || article_hash[:title] || params[:title],
+        description: front_matter["description"] || article_hash[:description] || params[:description],
+        tags: preview_tags(front_matter, article_hash),
+        cover_image: preview_cover_image(front_matter, article_hash),
+        reading_time_minutes: result.reading_time,
+        ai_disclosure_level: preview_ai_disclosure_level(front_matter, article_hash)
+      }, status: :ok
+    rescue StandardError => e
+      error_unprocessable_entity(ErrorMessages::Clean.call(e.message))
     end
 
     private
+
+    def extract_preview_article_hash
+      return params[:article] if params[:article].is_a?(ActionController::Parameters) || params[:article].is_a?(Hash)
+
+      {}
+    end
+
+    def preview_markdown(article_hash)
+      article_hash[:body_markdown] || params[:body_markdown] || params[:article_body]
+    end
+
+    def preview_tags(front_matter, article_hash)
+      raw_tags = front_matter["tags"] || article_hash[:tags] || params[:tags]
+      return unless raw_tags
+
+      raw_tags_input = raw_tags.is_a?(Array) ? raw_tags.join(", ") : raw_tags
+      Article.new.tag_list.add(raw_tags_input, parser: ActsAsTaggableOn::TagParser)
+    end
+
+    def preview_cover_image(front_matter, article_hash)
+      raw_cover_image = if front_matter.key?("cover_image")
+                          front_matter["cover_image"]
+                        else
+                          article_hash[:main_image] || article_hash[:cover_image] ||
+                            params[:main_image] || params[:cover_image]
+                        end
+      ApplicationController.helpers.cloud_cover_url(raw_cover_image) if raw_cover_image
+    end
+
+    def preview_ai_disclosure_level(front_matter, article_hash)
+      front_matter["ai_disclosure_level"] ||
+        front_matter["ai_disclosure"] ||
+        article_hash[:ai_disclosure_level] ||
+        params[:ai_disclosure_level]
+    end
 
     def invalid_tags_present?
       tag_params = [params[:tag], params[:tags], params[:tags_exclude]].flatten.compact
@@ -157,6 +227,31 @@ module Api
       all_tags = tag_params.flat_map { |t| t.to_s.split(",") }.map(&:strip).compact_blank
 
       all_tags.any? { |t| !t.match?(/\A[[:alnum:]\-]+\z/i) }
+    end
+
+    # Uses the same ArticlePolicy#update? as the web editor. A caller who may not
+    # edit the post gets a 404, not a 401, as before: this keeps the existing
+    # response and does not reveal that an unpublished draft exists.
+    def find_updatable_article
+      article = Article.includes(:user).find(params[:id])
+      authorize article, :update?
+      article
+    rescue Pundit::NotAuthorizedError => e
+      raise if e.is_a?(ApplicationPolicy::UserSuspendedError)
+
+      raise ActiveRecord::RecordNotFound
+    end
+
+    # @param organization_id [Integer, nil] the post's organization before the update,
+    #        i.e. the organization whose admin rights allowed the edit
+    def log_non_author_update(organization_id)
+      payload = {
+        action: "api_article_update",
+        article_id: @article.id,
+        organization_id: organization_id,
+        changed_attributes: @article.saved_changes.keys - %w[updated_at]
+      }
+      Audit::Logger.log(:admin_api, @user, payload)
     end
 
     def per_page_max

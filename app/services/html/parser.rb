@@ -1,5 +1,10 @@
 module Html
   class Parser
+    ALERT_TYPES = %w[note tip important warning caution].freeze
+    # The marker must be followed by whitespace or the end of the text node, so
+    # `[!NOTE]worthy` stays an ordinary blockquote.
+    ALERT_TOKEN = /\A\[!(#{ALERT_TYPES.join('|')})\](?=\s|\z)\s*/i
+
     # Each of the instance methods should return self to support chaining of
     # methods
     # For example:
@@ -28,7 +33,7 @@ module Html
 
     def remove_nested_linebreak_in_list
       html_doc = Nokogiri::HTML(@html)
-      html_doc.xpath("//*[self::ul or self::ol or self::li]/br").each(&:remove)
+      html_doc.xpath("//*[self::ul or self::ol or self::li]/br").each(&:remove) if @html&.match?(/<br/i)
       @html = html_doc.to_html
 
       self
@@ -90,24 +95,26 @@ module Html
       # wrap with Cloudinary or allow if from giphy or githubusercontent.com
       doc = Nokogiri::HTML.fragment(@html)
 
-      doc.css("img").each do |img|
-        src = img.attr("src")
-        next unless src
-        # allow image to render as-is
-        next if allowed_image_host?(src)
-        next if img["data-ignore-prefix"] == "true"
+      if @html&.match?(/<img/i)
+        doc.css("img").each do |img|
+          src = img.attr("src")
+          next unless src
+          # allow image to render as-is
+          next if allowed_image_host?(src)
+          next if img["data-ignore-prefix"] == "true"
 
-        if synchronous_detail_detection
-          header = { "User-Agent" => "#{Settings::Community.community_name} (#{URL.url})" }
-          img["width"], img["height"] = FastImage.size(src, timeout: 10, http_header: header)
+          if synchronous_detail_detection
+            header = { "User-Agent" => "#{Settings::Community.community_name} (#{URL.url})" }
+            img["width"], img["height"] = FastImage.size(src, timeout: 10, http_header: header)
+          end
+
+          img["loading"] = "lazy"
+          img["src"] = if Giphy::Image.valid_url?(src)
+                         src.gsub("https://media.", "https://i.")
+                       else
+                         img_of_size(src, width, quality: quality)
+                       end
         end
-
-        img["loading"] = "lazy"
-        img["src"] = if Giphy::Image.valid_url?(src)
-                       src.gsub("https://media.", "https://i.")
-                     else
-                       img_of_size(src, width, quality: quality)
-                     end
       end
 
       @html = doc.to_html
@@ -116,6 +123,8 @@ module Html
     end
 
     def wrap_all_images_in_links
+      return self if @html.blank? || !@html.match?(/<img/i)
+
       doc = Nokogiri::HTML.fragment(@html)
 
       doc.search("p img").each do |image|
@@ -126,6 +135,31 @@ module Html
         link["class"] = "article-body-image-wrapper"
         image.replace(link)
         link.add_child(image)
+      end
+
+      @html = doc.to_html
+
+      self
+    end
+
+    def transform_markdown_alerts
+      doc = Nokogiri::HTML.fragment(@html)
+
+      doc.css("blockquote").each do |blockquote|
+        first = blockquote.element_children.first
+        next unless first&.name == "p"
+
+        leading = first.children.first
+        next unless leading&.text?
+
+        match = leading.content.match(ALERT_TOKEN)
+        next unless match
+
+        alert_type = match[1].downcase
+        strip_alert_token(first)
+
+        blockquote["data-alert"] = alert_type
+        blockquote.prepend_child(alert_label_node(doc, alert_type))
       end
 
       @html = doc.to_html
@@ -158,6 +192,8 @@ module Html
     end
 
     def add_control_class_to_codeblock
+      return self if @html.blank? || !may_contain?("highlight")
+
       doc = Nokogiri::HTML.fragment(@html)
 
       doc.search("div.highlight").each do |codeblock|
@@ -170,6 +206,8 @@ module Html
     end
 
     def add_control_panel_to_codeblock
+      return self if @html.blank? || !may_contain?("highlight")
+
       doc = Nokogiri::HTML.fragment(@html)
 
       doc.search("div.highlight").each do |codeblock|
@@ -182,6 +220,8 @@ module Html
     end
 
     def add_fullscreen_button_to_panel
+      return self if @html.blank? || !may_contain?("highlight__panel")
+
       on_title = I18n.t("services.html.parser.enter_fullscreen_mode")
       on_cls = "highlight-action crayons-icon highlight-action--fullscreen-on"
       icon_fullscreen_on = inline_svg_tag(
@@ -210,6 +250,8 @@ module Html
     end
 
     def wrap_all_tables
+      return self if @html.blank? || !@html.match?(/<table/i)
+
       doc = Nokogiri::HTML.fragment(@html)
       doc.search("table").each { |table| table.swap("<div class='table-wrapper-paragraph'>#{table}</div>") }
       @html = doc.to_html
@@ -218,6 +260,8 @@ module Html
     end
 
     def remove_empty_paragraphs
+      return self if @html.blank? || !@html.match?(/<p/i)
+
       doc = Nokogiri::HTML.fragment(@html)
       doc.css("p").select { |paragraph| all_children_are_blank?(paragraph) }.each(&:remove)
       @html = doc.to_html
@@ -266,17 +310,15 @@ module Html
         end
       end
 
-      @html =
-        if html_doc.at_css("body")
-          html_doc.at_css("body").inner_html
-        else
-          html_doc.to_html
-        end
+      body = html_doc.at_css("body")
+      @html = body ? body.inner_html : html_doc.to_html
 
       self
     end
 
     def wrap_all_figures_with_tags
+      return self if @html.blank? || !@html.match?(/<figcaption/i)
+
       html_doc = Nokogiri::HTML(@html)
 
       html_doc.xpath("//figcaption").each do |caption|
@@ -288,17 +330,15 @@ module Html
         prev.replace(fig) << prev << caption
       end
 
-      @html =
-        if html_doc.at_css("body")
-          html_doc.at_css("body").inner_html
-        else
-          html_doc.to_html
-        end
+      body = html_doc.at_css("body")
+      @html = body ? body.inner_html : html_doc.to_html
 
       self
     end
 
     def wrap_mentions_with_links
+      return self if @html.blank? || !may_contain?("@")
+
       html_doc = Nokogiri::HTML(@html)
 
       # looks for nodes that isn't <code>, <a>, and contains "@"
@@ -318,12 +358,8 @@ module Html
         targets.concat(children)
       end
 
-      @html =
-        if html_doc.at_css("body")
-          html_doc.at_css("body").inner_html
-        else
-          html_doc.to_html
-        end
+      body = html_doc.at_css("body")
+      @html = body ? body.inner_html : html_doc.to_html
 
       self
     end
@@ -340,6 +376,8 @@ module Html
     end
 
     def enforce_gif_like_videos
+      return self if @html.blank? || !@html.match?(/<video/i)
+
       doc = Nokogiri::HTML.fragment(@html)
 
       doc.css("video").each do |video|
@@ -369,6 +407,34 @@ module Html
     end
 
     private
+
+    # Literal-substring fast-exit guard. Any "&" means the marker may be spelled with
+    # character references (e.g. "&#64;" or "high&#108;ight") that Nokogiri decodes,
+    # so fall through to the full parse in that case.
+    def may_contain?(marker)
+      @html.include?(marker) || @html.include?("&")
+    end
+
+    def strip_alert_token(paragraph)
+      text_node = paragraph.children.detect { |child| child.text? && child.content.match?(ALERT_TOKEN) }
+      return unless text_node
+
+      text_node.content = text_node.content.sub(ALERT_TOKEN, "")
+
+      # the newline after the token leaves a leading <br> behind
+      while (leading = paragraph.children.first) && blank?(leading)
+        leading.remove
+      end
+
+      paragraph.remove if all_children_are_blank?(paragraph)
+    end
+
+    def alert_label_node(doc, alert_type)
+      label = Nokogiri::XML::Node.new("p", doc)
+      label["data-alert-label"] = alert_type
+      label.content = I18n.t("services.html.parser.alerts.#{alert_type}")
+      label
+    end
 
     def img_of_size(source, width = 1500, quality: 81)
       Images::Optimizer.call(source, width: 1720, quality: 81).gsub(",", "%2C")

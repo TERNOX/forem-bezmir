@@ -3,6 +3,10 @@ en:
   services:
     analytics_service:
       no_stats: Ви не можете переглядати статистику цієї статті
+    appeals:
+      resolver:
+        approved_note: "Flag appeal #%{id} approved by %{resolver}."
+        automatic: "automatic AI review"
     article_with_video_creation_service:
       unpublished_video: Непубліковане відео ~ %{rand}
     articles:
@@ -61,6 +65,12 @@ en:
         parse_error: Виникла проблема під час розбору YAML-фронтматеру. Можливо, потрібно екранувати лапки або двокрапку. Якщо у вас проблеми, напишіть на %{email}.
     html:
       parser:
+        alerts:
+          caution: Caution
+          important: Important
+          note: Note
+          tip: Tip
+          warning: Warning
         enter_fullscreen_mode: Увімкнути повноекранний режим
         exit_fullscreen_mode: Вимкнути повноекранний режим
         unsupported_video: Ваш браузер не підтримує відтворення відео.
@@ -126,6 +136,9 @@ en:
       article_handler:
         suspended_too_many: Користувача заблоковано за надмірну кількість спам-статей, автоматично виявлено системою.
         marked_spam_repeat_auto_flags: User marked as spam after %{count} of their articles from the last month were auto-flagged as spam or clear violations, triggered by autovomit.
+      comment_handler:
+        marked_spam_repeat_auto_flags: User marked as spam after %{count} of their comments from the last month were auto-flagged as spam, triggered by autovomit.
+        marked_spam_comment_flood: New account marked as spam after commenting on %{count} posts in a day, triggered by autovomit.
     user_subscriptions:
       create_from_controller_params:
         source_not_found: Джерело не знайдено.

@@ -100,6 +100,14 @@ RSpec.describe "Api::V1::Articles" do
         expect(response_article["flare_tag"]["name"]).to eq("discuss")
       end
 
+      it "only returns flare tags for articles that have one" do
+        other_article = create(:article, featured: true, tags: "ruby")
+        get api_articles_path, headers: headers
+        articles_by_id = response.parsed_body.index_by { |a| a["id"] }
+        expect(articles_by_id[article.id]["flare_tag"]["name"]).to eq("discuss")
+        expect(articles_by_id[other_article.id]).not_to have_key("flare_tag")
+      end
+
       it "sets the correct edge caching surrogate key" do
         get api_articles_path, headers: headers
 
@@ -161,6 +169,14 @@ RSpec.describe "Api::V1::Articles" do
 
         get api_articles_path(tag: tag.name), headers: headers
         expect(response.parsed_body.size).to eq(0)
+      end
+
+      it "returns approved tag articles if tag requires approval" do
+        article.update_column(:approved, true)
+        Tag.find_by(name: article.tag_list.first).update(requires_approval: true)
+
+        get api_articles_path(tag: article.tag_list.first), headers: headers
+        expect(response.parsed_body.pluck("id")).to eq([article.id])
       end
 
       it "supports pagination" do
@@ -593,6 +609,17 @@ RSpec.describe "Api::V1::Articles" do
       it "return unauthorized" do
         get "/api/articles/me", headers: { "Accept" => "application/vnd.forem.api-v1+json" }
         expect(response).to have_http_status(:unauthorized)
+      end
+
+      # Regression test for https://github.com/forem/forem/issues/23675
+      # A 401 from an unauthenticated request must never be cached by Fastly or any
+      # intermediate proxy. Without no-store, the Fastly edge can serve a cached 401 to
+      # subsequent api-key-authenticated requests that share the same X-Loggedin cache bucket.
+      it "sets no-store cache headers on the 401 response" do
+        get "/api/articles/me", headers: { "Accept" => "application/vnd.forem.api-v1+json" }
+        expect(response).to have_http_status(:unauthorized)
+        expect(response.headers["Cache-Control"]).to eq("no-store")
+        expect(response.headers["Surrogate-Control"]).to eq("no-store")
       end
     end
 
@@ -1482,6 +1509,19 @@ RSpec.describe "Api::V1::Articles" do
     describe "when authorized as super_admin" do
       before { user.add_role(:super_admin) }
 
+      it "creates an audit log when updating another user's article" do
+        Audit::Subscribe.listen listener
+        other_article = create(:article, user: create(:user))
+
+        put "/api/articles/#{other_article.id}", params: { article: { body_markdown: "New body" } }.to_json,
+                                                 headers: auth_headers
+
+        expect(response).to have_http_status(:ok)
+        expect(AuditLog.last.data).to include("action" => "api_article_update", "article_id" => other_article.id)
+      ensure
+        Audit::Subscribe.forget listener
+      end
+
       it "updates the labels" do
         expect do
           put_article(
@@ -1523,6 +1563,105 @@ RSpec.describe "Api::V1::Articles" do
           )
           article.reload
         end.to change(article, :cached_label_list)
+      end
+    end
+  end
+
+  describe "PUT /api/articles/:id when the editor is not the author", :aggregate_failures do
+    let(:user) { api_secret.user }
+    let(:path) { api_article_path(article.id) }
+    let(:author) { create(:user) }
+    let(:article) do
+      create(:article, user: author, organization: organization, published: false, published_at: nil)
+    end
+    let(:new_body) { "An edit made through the API" }
+
+    before do
+      create(:organization_membership, user: author, organization: organization, type_of_user: "member")
+      Audit::Subscribe.listen listener
+    end
+
+    after { Audit::Subscribe.forget listener }
+
+    context "when the user is an admin of the article's organization" do
+      before do
+        create(:organization_membership, user: user, organization: organization, type_of_user: "admin")
+      end
+
+      it "updates the article and keeps the original author" do
+        put_article(title: "Edited by an org admin", body_markdown: new_body, user_id: user.id)
+
+        expect(response).to have_http_status(:ok)
+        article.reload
+        expect(article.title).to eq("Edited by an org admin")
+        expect(article.body_markdown).to eq(new_body)
+        expect(article.user).to eq(author)
+      end
+
+      it "creates an audit log of the update" do
+        expect { put_article(title: "Edited by an org admin", body_markdown: new_body) }
+          .to change(AuditLog, :count).by(1)
+
+        log = AuditLog.last
+        expect(log.category).to eq(AuditLog::ADMIN_API_AUDIT_LOG_CATEGORY)
+        expect(log.user_id).to eq(user.id)
+        expect(log.data["action"]).to eq("api_article_update")
+        expect(log.data["article_id"]).to eq(article.id)
+        expect(log.data["organization_id"]).to eq(organization.id)
+        expect(log.data["changed_attributes"]).to include("title", "body_markdown")
+        expect(log.data["changed_attributes"]).not_to include("updated_at")
+      end
+
+      it "does not move the article to an organization the author does not belong to" do
+        other_organization = create(:organization)
+        create(:organization_membership, user: user, organization: other_organization, type_of_user: "admin")
+
+        put_article(body_markdown: new_body, organization_id: other_organization.id)
+
+        expect(response).to have_http_status(:ok)
+        expect(article.reload.organization).to eq(organization)
+      end
+
+      it "does not create an audit log when the update fails" do
+        expect { put_article(title: nil, body_markdown: nil) }.not_to change(AuditLog, :count)
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    context "when the user is an admin of a different organization" do
+      before do
+        create(:organization_membership, user: user, organization: create(:organization), type_of_user: "admin")
+      end
+
+      it "returns not found and does not update the article" do
+        expect { put_article(body_markdown: new_body) }.not_to change(AuditLog, :count)
+
+        expect(response).to have_http_status(:not_found)
+        expect(article.reload.body_markdown).not_to eq(new_body)
+      end
+    end
+
+    context "when the user is a regular member of the article's organization" do
+      before do
+        create(:organization_membership, user: user, organization: organization, type_of_user: "member")
+      end
+
+      it "returns not found and does not update the article" do
+        expect { put_article(body_markdown: new_body) }.not_to change(AuditLog, :count)
+
+        expect(response).to have_http_status(:not_found)
+        expect(article.reload.body_markdown).not_to eq(new_body)
+      end
+    end
+
+    context "when the user is the author" do
+      let(:article) { create(:article, user: user, organization: organization, published: false) }
+
+      it "updates the article without creating an audit log" do
+        expect { put_article(body_markdown: new_body) }.not_to change(AuditLog, :count)
+
+        expect(response).to have_http_status(:ok)
+        expect(article.reload.body_markdown).to eq(new_body)
       end
     end
   end
@@ -1600,6 +1739,14 @@ RSpec.describe "Api::V1::Articles" do
       expect(response.headers["Access-Control-Max-Age"]).to eq(2.hours.to_i.to_s)
     end
 
+    it "sets Fastly Surrogate-Key and 1-hour cache control headers", :aggregate_failures do
+      get "/api/articles/search"
+
+      expect(response).to have_http_status(:ok)
+      expect(response.headers["Surrogate-Key"]).to include("articles", article.record_key)
+      expect(response.headers["Surrogate-Control"]).to include("max-age=3600")
+    end
+
     context "when there is one article returned" do
       it "has correct keys in the response" do
         article.update_columns(organization_id: organization.id)
@@ -1614,6 +1761,38 @@ RSpec.describe "Api::V1::Articles" do
         ]
 
         expect(response.parsed_body.first.keys).to match_array index_keys
+      end
+
+      it "runs the full-text search only once and returns body_markdown" do
+        article.update_columns(title: "Quuxlefrobnicator")
+        create(:article)
+        search_queries = []
+        callback = lambda do |*, payload|
+          search_queries << payload[:sql] if payload[:sql].include?("to_tsquery")
+        end
+        ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+          get "/api/articles/search", params: { q: "Quuxlefrobnicator" }
+        end
+
+        expect(response.parsed_body.pluck("id")).to eq([article.id])
+        expect(response.parsed_body.first["body_markdown"]).to eq(article.body_markdown)
+        expect(search_queries.size).to eq(1)
+      end
+    end
+
+    context "when there are no articles returned" do
+      it "returns an empty array after a single full-text search" do
+        search_queries = []
+        callback = lambda do |*, payload|
+          search_queries << payload[:sql] if payload[:sql].include?("to_tsquery")
+        end
+        ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+          get "/api/articles/search", params: { q: "zzznomatchzzz" }
+        end
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to eq([])
+        expect(search_queries.size).to eq(1)
       end
     end
 
@@ -1633,6 +1812,21 @@ RSpec.describe "Api::V1::Articles" do
         ]
 
         expect(response.parsed_body.first.keys).to match_array keys
+      end
+
+      it "does not run a separate COUNT query" do
+        create(:article)
+
+        count_queries = []
+        callback = lambda do |*, payload|
+          count_queries << payload[:sql] if payload[:sql].include?("subquery_for_count")
+        end
+        ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+          get "/api/articles/search"
+        end
+
+        expect(response.parsed_body.length).to eq(2)
+        expect(count_queries).to be_empty
       end
     end
 
@@ -1680,6 +1874,75 @@ RSpec.describe "Api::V1::Articles" do
         get "/api/articles/search", params: { per_page: 10 }
         expect(response.parsed_body.count).to eq(2)
       end
+    end
+  end
+
+  describe "POST /api/articles/preview" do
+    it "returns 401 when unauthenticated" do
+      post "/api/articles/preview", params: { article: { body_markdown: "# Hello" } }.to_json, headers: headers
+      expect(response).to have_http_status(:unauthorized)
+    end
+
+    it "renders markdown and parses front matter without persisting an article" do
+      markdown = <<~MARKDOWN
+        ---
+        title: Preview Title
+        description: Preview description
+        tags: ruby, rails
+        cover_image: https://example.com/cover.png
+        ai_disclosure_level: some_ai
+        ---
+
+        **Bold preview content**
+      MARKDOWN
+
+      expect do
+        post "/api/articles/preview",
+             params: { article: { body_markdown: markdown } }.to_json,
+             headers: auth_headers
+      end.not_to change(Article, :count)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(
+        "title" => "Preview Title",
+        "description" => "Preview description",
+        "tags" => %w[ruby rails],
+        "ai_disclosure_level" => "some_ai",
+        "reading_time_minutes" => a_kind_of(Integer),
+      )
+      expect(response.parsed_body["processed_html"]).to include("<strong>Bold preview content</strong>")
+      expect(response.parsed_body["body_html"]).to eq(response.parsed_body["processed_html"])
+      expect(response.parsed_body["cover_image"]).to include("example.com/cover.png")
+    end
+
+    it "supports top-level article_body or body_markdown and fallback article attributes" do
+      post "/api/articles/preview",
+           params: {
+             article: {
+               title: "JSON Title",
+               body_markdown: "_Italic body_",
+               tags: %w[discuss webdev],
+               ai_disclosure_level: "no_ai"
+             }
+           }.to_json,
+           headers: auth_headers
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include(
+        "title" => "JSON Title",
+        "tags" => %w[discuss webdev],
+        "ai_disclosure_level" => "no_ai",
+      )
+      expect(response.parsed_body["processed_html"]).to include("<em>Italic body</em>")
+    end
+
+    it "returns 422 when liquid tag parsing fails" do
+      post "/api/articles/preview",
+           params: { article: { body_markdown: "{% link invalid_link_that_does_not_exist %}" } }.to_json,
+           headers: auth_headers
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response.parsed_body["error"]).to be_present
     end
   end
 end

@@ -7,11 +7,13 @@ RSpec.describe EdgeCache::BustPage, type: :service do
     [
       "/page/#{slug}",
       "/#{slug}",
+      "/#{slug}/",
     ]
   end
 
   before do
     allow(EdgeCache::Bust).to receive(:new).and_return(cache_bust)
+    allow(EdgeCache::PurgeByKey).to receive(:call)
 
     paths.each do |path|
       allow(cache_bust).to receive(:call).with(path).once
@@ -24,5 +26,11 @@ RSpec.describe EdgeCache::BustPage, type: :service do
     paths.each do |path|
       expect(cache_bust).to have_received(:call).with(path).once
     end
+  end
+
+  it "purges the page's surrogate key so query variants of its URLs are purged too" do
+    described_class.call(slug)
+
+    expect(EdgeCache::PurgeByKey).to have_received(:call).with("show-page-#{slug}").once
   end
 end

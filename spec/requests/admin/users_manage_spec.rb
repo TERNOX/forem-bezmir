@@ -139,6 +139,38 @@ RSpec.describe "Admin::Users" do
       expect(Note.first.content).to eq("limited role added")
     end
 
+    it "allows admins to assign community leader level 1" do
+      sign_in create(:user, :admin)
+
+      params = {
+        user: { user_status: "Community Leader Level 1", note_for_current_role: "assigning community leader" }
+      }
+      patch user_status_admin_user_path(user.id), params: params
+
+      expect(user.reload.community_leader_level_1?).to be(true)
+    end
+
+    it "does not allow non-super-admins to assign community leader level 2" do
+      sign_in create(:user, :admin)
+
+      params = { user: { user_status: "Community Leader Level 2", note_for_current_role: "assigning level 2" } }
+      patch user_status_admin_user_path(user.id), params: params
+
+      expect(user.reload.community_leader_level_2?).to be(false)
+      expect(request.flash["danger"]).to be_present
+    end
+
+    it "allows admins to remove community leader level 1", :aggregate_failures do
+      sign_in create(:user, :admin)
+      user.add_role(:community_leader_level_1)
+      role = user.roles.find_by!(name: "community_leader_level_1")
+
+      delete admin_user_path(user.id), params: { user_id: user.id, role_id: role.id }
+
+      expect(user.reload.community_leader_level_1?).to be(false)
+      expect(request.flash["success"]).to include("Community Leader Level 1")
+    end
+
     it "selects new role for user" do
       user.add_role(:trusted)
       user.reload
@@ -364,6 +396,65 @@ RSpec.describe "Admin::Users" do
     it "expect flash message" do
       post full_delete_admin_user_path(user.id)
       expect(request.flash["success"]).to include("fully deleted")
+    end
+
+    it "allows admins to delete users below the published activity threshold", :aggregate_failures do
+      sign_in create(:user, :admin)
+
+      get admin_user_path(user.id)
+      expect(response.body).to include(full_delete_admin_user_path(user))
+
+      sidekiq_assert_enqueued_jobs(1, only: Users::DeleteWorker) do
+        post full_delete_admin_user_path(user.id)
+      end
+
+      expect(response).to redirect_to(admin_users_path)
+    end
+
+    it "restricts deleting users at or above the published activity threshold to super admins", :aggregate_failures do
+      create_list(:article, 3, user: user, published: true)
+      create_list(:comment, 2, user: user, commentable: article2, deleted: false)
+      admin = create(:user, :admin)
+      sign_in admin
+
+      get admin_user_path(user.id)
+      expect(response.body).to include(
+        I18n.t("views.admin.users.delete.activity_threshold_notice",
+               count: UserPolicy::ADMIN_DELETE_PUBLISHED_ACTIVITY_LIMIT),
+      )
+      expect(response.body).not_to include(full_delete_admin_user_path(user))
+
+      expect do
+        post full_delete_admin_user_path(user.id)
+      end.to raise_error(Pundit::NotAuthorizedError)
+
+      sign_in super_admin
+
+      get admin_user_path(user.id)
+      expect(response.body).to include(
+        I18n.t("views.admin.users.delete.activity_threshold_notice",
+               count: UserPolicy::ADMIN_DELETE_PUBLISHED_ACTIVITY_LIMIT),
+      )
+      expect(response.body).to include(full_delete_admin_user_path(user))
+
+      sidekiq_assert_enqueued_jobs(1, only: Users::DeleteWorker) do
+        post full_delete_admin_user_path(user.id)
+      end
+
+      expect(response).to redirect_to(admin_users_path)
+    end
+
+    it "forbids admins from deleting other admins or super admins", :aggregate_failures do
+      admin = create(:user, :admin)
+      sign_in admin
+
+      expect do
+        post full_delete_admin_user_path(super_admin.id)
+      end.to raise_error(Pundit::NotAuthorizedError)
+
+      expect do
+        post full_delete_admin_user_path(admin.id)
+      end.to raise_error(Pundit::NotAuthorizedError)
     end
   end
 

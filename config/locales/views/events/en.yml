@@ -35,6 +35,8 @@ en:
         live: LIVE
         ended: ENDED
       challenge:
+        upcoming: UPCOMING
+        starts_on: "Starts on %{date}"
         breadcrumb: Challenges
         status: "Challenge Status:"
         prompt_default: Challenge Prompt

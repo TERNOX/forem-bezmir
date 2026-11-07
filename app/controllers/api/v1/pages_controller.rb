@@ -17,6 +17,7 @@ module Api
       def create
         @page = Page.new(permitted_params)
         if @page.save
+          log_page_write("api_page_create")
           render json: @page, status: :ok
         else
           response.headers["X-Error-Text"] = @page.errors.full_messages.join(', ')
@@ -27,6 +28,7 @@ module Api
       def update
         @page = Page.find(params[:id])
         if @page.update(permitted_params)
+          log_page_write("api_page_update")
           render json: @page, status: :ok
         else
           response.headers["X-Error-Text"] = @page.errors.full_messages.join(', ')
@@ -37,6 +39,7 @@ module Api
       def destroy
         @page = Page.find(params[:id])
         if @page.destroy
+          log_page_write("api_page_destroy")
           render json: @page, status: :ok
         else
           response.headers["X-Error-Text"] = @page.errors.full_messages.join(', ')
@@ -45,6 +48,10 @@ module Api
       end
 
       private
+
+      def log_page_write(action)
+        Audit::Logger.log(:admin_api, @user, { "action" => action, "page_id" => @page.id })
+      end
 
       def require_admin
         authorize Page, :access?, policy_class: InternalPolicy

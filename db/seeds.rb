@@ -1163,24 +1163,6 @@ end
 
 ##############################################################################
 
-seeder.create_if_none(AiAudit) do
-  # AI Moderation Audits representing Forem's updated moderation flows
-  Article.order(Arel.sql("RANDOM()")).limit(10).each do |article|
-    AiAudit.create!(
-      affected_user_id: article.user_id,
-      affected_content_type: "Article",
-      affected_content_id: article.id,
-      ai_model: "gemini-1.5-pro",
-      wrapper_object_class: "Ai::ContentModerationLabeler",
-      request_body: { text: "evaluate this article" },
-      response_body: { label: "safe", score: 0.9 },
-      status_code: 200
-    )
-  end
-end
-
-##############################################################################
-
 # Pin an article for dynamic feed representation
 first_article = Article.order(Arel.sql("RANDOM()")).first
 PinnedArticle.set(first_article) if first_article.present?

@@ -1,0 +1,50 @@
+---
+uk:
+  core:
+    image_upload_server_error: Сталася помилка на сервері!
+  lib:
+    constants:
+      settings:
+        general:
+          geos_with_allowed_anonymous_tracking:
+            description: Країни або регіони (наприклад, US, CA, US-CA), де незалогіненим відвідувачам видається анонімний ідентифікатор у браузері разом із записом теґів, які вони читали, щоб показувати їм кращий контент. Указуйте лише місця, де таке зберігання дозволене без попередньої згоди (наприклад, не ЄС і не Велика Британія). Якщо ці дані використовуються для реклами, це також має бути там дозволено та/або узгоджено з Вашим банером cookie. Залиште порожнім, щоб вимкнути всюди.
+            placeholder: Коди країн або регіонів через кому, наприклад US,CA
+  views:
+    main:
+      side:
+        events:
+          headings:
+            upcoming_events: Найближчі події
+            live_events: Події наживо
+            live_and_upcoming_events: Події наживо й найближчі
+            upcoming_challenges: Найближчі челенджі
+            live_challenges: Челенджі зараз
+            live_and_upcoming_challenges: Челенджі зараз і найближчі
+            upcoming_livestreams: Найближчі трансляції
+            live_livestreams: Трансляції наживо
+            live_and_upcoming_livestreams: Трансляції наживо й найближчі
+            upcoming_takeovers: Найближчі takeover-події
+            live_takeovers: Takeover-події зараз
+            live_and_upcoming_takeovers: Takeover-події зараз і найближчі
+          types:
+            challenge: Челендж
+            live_stream: Трансляція
+            takeover: Takeover
+            other: Подія
+          live_badge: НАЖИВО
+    settings:
+      custom:
+        themes:
+          dark_theme: Темна тема
+          light_theme: Світла тема
+          system_theme: Як у системі
+      profile_image:
+        remove: Видалити фото профілю
+        remove_description: Замість нього буде показано стандартний аватар.
+    comments:
+      menu:
+        admin_profile:
+          aria_label: Відкрити профіль %{user} в адмінці
+          text: Профіль в адмінці
+    users:
+      view_admin_profile: Профіль в адмінці

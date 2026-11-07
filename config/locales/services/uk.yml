@@ -66,6 +66,12 @@ uk:
         parse_error: Виникла проблема під час розбору YAML-фронтматеру. Можливо, потрібно екранувати лапки або двокрапку. Якщо у вас проблеми, напишіть на %{email}.
     html:
       parser:
+        alerts:
+          caution: Обережно
+          important: Важливо
+          note: Примітка
+          tip: Порада
+          warning: Попередження
         enter_fullscreen_mode: Увімкнути повноекранний режим
         exit_fullscreen_mode: Вимкнути повноекранний режим
         unsupported_video: Ваш браузер не підтримує відтворення відео.
@@ -135,6 +141,9 @@ uk:
       article_handler:
         suspended_too_many: Користувача заблоковано за надмірну кількість спам-статей, автоматично виявлено системою.
         marked_spam_repeat_auto_flags: Користувача позначено як спамера, бо %{count} його дописів за останній місяць система автоматично позначила як спам або явні порушення.
+      comment_handler:
+        marked_spam_repeat_auto_flags: Користувача позначено як спамера, бо %{count} його коментарів за останній місяць система автоматично позначила як спам.
+        marked_spam_comment_flood: Новий акаунт позначено як спамера, бо за добу він прокоментував %{count} дописів.
     user_subscriptions:
       create_from_controller_params:
         source_not_found: Джерело не знайдено.

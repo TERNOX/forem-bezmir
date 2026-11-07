@@ -8,6 +8,7 @@ end
 resources :articles, only: %i[index show create update] do
   collection do
     get "/search", to: "articles#search"
+    post "/preview", to: "articles#preview"
     get "me(/:status)", to: "articles#me", constraints: { status: /published|unpublished|all/ }
     get "/:username/:slug", to: "articles#show_by_slug"
     get "/latest", to: "articles#index", defaults: { sort: "desc" }
@@ -15,7 +16,11 @@ resources :articles, only: %i[index show create update] do
 end
 
 resources :subforems, only: [:index]
-resources :comments, only: %i[index show]
+resources :comments, only: %i[index show] do
+  collection do
+    post :preview
+  end
+end
 resources :videos, only: [:index]
 resources :podcast_episodes, only: [:index]
 resources :users, only: %i[show] do
@@ -23,7 +28,11 @@ resources :users, only: %i[show] do
     get :me
   end
 end
-resources :tags, only: [:index]
+resources :tags, only: [:index] do
+  collection do
+    get :supported
+  end
+end
 resources :follows, only: [:create] do
   collection do
     get :tags

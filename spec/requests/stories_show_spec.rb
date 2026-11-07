@@ -29,6 +29,36 @@ RSpec.describe "StoriesShow" do
       expect(response).to have_http_status(:moved_permanently)
     end
 
+    it "sets surrogate keys on the org redirect without loading the article body by slug" do
+      old_path = article.path
+      article.update(organization: org)
+      slug_queries = []
+      callback = lambda do |*, payload|
+        slug_queries << payload[:sql] if payload[:sql].include?(%("articles"."slug" =))
+      end
+
+      ActiveSupport::Notifications.subscribed(callback, "sql.active_record") { get old_path }
+
+      expect(response).to redirect_to(article.path)
+      expect(response.headers["Surrogate-Key"]).to include(article.record_key, org.record_key)
+      expect(slug_queries).not_to be_empty
+      expect(slug_queries).to all(exclude("body_markdown").and(exclude(%("articles".*))))
+    end
+
+    it "loads the article by path without the semantic_embedding vector" do
+      path_queries = []
+      callback = lambda do |*, payload|
+        path_queries << payload[:sql] if payload[:sql].include?(%("articles"."path" =))
+      end
+
+      ActiveSupport::Notifications.subscribed(callback, "sql.active_record") { get article.path }
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include(CGI.escapeHTML(article.title))
+      expect(path_queries).not_to be_empty
+      expect(path_queries).to all(include(%("articles"."processed_html")).and(exclude("semantic_embedding")))
+    end
+
     it "preserves internal nav param (i=i) upon redirect" do
       old_path = article.path
       article.update(organization: org)
@@ -117,6 +147,19 @@ RSpec.describe "StoriesShow" do
       expect(response.body).to include(" articleuser-#{article.user_id}")
     end
 
+    it "reads the article's tag colors in one cache batch" do
+      allow(Rails.cache).to receive(:fetch).and_call_original
+      allow(Rails.cache).to receive(:fetch_multi).and_call_original
+
+      get article.path
+
+      tags = article.decorate.cached_tag_list_array
+      tag_color_keys = tags.map { |tag| "view-helper-#{tag}/tag_colors" }
+      expect(Rails.cache).to have_received(:fetch_multi).with(*tag_color_keys, expires_in: 5.hours).once
+      expect(Rails.cache).not_to have_received(:fetch).with(a_string_ending_with("/tag_colors"), any_args)
+      expect(response.body).to include(*tags.map { |tag| %(href="/t/#{tag}") })
+    end
+
     ###
 
     it "renders date-no-year if article published this year" do
@@ -194,10 +237,12 @@ RSpec.describe "StoriesShow" do
     end
 
     it "handles invalid slug characters" do
-      # rubocop:disable RSpec/MessageChain
-      allow(Article).to receive_message_chain(:includes, :find_by).and_raise(ArgumentError)
-      # rubocop:enable RSpec/MessageChain
-      get article.path
+      path = article.path
+      relation = instance_double(ActiveRecord::Relation)
+      allow(Article).to receive(:includes).with(:organization, user: %i[profile setting roles]).and_return(relation)
+      allow(relation).to receive(:select).with(Article.column_names - %w[semantic_embedding]).and_return(relation)
+      allow(relation).to receive(:find_by).with(path: path).and_raise(ArgumentError)
+      get path
 
       expect(response).to have_http_status(:bad_request)
     end
@@ -231,6 +276,82 @@ RSpec.describe "StoriesShow" do
       article = create(:article, with_main_image: false, social_image: "https://example.com/image.jpg")
       get article.path
       expect(response.body).to include(%(property="og:image" content="#{article.social_image}"))
+    end
+
+    it "marks the pinned article as pinned while looking up the pinned article once" do
+      PinnedArticle.set(article)
+      allow(PinnedArticle).to receive(:id).and_call_original
+
+      get article.path
+
+      expect(response.body).to match(/data-pinned[\s>]/)
+      expect(PinnedArticle).to have_received(:id).once
+    end
+
+    it "does not mark an article as pinned when another article is pinned" do
+      PinnedArticle.set(create(:article))
+
+      get article.path
+
+      expect(response.body).not_to match(/data-pinned[\s>]/)
+    end
+
+    it "does not query for negative comments when the article has no comments" do
+      negative_comment_queries = []
+      callback = lambda do |*, payload|
+        next if payload[:name] == "SCHEMA"
+
+        negative_comment_queries << payload[:sql] if payload[:sql].include?("score < 0")
+      end
+
+      ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+        get article.path
+      end
+
+      expect(response).to have_http_status(:ok)
+      expect(negative_comment_queries).to be_empty
+    end
+
+    it "queries for negative comments only once when rendering the hidden negative comments notice" do
+      create(:comment, commentable: article, score: -5)
+      article.reload
+
+      negative_comment_queries = []
+      callback = lambda do |*, payload|
+        next if payload[:name] == "SCHEMA"
+
+        negative_comment_queries << payload[:sql] if payload[:sql].include?("score < 0")
+      end
+
+      ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+        get article.path
+      end
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Some comments may only be visible to logged-in visitors")
+      expect(negative_comment_queries.size).to eq(1)
+    end
+
+    it "loads the series articles with a single query when rendering the series switcher" do
+      collection = create(:collection, :with_articles, user: user, amount: 6)
+      series_article = collection.articles.first
+
+      collection_queries = []
+      callback = lambda do |*, payload|
+        next if payload[:name] == "SCHEMA"
+
+        collection_queries << payload[:sql] if payload[:sql].include?(%("articles"."collection_id" =))
+      end
+
+      ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+        get series_article.path
+      end
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("series-switcher")
+      expect(response.body).to include("6 Part Series")
+      collection.articles.each { |a| expect(response.body).to include(a.path) }
+      expect(collection_queries.size).to eq(1)
     end
 
     context "when subforem logic is triggered by RequestStore" do
@@ -463,6 +584,40 @@ RSpec.describe "StoriesShow" do
         expect(response.body).not_to include("data-cue-message=")
         expect(response.body).not_to include("data-cue-close-label=")
       end
+    end
+
+    it "renders the organization's generated social_image in og:image and twitter:image:src when present" do
+      org.update_column(:social_image, "https://example.com/org-social-card.png")
+
+      get org.path
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include('property="og:image" content="https://example.com/org-social-card.png"')
+      expect(response.body).to include('name="twitter:image:src" content="https://example.com/org-social-card.png"')
+    end
+  end
+
+  describe "GET /:username (user)" do
+    it "renders the user's generated social_image in og:image and twitter:image:src when present" do
+      user.profile.update_column(
+        :data,
+        user.profile.data.merge("social_image" => "https://example.com/user-social-card.png"),
+      )
+
+      get user.path
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include('property="og:image" content="https://example.com/user-social-card.png"')
+      expect(response.body).to include('name="twitter:image:src" content="https://example.com/user-social-card.png"')
+    end
+
+    it "falls back to Settings::General.main_social_image when social_image is blank" do
+      allow(Settings::General).to receive(:main_social_image).and_return("https://example.com/default-main-social.png")
+
+      get user.path
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include('property="og:image" content="https://example.com/default-main-social.png"')
     end
   end
 end

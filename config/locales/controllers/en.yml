@@ -11,6 +11,8 @@ en:
   articles_controller:
     deleted: Article was successfully deleted.
     stale_edit: This post was changed by someone else since you opened it. To load the latest version, reload the page and then click the "Revert changes" button at the bottom of the editor (this replaces your current editor text, so copy it first if needed). Otherwise you would overwrite their changes.
+  co_author_invitations_controller:
+    not_updated: That co-author invitation couldn't be updated. It may have already been answered or withdrawn.
   comments_controller:
     create:
       success: created
@@ -71,6 +73,9 @@ en:
     error_fill: "Make sure the forms are filled. 🤖 Other possible errors: %{errors}"
     n_a: N/A
     submitted: Your report is submitted
+  flag_appeals:
+    submitted_success: Your appeal has been submitted for review. Thank you!
+    already_pending: You already have an open appeal pending review for this item.
   follows_controller:
     already_followed: already followed
     daily_limit: Daily account follow limit reached!

@@ -1,4 +1,6 @@
 <% title t("views.manager.meta.title", title: @article.title) %>
+<% org_pinnable = @article.organization.present? &&
+                  (current_user.any_admin? || current_user.org_admin?(@article.organization)) %>
 <main id="main-content" class="manage-page-with-sidebar">
   <!-- Sidebar Navigation -->
   <aside class="manage-sidebar crayons-card" id="manage-sidebar">
@@ -9,6 +11,9 @@
         <li><a href="#section-stats" class="manage-sidebar-link" data-section="section-stats">Статистика</a></li>
         <li><a href="#section-edit" class="manage-sidebar-link" data-section="section-edit">Редагувати публікацію</a></li>
         <li><a href="#section-pin" class="manage-sidebar-link" data-section="section-pin">Закріпити у профілі</a></li>
+        <% if org_pinnable %>
+          <li><a href="#section-pin-org" class="manage-sidebar-link" data-section="section-pin-org">Закріпити в проєкті</a></li>
+        <% end %>
         <li><a href="#section-discussion" class="manage-sidebar-link" data-section="section-discussion">Закрити коментарі</a></li>
         <li><a href="#section-delete" class="manage-sidebar-link" data-section="section-delete">Видалити публікацію</a></li>
         <li><a href="#section-tips" class="manage-sidebar-link" data-section="section-tips">Поради</a></li>
@@ -128,8 +133,8 @@
       <p class="color-base-70 mb-4">
         Закріплена публікація відображатиметься у верхній частині вашого профілю. Ви можете закріпити до 5 публікацій, щоб показати свої найкращі роботи.
       </p>
-      <% if @article.profile_pins.any? %>
-        <%= form_for(@article.profile_pins.first, html: { class: "mb-3" }) do |f| %>
+      <% if @article.user_profile_pins.any? %>
+        <%= form_for(@article.user_profile_pins.first, html: { class: "mb-3" }) do |f| %>
           <button type="submit" class="crayons-btn crayons-btn--outlined" style="width: auto;">
             Відкріпити з профілю
           </button>
@@ -146,6 +151,34 @@
         <% end %>
       <% end %>
     </div>
+
+    <% if org_pinnable %>
+      <!-- Pin to Organization -->
+      <div class="crayons-card p-6 mb-4" id="section-pin-org">
+        <h2 class="crayons-title mb-2">Закріпити в проєкті</h2>
+        <p class="color-base-70 mb-4">
+          Закріплений допис з’являється в окремому розділі вгорі сторінки проєкту «<%= @article.organization.name %>». Можна закріпити до 5 дописів.
+        </p>
+        <% org_pin = @article.profile_pins.find_by(profile_type: "Organization", profile_id: @article.organization.id) %>
+        <% if org_pin %>
+          <%= form_with url: organization_profile_pin_path(@article.organization.slug, org_pin.id), method: :delete, class: "mb-3" do %>
+            <button type="submit" class="crayons-btn crayons-btn--outlined" style="width: auto;">
+              Відкріпити від проєкту
+            </button>
+          <% end %>
+          <p class="color-base-60 fs-s">
+            Цей допис зараз закріплено в проєкті «<%= @article.organization.name %>».
+          </p>
+        <% else %>
+          <%= form_with url: organization_profile_pins_path(@article.organization.slug), method: :post do %>
+            <input type="hidden" name="profile_pin[pinnable_id]" value="<%= @article.id %>">
+            <button type="submit" class="crayons-btn" style="width: auto;">
+              Закріпити в проєкті
+            </button>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
 
     <!-- Discussion Lock -->
     <div class="crayons-card p-6 mb-4" id="section-discussion">

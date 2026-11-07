@@ -20,6 +20,7 @@ Rails.application.routes.draw do
 
   devise_scope :user do
     get "/enter", to: "registrations#new", as: :sign_up
+    get "/users/password", to: redirect("/users/password/new")
     get "/confirm-email", to: "confirmations#new"
     delete "/sign_out", to: "devise/sessions#destroy"
   end
@@ -89,10 +90,12 @@ Rails.application.routes.draw do
         resources :recommended_articles_lists, only: %i[index show create update]
 
         resources :billboards, only: %i[index show create update] do
+          post "preview", on: :collection
           put "unpublish", on: :member
         end
         # temporary keeping both routes while transitioning (renaming) display_ads => billboards
         resources :display_ads, only: %i[index show create update], controller: :billboards do
+          post "preview", on: :collection
           put "unpublish", on: :member
         end
 
@@ -103,6 +106,13 @@ Rails.application.routes.draw do
         end
 
         resources :pages, only: %i[index show create update destroy]
+
+        resources :tags, only: %i[create update] do
+          member do
+            post :moderators, action: :add_moderator
+            delete :moderators, action: :remove_moderator
+          end
+        end
 
         resources :agent_sessions, only: %i[index show create] do
           collection do
@@ -118,11 +128,11 @@ Rails.application.routes.draw do
         resources :organizations, only: %i[index create update destroy]
 
         scope("/users/:id") do
-          constraints(role: /suspend|suspended|limited|spam|trusted/) do
+          constraints(role: /suspend|suspended|limited|spam|trusted|base_subscriber/) do
             put "/:role", to: "user_roles#update", as: "user_add_role"
           end
 
-          constraints(role: /limited|spam|trusted/) do
+          constraints(role: /limited|spam|trusted|base_subscriber/) do
             delete "/:role", to: "user_roles#destroy", as: "user_remove_role"
           end
         end
@@ -213,6 +223,9 @@ Rails.application.routes.draw do
     resources :favorites, only: %i[create]
     resources :response_templates, only: %i[index create edit update destroy]
     resources :feedback_messages, only: %i[index create]
+    get "/appeal", to: "flag_appeals#new", as: :appeal
+    post "/appeal", to: "flag_appeals#create"
+    get "/appeal/success", to: "flag_appeals#show", as: :appeal_success
     resources :organizations, only: %i[update create destroy]
     resources :follows, only: %i[show create] do
       collection do
@@ -231,6 +244,13 @@ Rails.application.routes.draw do
       end
     end
     resources :notifications, only: [:index]
+    resources :co_author_invitations, only: [] do
+      get :candidates, on: :collection, defaults: { format: :json }
+      member do
+        patch :accept
+        patch :decline
+      end
+    end
     resources :tags, only: [:index] do
       collection do
         get "/suggest", to: "tags#suggest", defaults: { format: :json }
@@ -296,6 +316,8 @@ Rails.application.routes.draw do
     patch "/bb_tabulations/:id", to: "billboard_events#update"
 
     resources :badges, only: [:index]
+    # Individual badge pages were folded into /badges; keep old links working.
+    get "/badge/:slug", to: redirect("/badges#%{slug}")
     resources :user_blocks, param: :blocked_id, only: %i[show create destroy]
     resources :podcasts, only: %i[new create]
     resources :article_approvals, only: %i[create]
@@ -415,6 +437,8 @@ Rails.application.routes.draw do
     get "/search", to: "stories/articles_search#index"
     get "/community", to: "community#index", as: :community
     get "/:slug/members", to: "organizations#members", as: :organization_members
+    post "/:slug/profile_pins", to: "organization_profile_pins#create", as: :organization_profile_pins
+    delete "/:slug/profile_pins/:id", to: "organization_profile_pins#destroy", as: :organization_profile_pin
     post "articles/preview", to: "articles#preview"
     post "comments/preview", to: "comments#preview"
     post "comments/subscribe", to: "notification_subscriptions#create"
@@ -447,6 +471,7 @@ Rails.application.routes.draw do
     # Redirect previous settings changed after https://github.com/forem/forem/pull/11347
     get "/settings/integrations", to: redirect("/settings/extensions")
     get "/settings/misc", to: redirect("/settings")
+    get "/settings/password", to: redirect("/settings/account")
     get "/settings/publishing-from-rss", to: redirect("/settings/extensions")
     get "/settings/ux", to: redirect("/settings/customization")
 

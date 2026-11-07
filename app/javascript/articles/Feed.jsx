@@ -101,10 +101,13 @@ export const Feed = ({ timeFrame, feedView, renderFeed, afterRender }) => {
             feedThirdBillboard,
           ]) => {
             // Set feed config if available
-            if (feedPosts.length > 0) {
+            const indexContainer = document.getElementById('index-container');
+            if (indexContainer && feedPosts.length > 0) {
               const firstPost = feedPosts[0];
               if (firstPost.feed_config) {
-                document.getElementById('index-container').dataset.feedConfigId = firstPost.feed_config;
+                indexContainer.dataset.feedConfigId = firstPost.feed_config;
+              } else {
+                delete indexContainer.dataset.feedConfigId;
               }
             }
 
@@ -159,10 +162,10 @@ export const Feed = ({ timeFrame, feedView, renderFeed, afterRender }) => {
   }, [timeFrame, feedView, onError]);
 
   useEffect(() => {
-    if (feedItems.length > 0) {
+    if (!isLoading && feedItems.length > 0 && typeof afterRender === 'function') {
       afterRender();
     }
-  }, [afterRender, feedItems.length]);
+  }, [afterRender, feedItems, isLoading]);
 
   function getImagePost(feedPosts) {
     return feedPosts.find((post) => post.main_image !== null);

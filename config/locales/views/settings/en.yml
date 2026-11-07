@@ -86,6 +86,10 @@ en:
         subforem_reassignment_desc: When your content is marked as off-topic for its current subforem, it may be automatically moved to a more appropriate subforem. You can disable this automatic relocation if you prefer to keep your content in its original location.
         subforem_reassignment_field: Disable automatic relocation of my content to other subforems
         theme: Site Theme
+        themes:
+          dark_theme: Dark Theme
+          light_theme: Light Theme
+          system_theme: System Theme
         writing: Writing
       danger: Danger Zone
       destroy:
@@ -290,6 +294,9 @@ en:
         new: Password
         submit: Set New Password
       previous: There is an existing account authorized with that social account.
+      profile_image:
+        remove: Remove profile image
+        remove_description: Your profile will fall back to the default avatar.
       tab:
         Profile: Profile
         Customization: Customization

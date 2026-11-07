@@ -23,6 +23,7 @@ module Favorites
       log_audit
       grant_earned_favorite
       award_badge
+      send_gem_received_email
       favoritable.async_score_calc if favoritable.respond_to?(:async_score_calc)
       bust_favoritable_cache
       Result.new(success?: true, favoritable: favoritable)
@@ -171,6 +172,10 @@ module Favorites
       Badges::AwardCommunityFavorite.call(favoritable: favoritable, favoriter: user)
     rescue StandardError => e
       Honeybadger.notify(e)
+    end
+
+    def send_gem_received_email
+      SendGemReceivedEmailWorker.perform_async(favoritable.class.name, favoritable.id)
     end
 
     def log_audit
