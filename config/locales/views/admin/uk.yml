@@ -166,6 +166,9 @@ uk:
           onsubmit: Are you sure? This action is irreversible.
           desc2: Once deleted, all data relating to %{user} will be removed from our database.
           notice: Only Super Admins are allowed to delete users.
+          activity_threshold_notice: Лише суперадміни можуть видаляти користувачів, у яких %{count} або більше опублікованих дописів і коментарів.
+          super_admin_notice: Лише суперадміни можуть видаляти акаунти адміністраторів.
+          self_delete_notice: Ви не можете видалити власний акаунт з адмінпанелі.
           submit: Delete now
         update_email:
           heading: Update User Email
@@ -335,6 +338,7 @@ uk:
               resource_admin_billboard: Billboard Admin
               resource_admin_data_update_script: Data Update Script Admin
               resource_admin_feedback_message: Feedback Message Admin
+              resource_admin_flag_appeal: Flag Appeal Admin
               resource_admin_html_variant: HTML Variant Admin
               resource_admin_listing_category: Listing Category Admin
               resource_admin_page: Page Admin
@@ -346,6 +350,8 @@ uk:
               tech_admin: Tech Admin
               trusted: Trusted
               warned: Warned
+              community_leader_level_1: Community Leader Level 1
+              community_leader_level_2: Community Leader Level 2
           tag_mod:
             subtitle: Tags
             aria_learn: Learn more about tag moderation
@@ -450,6 +456,7 @@ uk:
           "Resource Admin: DataUpdateScript": "Resource Admin: DataUpdateScript"
           "Resource Admin: Event": "Resource Admin: Event"
           "Resource Admin: FeedbackMessage": "Resource Admin: FeedbackMessage"
+          "Resource Admin: FlagAppeal": "Resource Admin: FlagAppeal"
           "Resource Admin: HtmlVariant": "Resource Admin: HtmlVariant"
           "Resource Admin: ListingCategory": "Resource Admin: ListingCategory"
           "Resource Admin: Page": "Resource Admin: Page"
@@ -529,3 +536,16 @@ uk:
                 sent: Успішно надіслано
                 skipped: Пропущено
                 failed: Помилка
+      billboard_placement_area_configs:
+        index:
+          visibility: Видимість
+          hidden_by_default: Приховано за замовчуванням
+          visible: Видимий
+          caching: Кешування
+          fully_cached: Повністю кешовано
+          standard_caching: Стандартне
+        edit:
+          hidden_by_default: Приховано за замовчуванням
+          hidden_by_default_desc_html: Білборди все одно надходять у цю зону розміщення, але рендеряться прихованими й не рахують показів, доки фронтенд не покаже їх через %{reveal_call}. Відрендерені білборди мають атрибут %{placement_attribute}.
+          fully_cached: Повністю кешовано
+          fully_cached_desc: Для цієї зони розміщення віддається одна закешована відповідь на кожне місцезнаходження відвідувача, спільна для всіх дописів і сторінок, а також для залогінених відвідувачів, з терміном кешу, вказаним вище. Тут показуються лише білборди без таргетингу на теги, дописи, сторінки, сегменти аудиторії, ролі, проходження опитувань чи типи браузерів. Для дописів, автори яких відмовилися від спонсорів поруч, зберігається стандартна поведінка. Впливає лише на білборди, що завантажуються окремо від сторінки, а не на вбудовані в неї (як-от бічна панель головної).

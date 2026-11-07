@@ -1,0 +1,67 @@
+uk:
+  views:
+    admin:
+      flag_appeals:
+        title: Черга апеляцій
+        tabs:
+          pending: Очікують
+          approved: Схвалені
+          rejected: Відхилені
+        expand_all: Розгорнути всі
+        collapse_all: Згорнути всі
+        empty: Апеляцій із таким статусом немає.
+        back_to_queue: "← До черги апеляцій"
+        appeal_number: "Апеляція #%{id}"
+        submitted_html: "Подано %{time} тому, автор: %{user} (@%{username})"
+        link_to_appeal: Посилання на апеляцію
+        not_available: Н/Д
+        system: Система
+        status:
+          open: Відкрита
+          ai_reviewed: Перевірена ШІ
+          approved: Схвалена
+          rejected: Відхилена
+        recommendation:
+          auto_unflag: Зняти позначку автоматично
+          human_review: Ручний розгляд
+          confirm_flag: Підтвердити позначку
+        target:
+          comment: Коментар до «%{title}»
+          article: "Допис: «%{title}»"
+          user: "Акаунт: @%{username}"
+          other: "%{type} #%{id}"
+        types:
+          Article: Допис
+          Comment: Коментар
+          User: Користувач
+        post_fallback: Допис
+        discussion_fallback: Обговорення
+        appealing_user: Автор апеляції
+        user_id: "ID: %{id}"
+        user_score: "Рейтинг користувача: %{score}"
+        account_flagged: Заблоковано / позначено як спам
+        account_active: Активний
+        flagged_item: "Позначений контент (%{type})"
+        comment_on: "Коментар до:"
+        open_comment: Відкрити коментар на сайті ↗
+        comment_score_html: "Рейтинг коментаря: <strong>%{score}</strong>"
+        article_score_html: "Рейтинг допису: <strong>%{score}</strong>"
+        deleted: "%{type} #%{id} (видалено з бази даних)"
+        flagged_content_text: "Текст позначеного контенту:"
+        empty_comment: "(Порожній коментар)"
+        account_moderation: "Модерація акаунта @%{username}"
+        user_statement: "Пояснення користувача:"
+        ai:
+          badge: "ШІ: %{recommendation} (%{score})"
+          heading: Повторна оцінка ШІ
+          recommendation: "Рекомендація: %{recommendation}"
+          confidence: Впевненість
+          summary: Висновок ШІ
+          pending: Очікує фонової оцінки ШІ...
+        approve_button: Схвалити й зняти позначку
+        reject_button: Відхилити апеляцію
+        confirm_approve_article: "Апеляцію #%{id} буде схвалено: акаунт @%{username} відновиться (статус «заблоковано»/«спам» буде знято), з допису #%{target_id} знімуться автомодераційні позначки (якщо його знято з публікації, він знову опублікується), а реакції спам-маскота буде видалено. Продовжити?"
+        confirm_approve_comment: "Апеляцію #%{id} буде схвалено: акаунт @%{username} відновиться, реакції спам-маскота на коментарі #%{target_id} буде видалено, а рейтинг коментаря перераховано. Продовжити?"
+        confirm_approve_user: "Апеляцію #%{id} буде схвалено, а акаунт @%{username} відновлено (статус «заблоковано»/«спам» буде знято, а дописи, приховані автоматичним блокуванням, знову опубліковано). Продовжити?"
+        confirm_reject: "Апеляцію #%{id} буде відхилено, а всі чинні обмеження акаунта @%{username} залишаться. Продовжити?"
+        resolved_by_html: "Розглянув: <strong>%{name}</strong>, %{date}"
