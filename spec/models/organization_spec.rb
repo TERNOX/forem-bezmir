@@ -329,18 +329,9 @@ RSpec.describe Organization do
     end
   end
 
-  describe ".find_by_slug_or_legacy" do
-    it "finds an organization by its current, old, or old-old slug" do
-      original_slug = organization.slug
-      organization.update(slug: "second_slug")
-      organization.update(slug: "third_slug")
-
-      expect(described_class.find_by_slug_or_legacy("third_slug")).to eq(organization)
-      expect(described_class.find_by_slug_or_legacy("second_slug")).to eq(organization)
-      expect(described_class.find_by_slug_or_legacy(original_slug)).to eq(organization)
-      expect(described_class.find_by_slug_or_legacy("missing_slug")).to be_nil
-    end
-
+  # The fork has no Organization.find_by_slug_or_legacy; the legacy slug
+  # lookup lives in StoriesController and uses these indexes directly.
+  describe "legacy slug indexes" do
     it "uses indexes on the legacy slug columns" do
       indexed_columns = described_class.connection.indexes(:organizations).map(&:columns)
       expect(indexed_columns).to include(["old_slug"], ["old_old_slug"])

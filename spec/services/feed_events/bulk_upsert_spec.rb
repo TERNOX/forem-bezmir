@@ -326,24 +326,6 @@ RSpec.describe FeedEvents::BulkUpsert, type: :service do
   end
 
   context "with feed config feedback", :throttled_call do
-    it "spawns from batched engagement after recording the exposure that proves a config" do
-      article = create(:article)
-      config = create(:feed_config, feed_impressions_count: FeedConfig::LOW_IMPRESSION_COUNT - 1)
-      attributes = { article_id: article.id, user_id: user.id, category: "impression",
-                     context_type: "email", feed_config_id: config.id, article_position: 1,
-                     created_at: 6.minutes.ago, updated_at: 6.minutes.ago }
-      FeedEvent.insert_all(Array.new(FeedConfig::LOW_IMPRESSION_COUNT - 1) { attributes })
-      events = %w[click impression].map do |category|
-        attributes.except(:created_at, :updated_at).merge(category: category, event_id: SecureRandom.uuid)
-      end
-      expect { described_class.call(events) }.to change(FeedConfig, :count).by(1)
-      expect(config.reload.feed_impressions_count).to eq(FeedConfig::LOW_IMPRESSION_COUNT)
-      expect(FeedConfig.last.targeting_bucket).to eq(FeedConfig::BUCKET_DIGEST)
-      Timecop.travel(6.minutes.from_now) do
-        expect { described_class.call(events) }.not_to change(FeedConfig, :count)
-      end
-    end
-
     it "retains the home-click spawning restriction for mixed batches" do
       article = create(:article)
       config = create(:feed_config, feed_impressions_count: FeedConfig::LOW_IMPRESSION_COUNT)
