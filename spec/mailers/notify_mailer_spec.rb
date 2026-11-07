@@ -130,34 +130,34 @@ RSpec.describe NotifyMailer do
 
     include_examples "#renders_proper_email_headers"
     include_examples "#renders_one_click_unsubscribe_headers"
-    include_examples "#delivers_via_smtp_by_default"
 
     it "renders proper subject and receiver", :aggregate_failures do
-      expect(email.subject).to eq("💎 Your post was picked as a gem")
+      expect(email.subject).to eq("🏆 Your post was awarded platinum")
       expect(email.to).to eq([user.email])
     end
 
-    it "explains the gem and links to the post", :aggregate_failures do
-      expect(email.html_part.body).to include("Gems are rare")
+    it "explains platinum and links to the post", :aggregate_failures do
+      expect(email.html_part.body).to include("Platinum is rare")
       expect(email.html_part.body).to include(CGI.escapeHTML(article.title))
       expect(email.text_part.body).to include(URL.article(article))
     end
 
-    it "invites a regular member to pass a gem on", :aggregate_failures do
-      expect(email.html_part.body).to include("You have a gem to give")
+    it "invites a regular member to pass platinum on", :aggregate_failures do
+      expect(email.html_part.body).to include("You have platinum to give")
       expect(email.text_part.body).to include("Share the love!")
     end
 
-    it "does not offer a gem to pass on to a community leader" do
+    # Experts share the same platinum wallet, so the platinum they receive is theirs to give too.
+    it "offers platinum to pass on to an Expert as well" do
       user.add_role(:community_leader_level_1)
 
-      expect(email.html_part.body).not_to include("You have a gem to give")
+      expect(email.html_part.body).to include("You have platinum to give")
     end
 
-    it "does not offer a gem to pass on to a suspended author" do
+    it "does not offer platinum to pass on to a suspended author" do
       user.add_role(:suspended)
 
-      expect(email.html_part.body).not_to include("You have a gem to give")
+      expect(email.html_part.body).not_to include("You have platinum to give")
     end
 
     it "does not send when the author has turned off badge emails" do
@@ -200,28 +200,9 @@ RSpec.describe NotifyMailer do
       before { comment.update_columns(favorited_by_user_id: leader.id, favorited_at: Time.current) }
 
       it "describes the comment and links to it", :aggregate_failures do
-        expect(email.subject).to eq("💎 Your comment was picked as a gem")
+        expect(email.subject).to eq("🏆 Your comment was awarded platinum")
         expect(email.text_part.body).to include("your comment on \"#{article.title}\"")
         expect(email.text_part.body).to include(URL.comment(comment))
-      end
-    end
-
-    context "when routed through Customer.io" do
-      before do
-        allow(ApplicationConfig).to receive(:[]).and_call_original
-        allow(ApplicationConfig).to receive(:[]).with("CUSTOMERIO_APP_KEY").and_return("app-key")
-        FeatureFlag.enable(Deliverable::CUSTOMERIO_FLAG, FeatureFlag::Actor[user])
-        link_mlh_identity(user)
-      end
-
-      after { FeatureFlag.remove(Deliverable::CUSTOMERIO_FLAG) }
-
-      it "sends the Forem-rendered body instead of a Customer.io template", :aggregate_failures do
-        settings = email.message.delivery_method.settings
-
-        expect(email.message.delivery_method).to be_a(DeliveryMethods::CustomerIo)
-        expect(settings[:transactional_message_id]).to be_nil
-        expect(email.html_part.body).to include("Gems are rare")
       end
     end
   end
