@@ -10,10 +10,7 @@ class PasswordsController < Devise::PasswordsController
 
   def update
     super do |resource|
-      if resource.errors.empty? && resource.confirmed_at.blank?
-        resource.update_column(:confirmed_at, Time.current)
-        resource.track!("user_updated")
-      end
+      resource.update_column(:confirmed_at, Time.current) if resource.errors.empty? && resource.confirmed_at.blank?
     end
   end
 
