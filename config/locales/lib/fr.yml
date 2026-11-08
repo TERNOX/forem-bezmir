@@ -195,6 +195,10 @@ fr:
             description: Enable the Agent Sessions feature for uploading and embedding coding agent session transcripts.
           quote_card_social_images:
             description: "Générer des images de partage en carte citation (un extrait de la publication dans un cadre) pour les publications sans image de couverture, ainsi que des cartes de profil pour les utilisateurs et les organisations. Désactivez pour utiliser la carte de titre classique."
+          igdb_client_id:
+            description: "Client ID d'une application développeur Twitch (dev.twitch.tv/console/apps). Les votes l'utilisent pour rechercher les jeux et leurs jaquettes sur IGDB."
+          igdb_client_secret:
+            description: "Client Secret de la même application Twitch. Laissez les deux vides pour ajouter les nominés manuellement."
           appeal_auto_unflag_threshold:
             description: "Score de confiance minimal de l'IA (de 0,0 à 1,0) requis pour approuver automatiquement un recours lorsque l'IA recommande auto_unflag (s'applique uniquement aux restrictions automatisées, jamais aux suspensions par un modérateur humain). Définissez une valeur supérieure à 1,0 (par ex. 1,01) pour désactiver le désignalement automatique."
           video:

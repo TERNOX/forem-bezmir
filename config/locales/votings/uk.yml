@@ -1,0 +1,116 @@
+---
+uk:
+  liquid_tags:
+    voting_tag:
+      not_found: Голосування не знайдено або воно ще не опубліковане
+      eyebrow: Голосування спільноти
+      nominations:
+        one: "%{count} номінація"
+        few: "%{count} номінації"
+        many: "%{count} номінацій"
+        other: "%{count} номінації"
+      until: "до %{date}"
+      cta: Проголосувати
+      cta_closed: Переглянути
+  models:
+    voting:
+      closes_before_opens: має бути пізніше за час відкриття
+      slug_taken: уже зайнята користувачем, проєктом, сторінкою, подкастом чи іншим голосуванням
+    voting_nominee:
+      game_or_title: Оберіть гру або вкажіть назву
+  views:
+    votings:
+      show:
+        time_format: "%-d %B %Y, %H:%M"
+        meta_description: "Голосування спільноти: %{title}"
+        draft: Чернетка — бачать лише адміністратори
+        noscript: Щоб проголосувати, увімкніть JavaScript.
+      share:
+        title: "Вибір @%{username}: %{voting}"
+        description: "Ось як я проголосував(-ла) у «%{voting}». А який Ваш вибір?"
+        heading: "Вибір %{name}"
+        vote_too: Проголосувати теж
+        open_voting: До голосування
+        image_byline: "Вибір @%{username}"
+        image_more_picks: Інші мої вибори
+        image_footer: "Голосуйте на %{url}"
+      app:
+        progress: "Заповнено %{done} з %{total}"
+        step: "Номінація %{current} з %{total}"
+        required: Обов'язкова
+        optional: Необов'язкова
+        hint_single: Оберіть один варіант.
+        hint_multi: "Можна обрати до %{count} варіантів."
+        hint_ranked: "Натискайте на ігри по черзі, щоб розставити до %{count} місць. Бали за місця: %{points}."
+        selected_count: "Обрано: %{count} з %{max}"
+        limit_reached: "Тут можна обрати не більше %{count}. Зніміть один вибір, щоб додати інший."
+        place_label: "%{place} місце"
+        open_link: Детальніше ↗
+        other_label: Інше
+        other_placeholder: Свій варіант
+        back: Назад
+        next: Далі
+        skip: Пропустити
+        to_summary: До підсумку
+        all_nominations: Усі номінації
+        summary_title: Підсумок
+        summary_hint: Перевірте відповіді й надішліть голос. Натисніть на номінацію, щоб змінити вибір.
+        nothing_selected: Без відповіді
+        missing_required: "Ще потрібно відповісти: %{list}."
+        submit: Надіслати голос
+        update: Оновити голос
+        saving: Зберігаємо…
+        sign_in_to_vote: Увійдіть, щоб проголосувати
+        sign_in_hint: Ваш вибір збережеться в цьому браузері, поки Ви входите або реєструєтеся.
+        guest_hint: Обирати можна вже зараз, а щоб надіслати голос, потрібно увійти.
+        already_voted: Ваш голос уже враховано. Змінити його можна до закриття голосування.
+        see_my_picks: Сторінка з моїм вибором
+        status_open_until: "Голосування триває до %{date}."
+        status_upcoming: "Голосування стартує %{date}. Поки що можна роздивитися номінації."
+        status_closed: Голосування завершено.
+        status_draft: Чернетка — голосування бачать лише адміністратори.
+        results_soon: Результати оголосимо згодом.
+        show_results: Показати результати
+        back_to_voting: До голосування
+        reason_draft: Голосування ще не опубліковано.
+        reason_upcoming: Голосування ще не почалося.
+        reason_closed: Голосування вже завершено.
+        reason_sign_in: Увійдіть, щоб проголосувати.
+        reason_unconfirmed: Підтвердіть свою електронну пошту, щоб проголосувати.
+        reason_restricted: Ваш акаунт не може брати участь у голосуванні.
+        reason_low_score: Ваш рейтинг на сайті надто низький для участі в голосуванні.
+        reason_account_too_new: У цьому голосуванні беруть участь лише акаунти, створені до його початку.
+        error_required: Ця номінація обов'язкова.
+        error_too_many: Обрано забагато варіантів.
+        error_unknown_nominee: Номінантів змінили. Оновіть сторінку й перевірте вибір.
+        error_other_too_long: Свій варіант задовгий.
+        error_empty: Оберіть щось хоча б в одній номінації.
+        error_generic: Не вдалося зберегти голос. Спробуйте ще раз.
+        error_draft: Голосування ще не опубліковано.
+        error_upcoming: Голосування ще не почалося.
+        error_closed: Голосування вже завершено.
+        error_sign_in: Увійдіть, щоб проголосувати.
+        error_unconfirmed: Підтвердіть свою електронну пошту, щоб проголосувати.
+        error_restricted: Ваш акаунт не може брати участь у голосуванні.
+        error_low_score: Ваш рейтинг на сайті надто низький для участі в голосуванні.
+        error_account_too_new: У цьому голосуванні беруть участь лише акаунти, створені до його початку.
+        error_rate_limited: Забагато спроб. Зачекайте хвилинку й спробуйте ще раз.
+        thanks_title: Дякуємо! Ваш голос враховано
+        thanks_updated: Голос оновлено
+        thanks_body: "Змінити відповіді можна до %{date}."
+        edit_answers: Переглянути або змінити відповіді
+        share_title: Поділіться своїм вибором
+        share_text: "Мій вибір у «%{title}»"
+        share_image_alt: "Картка з моїм вибором у «%{title}»"
+        image_generating: Готуємо картинку…
+        share_download: Завантажити картинку
+        share_copy: Скопіювати посилання
+        share_copied: Посилання скопійовано
+        share_native: Поділитися
+        share_on: "Поділитися в:"
+        results_title: Результати
+        ballots_count: "Проголосувало: %{count}"
+        voters_count: "Відповіли: %{count}"
+        your_pick: Ваш вибір
+        points: "Бали: %{count}"
+        votes: "Голоси: %{count}"

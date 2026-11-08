@@ -1,0 +1,25 @@
+<%# Fork-only: {% voting %} card. Static: no live status, no user data. %>
+<div class="ltag__voting crayons-card">
+  <a href="<%= app_url(voting.path) %>" class="ltag__voting__link">
+    <% if voting.banner_image.present? %>
+      <img class="ltag__voting__banner" src="<%= voting.banner_image.url %>" alt="" loading="lazy">
+    <% elsif preview_images.any? %>
+      <span class="ltag__voting__collage" aria-hidden="true">
+        <% preview_images.each do |url| %>
+          <img src="<%= url %>" alt="" loading="lazy">
+        <% end %>
+      </span>
+    <% end %>
+    <span class="ltag__voting__body">
+      <span class="ltag__voting__eyebrow">
+        <%= t("liquid_tags.voting_tag.eyebrow") %>
+        · <%= t("liquid_tags.voting_tag.nominations", count: nominee_count) %>
+        <% if voting.closes_at %>
+          · <%= t("liquid_tags.voting_tag.until", date: l(voting.closes_at.to_date, format: :long)) %>
+        <% end %>
+      </span>
+      <span class="ltag__voting__title"><%= voting.title %></span>
+      <span class="crayons-btn ltag__voting__cta"><%= voting.closed? ? t("liquid_tags.voting_tag.cta_closed") : t("liquid_tags.voting_tag.cta") %></span>
+    </span>
+  </a>
+</div>

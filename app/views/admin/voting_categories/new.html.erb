@@ -1,0 +1,5 @@
+<header class="admin__header mb-4">
+  <p class="color-base-60"><%= link_to @voting.title, admin_voting_path(@voting) %></p>
+  <h1 class="fs-4xl fw-bold">New nomination</h1>
+</header>
+<div class="crayons-card p-6"><%= render "form" %></div>

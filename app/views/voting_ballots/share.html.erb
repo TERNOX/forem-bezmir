@@ -1,0 +1,65 @@
+<%# Fork-only: public "my picks" page — the link people share; its og:image is the generated card. %>
+<% page_title = t("views.votings.share.title", username: @user.username, voting: @voting.title) %>
+<% content_for :title, page_title %>
+<% canonical = @share_url %>
+<%= content_for :page_meta do %>
+  <link rel="canonical" href="<%= canonical %>" />
+  <meta name="description" content="<%= t("views.votings.share.description", voting: @voting.title) %>">
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="<%= canonical %>" />
+  <meta property="og:title" content="<%= page_title %>" />
+  <meta property="og:description" content="<%= t("views.votings.share.description", voting: @voting.title) %>" />
+  <meta property="og:image" content="<%= @share_image_url %>" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="<%= page_title %>">
+  <meta name="twitter:image:src" content="<%= @share_image_url %>">
+<% end %>
+
+<main class="voting-page crayons-layout crayons-layout--limited-l mx-auto" id="main-content">
+  <header class="voting-hero voting-share-header">
+    <div class="voting-hero__content">
+      <a href="<%= @voting.path %>" class="voting-share-header__voting"><%= @voting.title %></a>
+      <h1 class="voting-hero__title"><%= t("views.votings.share.heading", name: @user.name) %></h1>
+      <div class="voting-share-header__row">
+        <a href="<%= @user.path %>" class="voting-share-header__user">
+          <img src="<%= @user.profile_image_url_for(length: 96) %>" alt="" width="40" height="40" class="radius-full">
+          <span class="voting-share-header__handle">@<%= @user.username %></span>
+        </a>
+        <a href="<%= @voting.path %>" class="crayons-btn">
+          <%= @voting.open? ? t("views.votings.share.vote_too") : t("views.votings.share.open_voting") %>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <ol class="voting-share-list">
+    <% @picks.each do |pick| %>
+      <li class="voting-share-item crayons-card">
+        <h2 class="voting-share-item__title"><%= pick.category.title %></h2>
+        <ul class="voting-share-item__picks voting-share-item__picks--<%= pick.category.card_style %>">
+          <% pick.nominees.each_with_index do |nominee, index| %>
+            <li class="voting-share-pick">
+              <div class="voting-share-pick__image">
+                <% if (url = nominee.image_url_for(pick.category.card_style)) %>
+                  <img src="<%= url %>" alt="" loading="lazy">
+                <% end %>
+                <% if pick.category.ranked? %>
+                  <span class="voting-place-badge"><%= index + 1 %></span>
+                <% end %>
+              </div>
+              <span class="voting-share-pick__title"><%= nominee.display_title %></span>
+            </li>
+          <% end %>
+          <% if pick.other.present? %>
+            <li class="voting-share-pick voting-share-pick--other">
+              <div class="voting-share-pick__image voting-share-pick__image--text"><span><%= pick.other %></span></div>
+              <span class="voting-share-pick__title"><%= t("views.votings.app.other_label") %></span>
+            </li>
+          <% end %>
+        </ul>
+      </li>
+    <% end %>
+  </ol>
+</main>

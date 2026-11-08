@@ -1,0 +1,114 @@
+---
+fr:
+  liquid_tags:
+    voting_tag:
+      not_found: Vote introuvable ou pas encore publié
+      eyebrow: Vote de la communauté
+      nominations:
+        one: "%{count} catégorie"
+        other: "%{count} catégories"
+      until: "jusqu'au %{date}"
+      cta: Voter
+      cta_closed: Voir le vote
+  models:
+    voting:
+      closes_before_opens: doit être postérieure à l'ouverture
+      slug_taken: est déjà prise par un membre, une organisation, une page, un podcast ou un autre vote
+    voting_nominee:
+      game_or_title: Choisissez un jeu ou saisissez un titre
+  views:
+    votings:
+      show:
+        time_format: "%d/%m/%Y à %H:%M"
+        meta_description: "Vote de la communauté : %{title}"
+        draft: Brouillon — visible uniquement par les admins
+        noscript: Activez JavaScript pour voter.
+      share:
+        title: "Les choix de @%{username} : %{voting}"
+        description: "Voici mes choix pour « %{voting} ». Et vous ?"
+        heading: "Les choix de %{name}"
+        vote_too: Voter aussi
+        open_voting: Aller au vote
+        image_byline: "Les choix de @%{username}"
+        image_more_picks: Mes autres choix
+        image_footer: "Votez sur %{url}"
+      app:
+        progress: "%{done} sur %{total} répondues"
+        step: "Catégorie %{current} sur %{total}"
+        required: Obligatoire
+        optional: Facultative
+        hint_single: Choisissez-en un.
+        hint_multi: "Jusqu'à %{count} choix."
+        hint_ranked: "Touchez les jeux dans l'ordre pour remplir jusqu'à %{count} places. Points par place : %{points}."
+        selected_count: "Sélection : %{count} sur %{max}"
+        limit_reached: "Vous pouvez choisir au maximum %{count} ici. Retirez un choix pour en ajouter un autre."
+        place_label: "place %{place}"
+        open_link: En savoir plus ↗
+        other_label: Autre
+        other_placeholder: Votre propre réponse
+        back: Retour
+        next: Suivant
+        skip: Passer
+        to_summary: Récapitulatif
+        all_nominations: Toutes les catégories
+        summary_title: Récapitulatif
+        summary_hint: Vérifiez vos réponses et envoyez votre vote. Cliquez sur une catégorie pour la modifier.
+        nothing_selected: Sans réponse
+        missing_required: "Encore obligatoire : %{list}."
+        submit: Envoyer mon vote
+        update: Mettre à jour mon vote
+        saving: Enregistrement…
+        sign_in_to_vote: Connectez-vous pour voter
+        sign_in_hint: Vos choix sont conservés dans ce navigateur pendant que vous vous connectez.
+        guest_hint: Vous pouvez déjà choisir ; il faut se connecter pour envoyer le vote.
+        already_voted: Votre vote est pris en compte. Vous pouvez le modifier jusqu'à la clôture.
+        see_my_picks: Page de mes choix
+        status_open_until: "Le vote est ouvert jusqu'au %{date}."
+        status_upcoming: "Le vote ouvre le %{date}. Vous pouvez déjà parcourir les catégories."
+        status_closed: Le vote est terminé.
+        status_draft: Brouillon — seuls les admins voient ce vote.
+        results_soon: Les résultats seront annoncés bientôt.
+        show_results: Voir les résultats
+        back_to_voting: Retour au vote
+        reason_draft: Ce vote n'est pas encore publié.
+        reason_upcoming: Le vote n'a pas encore commencé.
+        reason_closed: Le vote est terminé.
+        reason_sign_in: Connectez-vous pour voter.
+        reason_unconfirmed: Confirmez votre adresse e-mail pour voter.
+        reason_restricted: Votre compte ne peut pas participer aux votes.
+        reason_low_score: Le score de votre compte est trop bas pour participer à ce vote.
+        reason_account_too_new: Seuls les comptes créés avant l'ouverture du vote peuvent participer.
+        error_required: Cette catégorie est obligatoire.
+        error_too_many: Trop de choix.
+        error_unknown_nominee: Les nominés ont changé. Rechargez la page et vérifiez vos choix.
+        error_other_too_long: Votre réponse est trop longue.
+        error_empty: Choisissez au moins une réponse.
+        error_generic: Impossible d'enregistrer votre vote. Réessayez.
+        error_draft: Ce vote n'est pas encore publié.
+        error_upcoming: Le vote n'a pas encore commencé.
+        error_closed: Le vote est terminé.
+        error_sign_in: Connectez-vous pour voter.
+        error_unconfirmed: Confirmez votre adresse e-mail pour voter.
+        error_restricted: Votre compte ne peut pas participer aux votes.
+        error_low_score: Le score de votre compte est trop bas pour participer à ce vote.
+        error_account_too_new: Seuls les comptes créés avant l'ouverture du vote peuvent participer.
+        error_rate_limited: Trop de tentatives. Patientez une minute puis réessayez.
+        thanks_title: Merci ! Votre vote est pris en compte
+        thanks_updated: Vote mis à jour
+        thanks_body: "Vous pouvez modifier vos réponses jusqu'au %{date}."
+        edit_answers: Revoir ou modifier mes réponses
+        share_title: Partagez vos choix
+        share_text: "Mes choix pour « %{title} »"
+        share_image_alt: "Carte avec mes choix pour « %{title} »"
+        image_generating: Préparation de l'image…
+        share_download: Télécharger l'image
+        share_copy: Copier le lien
+        share_copied: Lien copié
+        share_native: Partager
+        share_on: "Partager sur :"
+        results_title: Résultats
+        ballots_count: "Bulletins : %{count}"
+        voters_count: "Réponses : %{count}"
+        your_pick: Votre choix
+        points: "Points : %{count}"
+        votes: "Votes : %{count}"

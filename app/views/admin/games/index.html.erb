@@ -1,0 +1,33 @@
+<header class="admin__header mb-4 flex flex-wrap items-center justify-between gap-4">
+  <div>
+    <h1 class="fs-4xl fw-bold">Game catalog</h1>
+    <p class="color-base-60">Games used as voting nominees. Added from the voting page; covers come from IGDB.</p>
+  </div>
+  <%= form_with url: admin_games_path, method: :get, local: true, class: "flex gap-2" do %>
+    <input type="search" name="q" value="<%= params[:q] %>" class="crayons-textfield" placeholder="Filter by title">
+    <button type="submit" class="crayons-btn crayons-btn--secondary">Filter</button>
+  <% end %>
+</header>
+
+<div class="crayons-card p-4">
+  <% if @games.any? %>
+    <ul style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: var(--su-3); list-style: none; padding: 0; margin: 0;">
+      <% @games.each do |game| %>
+        <li>
+          <%= link_to edit_admin_game_path(game), class: "flex flex-col gap-1 color-base-90" do %>
+            <div style="aspect-ratio: 3 / 4; background: var(--base-10); border-radius: var(--radius); overflow: hidden;">
+              <% if game.cover_url %>
+                <img src="<%= game.cover_url %>" alt="" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;">
+              <% end %>
+            </div>
+            <strong class="fs-s"><%= game.title %></strong>
+            <span class="fs-xs color-base-60"><%= game.release_year %><%= " · images pending" if game.images_pending? %></span>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+    <div class="mt-4"><%= paginate @games %></div>
+  <% else %>
+    <p class="text-center py-6 color-base-60">No games yet.</p>
+  <% end %>
+</div>

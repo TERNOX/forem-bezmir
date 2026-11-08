@@ -1,0 +1,62 @@
+<header class="admin__header mb-4">
+  <p class="color-base-60"><%= link_to @voting.title, admin_voting_path(@voting, anchor: "category-#{@category.id}") %> → <%= @category.title %></p>
+  <h1 class="fs-4xl fw-bold">Edit nominee</h1>
+</header>
+
+<div class="crayons-card p-6">
+  <%= form_for @nominee, url: admin_voting_voting_category_voting_nominee_path(@voting, @category, @nominee), method: :patch, html: { class: "flex flex-col gap-6", multipart: true } do |f| %>
+    <% if @nominee.errors.any? %>
+      <div class="crayons-notice crayons-notice--danger" role="alert"><%= @nominee.errors.full_messages.to_sentence %></div>
+    <% end %>
+
+    <% if @nominee.game %>
+      <div class="flex gap-4 items-start">
+        <img src="<%= @nominee.game.cover_url %>" alt="" style="width: 90px; border-radius: 6px;">
+        <div>
+          <p class="fw-bold"><%= @nominee.game.title %> <%= "(#{@nominee.game.release_year})" if @nominee.game.release_year %></p>
+          <p class="fs-s color-base-60">Wrong game or picture? Fix the picture in the <%= link_to "catalog entry", edit_admin_game_path(@nominee.game) %> (applies everywhere), or link another game below.</p>
+        </div>
+      </div>
+      <div class="crayons-field">
+        <label class="crayons-field__label" for="replace_igdb_id">Replace with IGDB game id</label>
+        <p class="crayons-field__description">The number from the IGDB search (or the catalog game id in the next field).</p>
+        <input id="replace_igdb_id" name="replace_igdb_id" type="number" class="crayons-textfield">
+      </div>
+      <div class="crayons-field">
+        <label class="crayons-field__label" for="replace_game_id">…or catalog game</label>
+        <div class="crayons-select">
+          <%= select_tag :replace_game_id, options_for_select([["—", ""]] + Game.order(:title).pluck(:title, :id)), class: "crayons-select__native" %>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="crayons-field">
+      <%= f.label :title, @nominee.game ? "Title override (optional)" : "Title", class: "crayons-field__label" %>
+      <%= f.text_field :title, class: "crayons-textfield", placeholder: @nominee.game&.title %>
+    </div>
+    <div class="crayons-field">
+      <%= f.label :subtitle, "Subtitle (optional)", class: "crayons-field__label" %>
+      <%= f.text_field :subtitle, class: "crayons-textfield" %>
+    </div>
+    <div class="crayons-field">
+      <%= f.label :link_url, "Link (optional)", class: "crayons-field__label" %>
+      <%= f.url_field :link_url, class: "crayons-textfield", placeholder: "https://…" %>
+    </div>
+    <div class="crayons-field">
+      <%= f.label :image, "Own image (optional, overrides the game picture in this nomination)", class: "crayons-field__label" %>
+      <% if @nominee.image.present? %>
+        <img src="<%= @nominee.image.url %>" alt="" style="max-width: 240px; border-radius: 6px;" class="mb-2">
+        <label class="crayons-field crayons-field--checkbox">
+          <%= f.check_box :remove_image, class: "crayons-checkbox" %>
+          <span class="crayons-field__label">Remove image</span>
+        </label>
+      <% end %>
+      <%= f.file_field :image, accept: "image/*" %>
+    </div>
+
+    <div class="flex gap-2">
+      <%= f.submit "Save", class: "crayons-btn" %>
+      <%= link_to "Cancel", admin_voting_path(@voting, anchor: "category-#{@category.id}"), class: "crayons-btn crayons-btn--ghost" %>
+    </div>
+  <% end %>
+</div>

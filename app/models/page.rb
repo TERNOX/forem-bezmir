@@ -180,7 +180,8 @@ class Page < ApplicationRecord
       return
     end
 
-    if User.where(username: slug).exists? || Organization.where(slug: slug).exists? || Podcast.where(slug: slug).exists?
+    if User.where(username: slug).exists? || Organization.where(slug: slug).exists? || Podcast.where(slug: slug).exists? ||
+        Voting.where(slug: slug, top_level_path: true).exists? # fork-only: top-level votings
       errors.add(:slug, "is already taken by another entity")
       return
     end

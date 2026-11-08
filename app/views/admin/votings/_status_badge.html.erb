@@ -1,0 +1,6 @@
+<% status = voting.status %>
+<% styles = { draft: "", upcoming: "crayons-badge--warning", open: "crayons-badge--success", closed: "crayons-badge--danger" } %>
+<span class="crayons-badge <%= styles[status] %>"><%= status.to_s.titleize %></span>
+<% if voting.results_published? %>
+  <span class="crayons-badge crayons-badge--info">Results public</span>
+<% end %>

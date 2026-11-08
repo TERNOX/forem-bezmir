@@ -1,0 +1,114 @@
+---
+pt:
+  liquid_tags:
+    voting_tag:
+      not_found: Votação não encontrada ou ainda não publicada
+      eyebrow: Votação da comunidade
+      nominations:
+        one: "%{count} categoria"
+        other: "%{count} categorias"
+      until: "até %{date}"
+      cta: Votar
+      cta_closed: Ver a votação
+  models:
+    voting:
+      closes_before_opens: deve ser posterior à abertura
+      slug_taken: já está em uso por um membro, organização, página, podcast ou outra votação
+    voting_nominee:
+      game_or_title: Escolha um jogo ou informe um título
+  views:
+    votings:
+      show:
+        time_format: "%d/%m/%Y, %H:%M"
+        meta_description: "Votação da comunidade: %{title}"
+        draft: Rascunho — visível apenas para admins
+        noscript: Ative o JavaScript para votar.
+      share:
+        title: "Escolhas de @%{username}: %{voting}"
+        description: "Assim votei em “%{voting}”. Quais são as suas escolhas?"
+        heading: "As escolhas de %{name}"
+        vote_too: Votar também
+        open_voting: Ir para a votação
+        image_byline: "Escolhas de @%{username}"
+        image_more_picks: Minhas outras escolhas
+        image_footer: "Vote em %{url}"
+      app:
+        progress: "%{done} de %{total} respondidas"
+        step: "Categoria %{current} de %{total}"
+        required: Obrigatória
+        optional: Opcional
+        hint_single: Escolha um.
+        hint_multi: "Escolha até %{count}."
+        hint_ranked: "Toque nos jogos em ordem para preencher até %{count} posições. Pontos por posição: %{points}."
+        selected_count: "Selecionados: %{count} de %{max}"
+        limit_reached: "Você pode escolher no máximo %{count} aqui. Desmarque um para escolher outro."
+        place_label: "posição %{place}"
+        open_link: Saiba mais ↗
+        other_label: Outro
+        other_placeholder: Sua própria resposta
+        back: Voltar
+        next: Próxima
+        skip: Pular
+        to_summary: Revisar
+        all_nominations: Todas as categorias
+        summary_title: Revisão
+        summary_hint: Confira suas respostas e envie seu voto. Clique em uma categoria para alterá-la.
+        nothing_selected: Sem resposta
+        missing_required: "Ainda obrigatório: %{list}."
+        submit: Enviar voto
+        update: Atualizar voto
+        saving: Salvando…
+        sign_in_to_vote: Entre para votar
+        sign_in_hint: Suas escolhas ficam salvas neste navegador enquanto você entra ou cria uma conta.
+        guest_hint: Você já pode escolher; é preciso entrar para enviar o voto.
+        already_voted: Seu voto foi contado. Você pode alterá-lo até o encerramento.
+        see_my_picks: Página com minhas escolhas
+        status_open_until: "A votação vai até %{date}."
+        status_upcoming: "A votação começa em %{date}. Você já pode ver as categorias."
+        status_closed: A votação foi encerrada.
+        status_draft: Rascunho — apenas admins veem esta votação.
+        results_soon: Os resultados serão anunciados em breve.
+        show_results: Ver resultados
+        back_to_voting: Voltar à votação
+        reason_draft: Esta votação ainda não foi publicada.
+        reason_upcoming: A votação ainda não começou.
+        reason_closed: A votação foi encerrada.
+        reason_sign_in: Entre para votar.
+        reason_unconfirmed: Confirme seu e-mail para votar.
+        reason_restricted: Sua conta não pode participar de votações.
+        reason_low_score: A pontuação da sua conta é baixa demais para esta votação.
+        reason_account_too_new: Apenas contas criadas antes da abertura podem participar.
+        error_required: Esta categoria é obrigatória.
+        error_too_many: Escolhas demais.
+        error_unknown_nominee: Os indicados mudaram. Recarregue a página e confira suas escolhas.
+        error_other_too_long: Sua resposta é longa demais.
+        error_empty: Escolha algo em pelo menos uma categoria.
+        error_generic: Não foi possível salvar seu voto. Tente novamente.
+        error_draft: Esta votação ainda não foi publicada.
+        error_upcoming: A votação ainda não começou.
+        error_closed: A votação foi encerrada.
+        error_sign_in: Entre para votar.
+        error_unconfirmed: Confirme seu e-mail para votar.
+        error_restricted: Sua conta não pode participar de votações.
+        error_low_score: A pontuação da sua conta é baixa demais para esta votação.
+        error_account_too_new: Apenas contas criadas antes da abertura podem participar.
+        error_rate_limited: Muitas tentativas. Aguarde um minuto e tente novamente.
+        thanks_title: Obrigado! Seu voto foi contado
+        thanks_updated: Voto atualizado
+        thanks_body: "Você pode alterar suas respostas até %{date}."
+        edit_answers: Revisar ou alterar respostas
+        share_title: Compartilhe suas escolhas
+        share_text: "Minhas escolhas em “%{title}”"
+        share_image_alt: "Cartão com minhas escolhas em “%{title}”"
+        image_generating: Preparando a imagem…
+        share_download: Baixar imagem
+        share_copy: Copiar link
+        share_copied: Link copiado
+        share_native: Compartilhar
+        share_on: "Compartilhar no:"
+        results_title: Resultados
+        ballots_count: "Votos registrados: %{count}"
+        voters_count: "Responderam: %{count}"
+        your_pick: Sua escolha
+        points: "Pontos: %{count}"
+        votes: "Votos: %{count}"

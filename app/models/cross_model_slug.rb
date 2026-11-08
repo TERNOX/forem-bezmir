@@ -34,6 +34,8 @@ class CrossModelSlug
         column_name = conn.quote_column_name(attribute)
         "SELECT 1 FROM #{table_name} WHERE #{column_name} = #{quoted_value}"
       end
+      # Fork-only: votings published at a top-level path (/<slug>) also claim the slug.
+      union_queries << "SELECT 1 FROM votings WHERE slug = #{quoted_value} AND top_level_path = TRUE"
 
       conn.select_value("SELECT EXISTS (#{union_queries.join(' UNION ALL ')})")
     end

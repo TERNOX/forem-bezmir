@@ -1,0 +1,34 @@
+<%# Fork-only: IGDB credentials for votings (game search + covers). %>
+<%= form_for(Settings::General.new,
+             url: admin_settings_general_settings_path,
+             html: { data: {
+               action: "submit->config#updateConfigurationSettings",
+               testid: "igdbForm"
+             } }) do |f| %>
+  <details class="crayons-card">
+    <summary class="crayons-subtitle-2 p-6">IGDB (Votings)</summary>
+
+    <div class="p-6 pt-0">
+      <fieldset class="grid gap-4">
+        <div class="crayons-field">
+          <%= admin_config_label :igdb_client_id %>
+          <%= admin_config_description Constants::Settings::General.details[:igdb_client_id][:description] %>
+          <%= f.text_field :igdb_client_id,
+                           class: "crayons-textfield",
+                           value: Settings::General.igdb_client_id,
+                           autocomplete: "off",
+                           placeholder: Constants::Settings::General.details[:igdb_client_id][:placeholder] %>
+        </div>
+        <div class="crayons-field">
+          <%= admin_config_label :igdb_client_secret %>
+          <%= admin_config_description Constants::Settings::General.details[:igdb_client_secret][:description] %>
+          <%= f.password_field :igdb_client_secret,
+                               class: "crayons-textfield",
+                               value: Settings::General.igdb_client_secret,
+                               autocomplete: "new-password" %>
+        </div>
+      </fieldset>
+      <%= render "update_setting_button", f: f %>
+    </div>
+  </details>
+<% end %>
