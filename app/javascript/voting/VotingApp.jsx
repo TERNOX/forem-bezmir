@@ -203,6 +203,7 @@ export function VotingApp({ voting, categories, results, strings, signInUrl }) {
           savedSelections={savedSelections}
           msg={msg}
           strings={strings}
+          onBack={() => setView('vote')}
         />
       </div>
     );
@@ -372,8 +373,16 @@ function StatusBar({
   const reason =
     !loading && account.signedIn && !account.eligible && account.reason;
   const guestHint = !account.signedIn && voting.status === 'open';
-  const showResultsButton = voting.status === 'closed' && hasResults;
-  if (!text && !reason && !guestHint && voting.status !== 'closed') {
+  // Results are shown once an admin publishes them, even while voting is
+  // still open (or has no closing date).
+  const showResultsButton = hasResults;
+  if (
+    !text &&
+    !reason &&
+    !guestHint &&
+    !hasResults &&
+    voting.status !== 'closed'
+  ) {
     return null;
   }
   return (
@@ -818,7 +827,14 @@ function ThanksView({ voting, shareUrl, updated, msg, onEdit }) {
   );
 }
 
-function ResultsView({ categories, results, savedSelections, msg, strings }) {
+function ResultsView({
+  categories,
+  results,
+  savedSelections,
+  msg,
+  strings,
+  onBack,
+}) {
   return (
     <div className="voting-results">
       <h2 className="voting-results__title">{msg('results_title')}</h2>
@@ -890,6 +906,15 @@ function ResultsView({ categories, results, savedSelections, msg, strings }) {
       {strings.results_footer && (
         <p className="voting-status__hint">{msg('results_footer')}</p>
       )}
+      <div className="voting-results__actions">
+        <button
+          type="button"
+          className="crayons-btn crayons-btn--secondary"
+          onClick={onBack}
+        >
+          {msg('back_to_voting')}
+        </button>
+      </div>
     </div>
   );
 }

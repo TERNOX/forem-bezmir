@@ -29,6 +29,7 @@
   .voting-progress,
   .voting-steps,
   .voting-results__title,
+  .voting-results__actions,
   .voting-results > .voting-status__text {
     @media (max-width: 639px) {
       padding-inline: var(--su-3);
@@ -694,6 +695,10 @@
     font-size: var(--fs-3xl);
     font-weight: var(--fw-heavy);
     margin-bottom: var(--su-2);
+  }
+
+  &__actions {
+    margin-top: var(--su-6);
   }
 
   &__category {

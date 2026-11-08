@@ -69,6 +69,7 @@ fr:
         status_draft: Brouillon — seuls les admins voient ce vote.
         results_soon: Les résultats seront annoncés bientôt.
         show_results: Voir les résultats
+        back_to_voting: Retour au vote
         reason_draft: Ce vote n'est pas encore publié.
         reason_upcoming: Le vote n'a pas encore commencé.
         reason_closed: Le vote est terminé.

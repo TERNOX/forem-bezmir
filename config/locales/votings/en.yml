@@ -69,6 +69,7 @@ en:
         status_draft: Draft — only admins can see this voting.
         results_soon: Results will be announced soon.
         show_results: Show results
+        back_to_voting: Back to voting
         reason_draft: This voting is not published yet.
         reason_upcoming: Voting has not started yet.
         reason_closed: Voting has ended.
