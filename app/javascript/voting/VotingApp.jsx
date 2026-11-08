@@ -9,6 +9,7 @@ import {
   isAnswered,
   isSingleChoice,
   pickCount,
+  pruneSelections,
   sameSelections,
   setOther,
   toggleNominee,
@@ -65,8 +66,8 @@ export function VotingApp({ voting, categories, results, strings, signInUrl }) {
   });
   // A local draft is available synchronously; picks made before the ballot
   // request finishes must not be overwritten by its response.
-  const [selections, setSelections] = useState(
-    () => (!readOnly && readDraft(voting.slug)) || {},
+  const [selections, setSelections] = useState(() =>
+    pruneSelections(!readOnly && readDraft(voting.slug), categories),
   );
   const touchedRef = useRef(false);
   const [savedSelections, setSavedSelections] = useState({});
@@ -87,7 +88,7 @@ export function VotingApp({ voting, categories, results, strings, signInUrl }) {
       .then((response) => response.json())
       .then((data) => {
         if (cancelled) return;
-        const server = fromBallot(data.ballot);
+        const server = pruneSelections(fromBallot(data.ballot), categories);
         const draft = readDraft(voting.slug);
         setAccount({
           signedIn: data.signedIn,
@@ -98,7 +99,9 @@ export function VotingApp({ voting, categories, results, strings, signInUrl }) {
         setSubmittedAt(data.ballot?.submittedAt || null);
         setShareUrl(data.shareUrl || null);
         if (!touchedRef.current) {
-          setSelections(draft && !readOnly ? draft : server);
+          setSelections(
+            draft && !readOnly ? pruneSelections(draft, categories) : server,
+          );
         }
       })
       .catch(() => {})
@@ -106,7 +109,7 @@ export function VotingApp({ voting, categories, results, strings, signInUrl }) {
     return () => {
       cancelled = true;
     };
-  }, [voting.ballotUrl, voting.slug, readOnly]);
+  }, [voting.ballotUrl, voting.slug, readOnly, categories]);
 
   const answeredCount = categories.filter((c) =>
     isAnswered(selections[c.id]),

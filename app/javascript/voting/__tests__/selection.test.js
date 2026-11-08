@@ -2,11 +2,51 @@ import {
   fromBallot,
   interpolate,
   isAnswered,
+  pruneSelections,
   sameSelections,
   setOther,
   toggleNominee,
   toPayload,
 } from '../selection';
+
+describe('pruneSelections', () => {
+  const categories = [
+    {
+      id: 1,
+      maxChoices: 2,
+      allowOther: false,
+      nominees: [{ id: 10 }, { id: 11 }],
+    },
+    { id: 2, maxChoices: 1, allowOther: true, nominees: [{ id: 20 }] },
+  ];
+
+  it('drops nominees and nominations that no longer exist', () => {
+    const draft = {
+      1: { ids: [99, 10], other: 'stale' },
+      7: { ids: [70], other: '' },
+    };
+    expect(pruneSelections(draft, categories)).toEqual({
+      1: { ids: [10], other: '' },
+    });
+  });
+
+  it('respects a lowered limit, counting the free-text answer', () => {
+    expect(
+      pruneSelections({ 2: { ids: [20], other: 'Mine' } }, categories),
+    ).toEqual({ 2: { ids: [], other: 'Mine' } });
+    expect(pruneSelections({ 1: { ids: [10, 11, 10] } }, categories)).toEqual({
+      1: { ids: [10, 11], other: '' },
+    });
+  });
+
+  it('ignores malformed drafts', () => {
+    expect(pruneSelections(null, categories)).toEqual({});
+    expect(pruneSelections('x', categories)).toEqual({});
+    expect(pruneSelections({ 1: { ids: 'x' } }, categories)).toEqual({
+      1: { ids: [], other: '' },
+    });
+  });
+});
 
 const single = { maxChoices: 1, ranked: false };
 const multi = { maxChoices: 2, ranked: false };

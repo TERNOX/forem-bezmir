@@ -80,6 +80,33 @@ export function fromBallot(ballot) {
   return selections;
 }
 
+/**
+ * Keeps only picks that still fit the voting: a draft saved in the browser
+ * (or an old ballot) may name nominees or nominations an admin has since
+ * removed, or exceed a lowered maxChoices. Such picks have no card to
+ * deselect, and the server would reject the whole ballot because of them.
+ */
+export function pruneSelections(selections, categories) {
+  const pruned = {};
+  if (!selections || typeof selections !== 'object') return pruned;
+  categories.forEach((category) => {
+    const selection = selections[category.id];
+    if (!selection || typeof selection !== 'object') return;
+    const known = new Set(category.nominees.map((nominee) => nominee.id));
+    const other =
+      category.allowOther && typeof selection.other === 'string'
+        ? selection.other
+        : '';
+    const room = Math.max(0, category.maxChoices - (other.trim() ? 1 : 0));
+    const ids = (Array.isArray(selection.ids) ? selection.ids : [])
+      .map(Number)
+      .filter((id, index, all) => known.has(id) && all.indexOf(id) === index)
+      .slice(0, room);
+    pruned[category.id] = { ids, other };
+  });
+  return pruned;
+}
+
 export function sameSelections(a, b) {
   return JSON.stringify(toPayload(a)) === JSON.stringify(toPayload(b));
 }
