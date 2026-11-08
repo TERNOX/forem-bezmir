@@ -94,6 +94,21 @@ RSpec.describe "Admin::Votings" do
     expect(copy.categories.first.nominees.count).to eq(1)
   end
 
+  it "keeps uploaded images when cloning, as the copy's own files" do
+    voting.update!(banner_image: fixture_file_upload("800x600.png", "image/png"))
+    category = create(:voting_category, voting: voting)
+    create(:voting_nominee, category: category, game: nil, title: "Custom card",
+                            image: fixture_file_upload("podcast.png", "image/png"))
+
+    post clone_admin_voting_path(voting)
+
+    copy = Voting.order(:id).last
+    copied_nominee = copy.categories.first.nominees.first
+    expect(copy.banner_image).to be_present
+    expect(copied_nominee.image).to be_present
+    expect(copied_nominee.image.path).not_to eq(category.nominees.first.image.path)
+  end
+
   it "searches the catalog (and reports IGDB as not configured)" do
     create(:game, title: "Hades II")
     get search_admin_games_path(q: "hades", format: :json)

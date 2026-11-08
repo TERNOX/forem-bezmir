@@ -20,14 +20,7 @@ module Votings
     end
 
     def self.copy_image(nominee, copy)
-      return if nominee.image.blank?
-
-      url = nominee.image.url.to_s
-      if url.start_with?("http")
-        copy.remote_image_url = url
-      elsif nominee.image.path && File.exist?(nominee.image.path)
-        copy.image = File.open(nominee.image.path)
-      end
+      Cloner.copy_upload(nominee.image, copy, :image)
     end
   end
 end

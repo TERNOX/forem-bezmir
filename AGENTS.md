@@ -21,6 +21,7 @@ Follow these rules and patterns to ensure high-quality contributions.
   - `fr` (French)
   - `pt` (Portuguese)
   - And any others present in `config/locales`.
+- **Fork note (forem-bezmir)**: end-user text needs `uk` (the community's language) plus `en`/`fr`/`pt`. The admin panel (`app/views/admin/**`, admin controller notices, admin-only JS) may stay English-only; this is the maintainer's explicit choice, so hardcoded English there is not a finding.
 
 ## Performance & Caching
 - **Avoid `current_user` in Cache**: Never use `current_user` objects in cached pages or partials to prevent cache leaks and private data exposure.
