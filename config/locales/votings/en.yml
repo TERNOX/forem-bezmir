@@ -1,0 +1,113 @@
+---
+en:
+  liquid_tags:
+    voting_tag:
+      not_found: Voting not found or not published yet
+      eyebrow: Community voting
+      nominations:
+        one: "%{count} nomination"
+        other: "%{count} nominations"
+      until: "until %{date}"
+      cta: Vote now
+      cta_closed: See the voting
+  models:
+    voting:
+      closes_before_opens: must be later than the opening time
+      slug_taken: is already taken by a member, organization, page, podcast or another voting
+    voting_nominee:
+      game_or_title: Pick a game or enter a title
+  views:
+    votings:
+      show:
+        time_format: "%B %-d, %Y, %H:%M"
+        meta_description: "Community voting: %{title}"
+        draft: Draft — only admins can see this
+        noscript: Please enable JavaScript to vote.
+      share:
+        title: "@%{username}'s picks: %{voting}"
+        description: "Here is how I voted in “%{voting}”. What are your picks?"
+        heading: "%{name}’s picks"
+        vote_too: Vote too
+        open_voting: Go to the voting
+        image_byline: "@%{username}'s picks"
+        image_more_picks: My other picks
+        image_footer: "Vote at %{url}"
+      app:
+        progress: "%{done} of %{total} answered"
+        step: "Nomination %{current} of %{total}"
+        required: Required
+        optional: Optional
+        hint_single: Pick one.
+        hint_multi: "Pick up to %{count}."
+        hint_ranked: "Tap games in order to fill up to %{count} places. Points per place: %{points}."
+        selected_count: "Selected: %{count} of %{max}"
+        limit_reached: "You can pick at most %{count} here. Unselect one to pick another."
+        place_label: "place %{place}"
+        open_link: Read more ↗
+        other_label: Other
+        other_placeholder: Your own answer
+        back: Back
+        next: Next
+        skip: Skip
+        to_summary: Review
+        all_nominations: All nominations
+        summary_title: Review
+        summary_hint: Check your answers and submit your vote. Click a nomination to change it.
+        nothing_selected: No answer
+        missing_required: "Still required: %{list}."
+        submit: Submit vote
+        update: Update vote
+        saving: Saving…
+        sign_in_to_vote: Sign in to vote
+        sign_in_hint: Your picks are kept in this browser while you sign in or create an account.
+        guest_hint: You can start picking now; you need to sign in to submit your vote.
+        already_voted: Your vote is counted. You can change it until the voting closes.
+        see_my_picks: My picks page
+        status_open_until: "Voting is open until %{date}."
+        status_upcoming: "Voting opens %{date}. You can browse the nominations already."
+        status_closed: Voting has ended.
+        status_draft: Draft — only admins can see this voting.
+        results_soon: Results will be announced soon.
+        show_results: Show results
+        reason_draft: This voting is not published yet.
+        reason_upcoming: Voting has not started yet.
+        reason_closed: Voting has ended.
+        reason_sign_in: Sign in to vote.
+        reason_unconfirmed: Confirm your email address to vote.
+        reason_restricted: Your account can't take part in votings.
+        reason_low_score: Your account score is too low to take part in this voting.
+        reason_account_too_new: Only accounts created before this voting opened can take part.
+        error_required: This nomination is required.
+        error_too_many: Too many picks.
+        error_unknown_nominee: The nominees changed. Reload the page and check your picks.
+        error_other_too_long: Your own answer is too long.
+        error_empty: Pick something in at least one nomination.
+        error_generic: Couldn't save your vote. Please try again.
+        error_draft: This voting is not published yet.
+        error_upcoming: Voting has not started yet.
+        error_closed: Voting has ended.
+        error_sign_in: Sign in to vote.
+        error_unconfirmed: Confirm your email address to vote.
+        error_restricted: Your account can't take part in votings.
+        error_low_score: Your account score is too low to take part in this voting.
+        error_account_too_new: Only accounts created before this voting opened can take part.
+        error_rate_limited: Too many attempts. Wait a minute and try again.
+        thanks_title: Thank you! Your vote is counted
+        thanks_updated: Vote updated
+        thanks_body: "You can change your answers until %{date}."
+        edit_answers: Review or change answers
+        share_title: Share your picks
+        share_text: "My picks in “%{title}”"
+        share_image_alt: "Card with my picks in “%{title}”"
+        image_generating: Preparing the picture…
+        share_download: Download picture
+        share_copy: Copy link
+        share_copied: Link copied
+        share_native: Share
+        share_on: "Share on:"
+        results_title: Results
+        ballots_count: "Ballots: %{count}"
+        voters_count: "Answered: %{count}"
+        your_pick: Your pick
+        points: "Points: %{count}"
+        votes: "Votes: %{count}"

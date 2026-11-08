@@ -191,6 +191,12 @@ Rails.application.routes.draw do
     get "events/:event_name_slug/:event_variation_slug/signup_status", to: "event_signups#status", as: :event_signup_status
     post "events/:event_name_slug/:event_variation_slug/signup", to: "event_signups#create", as: :event_signup
     delete "events/:event_name_slug/:event_variation_slug/signup", to: "event_signups#destroy"
+    # Fork-only: community votings ("Гра року").
+    get "vote/:slug", to: "votings#show", as: :voting
+    get "vote/:slug/ballot", to: "voting_ballots#show", as: :voting_ballot
+    put "vote/:slug/ballot", to: "voting_ballots#update"
+    get "vote/:slug/u/:username/:token", to: "voting_ballots#share", as: :voting_share
+    get "vote/:slug/u/:username/:token/image", to: "voting_ballots#image", as: :voting_share_image
     resources :article_mutes, only: %i[update]
     resources :comments, only: %i[create update destroy] do
       patch "/hide", to: "comments#hide"

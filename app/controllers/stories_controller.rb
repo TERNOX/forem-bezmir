@@ -1,4 +1,6 @@
 class StoriesController < ApplicationController
+  include VotingPage # fork-only: top-level votings
+
   helper ProfileHelper
 
   COMMUNITY_ORGANIZATION_IDS = [1, 2].freeze
@@ -179,6 +181,10 @@ class StoriesController < ApplicationController
       else
         not_found
       end
+    elsif (voting = Voting.published.find_by(slug: params[:username].to_s.downcase, top_level_path: true))
+      # Fork-only: votings served at /<slug>. Not edge-cached (nominees/results change).
+      unset_cache_control_headers
+      render_voting_page(voting)
     elsif (@podcast = Podcast.available.find_by(slug: params[:username]))
       handle_podcast_index
     else

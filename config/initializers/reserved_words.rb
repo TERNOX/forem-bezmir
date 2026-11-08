@@ -219,6 +219,7 @@ class ReservedWords
     users
     video_states
     videos
+    vote
     welcome
     work
     yes

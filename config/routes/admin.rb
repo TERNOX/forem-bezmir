@@ -166,6 +166,29 @@ namespace :admin do
         get :fork
       end
     end
+    # Fork-only: community votings ("Гра року") and their game catalog.
+    resources :votings do
+      member do
+        get :results
+        patch :publish_results
+        patch :unpublish_results
+        post :clone
+      end
+      resources :voting_categories, path: "nominations", except: %i[index show] do
+        member do
+          patch :move
+          post :copy_nominees
+        end
+        resources :voting_nominees, path: "nominees", only: %i[create edit update destroy] do
+          member { patch :move }
+          collection { post :bulk_create }
+        end
+      end
+    end
+    resources :games, only: %i[index edit update] do
+      member { post :refresh }
+      collection { get :search }
+    end
   end
 
   scope :customization do

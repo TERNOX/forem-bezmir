@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_10_30_110000) do
+ActiveRecord::Schema[7.2].define(version: 2026_11_07_130100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "ltree"
@@ -979,6 +979,22 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_30_110000) do
     t.index ["followable_id", "followable_type"], name: "fk_followables"
     t.index ["followable_type", "followable_id", "blocked", "created_at"], name: "index_follows_on_followable_blocked_and_created_at"
     t.index ["follower_id", "follower_type"], name: "fk_follows"
+  end
+
+  create_table "games", force: :cascade do |t|
+    t.string "artwork_image"
+    t.string "cover_image"
+    t.datetime "created_at", null: false
+    t.string "igdb_artwork_image_id"
+    t.string "igdb_cover_image_id"
+    t.bigint "igdb_id"
+    t.string "igdb_url"
+    t.string "platforms", default: [], null: false, array: true
+    t.integer "release_year"
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index "lower((title)::text)", name: "index_games_on_lower_title"
+    t.index ["igdb_id"], name: "index_games_on_igdb_id", unique: true, where: "(igdb_id IS NOT NULL)"
   end
 
   create_table "github_issues", force: :cascade do |t|
@@ -2198,6 +2214,77 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_30_110000) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "voting_ballots", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "share_image"
+    t.datetime "submitted_at"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.bigint "voting_id", null: false
+    t.index ["user_id"], name: "index_voting_ballots_on_user_id"
+    t.index ["voting_id", "user_id"], name: "index_voting_ballots_on_voting_id_and_user_id", unique: true
+  end
+
+  create_table "voting_categories", force: :cascade do |t|
+    t.boolean "allow_other", default: false, null: false
+    t.integer "card_style", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.integer "max_choices", default: 1, null: false
+    t.integer "position", default: 0, null: false
+    t.boolean "ranked", default: false, null: false
+    t.boolean "required", default: false, null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "voting_id", null: false
+    t.index ["voting_id", "position"], name: "index_voting_categories_on_voting_id_and_position"
+  end
+
+  create_table "voting_choices", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "other_text"
+    t.integer "rank"
+    t.datetime "updated_at", null: false
+    t.bigint "voting_ballot_id", null: false
+    t.bigint "voting_category_id", null: false
+    t.bigint "voting_nominee_id"
+    t.index ["voting_ballot_id", "voting_category_id"], name: "index_voting_choices_on_ballot_and_category"
+    t.index ["voting_category_id"], name: "index_voting_choices_on_voting_category_id"
+    t.index ["voting_nominee_id"], name: "index_voting_choices_on_voting_nominee_id"
+  end
+
+  create_table "voting_nominees", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "game_id"
+    t.string "image"
+    t.string "link_url"
+    t.integer "position", default: 0, null: false
+    t.string "subtitle"
+    t.string "title"
+    t.datetime "updated_at", null: false
+    t.bigint "voting_category_id", null: false
+    t.index ["game_id"], name: "index_voting_nominees_on_game_id"
+    t.index ["voting_category_id", "position"], name: "index_voting_nominees_on_voting_category_id_and_position"
+  end
+
+  create_table "votings", force: :cascade do |t|
+    t.string "banner_image"
+    t.datetime "closes_at"
+    t.datetime "created_at", null: false
+    t.text "description_html"
+    t.text "description_markdown"
+    t.integer "min_user_score", default: 0, null: false
+    t.datetime "opens_at"
+    t.boolean "published", default: false, null: false
+    t.boolean "require_account_before_start", default: false, null: false
+    t.datetime "results_published_at"
+    t.string "slug", null: false
+    t.string "title", null: false
+    t.boolean "top_level_path", default: false, null: false
+    t.datetime "updated_at", null: false
+    t.index ["slug"], name: "index_votings_on_slug", unique: true
+  end
+
   create_table "webpage_references", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "linked_domain_id", null: false
@@ -2344,6 +2431,14 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_30_110000) do
   add_foreign_key "users_roles", "roles", on_delete: :cascade
   add_foreign_key "users_roles", "users", on_delete: :cascade
   add_foreign_key "users_settings", "users"
+  add_foreign_key "voting_ballots", "users", on_delete: :cascade
+  add_foreign_key "voting_ballots", "votings", on_delete: :cascade
+  add_foreign_key "voting_categories", "votings", on_delete: :cascade
+  add_foreign_key "voting_choices", "voting_ballots", on_delete: :cascade
+  add_foreign_key "voting_choices", "voting_categories", on_delete: :cascade
+  add_foreign_key "voting_choices", "voting_nominees", on_delete: :cascade
+  add_foreign_key "voting_nominees", "games", on_delete: :restrict
+  add_foreign_key "voting_nominees", "voting_categories", on_delete: :cascade
   create_trigger("update_reading_list_document", :generated => true, :compatibility => 1).
       on("articles").
       name("update_reading_list_document").

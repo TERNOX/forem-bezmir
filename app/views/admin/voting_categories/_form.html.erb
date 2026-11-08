@@ -1,0 +1,57 @@
+<%= form_for [:admin, @voting, @category], html: { class: "flex flex-col gap-6" } do |f| %>
+  <% if @category.errors.any? %>
+    <div class="crayons-notice crayons-notice--danger" role="alert"><%= @category.errors.full_messages.to_sentence %></div>
+  <% end %>
+
+  <div class="crayons-field">
+    <%= f.label :title, class: "crayons-field__label" %>
+    <%= f.text_field :title, class: "crayons-textfield", required: true, placeholder: "Найкращий горрор" %>
+  </div>
+
+  <div class="crayons-field">
+    <%= f.label :description, class: "crayons-field__label" %>
+    <%= f.text_area :description, class: "crayons-textfield", rows: 2, placeholder: "Ігри, що змушують серце битися частіше…" %>
+  </div>
+
+  <div class="crayons-field">
+    <%= f.label :max_choices, "How many picks", class: "crayons-field__label" %>
+    <p class="crayons-field__description">1 = one choice. For a ranked nomination this is the number of places.</p>
+    <%= f.number_field :max_choices, class: "crayons-textfield", min: 1, max: VotingCategory::MAX_CHOICES_LIMIT %>
+  </div>
+
+  <label class="crayons-field crayons-field--checkbox">
+    <%= f.check_box :ranked, class: "crayons-checkbox" %>
+    <div>
+      <div class="crayons-field__label">Ranked (places with points)</div>
+      <p class="crayons-field__description">Voters order their picks. With 3 places: 1st = 3 points, 2nd = 2, 3rd = 1.</p>
+    </div>
+  </label>
+
+  <label class="crayons-field crayons-field--checkbox">
+    <%= f.check_box :required, class: "crayons-checkbox" %>
+    <div>
+      <div class="crayons-field__label">Required</div>
+      <p class="crayons-field__description">Voters can't submit without answering this one.</p>
+    </div>
+  </label>
+
+  <label class="crayons-field crayons-field--checkbox">
+    <%= f.check_box :allow_other, class: "crayons-checkbox" %>
+    <div>
+      <div class="crayons-field__label">Allow an “Other” answer</div>
+      <p class="crayons-field__description">A free-text option (up to <%= VotingCategory::OTHER_TEXT_MAX_LENGTH %> characters). Counts as one of the picks.</p>
+    </div>
+  </label>
+
+  <div class="crayons-field">
+    <%= f.label :card_style, "Card style", class: "crayons-field__label" %>
+    <div class="crayons-select">
+      <%= f.select :card_style, [["Covers (vertical 2:3)", "cover"], ["Wide artwork (16:9)", "artwork"]], {}, class: "crayons-select__native" %>
+    </div>
+  </div>
+
+  <div class="flex gap-2">
+    <%= f.submit @category.persisted? ? "Save" : "Add nomination", class: "crayons-btn" %>
+    <%= link_to "Cancel", admin_voting_path(@voting), class: "crayons-btn crayons-btn--ghost" %>
+  </div>
+<% end %>

@@ -1,0 +1,53 @@
+<%# Fork-only: community voting page. No current_user data here; the ballot is fetched client-side. %>
+<% content_for :title, @voting.title %>
+<%
+  canonical = app_url(@voting.path)
+  description = strip_tags(@voting.description_html.to_s).squish.truncate(200).presence ||
+    t("views.votings.show.meta_description", title: @voting.title)
+  banner_url = @voting.banner_image.url
+  social_image = if banner_url.present?
+                   banner_url.start_with?("http") ? banner_url : app_url(banner_url)
+                 else
+                   Settings::General.main_social_image.to_s
+                 end
+%>
+<%= content_for :page_meta do %>
+  <link rel="canonical" href="<%= canonical %>" />
+  <meta name="description" content="<%= description %>">
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="<%= canonical %>" />
+  <meta property="og:title" content="<%= @voting.title %>" />
+  <meta property="og:description" content="<%= description %>" />
+  <meta property="og:image" content="<%= social_image %>" />
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="<%= @voting.title %>">
+  <meta name="twitter:description" content="<%= description %>">
+  <meta name="twitter:image:src" content="<%= social_image %>">
+  <% unless @voting.published? %>
+    <meta name="robots" content="noindex">
+  <% end %>
+<% end %>
+
+<main class="voting-page crayons-layout crayons-layout--limited-l mx-auto" id="main-content">
+  <header class="voting-hero<%= ' voting-hero--banner' if banner_url.present? %>">
+    <% if banner_url.present? %>
+      <img class="voting-hero__banner" src="<%= banner_url %>" alt="">
+    <% end %>
+    <div class="voting-hero__content">
+      <% unless @voting.published? %>
+        <span class="crayons-badge crayons-badge--warning mb-2"><%= t("views.votings.show.draft") %></span>
+      <% end %>
+      <h1 class="voting-hero__title"><%= @voting.title %></h1>
+      <% if @voting.description_html.present? %>
+        <div class="voting-hero__description text-styles"><%= sanitize @voting.description_html %></div>
+      <% end %>
+    </div>
+  </header>
+
+  <div id="voting-app" data-voting="<%= @voting_payload.to_json %>">
+    <noscript><p class="p-4"><%= t("views.votings.show.noscript") %></p></noscript>
+    <div class="voting-loading" aria-hidden="true"></div>
+  </div>
+</main>
+
+<%= javascript_include_tag "voting", defer: true %>

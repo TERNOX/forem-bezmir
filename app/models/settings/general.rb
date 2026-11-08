@@ -69,6 +69,9 @@ module Settings
     setting :enable_agent_sessions, type: :boolean, default: true
     # Quote-card share images for posts without a cover; off falls back to the classic title card.
     setting :quote_card_social_images, type: :boolean, default: true
+    # Fork-only: IGDB (Twitch) app credentials, used by votings to find game covers.
+    setting :igdb_client_id, type: :string, default: ApplicationConfig["IGDB_CLIENT_ID"]
+    setting :igdb_client_secret, type: :string, default: ApplicationConfig["IGDB_CLIENT_SECRET"]
 
     # Mascot
     setting :mascot_user_id, type: :integer, default: nil

@@ -1,0 +1,897 @@
+// Fork-only: community votings ("Гра року") — /vote/:slug and share pages.
+// Uses crayons tokens only, so light/dark themes work automatically.
+
+.voting-page {
+  --voting-accent: var(--accent-brand);
+  --voting-gold: #f5b301;
+  --voting-radius: 12px;
+  padding: var(--su-4) var(--su-2) var(--su-9);
+
+  @media (min-width: 640px) {
+    padding-inline: var(--su-4);
+  }
+}
+
+// Hero ------------------------------------------------------------------------
+
+// Like other crayons cards: edge-to-edge on phones, rounded from 640px. Loose
+// elements between the cards (status, progress, nominations list) get a gutter.
+.voting-hero,
+.voting-step,
+.voting-thanks {
+  @media (max-width: 639px) {
+    border-radius: 0 !important;
+  }
+}
+
+.voting-page {
+  .voting-status,
+  .voting-progress,
+  .voting-steps,
+  .voting-results__title,
+  .voting-results > .voting-status__text {
+    @media (max-width: 639px) {
+      padding-inline: var(--su-3);
+    }
+  }
+}
+
+.voting-hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--voting-radius);
+  background: var(--card-bg);
+  box-shadow: var(--shadow-0);
+  margin-bottom: var(--su-6);
+
+  &__banner {
+    display: block;
+    width: 100%;
+    max-height: 340px;
+    object-fit: cover;
+  }
+
+  &__content {
+    padding: var(--su-6) var(--su-4);
+
+    @media (min-width: 640px) {
+      padding: var(--su-7) var(--su-8);
+    }
+  }
+
+  &--banner &__content {
+    padding-top: var(--su-5);
+  }
+
+  &__title {
+    font-size: var(--fs-3xl);
+    font-weight: var(--fw-heavy);
+    line-height: var(--lh-tight);
+    color: var(--base-100);
+
+    @media (min-width: 640px) {
+      font-size: var(--fs-4xl);
+    }
+  }
+
+  &__description {
+    margin-top: var(--su-3);
+    color: var(--base-80);
+    max-width: 70ch;
+  }
+}
+
+.voting-loading {
+  min-height: 60vh;
+}
+
+// Status & progress -------------------------------------------------------------
+
+.voting-status {
+  display: flex;
+  flex-direction: column;
+  gap: var(--su-2);
+  margin-bottom: var(--su-4);
+
+  &__text {
+    color: var(--base-70);
+    font-weight: var(--fw-medium);
+  }
+
+  &__hint {
+    color: var(--base-60);
+    font-size: var(--fs-s);
+  }
+}
+
+.voting-progress {
+  position: sticky;
+  top: var(--header-height, 56px);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: var(--su-3);
+  padding: var(--su-2) 0;
+  margin-bottom: var(--su-4);
+  background: var(--body-bg);
+
+  &__bar {
+    flex: 1;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--base-10);
+    overflow: hidden;
+
+    span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(
+        90deg,
+        var(--voting-accent),
+        var(--voting-gold)
+      );
+      transition: width 0.3s ease;
+    }
+  }
+
+  &__label {
+    font-size: var(--fs-s);
+    font-weight: var(--fw-medium);
+    color: var(--base-70);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+// Step ----------------------------------------------------------------------------
+
+.voting-step {
+  background: var(--card-bg);
+  border-radius: var(--voting-radius);
+  box-shadow: var(--shadow-0);
+  padding: var(--su-5) var(--su-4);
+
+  @media (min-width: 640px) {
+    padding: var(--su-7) var(--su-8);
+  }
+
+  &__header {
+    margin-bottom: var(--su-5);
+  }
+
+  &__counter {
+    display: flex;
+    align-items: center;
+    gap: var(--su-2);
+    font-size: var(--fs-s);
+    color: var(--base-60);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__tag {
+    border-radius: 999px;
+    padding: 0 var(--su-2);
+    background: var(--base-10);
+    color: var(--base-70);
+    font-size: var(--fs-xs);
+
+    &--required {
+      background: var(--accent-warning-a10, rgba(245, 179, 1, 0.15));
+      color: var(--base-90);
+    }
+  }
+
+  &__title {
+    margin-top: var(--su-1);
+    font-size: var(--fs-2xl);
+    font-weight: var(--fw-bold);
+    line-height: var(--lh-tight);
+    color: var(--base-100);
+    text-wrap: balance;
+
+    @media (min-width: 640px) {
+      font-size: var(--fs-3xl);
+    }
+  }
+
+  &__description {
+    margin-top: var(--su-2);
+    color: var(--base-80);
+  }
+
+  &__hint {
+    margin-top: var(--su-3);
+    font-size: var(--fs-s);
+    color: var(--base-60);
+  }
+
+  &__count {
+    color: var(--base-90);
+    font-weight: var(--fw-medium);
+  }
+
+  &__flash {
+    margin-bottom: var(--su-3);
+    font-size: var(--fs-s);
+    color: var(--accent-danger);
+  }
+
+  &__nav {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--su-3);
+    margin-top: var(--su-6);
+  }
+}
+
+// Cards ---------------------------------------------------------------------------
+
+.voting-grid {
+  display: grid;
+  gap: var(--su-4) var(--su-3);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  &--cover {
+    // Three covers per row on phones, so a 15-game list stays scannable.
+    grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+    gap: var(--su-3) var(--su-2);
+
+    @media (min-width: 640px) {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+  }
+
+  &--artwork {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+}
+
+.voting-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+
+  &__button {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    text-align: start;
+    font: inherit;
+    cursor: pointer;
+    border-radius: var(--voting-radius);
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+
+    &:focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 3px;
+    }
+
+    div & {
+      cursor: default;
+    }
+  }
+
+  &__image {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    border-radius: var(--voting-radius);
+    background: var(--base-10);
+    box-shadow: 0 0 0 1px var(--base-a10, rgba(0, 0, 0, 0.08));
+    transition:
+      transform 0.15s ease,
+      box-shadow 0.15s ease,
+      opacity 0.15s ease;
+
+    &--cover {
+      aspect-ratio: 3 / 4;
+    }
+
+    &--artwork {
+      aspect-ratio: 16 / 9;
+    }
+
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    font-size: var(--fs-4xl);
+    font-weight: var(--fw-heavy);
+    color: var(--base-40);
+  }
+
+  &__check {
+    position: absolute;
+    top: var(--su-2);
+    inset-inline-end: var(--su-2);
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--voting-accent);
+    color: var(--accent-brand-inverted, #fff);
+    font-weight: var(--fw-bold);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  }
+
+  &__trophy {
+    position: absolute;
+    top: var(--su-2);
+    inset-inline-start: var(--su-2);
+    font-size: var(--fs-xl);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    margin-top: var(--su-2);
+  }
+
+  &__title {
+    font-size: var(--fs-s);
+    font-weight: var(--fw-medium);
+    line-height: var(--lh-tight);
+    color: var(--base-90);
+    overflow-wrap: anywhere;
+
+    @media (min-width: 640px) {
+      font-size: var(--fs-base);
+    }
+  }
+
+  &__subtitle {
+    margin-top: 2px;
+    font-size: var(--fs-xs);
+    color: var(--base-60);
+  }
+
+  &__link {
+    margin-top: var(--su-1);
+    font-size: var(--fs-xs);
+  }
+
+  &__bar {
+    display: block;
+    height: 6px;
+    margin-top: var(--su-2);
+    border-radius: 999px;
+    background: var(--base-10);
+
+    span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--voting-accent);
+    }
+  }
+
+  @media (hover: hover) {
+    &__button:not(:disabled):hover &__image {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+    }
+  }
+
+  &--selected &__image {
+    box-shadow:
+      0 0 0 3px var(--voting-accent),
+      0 8px 20px rgba(0, 0, 0, 0.18);
+  }
+
+  &--selected &__title {
+    color: var(--base-100);
+    font-weight: var(--fw-bold);
+  }
+
+  &__button:disabled &__image {
+    opacity: 0.45;
+  }
+
+  &--winner &__image {
+    box-shadow: 0 0 0 3px var(--voting-gold);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__image {
+      transition: none;
+    }
+  }
+}
+
+.voting-place-badge {
+  position: absolute;
+  top: var(--su-2);
+  inset-inline-start: var(--su-2);
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--voting-gold);
+  color: #111;
+  font-weight: var(--fw-heavy);
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+.voting-other {
+  margin-top: var(--su-5);
+  max-width: 420px;
+}
+
+// All nominations list --------------------------------------------------------------
+
+.voting-steps {
+  margin-top: var(--su-7);
+
+  &__title {
+    font-size: var(--fs-l);
+    font-weight: var(--fw-bold);
+    margin-bottom: var(--su-3);
+    color: var(--base-90);
+  }
+
+  &__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: var(--su-2);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: var(--su-2);
+    width: 100%;
+    padding: var(--su-2) var(--su-3);
+    border: 1px solid var(--base-10);
+    border-radius: var(--radius);
+    background: var(--card-bg);
+    color: var(--base-80);
+    text-align: start;
+    font: inherit;
+    font-size: var(--fs-s);
+    cursor: pointer;
+
+    &:hover {
+      border-color: var(--base-30);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--focus);
+      outline-offset: 2px;
+    }
+
+    &--current {
+      border-color: var(--voting-accent);
+      box-shadow: 0 0 0 1px var(--voting-accent);
+      color: var(--base-100);
+    }
+
+    &--error {
+      border-color: var(--accent-danger);
+    }
+  }
+
+  &__number {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--base-10);
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-bold);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__item--answered &__number {
+    background: var(--accent-success, #10b981);
+    color: #fff;
+  }
+
+  &__name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  &__required {
+    color: var(--accent-danger);
+  }
+}
+
+// Summary ---------------------------------------------------------------------------
+
+.voting-summary {
+  &__list {
+    display: grid;
+    gap: var(--su-2);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  &__button {
+    display: flex;
+    flex-direction: column;
+    gap: var(--su-2);
+    width: 100%;
+    padding: var(--su-3);
+    border: 1px solid var(--base-10);
+    border-radius: var(--radius);
+    background: none;
+    color: inherit;
+    text-align: start;
+    font: inherit;
+    cursor: pointer;
+
+    &:hover {
+      border-color: var(--base-30);
+    }
+
+    @media (min-width: 640px) {
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+
+  &__item--error &__button {
+    border-color: var(--accent-danger);
+  }
+
+  &__name {
+    flex: 0 0 35%;
+    font-weight: var(--fw-medium);
+    color: var(--base-90);
+  }
+
+  &__picks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--su-2);
+    flex: 1;
+  }
+
+  &__pick {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--su-2);
+    padding: 2px var(--su-2) 2px 2px;
+    border-radius: 999px;
+    background: var(--base-10);
+    font-size: var(--fs-s);
+    color: var(--base-90);
+
+    img {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    span:only-child {
+      padding-inline-start: var(--su-2);
+    }
+  }
+
+  &__empty {
+    font-size: var(--fs-s);
+    color: var(--base-50);
+  }
+}
+
+// Thanks & share --------------------------------------------------------------------
+
+.voting-thanks {
+  padding: var(--su-6) var(--su-4);
+  text-align: center;
+
+  @media (min-width: 640px) {
+    padding: var(--su-8);
+  }
+
+  &__title {
+    font-size: var(--fs-2xl);
+    font-weight: var(--fw-bold);
+    color: var(--base-100);
+  }
+
+  &__text {
+    margin-top: var(--su-2);
+    color: var(--base-70);
+  }
+}
+
+.voting-share {
+  margin-top: var(--su-6);
+
+  &__title {
+    font-size: var(--fs-l);
+    font-weight: var(--fw-bold);
+    margin-bottom: var(--su-3);
+  }
+
+  &__preview {
+    position: relative;
+    max-width: 720px;
+    margin: 0 auto var(--su-4);
+    aspect-ratio: 1200 / 630;
+    border-radius: var(--voting-radius);
+    overflow: hidden;
+    background: var(--base-10);
+
+    img {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+  }
+
+  &__loading {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: var(--base-60);
+  }
+
+  &__actions,
+  &__networks {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--su-2);
+  }
+
+  &__networks {
+    margin-top: var(--su-4);
+  }
+
+  &__networks-label {
+    font-size: var(--fs-s);
+    color: var(--base-70);
+    margin-inline-end: var(--su-1);
+  }
+
+  &__page {
+    display: inline-block;
+    margin-top: var(--su-3);
+    font-size: var(--fs-s);
+  }
+}
+
+// Results ---------------------------------------------------------------------------
+
+.voting-results {
+  &__title {
+    font-size: var(--fs-3xl);
+    font-weight: var(--fw-heavy);
+    margin-bottom: var(--su-2);
+  }
+
+  &__category {
+    margin-top: var(--su-5);
+    padding: var(--su-5) var(--su-4);
+    border-radius: var(--voting-radius);
+    background: var(--card-bg);
+    box-shadow: var(--shadow-0);
+
+    @media (min-width: 640px) {
+      padding: var(--su-6) var(--su-7);
+    }
+  }
+
+  &__rows {
+    display: grid;
+    gap: var(--su-3);
+    list-style: none;
+    margin: var(--su-4) 0 0;
+    padding: 0;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: var(--su-3);
+
+    &--winner {
+      padding: var(--su-2);
+      border-radius: var(--voting-radius);
+      background: rgba(245, 179, 1, 0.12);
+    }
+  }
+
+  &__place {
+    width: 2ch;
+    text-align: center;
+    font-weight: var(--fw-bold);
+    color: var(--base-60);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__image {
+    width: 44px;
+    height: 58px;
+    border-radius: 6px;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--su-1);
+  }
+
+  &__name {
+    font-weight: var(--fw-medium);
+    color: var(--base-90);
+  }
+
+  &__mine {
+    margin-inline-start: var(--su-2);
+    padding: 0 var(--su-2);
+    border-radius: 999px;
+    background: var(--base-10);
+    font-size: var(--fs-xs);
+    color: var(--base-70);
+  }
+
+  &__bar {
+    display: block;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--base-10);
+
+    span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--voting-accent);
+    }
+  }
+
+  &__row--winner &__bar span {
+    background: var(--voting-gold);
+  }
+
+  &__points {
+    font-size: var(--fs-s);
+    color: var(--base-70);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+// Share page (/vote/:slug/u/:username) ----------------------------------------------
+
+.voting-share-header {
+  &__voting {
+    display: inline-block;
+    margin-bottom: var(--su-2);
+    font-size: var(--fs-s);
+    font-weight: var(--fw-bold);
+    color: var(--accent-brand);
+  }
+
+  &__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--su-3);
+    margin-top: var(--su-4);
+  }
+
+  &__user {
+    display: flex;
+    align-items: center;
+    gap: var(--su-2);
+    color: var(--base-80);
+    font-weight: var(--fw-medium);
+  }
+}
+
+.voting-share-list {
+  display: grid;
+  gap: var(--su-4);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.voting-share-item {
+  padding: var(--su-5) var(--su-4);
+
+  &__title {
+    font-size: var(--fs-l);
+    font-weight: var(--fw-bold);
+    margin-bottom: var(--su-3);
+  }
+
+  &__picks {
+    display: grid;
+    gap: var(--su-3);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    &--cover {
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    }
+
+    &--artwork {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+  }
+}
+
+.voting-share-pick {
+  &__image {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--voting-radius, 12px);
+    background: var(--base-10);
+    aspect-ratio: 3 / 4;
+
+    .voting-share-item__picks--artwork & {
+      aspect-ratio: 16 / 9;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    // A voter's own "Other" answer: a compact quote tile, not a full cover.
+    &--text {
+      display: grid;
+      place-items: center;
+      aspect-ratio: auto !important;
+      min-height: 96px;
+      padding: var(--su-3);
+      text-align: center;
+      font-style: italic;
+      font-weight: var(--fw-medium);
+      overflow-wrap: anywhere;
+    }
+  }
+
+  &__title {
+    display: block;
+    margin-top: var(--su-2);
+    font-size: var(--fs-s);
+    font-weight: var(--fw-medium);
+  }
+}

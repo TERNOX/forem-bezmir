@@ -28,6 +28,8 @@ class AdminMenu
       item(name: "audience segments", controller: "audience_segments"),
       item(name: "surveys"),
       item(name: "events"),
+      item(name: "votings"),
+      item(name: "games"),
     ]
 
     scope :customization, "tools-line", [

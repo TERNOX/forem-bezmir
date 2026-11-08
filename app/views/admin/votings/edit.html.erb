@@ -1,0 +1,9 @@
+<header class="admin__header mb-4 flex items-center justify-between">
+  <h1 class="fs-4xl fw-bold">Edit “<%= @voting.title %>”</h1>
+  <%= link_to "Delete voting", admin_voting_path(@voting), method: :delete,
+                                                          data: { confirm: "Delete this voting with all nominations and ballots? This cannot be undone." },
+                                                          class: "crayons-btn crayons-btn--danger" %>
+</header>
+<div class="crayons-card p-6">
+  <%= render "form" %>
+</div>

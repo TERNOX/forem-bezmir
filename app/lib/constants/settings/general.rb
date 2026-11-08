@@ -182,6 +182,14 @@ module Constants
           quote_card_social_images: {
             description: I18n.t("lib.constants.settings.general.quote_card_social_images.description")
           },
+          igdb_client_id: {
+            description: I18n.t("lib.constants.settings.general.igdb_client_id.description"),
+            placeholder: "abcdefghijklmnopqrstuvwxyz0123"
+          },
+          igdb_client_secret: {
+            description: I18n.t("lib.constants.settings.general.igdb_client_secret.description"),
+            placeholder: ""
+          },
           appeal_auto_unflag_threshold: {
             description: I18n.t("lib.constants.settings.general.appeal_auto_unflag_threshold.description"),
             placeholder: 1.01
