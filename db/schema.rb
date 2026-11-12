@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_11_07_130100) do
+ActiveRecord::Schema[7.2].define(version: 2026_11_12_120100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "ltree"
@@ -1726,6 +1726,16 @@ ActiveRecord::Schema[7.2].define(version: 2026_11_07_130100) do
     t.index ["var", "subforem_id"], name: "index_settings_smtp_on_var_and_subforem_id", unique: true
   end
 
+  create_table "settings_social_autoposts", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "subforem_id"
+    t.datetime "updated_at", null: false
+    t.text "value"
+    t.string "var", null: false
+    t.index ["subforem_id"], name: "index_settings_social_autoposts_on_subforem_id"
+    t.index ["var", "subforem_id"], name: "index_settings_social_autoposts_on_var_and_subforem_id", unique: true
+  end
+
   create_table "settings_user_experiences", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "subforem_id"
@@ -1744,6 +1754,27 @@ ActiveRecord::Schema[7.2].define(version: 2026_11_07_130100) do
     t.string "var", null: false
     t.index ["subforem_id"], name: "index_site_configs_on_subforem_id"
     t.index ["var", "subforem_id"], name: "index_site_configs_on_var_and_subforem_id", unique: true
+  end
+
+  create_table "social_autopost_items", force: :cascade do |t|
+    t.bigint "article_id", null: false
+    t.integer "attempts", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.text "custom_message"
+    t.string "kind", default: "community", null: false
+    t.text "last_error"
+    t.datetime "post_after"
+    t.datetime "posted_at"
+    t.integer "priority", default: 0, null: false
+    t.text "sent_message"
+    t.string "skip_reason"
+    t.string "source", default: "auto", null: false
+    t.string "status", default: "queued", null: false
+    t.string "telegram_message_id"
+    t.datetime "updated_at", null: false
+    t.index ["article_id"], name: "index_social_autopost_items_on_article_id", unique: true
+    t.index ["posted_at"], name: "index_social_autopost_items_on_posted_at"
+    t.index ["status", "priority"], name: "index_social_autopost_items_on_status_and_priority"
   end
 
   create_table "social_post_snapshots", force: :cascade do |t|
@@ -2409,6 +2440,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_11_07_130100) do
   add_foreign_key "scheduled_automations", "users"
   add_foreign_key "segmented_users", "audience_segments"
   add_foreign_key "segmented_users", "users"
+  add_foreign_key "social_autopost_items", "articles", on_delete: :cascade
   add_foreign_key "survey_completions", "surveys"
   add_foreign_key "survey_completions", "users"
   add_foreign_key "tag_adjustments", "articles", on_delete: :cascade

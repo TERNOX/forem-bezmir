@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe Articles::TopArticlesDigestWorker do
+  include ActiveSupport::Testing::TimeHelpers
+
   subject(:worker) { described_class.new }
 
   let(:scheduled_run_at) { Time.zone.local(2024, 6, 17, 20, 0, 0) }
@@ -49,6 +51,32 @@ RSpec.describe Articles::TopArticlesDigestWorker do
     end
   end
 
+  context "when the digest is published (Telegram autoposting)" do
+    let(:article) { instance_double(Article, persisted?: true, id: 99) }
+
+    before do
+      allow(Articles::TopArticles::DigestPublisher).to receive(:new).and_return(publisher)
+      allow(publisher).to receive(:publication_errors).and_return([])
+      allow(publisher).to receive(:publication_due?).and_return(true)
+      allow(publisher).to receive(:call).and_return(article)
+    end
+
+    it "hands the digest to autoposting" do
+      allow(SocialAutopost::Enqueuer).to receive(:enqueue_digest)
+      worker.perform
+      expect(SocialAutopost::Enqueuer).to have_received(:enqueue_digest).with(article)
+    end
+
+    it "still records success when autoposting fails" do
+      allow(SocialAutopost::Enqueuer).to receive(:enqueue_digest).and_raise(StandardError, "boom")
+      allow(Honeybadger).to receive(:notify)
+
+      expect { worker.perform }.not_to raise_error
+      expect(Settings::General.top_articles_digest_last_run_status).to eq("success")
+      expect(Honeybadger).to have_received(:notify)
+    end
+  end
+
   context "when the publisher reports configuration errors" do
     before do
       allow(Articles::TopArticles::DigestPublisher).to receive(:new).and_return(publisher)
@@ -69,6 +97,7 @@ RSpec.describe Articles::TopArticlesDigestWorker do
       allow(Articles::TopArticles::DigestPublisher).to receive(:new).and_return(publisher)
       allow(publisher).to receive(:publication_errors).and_return([])
       allow(publisher).to receive(:publication_due?).and_return(false)
+      allow(publisher).to receive(:call)
     end
 
     it "records the skip and advances the schedule" do
@@ -104,6 +133,7 @@ RSpec.describe Articles::TopArticlesDigestWorker do
 
     before do
       Settings::General.set_top_articles_digest_next_run_at(current_time + 5.hours)
+      allow(Articles::TopArticles::DigestPublisher).to receive(:new)
     end
 
     it "does nothing" do

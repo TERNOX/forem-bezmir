@@ -154,3 +154,8 @@ uk:
         error: Виникла помилка під час видалення цієї ролі. %{e_message}
       calculate_monthly_reputation:
         badge_message: "Вітаємо з потраплянням у місячний топ-10 за %{month}!"
+    social_autopost:
+      templates:
+        community: "{{title}}\nДопис від нашого користувача {{author}}\n{{short_url}}"
+        staff: "{{title}}\n{{short_url}}"
+        digest: "Найкращі дописи тижня від нашої спільноти\n{{title}}\n{{short_url}}"

@@ -1,0 +1,164 @@
+<% kyiv = SocialAutopost::Schedule.time_zone %>
+<% fmt = ->(time) { time ? time.in_time_zone(kyiv).strftime("%a %d.%m %H:%M") : "—" } %>
+
+<header class="admin__header mb-4">
+  <h1 class="fs-4xl fw-bold">Telegram autoposting</h1>
+  <p class="color-base-60">
+    Community posts that reach the rating threshold go into a queue and are posted to the Telegram channel
+    in the posting windows below. The channel's crossposting then shares them to the other networks.
+    The weekly “top posts” digest is posted with its own text as soon as the bot publishes it.
+  </p>
+</header>
+
+<section class="crayons-card p-4 mb-4 flex flex-col gap-3">
+  <div class="flex flex-wrap items-center gap-3">
+    <% if SocialAutopost.active? %>
+      <span class="c-indicator c-indicator--success">Active</span>
+    <% elsif !SocialAutopost.configured? %>
+      <span class="c-indicator c-indicator--warning">Set the bot token and channel</span>
+    <% else %>
+      <span class="c-indicator">Off</span>
+    <% end %>
+    <span><strong><%= @queued_count %></strong> in the queue</span>
+    <% if SocialAutopost.active? %>
+      <% next_at = @upcoming_times.values.first %>
+      <span class="color-base-70">Next scheduled post: <strong><%= fmt.call(next_at) %></strong> (Kyiv time)</span>
+    <% end %>
+    <div class="flex gap-2 ml-auto">
+      <%= button_to "Check bot", check_bot_admin_social_autoposts_path,
+                    method: :post, disabled: !SocialAutopost.configured?,
+                    class: "crayons-btn crayons-btn--secondary crayons-btn--s" %>
+      <%= button_to "Refresh queue now", refresh_queue_admin_social_autoposts_path,
+                    method: :post, class: "crayons-btn crayons-btn--secondary crayons-btn--s" %>
+    </div>
+  </div>
+  <% if @settings.last_error.present? %>
+    <div class="crayons-notice crayons-notice--danger">
+      Last Telegram error (<%= fmt.call(@settings.last_error_at.present? ? Time.zone.parse(@settings.last_error_at) : nil) %>):
+      <%= @settings.last_error %>
+    </div>
+  <% end %>
+</section>
+
+<section class="crayons-card p-4 mb-4">
+  <div class="flex flex-wrap items-end justify-between gap-3 mb-3">
+    <h2 class="fs-xl fw-bold">Queue</h2>
+    <%= form_with url: add_item_admin_social_autoposts_path, method: :post, class: "flex gap-2 items-end" do %>
+      <div class="crayons-field">
+        <label for="article" class="crayons-field__label fs-s">Add an article by ID or link</label>
+        <input type="text" name="article" id="article" class="crayons-textfield" placeholder="12259 or https://kutok.io/s/12259" autocomplete="off" required>
+      </div>
+      <button type="submit" class="crayons-btn crayons-btn--s">Add to top</button>
+    <% end %>
+  </div>
+
+  <% if @queue.any? %>
+    <table class="crayons-table w-100">
+      <thead>
+        <tr>
+          <th>When (estimate)</th>
+          <th>Article</th>
+          <th>Template</th>
+          <th>Score</th>
+          <th class="text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @queue.each do |item| %>
+          <% article = item.article %>
+          <tr id="item-<%= item.id %>">
+            <td class="fs-s">
+              <% if item.post_after.present? %>
+                <strong>Sending now</strong>
+              <% else %>
+                <%= fmt.call(@upcoming_times[item.id]) %>
+              <% end %>
+            </td>
+            <td>
+              <%= link_to article.title, article.path, target: "_blank", rel: "noopener", class: "fw-medium" %>
+              <div class="fs-s color-base-60">
+                <%= article.user&.name %><%= " · #{article.organization.name}" if article.organization %>
+                · <%= fmt.call(article.published_at) %>
+                · <%= item.source %><%= " · priority #{item.priority}" if item.priority.positive? %>
+                <% if item.last_error.present? %>
+                  · <span class="color-accent-danger">attempt <%= item.attempts %>: <%= item.last_error %></span>
+                <% end %>
+              </div>
+              <details class="mt-2">
+                <summary class="fs-s cursor-pointer">Message<%= " (edited)" if item.custom_message.present? %></summary>
+                <pre class="fs-s p-2 my-2 crayons-card crayons-card--secondary whitespace-pre-wrap"><%= item.message %></pre>
+                <%= form_with model: item, url: admin_social_autopost_item_path(item), method: :patch, class: "flex flex-col gap-2" do |f| %>
+                  <%= f.text_area :custom_message, rows: 4, class: "crayons-textfield fs-s",
+                                                   placeholder: "Leave empty to use the template" %>
+                  <div class="flex gap-2 items-center">
+                    <%= f.select :kind, SocialAutopostItem::KINDS, {}, class: "crayons-select w-auto" %>
+                    <%= f.submit "Save message", class: "crayons-btn crayons-btn--s crayons-btn--secondary" %>
+                  </div>
+                <% end %>
+              </details>
+            </td>
+            <td><span class="c-indicator"><%= item.kind %></span></td>
+            <td><%= article.score %></td>
+            <td class="text-right">
+              <div class="flex flex-wrap justify-end gap-1">
+                <%= button_to "Post now", post_now_admin_social_autopost_item_path(item), method: :post,
+                                                                                          class: "crayons-btn crayons-btn--s",
+                                                                                          form: { data: { confirm: "Post “#{article.title}” to Telegram now?" } } %>
+                <%= button_to "To top", move_top_admin_social_autopost_item_path(item), method: :patch,
+                                                                                        class: "crayons-btn crayons-btn--ghost crayons-btn--s" %>
+                <%= button_to "Skip", skip_admin_social_autopost_item_path(item), method: :patch,
+                                                                                  class: "crayons-btn crayons-btn--ghost crayons-btn--s" %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <p class="fs-s color-base-60 mt-2">
+      Estimates follow the posting windows and minimum interval (random delay and the daily limit are not counted).
+      Skipped articles are never picked up again automatically.
+    </p>
+  <% else %>
+    <p class="text-center py-6 color-base-60">The queue is empty.</p>
+  <% end %>
+</section>
+
+<section class="crayons-card p-4 mb-4">
+  <h2 class="fs-xl fw-bold mb-3">History</h2>
+  <% if @history.any? %>
+    <table class="crayons-table w-100">
+      <thead>
+        <tr><th>When</th><th>Article</th><th>Status</th><th class="text-right">Actions</th></tr>
+      </thead>
+      <tbody>
+        <% @history.each do |item| %>
+          <tr>
+            <td class="fs-s"><%= fmt.call(item.posted_at || item.updated_at) %></td>
+            <td>
+              <%= link_to item.article.title, item.article.path, target: "_blank", rel: "noopener" %>
+              <% if item.sent_message.present? %>
+                <details><summary class="fs-s cursor-pointer">Sent text</summary>
+                  <pre class="fs-s p-2 my-2 crayons-card crayons-card--secondary whitespace-pre-wrap"><%= item.sent_message %></pre>
+                </details>
+              <% end %>
+            </td>
+            <td class="fs-s">
+              <%= item.status %><%= " (#{item.skip_reason})" if item.skip_reason.present? %>
+              <% if item.failed? && item.last_error.present? %><div class="color-accent-danger"><%= item.last_error %></div><% end %>
+            </td>
+            <td class="text-right">
+              <% unless item.posted? %>
+                <%= button_to "Back to queue", requeue_admin_social_autopost_item_path(item), method: :patch,
+                                                                                              class: "crayons-btn crayons-btn--ghost crayons-btn--s" %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p class="text-center py-6 color-base-60">Nothing posted yet.</p>
+  <% end %>
+</section>
+
+<%= render "admin/social_autoposts/settings_form" %>

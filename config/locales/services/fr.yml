@@ -147,3 +147,8 @@ fr:
             missing_bot_user: "La clé API sélectionnée n'appartient à aucun compte utilisateur."
             missing_title_template: "Définissez un modèle de titre de publication avant de publier le digest."
             no_articles: "Aucun article ne correspond à la période sélectionnée."
+    social_autopost:
+      templates:
+        community: "{{title}}\nUne publication de {{author}}, membre de notre communauté\n{{short_url}}"
+        staff: "{{title}}\n{{short_url}}"
+        digest: "Les meilleures publications de la semaine de notre communauté\n{{title}}\n{{short_url}}"

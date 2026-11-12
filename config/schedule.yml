@@ -90,6 +90,10 @@ publish_top_articles_digest:
   description: "Publishes the automated top articles digest according to the configured cadence (checks hourly)"
   cron: "0 * * * *"
   class: "Articles::TopArticlesDigestWorker"
+social_autopost_tick:
+  description: "Queues qualifying community posts and sends them to the Telegram channel on the configured schedule (runs every 5 minutes)"
+  cron: "*/5 * * * *"
+  class: "SocialAutopost::TickWorker"
 award_contributor_badges_from_github:
   description: "Awards 'GitHub contributor' badges to users (runs hourly on the 20th minute after the hour)"
   cron: "20 * * * *"

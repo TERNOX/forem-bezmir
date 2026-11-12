@@ -32,6 +32,7 @@ module Articles
 
       if article&.persisted?
         record_success(reference_time)
+        share_to_social(article)
       else
         record_failure(reference_time, [I18n.t("workers.articles.top_articles_digest.publication_failed")])
       end
@@ -73,6 +74,14 @@ module Articles
       return false if scheduled_run_at.blank?
 
       reference_time >= scheduled_run_at
+    end
+
+    # Fork-only: hand the new digest to Telegram autoposting. A Telegram
+    # problem must never fail (and so re-run) the digest itself.
+    def share_to_social(article)
+      SocialAutopost::Enqueuer.enqueue_digest(article)
+    rescue StandardError => e
+      Honeybadger.notify(e, context: { article_id: article.id })
     end
 
     def record_success(reference_time)

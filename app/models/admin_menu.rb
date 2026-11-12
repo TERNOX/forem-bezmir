@@ -30,6 +30,7 @@ class AdminMenu
       item(name: "events"),
       item(name: "votings"),
       item(name: "games"),
+      item(name: "autoposting", controller: "social_autoposts"),
     ]
 
     scope :customization, "tools-line", [
