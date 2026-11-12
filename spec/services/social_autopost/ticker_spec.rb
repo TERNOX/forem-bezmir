@@ -119,6 +119,22 @@ RSpec.describe SocialAutopost::Ticker do
     expect(Settings::SocialAutopost.last_error).to include("Unauthorized")
   end
 
+  it "waits out Telegram's retry_after, even for forced items" do
+    item = SocialAutopostItem.create!(article: qualifying_article, source: "digest", kind: "digest", post_after: now)
+    allow(client).to receive(:send_message)
+      .and_raise(SocialAutopost::TelegramClient::Error.new("Too Many Requests", code: 429, retry_after: 900))
+
+    expect(tick).to eq(:setup_error)
+    expect(client).to have_received(:send_message).once
+
+    allow(client).to receive(:send_message).and_return("43")
+    expect(tick(now + 10.minutes)).to eq(:rate_limited)
+    expect(item.reload).to be_queued
+
+    tick(now + 16.minutes)
+    expect(item.reload).to be_posted
+  end
+
   it "gives up on a message after repeated message errors" do
     qualifying_article
     allow(client).to receive(:send_message)

@@ -58,7 +58,31 @@ module Settings
 
     # Runtime state
     setting :next_post_not_before, type: :string
+    # Set from Telegram's 429 retry_after: no sends at all (forced ones too) before it.
+    setting :rate_limited_until, type: :string
     setting :last_error, type: :string
     setting :last_error_at, type: :string
+
+    # Autoposting is site-wide. Admin requests carry a subforem in
+    # RequestStore while Sidekiq jobs don't, so every accessor ignores the
+    # request's subforem: both sides read and write the same global rows.
+    SUBFOREM_STORE_KEYS = %i[subforem_id default_subforem_id].freeze
+
+    def self.globally
+      saved = RequestStore.store.slice(*SUBFOREM_STORE_KEYS)
+      SUBFOREM_STORE_KEYS.each { |key| RequestStore.store.delete(key) }
+      yield
+    ensure
+      saved&.each { |key, value| RequestStore.store[key] = value }
+    end
+
+    keys.each do |key|
+      [key, :"set_#{key}", :"#{key}="].each do |name|
+        original = method(name)
+        define_singleton_method(name) do |*args, **kwargs|
+          globally { original.call(*args, **kwargs.except(:subforem_id)) }
+        end
+      end
+    end
   end
 end

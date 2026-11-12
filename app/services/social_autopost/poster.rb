@@ -57,7 +57,7 @@ module SocialAutopost
 
       if error.setup_problem?
         if error.retry_after.to_i.positive?
-          Settings::SocialAutopost.next_post_not_before = (now + error.retry_after.to_i.seconds).iso8601
+          Settings::SocialAutopost.rate_limited_until = (now + error.retry_after.to_i.seconds).iso8601
         end
         item.update!(status: "queued", last_error: error.message)
         return :setup_error

@@ -30,6 +30,15 @@ RSpec.describe SocialAutopost::Enqueuer do
       expect(SocialAutopost::PostItemWorker).not_to have_received(:perform_async)
     end
 
+    it "leaves an item that is being sent alone" do
+      item = SocialAutopostItem.create!(article: article, status: "sending")
+
+      described_class.enqueue_digest(article)
+
+      expect(item.reload).to be_sending
+      expect(SocialAutopost::PostItemWorker).not_to have_received(:perform_async)
+    end
+
     it "does nothing when digest posting is off" do
       Settings::SocialAutopost.post_digest = false
       expect(described_class.enqueue_digest(article)).to be_nil
@@ -56,6 +65,13 @@ RSpec.describe SocialAutopost::Enqueuer do
     it "refuses an article that was already posted" do
       SocialAutopostItem.create!(article: article, status: "posted", posted_at: Time.current)
       expect { described_class.add_manual(article) }.to raise_error(described_class::Error)
+    end
+
+    it "refuses an article that is being sent right now" do
+      item = SocialAutopostItem.create!(article: article, status: "sending")
+
+      expect { described_class.add_manual(article) }.to raise_error(described_class::Error, /being sent/)
+      expect(item.reload).to be_sending
     end
 
     it "refuses drafts" do

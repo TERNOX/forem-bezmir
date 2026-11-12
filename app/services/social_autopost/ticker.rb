@@ -25,6 +25,7 @@ module SocialAutopost
 
       release_stuck_items
       Enqueuer.enqueue_candidates(now: now)
+      return :rate_limited if SocialAutopost.rate_limited?(now)
       return :setup_error if post_forced_items == :setup_error
       return :closed unless schedule.open_at?(now)
       return :waiting if next_post_not_before && next_post_not_before > now

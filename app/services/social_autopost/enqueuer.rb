@@ -30,11 +30,15 @@ module SocialAutopost
       raise Error, "Only published articles can be queued." unless article.published
 
       item = SocialAutopostItem.find_or_initialize_by(article: article)
-      raise Error, "This article was already posted on #{I18n.l(item.posted_at, format: :short)}." if item.posted?
+      update_unless_in_flight(item) do
+        if item.posted?
+          raise Error, "This article was already posted on #{I18n.l(item.posted_at, format: :short)}."
+        end
+        raise Error, "This article is being sent right now." if item.sending?
 
-      item.assign_attributes(source: "manual", kind: SocialAutopost.kind_for(article), status: "queued",
-                             priority: top_priority, attempts: 0, skip_reason: nil, last_error: nil)
-      item.save!
+        item.update!(source: "manual", kind: SocialAutopost.kind_for(article), status: "queued",
+                     priority: top_priority, attempts: 0, skip_reason: nil, last_error: nil)
+      end
       item
     end
 
@@ -43,15 +47,22 @@ module SocialAutopost
       return unless SocialAutopost.active? && Settings::SocialAutopost.post_digest
 
       item = SocialAutopostItem.find_or_initialize_by(article: article)
-      return item if item.posted?
-
       immediately = Settings::SocialAutopost.digest_timing == "immediately"
-      item.assign_attributes(source: "digest", kind: "digest", status: "queued", attempts: 0,
-                             priority: top_priority, post_after: immediately ? now : nil,
-                             skip_reason: nil, last_error: nil)
-      item.save!
-      SocialAutopost::PostItemWorker.perform_async(item.id) if immediately
+      queued = update_unless_in_flight(item) do
+        next false if item.posted? || item.sending?
+
+        item.update!(source: "digest", kind: "digest", status: "queued", attempts: 0,
+                     priority: top_priority, post_after: immediately ? now : nil,
+                     skip_reason: nil, last_error: nil)
+      end
+      SocialAutopost::PostItemWorker.perform_async(item.id) if queued && immediately
       item
+    end
+
+    # Status changes on an existing row happen under a row lock, so they can't
+    # overwrite a claim (queued -> sending) made by a worker in the meantime.
+    def self.update_unless_in_flight(item, &block)
+      item.new_record? ? yield : item.with_lock(&block)
     end
 
     def self.top_priority

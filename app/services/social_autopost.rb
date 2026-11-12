@@ -60,6 +60,14 @@ module SocialAutopost
     Settings::SocialAutopost.next_post_not_before = candidate.iso8601
   end
 
+  # True while Telegram's 429 cooldown (retry_after) is still running.
+  def rate_limited?(now)
+    value = Settings::SocialAutopost.rate_limited_until.presence
+    value.present? && Time.zone.parse(value) > now
+  rescue ArgumentError
+    false
+  end
+
   def unpostable_author?(user)
     user.nil? || user.spam? || user.suspended?
   end
