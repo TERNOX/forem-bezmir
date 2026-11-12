@@ -149,3 +149,8 @@ pt:
             missing_bot_user: "A chave de API selecionada não pertence a uma conta de usuário."
             missing_title_template: "Defina um modelo de título da publicação antes de publicar o resumo."
             no_articles: "Nenhum artigo corresponde ao período selecionado."
+    social_autopost:
+      templates:
+        community: "{{title}}\nUma publicação de {{author}}, membro da nossa comunidade\n{{short_url}}"
+        staff: "{{title}}\n{{short_url}}"
+        digest: "As melhores publicações da semana da nossa comunidade\n{{title}}\n{{short_url}}"

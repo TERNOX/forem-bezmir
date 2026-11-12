@@ -189,6 +189,23 @@ namespace :admin do
       member { post :refresh }
       collection { get :search }
     end
+    # Fork-only: Telegram autoposting of community articles.
+    resources :social_autoposts, only: %i[index] do
+      collection do
+        patch :update_settings
+        post :check_bot
+        post :refresh_queue
+        post :add_item
+      end
+    end
+    resources :social_autopost_items, only: %i[update destroy] do
+      member do
+        post :post_now
+        patch :move_top
+        patch :skip
+        patch :requeue
+      end
+    end
   end
 
   scope :customization do

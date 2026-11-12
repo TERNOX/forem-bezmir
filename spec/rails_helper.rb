@@ -202,6 +202,7 @@ RSpec.configure do |config|
 
   config.after do
     Settings::General.clear_cache
+    Settings::SocialAutopost.clear_cache
   end
 
   # Only turn on VCR if :vcr is included metadata keys

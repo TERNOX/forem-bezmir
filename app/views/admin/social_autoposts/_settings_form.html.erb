@@ -1,0 +1,194 @@
+<% s = @settings %>
+<%= form_with scope: :social_autopost, url: update_settings_admin_social_autoposts_path, method: :patch,
+              class: "crayons-card p-4 flex flex-col gap-6" do |f| %>
+  <h2 class="fs-xl fw-bold">Settings</h2>
+
+  <label class="crayons-field crayons-field--checkbox">
+    <%= f.check_box :enabled, { checked: s.enabled, class: "crayons-checkbox" }, "1", "0" %>
+    <div>
+      <div class="crayons-field__label">Autoposting is on</div>
+      <p class="crayons-field__description">When off, nothing is queued or posted (except a manual “Post now”).</p>
+    </div>
+  </label>
+
+  <fieldset class="crayons-card crayons-card--secondary p-4 flex flex-col gap-4">
+    <legend class="fw-bold px-1">Telegram</legend>
+    <div class="crayons-field">
+      <%= f.label :telegram_bot_token, "Bot token", class: "crayons-field__label" %>
+      <p class="crayons-field__description">
+        From @BotFather. Add the bot to the channel as an admin with the “Post messages” right.
+        <%= s.telegram_bot_token.present? ? "A token is saved; leave empty to keep it." : "No token saved yet." %>
+      </p>
+      <%= f.password_field :telegram_bot_token, value: "", class: "crayons-textfield", autocomplete: "off",
+                                                placeholder: s.telegram_bot_token.present? ? "••••••••" : "123456:ABC-DEF…" %>
+      <% if s.telegram_bot_token.present? %>
+        <label class="crayons-field crayons-field--checkbox mt-1">
+          <%= f.check_box :clear_telegram_bot_token, { class: "crayons-checkbox" }, "1", "0" %>
+          <span class="crayons-field__label fs-s">Remove the saved token</span>
+        </label>
+      <% end %>
+    </div>
+    <div class="crayons-field">
+      <%= f.label :telegram_chat_id, "Channel", class: "crayons-field__label" %>
+      <p class="crayons-field__description">
+        A public <code>@username</code> or, for a private channel, its numeric id like <code>-1001234567890</code>.
+      </p>
+      <%= f.text_field :telegram_chat_id, value: s.telegram_chat_id, class: "crayons-textfield", placeholder: "-1001234567890" %>
+    </div>
+    <label class="crayons-field crayons-field--checkbox">
+      <%= f.check_box :disable_link_preview, { checked: s.disable_link_preview, class: "crayons-checkbox" }, "1", "0" %>
+      <span class="crayons-field__label">Turn off the link preview (cover image and description card)</span>
+    </label>
+  </fieldset>
+
+  <fieldset class="crayons-card crayons-card--secondary p-4 flex flex-col gap-4">
+    <legend class="fw-bold px-1">Which posts get queued</legend>
+    <div class="grid s:grid-cols-3 gap-4">
+      <div class="crayons-field">
+        <%= f.label :minimum_score, "Minimum rating (score)", class: "crayons-field__label" %>
+        <%= f.number_field :minimum_score, value: s.minimum_score, class: "crayons-textfield", min: 0 %>
+      </div>
+      <div class="crayons-field">
+        <%= f.label :minimum_reactions, "Minimum reactions", class: "crayons-field__label" %>
+        <%= f.number_field :minimum_reactions, value: s.minimum_reactions, class: "crayons-textfield", min: 0 %>
+        <p class="crayons-field__description">0 = not checked.</p>
+      </div>
+      <div class="crayons-field">
+        <%= f.label :max_age_days, "Not older than (days)", class: "crayons-field__label" %>
+        <%= f.number_field :max_age_days, value: s.max_age_days, class: "crayons-textfield", min: 1 %>
+        <p class="crayons-field__description">Older posts leave the queue unposted.</p>
+      </div>
+    </div>
+    <div class="crayons-field">
+      <%= f.label :published_after, "Only posts published after", class: "crayons-field__label" %>
+      <p class="crayons-field__description">Optional. Handy right after turning autoposting on, so posts you already shared by hand don't come back.</p>
+      <%= f.date_field :published_after, value: s.published_after.presence, class: "crayons-textfield w-auto" %>
+    </div>
+
+    <label class="crayons-field crayons-field--checkbox">
+      <%= f.check_box :include_community_favorites, { checked: s.include_community_favorites, class: "crayons-checkbox" }, "1", "0" %>
+      <span class="crayons-field__label">Community favorites (gems) qualify regardless of rating</span>
+    </label>
+    <label class="crayons-field crayons-field--checkbox">
+      <%= f.check_box :include_staff_posts, { checked: s.include_staff_posts, class: "crayons-checkbox" }, "1", "0" %>
+      <div>
+        <div class="crayons-field__label">Also queue posts by admins and staff (outside the official organizations)</div>
+        <p class="crayons-field__description">They use the “staff” template, without the “by our community member” line.</p>
+      </div>
+    </label>
+
+    <div class="crayons-field">
+      <%= f.label :official_organization_ids, "Official organizations (not community)", class: "crayons-field__label" %>
+      <p class="crayons-field__description">Posts in these organizations are not queued automatically and use the staff template when added by hand. Hold Ctrl to pick several.</p>
+      <%= f.select :official_organization_ids, options_for_select(@organizations, SocialAutopost.official_organization_ids),
+                   { include_hidden: true }, multiple: true, size: @organizations.size.clamp(3, 8), class: "crayons-select" %>
+    </div>
+    <label class="crayons-field crayons-field--checkbox">
+      <%= f.check_box :include_official_posts, { checked: s.include_official_posts, class: "crayons-checkbox" }, "1", "0" %>
+      <span class="crayons-field__label">Queue posts from the official organizations too (with the staff template)</span>
+    </label>
+    <div class="crayons-field">
+      <%= f.label :staff_usernames, "Extra staff usernames", class: "crayons-field__label" %>
+      <p class="crayons-field__description">Admins are detected automatically. Add other people whose posts should use the staff template. Comma-separated.</p>
+      <%= f.text_field :staff_usernames, value: Array(s.staff_usernames).join(", "), class: "crayons-textfield" %>
+    </div>
+
+    <label class="crayons-field crayons-field--checkbox">
+      <%= f.check_box :use_digest_filters, { checked: s.use_digest_filters, class: "crayons-checkbox" }, "1", "0" %>
+      <div>
+        <div class="crayons-field__label">Use the “posts of the week” quality filters</div>
+        <p class="crayons-field__description">
+          Minimum length <strong><%= @digest_settings[:minimum_body_length] %></strong> characters,
+          excluded tags: <strong><%= @digest_settings[:excluded_tags].presence || "none" %></strong>
+          (set in <%= link_to "Developer tools", admin_tools_path %>). When off, the two fields below apply.
+        </p>
+      </div>
+    </label>
+    <div class="grid s:grid-cols-2 gap-4">
+      <div class="crayons-field">
+        <%= f.label :minimum_body_length, "Minimum text length", class: "crayons-field__label" %>
+        <%= f.number_field :minimum_body_length, value: s.minimum_body_length, class: "crayons-textfield", min: 0 %>
+      </div>
+      <div class="crayons-field">
+        <%= f.label :excluded_tags, "Excluded tags", class: "crayons-field__label" %>
+        <%= f.text_field :excluded_tags, value: Array(s.excluded_tags).join(", "), class: "crayons-textfield" %>
+      </div>
+    </div>
+    <div class="crayons-field">
+      <%= f.label :minimum_video_body_length, "Minimum text length for video posts", class: "crayons-field__label" %>
+      <p class="crayons-field__description">So a bare video with a line of text doesn't get posted.</p>
+      <%= f.number_field :minimum_video_body_length, value: s.minimum_video_body_length, class: "crayons-textfield w-auto", min: 0 %>
+    </div>
+    <div class="crayons-field">
+      <%= f.label :queue_order, "Queue order", class: "crayons-field__label" %>
+      <%= f.select :queue_order, [["Highest rating first", "score"], ["Oldest first", "oldest"], ["Newest first", "newest"]],
+                   { selected: s.queue_order }, class: "crayons-select w-auto" %>
+      <p class="crayons-field__description">Articles moved “to top” or added by hand always go first.</p>
+    </div>
+  </fieldset>
+
+  <fieldset class="crayons-card crayons-card--secondary p-4 flex flex-col gap-4">
+    <legend class="fw-bold px-1">Schedule (Kyiv time)</legend>
+    <p class="crayons-field__description">
+      Posting windows per day, like <code>19:00-21:30</code>. Several windows: <code>13:00-16:00, 18:00-22:00</code>.
+      Leave a day empty to skip it.
+    </p>
+    <div class="grid s:grid-cols-2 m:grid-cols-4 gap-4">
+      <% Settings::SocialAutopost::WEEKDAYS.each do |day| %>
+        <div class="crayons-field">
+          <%= f.label :"schedule_#{day}", day.capitalize, class: "crayons-field__label" %>
+          <%= f.text_field :"schedule_#{day}", value: s.public_send(:"schedule_#{day}"), class: "crayons-textfield" %>
+        </div>
+      <% end %>
+    </div>
+    <div class="grid s:grid-cols-3 gap-4">
+      <div class="crayons-field">
+        <%= f.label :min_interval_minutes, "Minimum gap between posts (minutes)", class: "crayons-field__label" %>
+        <%= f.number_field :min_interval_minutes, value: s.min_interval_minutes, class: "crayons-textfield", min: 0 %>
+      </div>
+      <div class="crayons-field">
+        <%= f.label :random_delay_minutes, "Extra random delay, up to (minutes)", class: "crayons-field__label" %>
+        <%= f.number_field :random_delay_minutes, value: s.random_delay_minutes, class: "crayons-textfield", min: 0 %>
+        <p class="crayons-field__description">Makes posting times less mechanical. 0 = off.</p>
+      </div>
+      <div class="crayons-field">
+        <%= f.label :max_posts_per_day, "Max posts per day", class: "crayons-field__label" %>
+        <%= f.number_field :max_posts_per_day, value: s.max_posts_per_day, class: "crayons-textfield", min: 0 %>
+        <p class="crayons-field__description">0 = no limit.</p>
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset class="crayons-card crayons-card--secondary p-4 flex flex-col gap-4">
+    <legend class="fw-bold px-1">“Posts of the week” digest</legend>
+    <label class="crayons-field crayons-field--checkbox">
+      <%= f.check_box :post_digest, { checked: s.post_digest, class: "crayons-checkbox" }, "1", "0" %>
+      <span class="crayons-field__label">Post the weekly digest to Telegram when the bot publishes it</span>
+    </label>
+    <div class="crayons-field">
+      <%= f.label :digest_timing, "When", class: "crayons-field__label" %>
+      <%= f.select :digest_timing, [["Right away, outside the schedule", "immediately"], ["In the next posting slot, first in line", "next_slot"]],
+                   { selected: s.digest_timing }, class: "crayons-select w-auto" %>
+    </div>
+  </fieldset>
+
+  <fieldset class="crayons-card crayons-card--secondary p-4 flex flex-col gap-4">
+    <legend class="fw-bold px-1">Message templates</legend>
+    <p class="crayons-field__description">
+      Placeholders:
+      <% SocialAutopost::MessageBuilder::PLACEHOLDERS.each do |name| %><code>{{<%= name %>}}</code> <% end %>.
+      <code>{{short_url}}</code> is the short <code>/s/ID</code> link. Leave a template empty to use the default shown.
+    </p>
+    <% { "community" => "Community posts", "staff" => "Admins, staff and official organizations", "digest" => "Weekly digest" }.each do |kind, label| %>
+      <div class="crayons-field">
+        <%= f.label :"template_#{kind}", label, class: "crayons-field__label" %>
+        <%= f.text_area :"template_#{kind}", value: s.public_send(:"template_#{kind}"), rows: 4, class: "crayons-textfield",
+                                             placeholder: SocialAutopost::MessageBuilder.default_template(kind) %>
+      </div>
+    <% end %>
+  </fieldset>
+
+  <div>
+    <%= f.submit "Save settings", class: "crayons-btn" %>
+  </div>
+<% end %>

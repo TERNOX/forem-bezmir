@@ -1,0 +1,74 @@
+# Fork-only: automatic posting of community articles to a Telegram channel
+# (the channel's own crossposting then spreads them to the site's other social
+# networks). Articles enter a queue once they reach a rating threshold and are
+# posted inside configured time windows with a minimum gap between posts. The
+# weekly "top posts" digest is posted right after the bot publishes it.
+module SocialAutopost
+  module_function
+
+  def configured?
+    Settings::SocialAutopost.telegram_bot_token.present? && Settings::SocialAutopost.telegram_chat_id.present?
+  end
+
+  def active?
+    Settings::SocialAutopost.enabled && configured?
+  end
+
+  def official_organization_ids
+    Array(Settings::SocialAutopost.official_organization_ids).filter_map do |value|
+      value.to_i if value.to_i.positive?
+    end.uniq
+  end
+
+  def staff_usernames
+    Array(Settings::SocialAutopost.staff_usernames).map { |name| name.to_s.strip.delete_prefix("@").downcase }
+      .compact_blank.uniq
+  end
+
+  def staff_user_ids
+    admin_ids = User.with_any_role(*Authorizer::RoleBasedQueries::ANY_ADMIN_ROLES).map(&:id)
+    named_ids = staff_usernames.empty? ? [] : User.where("lower(username) IN (?)", staff_usernames).ids
+    (admin_ids + named_ids).uniq
+  end
+
+  # Which message template an article gets: "staff" for admins, people listed
+  # as staff and the official organizations, "community" for everyone else.
+  def kind_for(article)
+    return "staff" if article.organization_id.present? && article.organization_id.in?(official_organization_ids)
+
+    user = article.user
+    return "community" unless user
+    return "staff" if user.any_admin? || user.username.to_s.downcase.in?(staff_usernames)
+
+    "community"
+  end
+
+  # After any post, the next scheduled one waits at least the minimum
+  # interval (plus the optional random delay).
+  def push_back_next_post!(now)
+    gap = [Settings::SocialAutopost.min_interval_minutes.to_i, 0].max.minutes
+    jitter = Settings::SocialAutopost.random_delay_minutes.to_i
+    gap += rand(0..jitter).minutes if jitter.positive?
+    candidate = now + gap
+
+    current = Settings::SocialAutopost.next_post_not_before.presence
+    current &&= Time.zone.parse(current)
+    return if current && current > candidate
+
+    Settings::SocialAutopost.next_post_not_before = candidate.iso8601
+  rescue ArgumentError
+    Settings::SocialAutopost.next_post_not_before = candidate.iso8601
+  end
+
+  # True while Telegram's 429 cooldown (retry_after) is still running.
+  def rate_limited?(now)
+    value = Settings::SocialAutopost.rate_limited_until.presence
+    value.present? && Time.zone.parse(value) > now
+  rescue ArgumentError
+    false
+  end
+
+  def unpostable_author?(user)
+    user.nil? || user.spam? || user.suspended?
+  end
+end
