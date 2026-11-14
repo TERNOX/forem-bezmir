@@ -55,8 +55,9 @@ module SocialAutopost
     end
 
     def post_next_scheduled
+      candidates = scheduled_candidates
       MAX_SKIPS_PER_TICK.times do
-        item = SocialAutopostItem.ordered_queue.where(post_after: nil).first
+        item = candidates.first
         return :empty unless item
 
         result = Poster.call(item, client: client, now: now)
@@ -70,6 +71,18 @@ module SocialAutopost
         end
       end
       :empty
+    end
+
+    # Queued items without a forced time, minus community authors who were
+    # already posted today (see SocialAutopost.author_waits?).
+    def scheduled_candidates
+      scope = SocialAutopostItem.ordered_queue.where(post_after: nil)
+      return scope unless Settings::SocialAutopost.one_post_per_author_per_day
+
+      posted_today = SocialAutopost.posted_author_ids(schedule.beginning_of_local_day(now)..now)
+      return scope if posted_today.empty?
+
+      scope.where("social_autopost_items.kind <> 'community' OR articles.user_id NOT IN (?)", posted_today)
     end
 
     def next_post_not_before

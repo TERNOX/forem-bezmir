@@ -2,7 +2,8 @@ module SocialAutopost
   # Articles that qualify for automatic posting right now and are not in the
   # queue/history yet. Thresholds come from Settings::SocialAutopost; with
   # `use_digest_filters` the minimum length and excluded tags follow the
-  # "posts of the week" digest settings.
+  # "posts of the week" digest settings. Featured articles bypass the rating
+  # and quality filters, but not the age, organization and staff rules.
   class CandidateQuery
     def self.call(...)
       new(...).call
@@ -14,18 +15,23 @@ module SocialAutopost
     end
 
     def call
-      scope = Article.published
+      base = Article.published
         .where.not(type_of: Article.type_ofs[:status])
         .where(published_at: oldest_published_at..now)
         .where.not(id: SocialAutopostItem.select(:article_id))
+      base = base.where(organization_predicate) if organization_predicate
+      base = base.where.not(user_id: staff_user_ids) unless settings.include_staff_posts
+
+      quality = base
         .where("length(coalesce(articles.body_markdown, '')) >= ?", minimum_body_length)
         .where("articles.video IS NULL OR articles.video = '' OR " \
                "length(coalesce(articles.body_markdown, '')) >= ?", minimum_video_body_length)
         .where(rating_predicate)
+      quality = quality.where.not(id: excluded_tag_article_ids) if excluded_tag_ids.any?
 
-      scope = scope.where(organization_predicate) if organization_predicate
-      scope = scope.where.not(id: excluded_tag_article_ids) if excluded_tag_ids.any?
-      scope = scope.where.not(user_id: staff_user_ids) unless settings.include_staff_posts
+      # Featured ("Рекомендувати" in the moderation panel) is a deliberate pick
+      # by an admin or moderator, so it skips the rating and quality filters.
+      scope = settings.include_featured ? quality.or(base.where(featured: true)) : quality
 
       scope.includes(:user).reject { |article| SocialAutopost.unpostable_author?(article.user) }
     end

@@ -19,8 +19,10 @@
         From @BotFather. Add the bot to the channel as an admin with the “Post messages” right.
         <%= s.telegram_bot_token.present? ? "A token is saved; leave empty to keep it." : "No token saved yet." %>
       </p>
-      <%= f.password_field :telegram_bot_token, value: "", class: "crayons-textfield", autocomplete: "off",
-                                                placeholder: s.telegram_bot_token.present? ? "••••••••" : "123456:ABC-DEF…" %>
+      <%# A text field on purpose: password managers autofill password fields with unrelated saved logins. %>
+      <%= f.text_field :telegram_bot_token, value: "", class: "crayons-textfield", autocomplete: "off",
+                                            spellcheck: false, data: { "1p-ignore": true, lpignore: "true" },
+                                            placeholder: s.telegram_bot_token.present? ? "••••••••" : "123456:ABC-DEF…" %>
       <% if s.telegram_bot_token.present? %>
         <label class="crayons-field crayons-field--checkbox mt-1">
           <%= f.check_box :clear_telegram_bot_token, { class: "crayons-checkbox" }, "1", "0" %>
@@ -68,6 +70,16 @@
     <label class="crayons-field crayons-field--checkbox">
       <%= f.check_box :include_community_favorites, { checked: s.include_community_favorites, class: "crayons-checkbox" }, "1", "0" %>
       <span class="crayons-field__label">Community favorites (gems) qualify regardless of rating</span>
+    </label>
+    <label class="crayons-field crayons-field--checkbox">
+      <%= f.check_box :include_featured, { checked: s.include_featured, class: "crayons-checkbox" }, "1", "0" %>
+      <div>
+        <div class="crayons-field__label">Featured posts (“Рекомендувати” in the moderation panel) always qualify</div>
+        <p class="crayons-field__description">
+          Regardless of rating, length, video and excluded tags. The age limit, “published after”
+          and official organizations still apply.
+        </p>
+      </div>
     </label>
     <label class="crayons-field crayons-field--checkbox">
       <%= f.check_box :include_staff_posts, { checked: s.include_staff_posts, class: "crayons-checkbox" }, "1", "0" %>
@@ -157,6 +169,16 @@
         <p class="crayons-field__description">0 = no limit.</p>
       </div>
     </div>
+    <label class="crayons-field crayons-field--checkbox">
+      <%= f.check_box :one_post_per_author_per_day, { checked: s.one_post_per_author_per_day, class: "crayons-checkbox" }, "1", "0" %>
+      <div>
+        <div class="crayons-field__label">At most one post per day from the same author (admins and staff exempt)</div>
+        <p class="crayons-field__description">
+          Their other articles stay in the queue and go out on the following days. “Post now” and the digest
+          ignore this rule.
+        </p>
+      </div>
+    </label>
   </fieldset>
 
   <fieldset class="crayons-card crayons-card--secondary p-4 flex flex-col gap-4">

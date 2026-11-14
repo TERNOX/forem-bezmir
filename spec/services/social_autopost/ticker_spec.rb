@@ -8,8 +8,8 @@ RSpec.describe SocialAutopost::Ticker do
   let(:now) { kyiv.local(2026, 11, 11, 19, 5) }
   let(:client) { instance_double(SocialAutopost::TelegramClient, send_message: "42") }
 
-  def qualifying_article(score: 20, published_at: now - 2.days)
-    article = create(:article)
+  def qualifying_article(score: 20, published_at: now - 2.days, user: nil)
+    article = user ? create(:article, user: user) : create(:article)
     article.update_columns(score: score, published_at: published_at, body_markdown: "x" * 400)
     article
   end
@@ -159,5 +159,58 @@ RSpec.describe SocialAutopost::Ticker do
 
     tick
     expect(SocialAutopostItem.find_by(article: article).kind).to eq("staff")
+  end
+
+  describe "one post per author per day" do
+    let(:author) { create(:user) }
+
+    before { Settings::SocialAutopost.min_interval_minutes = 0 }
+
+    it "holds an author's second article until the next day and posts someone else meanwhile" do
+      first = qualifying_article(score: 50, user: author)
+      second = qualifying_article(score: 40, user: author)
+      other = qualifying_article(score: 20)
+
+      tick
+      tick(now + 10.minutes)
+      expect(SocialAutopostItem.find_by(article: first)).to be_posted
+      expect(SocialAutopostItem.find_by(article: other)).to be_posted
+      expect(SocialAutopostItem.find_by(article: second)).to be_queued
+
+      expect(tick(now + 20.minutes)).to eq(:empty)
+      expect(SocialAutopostItem.find_by(article: second)).to be_queued
+
+      expect(tick(now + 1.day)).to eq(:posted)
+      expect(SocialAutopostItem.find_by(article: second)).to be_posted
+    end
+
+    it "counts a forced post by the author too" do
+      forced = qualifying_article(score: 10, user: author)
+      SocialAutopostItem.create!(article: forced, source: "manual", post_after: now)
+      waiting = qualifying_article(score: 40, user: author)
+
+      tick
+      expect(SocialAutopostItem.find_by(article: forced)).to be_posted
+      expect(tick(now + 10.minutes)).to eq(:empty)
+      expect(SocialAutopostItem.find_by(article: waiting)).to be_queued
+    end
+
+    it "does not limit admins" do
+      author.add_role(:admin)
+      2.times { qualifying_article(user: author) }
+
+      tick
+      tick(now + 10.minutes)
+      expect(SocialAutopostItem.posted.count).to eq(2)
+    end
+
+    it "can be turned off" do
+      Settings::SocialAutopost.one_post_per_author_per_day = false
+      2.times { qualifying_article(user: author) }
+
+      tick
+      tick(now + 10.minutes)
+      expect(SocialAutopostItem.posted.count).to eq(2)
+    end
   end
 end

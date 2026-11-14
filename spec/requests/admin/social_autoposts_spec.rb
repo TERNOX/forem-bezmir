@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe "Admin::SocialAutoposts" do
+  include ActiveSupport::Testing::TimeHelpers
+
   let(:admin) { create(:user, :super_admin) }
   let(:article) { create(:article) }
 
@@ -19,6 +21,25 @@ RSpec.describe "Admin::SocialAutoposts" do
     get admin_social_autoposts_path
     expect(response).to have_http_status(:ok)
     expect(response.body).to include(CGI.escapeHTML(article.title), "Sent text", "Допис від нашого користувача")
+  end
+
+  it "estimates times that respect one post per author per day" do
+    Settings::SocialAutopost.enabled = true
+    Settings::SocialAutopost.telegram_bot_token = "123:abc"
+    Settings::SocialAutopost.telegram_chat_id = "-100123"
+    author = create(:user)
+    first = SocialAutopostItem.create!(article: create(:article, user: author), priority: 3)
+    second = SocialAutopostItem.create!(article: create(:article, user: author), priority: 2)
+    other = SocialAutopostItem.create!(article: create(:article), priority: 1)
+
+    # Wednesday 18:00 Kyiv, before the 19:00-21:30 window.
+    travel_to(SocialAutopost::Schedule.time_zone.local(2026, 11, 11, 18, 0)) { get admin_social_autoposts_path }
+
+    page = Nokogiri::HTML(response.body)
+    estimate = ->(item) { page.at_css("#item-#{item.id} td").text.strip }
+    expect(estimate.call(first)).to eq("Wed 11.11 19:00")
+    expect(estimate.call(other)).to eq("Wed 11.11 21:00")
+    expect(estimate.call(second)).to eq("Thu 12.11 19:00")
   end
 
   it "saves settings and keeps the token when the field is left empty" do
@@ -47,6 +68,27 @@ RSpec.describe "Admin::SocialAutoposts" do
 
     expect(flash[:danger]).to include("Invalid posting window")
     expect(Settings::SocialAutopost.minimum_score).to eq(15)
+  end
+
+  it "rejects a value that is not a bot token or a channel id" do
+    Settings::SocialAutopost.telegram_bot_token = "123:abc"
+
+    patch update_settings_admin_social_autoposts_path,
+          params: { social_autopost: { telegram_bot_token: "http://user@host/#1" } }
+    expect(flash[:danger]).to include("not a bot token")
+    expect(Settings::SocialAutopost.telegram_bot_token).to eq("123:abc")
+
+    patch update_settings_admin_social_autoposts_path, params: { social_autopost: { telegram_chat_id: "Куток" } }
+    expect(flash[:danger]).to include("Channel id")
+  end
+
+  it "reports a broken saved token instead of failing on Check bot" do
+    Settings::SocialAutopost.telegram_bot_token = "http://user@host/#1"
+    Settings::SocialAutopost.telegram_chat_id = "-100123"
+
+    post check_bot_admin_social_autoposts_path
+    expect(response).to redirect_to(admin_social_autoposts_path)
+    expect(flash[:danger]).to include("not a @BotFather token")
   end
 
   it "adds an article by its short link" do

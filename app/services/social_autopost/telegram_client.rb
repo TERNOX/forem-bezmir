@@ -3,6 +3,10 @@ module SocialAutopost
   class TelegramClient
     API_URL = "https://api.telegram.org".freeze
     TIMEOUT = 15
+    # "<bot id>:<secret>" as issued by @BotFather.
+    TOKEN_FORMAT = /\A\d+:[A-Za-z0-9_-]+\z/
+    # A numeric chat id (-100… for channels) or a public @channelusername.
+    CHAT_ID_FORMAT = /\A(-?\d+|@[A-Za-z0-9_]{4,})\z/
 
     class Error < StandardError
       attr_reader :code, :retry_after
@@ -56,6 +60,8 @@ module SocialAutopost
 
     def call(method, **params)
       raise Error, "Telegram bot token is not set" if token.blank?
+      raise Error, "The saved bot token is not a @BotFather token (digits:letters). Paste it again." unless
+        token.match?(TOKEN_FORMAT)
 
       response = HTTParty.post(
         "#{API_URL}/bot#{token}/#{method}",

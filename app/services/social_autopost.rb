@@ -43,6 +43,18 @@ module SocialAutopost
     "community"
   end
 
+  # Authors (user ids) who already had an article posted in the given range.
+  def posted_author_ids(range)
+    SocialAutopostItem.posted.where(posted_at: range).joins(:article).distinct.pluck("articles.user_id")
+  end
+
+  # With one_post_per_author_per_day, community items whose author is in
+  # +author_ids+ wait for another day; staff and digest items never do.
+  def author_waits?(item, author_ids)
+    Settings::SocialAutopost.one_post_per_author_per_day && item.kind == "community" &&
+      item.article&.user_id.in?(author_ids)
+  end
+
   # After any post, the next scheduled one waits at least the minimum
   # interval (plus the optional random delay).
   def push_back_next_post!(now)
