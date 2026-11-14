@@ -18,7 +18,21 @@ class SocialAutopostItem < ApplicationRecord
   scope :posted, -> { where(status: "posted") }
   scope :history, -> { where(status: %w[posted skipped failed]).order(updated_at: :desc) }
 
-  def self.ordered_queue(order = Settings::SocialAutopost.queue_order)
+  # Last autopost time of every author who has one.
+  AUTHOR_TURNS_JOIN = <<~SQL.squish.freeze
+    LEFT JOIN (
+      SELECT posted_articles.user_id AS author_id, MAX(posted_items.posted_at) AS last_posted_at
+      FROM social_autopost_items posted_items
+      INNER JOIN articles posted_articles ON posted_articles.id = posted_items.article_id
+      WHERE posted_items.status = 'posted'
+      GROUP BY posted_articles.user_id
+    ) author_turns ON author_turns.author_id = articles.user_id
+  SQL
+
+  # The order scheduled posts go out in: "To top" first, then (with
+  # rotate_authors) the author who waited longest, then the queue order.
+  def self.ordered_queue(order = Settings::SocialAutopost.queue_order,
+                         rotate: Settings::SocialAutopost.rotate_authors)
     article_order =
       case order
       when "oldest" then "articles.published_at ASC"
@@ -26,9 +40,14 @@ class SocialAutopostItem < ApplicationRecord
       else "articles.score DESC, articles.published_at ASC"
       end
 
-    queued
-      .joins(:article)
-      .order(Arel.sql("social_autopost_items.priority DESC, #{article_order}, social_autopost_items.id ASC"))
+    scope = queued.joins(:article)
+    turn_order = ""
+    if rotate
+      scope = scope.joins(AUTHOR_TURNS_JOIN)
+      turn_order = "author_turns.last_posted_at ASC NULLS FIRST, "
+    end
+    order_sql = "social_autopost_items.priority DESC, #{turn_order}#{article_order}, social_autopost_items.id ASC"
+    scope.order(Arel.sql(order_sql))
   end
 
   STATUSES.each do |value|

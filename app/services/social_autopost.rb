@@ -48,6 +48,11 @@ module SocialAutopost
     SocialAutopostItem.posted.where(posted_at: range).joins(:article).distinct.pluck("articles.user_id")
   end
 
+  # Author (user id) => time of their latest autopost.
+  def last_posted_at_by_author
+    SocialAutopostItem.posted.joins(:article).group("articles.user_id").maximum(:posted_at)
+  end
+
   # With one_post_per_author_per_day, community items whose author is in
   # +author_ids+ wait for another day; staff and digest items never do.
   def author_waits?(item, author_ids)

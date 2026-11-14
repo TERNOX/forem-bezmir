@@ -87,15 +87,15 @@ RSpec.describe SocialAutopost::Ticker do
     expect(Time.zone.parse(Settings::SocialAutopost.next_post_not_before)).to eq(night + 120.minutes)
   end
 
-  it "skips queued items that aged out and posts the next one" do
-    stale = qualifying_article(score: 90)
+  it "keeps a queued item past the age limit and still posts it" do
+    old = qualifying_article(score: 90)
     fresh = qualifying_article(score: 20)
-    SocialAutopostItem.create!(article: stale)
-    stale.update_columns(published_at: now - 31.days)
+    SocialAutopostItem.create!(article: old)
+    old.update_columns(published_at: now - 31.days)
 
     tick
-    expect(SocialAutopostItem.find_by(article: stale)).to have_attributes(status: "skipped", skip_reason: "too_old")
-    expect(SocialAutopostItem.find_by(article: fresh)).to be_posted
+    expect(SocialAutopostItem.find_by(article: old)).to be_posted
+    expect(SocialAutopostItem.find_by(article: fresh)).to be_queued
   end
 
   it "skips articles unpublished while queued" do
@@ -235,6 +235,38 @@ RSpec.describe SocialAutopost::Ticker do
       tick
       tick(now + 10.minutes)
       expect(SocialAutopostItem.posted.count).to eq(2)
+    end
+  end
+
+  describe "taking turns between authors" do
+    let(:author) { create(:user) }
+    let!(:frequent) { qualifying_article(score: 50, user: author) }
+    let!(:newcomer) { qualifying_article(score: 16) }
+
+    before do
+      yesterday = qualifying_article(user: author)
+      SocialAutopostItem.create!(article: yesterday, status: "posted", posted_at: now - 1.day)
+    end
+
+    it "gives the slot to an author who waited longer, even with a lower score" do
+      tick
+      expect(SocialAutopostItem.find_by(article: newcomer)).to be_posted
+      expect(SocialAutopostItem.find_by(article: frequent)).to be_queued
+    end
+
+    it "lets “To top” go first" do
+      SocialAutopost::Enqueuer.enqueue_candidates(now: now)
+      SocialAutopostItem.find_by(article: frequent).update!(priority: 1)
+
+      tick
+      expect(SocialAutopostItem.find_by(article: frequent)).to be_posted
+    end
+
+    it "can be turned off" do
+      Settings::SocialAutopost.rotate_authors = false
+
+      tick
+      expect(SocialAutopostItem.find_by(article: frequent)).to be_posted
     end
   end
 end

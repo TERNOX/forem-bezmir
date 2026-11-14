@@ -51,6 +51,10 @@ module Settings
     # Scheduled posts only: a community author whose article went out today
     # waits until tomorrow. Staff posts, the digest and "post now" are exempt.
     setting :one_post_per_author_per_day, type: :boolean, default: true
+    # Scheduled posts take turns between authors: the next slot goes to the
+    # author whose last autopost was longest ago (never posted first). Their
+    # own articles keep the queue order; "To top" still goes first.
+    setting :rotate_authors, type: :boolean, default: true
 
     # "Posts of the week" digest
     setting :post_digest, type: :boolean, default: true

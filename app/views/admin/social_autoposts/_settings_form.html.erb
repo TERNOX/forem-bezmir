@@ -58,7 +58,7 @@
       <div class="crayons-field">
         <%= f.label :max_age_days, "Not older than (days)", class: "crayons-field__label" %>
         <%= f.number_field :max_age_days, value: s.max_age_days, class: "crayons-textfield", min: 1 %>
-        <p class="crayons-field__description">Older posts leave the queue unposted.</p>
+        <p class="crayons-field__description">Only for getting into the queue: a queued post stays until it is posted or skipped.</p>
       </div>
     </div>
     <div class="crayons-field">
@@ -176,6 +176,17 @@
         <p class="crayons-field__description">
           Their other articles stay in the queue and go out on the following days. “Post now” and the digest
           ignore this rule.
+        </p>
+      </div>
+    </label>
+    <label class="crayons-field crayons-field--checkbox">
+      <%= f.check_box :rotate_authors, { checked: s.rotate_authors, class: "crayons-checkbox" }, "1", "0" %>
+      <div>
+        <div class="crayons-field__label">Take turns between authors</div>
+        <p class="crayons-field__description">
+          The next slot goes to the author whose last autopost was longest ago (new authors first), even if
+          another author has higher-rated articles waiting. Each author's articles keep the queue order;
+          “To top” still goes first.
         </p>
       </div>
     </label>
