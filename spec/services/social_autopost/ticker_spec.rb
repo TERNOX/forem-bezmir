@@ -147,6 +147,18 @@ RSpec.describe SocialAutopost::Ticker do
     expect(item.reload).to be_posted
   end
 
+  it "shows an unexpected error on the admin page, with the token masked, and keeps the item" do
+    item = SocialAutopostItem.create!(article: qualifying_article, source: "manual", post_after: now)
+    allow(client).to receive(:send_message).and_raise(URI::InvalidURIError, "bad URI: https://api.telegram.org/bot123:abc/x")
+
+    expect { tick }.to raise_error(URI::InvalidURIError)
+
+    expect(item.reload).to have_attributes(status: "queued", last_error: include("URI::InvalidURIError"))
+    expect(item.last_error).not_to include("123:abc")
+    expect(Settings::SocialAutopost.last_error).to include("[bot token]")
+    expect(Settings::SocialAutopost.last_error_at).to be_present
+  end
+
   it "gives up on a message after repeated message errors" do
     qualifying_article
     allow(client).to receive(:send_message)

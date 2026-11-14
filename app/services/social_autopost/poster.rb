@@ -32,8 +32,13 @@ module SocialAutopost
       :posted
     rescue TelegramClient::Error => e
       handle_error(e)
-    rescue StandardError
-      item.update_columns(status: "queued", updated_at: Time.current) if item.reload.sending?
+    rescue StandardError => e
+      # Not a Telegram API answer (a bug, a broken setting...): put the item
+      # back, show the error on the admin page and let it reach Honeybadger.
+      SocialAutopost.record_error!(e, now: now)
+      if item.reload.sending?
+        item.update_columns(status: "queued", last_error: SocialAutopost.describe_error(e), updated_at: Time.current)
+      end
       raise
     end
 
@@ -52,8 +57,7 @@ module SocialAutopost
     end
 
     def handle_error(error)
-      Settings::SocialAutopost.last_error = error.message
-      Settings::SocialAutopost.last_error_at = now.iso8601
+      SocialAutopost.record_error!(error, now: now)
 
       if error.setup_problem?
         if error.retry_after.to_i.positive?

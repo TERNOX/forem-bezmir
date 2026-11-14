@@ -82,6 +82,16 @@ RSpec.describe "Admin::SocialAutoposts" do
     expect(flash[:danger]).to include("Channel id")
   end
 
+  it "marks a forced item that failed to send instead of showing it as sending" do
+    SocialAutopostItem.create!(article: article, source: "manual", post_after: 1.minute.ago,
+                               last_error: "Telegram sendMessage failed: Bad Request: chat not found")
+    Settings::SocialAutopost.last_error = "Telegram sendMessage failed: Bad Request: chat not found"
+
+    get admin_social_autoposts_path
+    expect(response.body).to include("Not sent, retrying", "error: Telegram sendMessage failed", "Last error")
+    expect(response.body).not_to include("Sending now")
+  end
+
   it "reports a broken saved token instead of failing on Check bot" do
     Settings::SocialAutopost.telegram_bot_token = "http://user@host/#1"
     Settings::SocialAutopost.telegram_chat_id = "-100123"
