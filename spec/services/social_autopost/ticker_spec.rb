@@ -109,6 +109,18 @@ RSpec.describe SocialAutopost::Ticker do
     expect(client).not_to have_received(:send_message)
   end
 
+  it "moves past a skipped head item and posts the next one in the same tick" do
+    unpublished = qualifying_article(score: 90)
+    valid = qualifying_article(score: 20)
+    SocialAutopostItem.create!(article: unpublished)
+    unpublished.update_columns(published: false)
+
+    expect(tick).to eq(:posted)
+    expect(SocialAutopostItem.find_by(article: unpublished)).to have_attributes(status: "skipped",
+                                                                                skip_reason: "unpublished")
+    expect(SocialAutopostItem.find_by(article: valid)).to be_posted
+  end
+
   it "keeps the item queued when the bot setup is broken" do
     qualifying_article
     allow(client).to receive(:send_message)

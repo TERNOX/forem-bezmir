@@ -55,9 +55,10 @@ module SocialAutopost
     end
 
     def post_next_scheduled
-      candidates = scheduled_candidates
       MAX_SKIPS_PER_TICK.times do
-        item = candidates.first
+        # A fresh query each time: a relation memoizes #first, which would
+        # hand back the item that was just skipped.
+        item = scheduled_candidates.first
         return :empty unless item
 
         result = Poster.call(item, client: client, now: now)
