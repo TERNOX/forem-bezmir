@@ -83,4 +83,19 @@ module SocialAutopost
   def unpostable_author?(user)
     user.nil? || user.spam? || user.suspended?
   end
+
+  # Readable one-line description of an error for the admin page, with the
+  # bot token masked (some errors quote the API URL, which contains it).
+  def describe_error(error)
+    message = error.is_a?(TelegramClient::Error) ? error.message : "#{error.class}: #{error.message}"
+    token = Settings::SocialAutopost.telegram_bot_token.to_s.strip
+    message = message.gsub(token, "[bot token]") if token.present?
+    message.squish.truncate(500)
+  end
+
+  # Shows the error in the "Last error" banner of the admin page.
+  def record_error!(error, now: Time.current)
+    Settings::SocialAutopost.last_error = describe_error(error)
+    Settings::SocialAutopost.last_error_at = now.iso8601
+  end
 end

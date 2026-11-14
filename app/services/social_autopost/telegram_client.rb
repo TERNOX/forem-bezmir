@@ -77,6 +77,8 @@ module SocialAutopost
         code: body["error_code"] || response.code,
         retry_after: body.dig("parameters", "retry_after"),
       )
+    rescue URI::InvalidURIError
+      raise Error, "The saved bot token is not a @BotFather token (digits:letters). Paste it again."
     rescue HTTParty::Error, Net::OpenTimeout, Net::ReadTimeout, SocketError, Errno::ECONNREFUSED,
            Errno::ECONNRESET, OpenSSL::SSL::SSLError => e
       raise Error, "Telegram #{method} failed: #{e.class}"

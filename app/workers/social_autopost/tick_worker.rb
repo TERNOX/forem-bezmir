@@ -7,6 +7,10 @@ module SocialAutopost
 
     def perform
       SocialAutopost::Ticker.call
+    rescue StandardError => e
+      # Make failures outside a send (queueing, schedule) visible in the admin.
+      SocialAutopost.record_error!(e)
+      raise
     end
   end
 end

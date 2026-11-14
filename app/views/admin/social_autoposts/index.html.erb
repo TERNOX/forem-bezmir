@@ -34,7 +34,7 @@
   </div>
   <% if @settings.last_error.present? %>
     <div class="crayons-notice crayons-notice--danger">
-      Last Telegram error (<%= fmt.call(@settings.last_error_at.present? ? Time.zone.parse(@settings.last_error_at) : nil) %>):
+      Last error (<%= fmt.call(@settings.last_error_at.present? ? Time.zone.parse(@settings.last_error_at) : nil) %>):
       <%= @settings.last_error %>
     </div>
   <% end %>
@@ -68,7 +68,9 @@
           <% article = item.article %>
           <tr id="item-<%= item.id %>">
             <td class="fs-s">
-              <% if item.post_after.present? %>
+              <% if item.post_after.present? && item.last_error.present? %>
+                <strong class="color-accent-danger">Not sent, retrying</strong>
+              <% elsif item.post_after.present? %>
                 <strong>Sending now</strong>
               <% else %>
                 <%= fmt.call(@upcoming_times[item.id]) %>
@@ -81,7 +83,9 @@
                 · <%= fmt.call(article.published_at) %>
                 · <%= item.source %><%= " · priority #{item.priority}" if item.priority.positive? %>
                 <% if item.last_error.present? %>
-                  · <span class="color-accent-danger">attempt <%= item.attempts %>: <%= item.last_error %></span>
+                  · <span class="color-accent-danger">
+                    <%= item.attempts.positive? ? "attempt #{item.attempts}: " : "error: " %><%= item.last_error %>
+                  </span>
                 <% end %>
               </div>
               <details class="mt-2">
