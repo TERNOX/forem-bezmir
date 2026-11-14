@@ -50,10 +50,8 @@ module SocialAutopost
       article = item.article
       return "unpublished" unless article&.published && article.published_at.present? && article.published_at <= now
       return "author_banned" if SocialAutopost.unpostable_author?(article.user)
-      return "flagged" if article.score.to_i.negative?
-      return unless item.source == "auto" && item.post_after.nil?
 
-      "too_old" if article.published_at < now - [Settings::SocialAutopost.max_age_days.to_i, 1].max.days
+      "flagged" if article.score.to_i.negative?
     end
 
     def handle_error(error)

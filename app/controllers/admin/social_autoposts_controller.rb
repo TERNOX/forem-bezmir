@@ -6,7 +6,7 @@ module Admin
 
     BOOLEAN_SETTINGS = %i[
       enabled disable_link_preview include_community_favorites include_featured include_staff_posts
-      include_official_posts use_digest_filters post_digest one_post_per_author_per_day
+      include_official_posts use_digest_filters post_digest one_post_per_author_per_day rotate_authors
     ].freeze
     INTEGER_SETTINGS = %i[
       minimum_score minimum_reactions max_age_days minimum_body_length minimum_video_body_length
@@ -26,6 +26,7 @@ module Admin
       @history = SocialAutopostItem.history.includes(:article).limit(50)
       @organizations = Organization.order(:name).pluck(:name, :id)
       @upcoming_times = SocialAutopost::Forecast.call(@queue, limit: UPCOMING_LIMIT)
+      @queue = sort_by_forecast(@queue, @upcoming_times)
       @digest_settings = {
         minimum_body_length: ::Settings::General.top_articles_digest_minimum_body_length,
         excluded_tags: Array(::Settings::General.top_articles_digest_excluded_tags).join(", ")
@@ -79,6 +80,20 @@ module Admin
     end
 
     private
+
+    # The queue table in expected posting order: items being sent now first,
+    # then the forecast, then everything beyond it in queue order.
+    def sort_by_forecast(queue, times)
+      queue.each_with_index.sort_by do |item, index|
+        if item.post_after.present?
+          [0, 0, index]
+        elsif times[item.id]
+          [1, times[item.id].to_f, index]
+        else
+          [2, 0, index]
+        end
+      end.map(&:first)
+    end
 
     def validate_settings!(permitted)
       SCHEDULE_SETTINGS.each { |key| SocialAutopost::Schedule.parse(permitted[key]) if permitted.key?(key) }

@@ -3,25 +3,17 @@ module SocialAutopost
   class Enqueuer
     class Error < StandardError; end
 
-    # Queues every article that currently qualifies and drops automatic items
-    # that aged out while waiting.
+    # Queues every article that currently qualifies. The age limit only
+    # decides what enters the queue: a queued article stays there until it is
+    # posted or an admin skips it.
     # @return [Integer] how many articles were added
     def self.enqueue_candidates(now: Time.current)
-      expire_old_items(now)
-
       CandidateQuery.call(now: now).count do |article|
         SocialAutopostItem.create!(article: article, source: "auto", kind: SocialAutopost.kind_for(article))
         true
       rescue ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid
         false
       end
-    end
-
-    def self.expire_old_items(now)
-      cutoff = now - [Settings::SocialAutopost.max_age_days.to_i, 1].max.days
-      SocialAutopostItem.queued.where(source: "auto", post_after: nil)
-        .where(article_id: Article.where(published_at: ...cutoff).select(:id))
-        .update_all(status: "skipped", skip_reason: "too_old", updated_at: Time.current)
     end
 
     # An admin adds an article by hand: it skips the rating rules and goes to

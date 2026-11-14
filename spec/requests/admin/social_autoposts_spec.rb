@@ -42,6 +42,26 @@ RSpec.describe "Admin::SocialAutoposts" do
     expect(estimate.call(second)).to eq("Thu 12.11 19:00")
   end
 
+  it "lists the queue in the forecast order, taking turns between authors" do
+    Settings::SocialAutopost.enabled = true
+    Settings::SocialAutopost.telegram_bot_token = "123:abc"
+    Settings::SocialAutopost.telegram_chat_id = "-100123"
+    author = create(:user)
+    first, second = Array.new(2) do |i|
+      article = create(:article, user: author)
+      article.update_columns(score: 40 - i)
+      SocialAutopostItem.create!(article: article)
+    end
+    newcomer_article = create(:article)
+    newcomer_article.update_columns(score: 10)
+    newcomer = SocialAutopostItem.create!(article: newcomer_article)
+
+    travel_to(SocialAutopost::Schedule.time_zone.local(2026, 11, 11, 18, 0)) { get admin_social_autoposts_path }
+
+    rows = Nokogiri::HTML(response.body).css("tr[id^='item-']").pluck("id")
+    expect(rows).to eq(["item-#{first.id}", "item-#{newcomer.id}", "item-#{second.id}"])
+  end
+
   it "saves settings and keeps the token when the field is left empty" do
     Settings::SocialAutopost.telegram_bot_token = "123:abc"
 
