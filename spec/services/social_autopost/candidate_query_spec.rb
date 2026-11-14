@@ -41,6 +41,23 @@ RSpec.describe SocialAutopost::CandidateQuery do
     expect(described_class.call).not_to include(favorite)
   end
 
+  it "lets featured posts in regardless of rating, length and excluded tags" do
+    Settings::SocialAutopost.excluded_tags = "memes"
+    featured = article_with(score: 0, body: "x" * 20, tags: "memes")
+    featured.update_columns(featured: true)
+    featured_official = article_with(score: 0, organization: official_org)
+    featured_official.update_columns(featured: true)
+    featured_old = article_with(score: 0, published_at: 31.days.ago)
+    featured_old.update_columns(featured: true)
+
+    result = described_class.call
+    expect(result).to include(featured)
+    expect(result).not_to include(featured_official, featured_old)
+
+    Settings::SocialAutopost.include_featured = false
+    expect(described_class.call).not_to include(featured)
+  end
+
   it "needs more text next to a video" do
     video = article_with(body: "x" * 400)
     video.update_columns(video: "https://example.com/video.m3u8")

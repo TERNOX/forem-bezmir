@@ -27,6 +27,16 @@ RSpec.describe SocialAutopost::TelegramClient do
     }
   end
 
+  it "refuses a malformed token (e.g. a browser-autofilled password) without calling Telegram" do
+    bad = described_class.new(token: "http://user@host/#1", chat_id: "-100123")
+
+    expect { bad.check }.to raise_error(described_class::Error, /not a @BotFather token/) { |error|
+      expect(error).to be_setup_problem
+      expect(error.message).not_to include("user@host")
+    }
+    expect(a_request(:any, /api.telegram.org/)).not_to have_been_made
+  end
+
   it "treats other bad requests as a problem with the message" do
     error = described_class::Error.new("Bad Request: message is too long", code: 400)
     expect(error).not_to be_setup_problem

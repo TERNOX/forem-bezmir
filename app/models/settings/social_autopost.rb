@@ -21,6 +21,8 @@ module Settings
     setting :minimum_reactions, type: :integer, default: 0
     setting :max_age_days, type: :integer, default: 30
     setting :include_community_favorites, type: :boolean, default: true
+    # Featured articles qualify regardless of rating, length and excluded tags.
+    setting :include_featured, type: :boolean, default: true
     setting :include_staff_posts, type: :boolean, default: true
     setting :include_official_posts, type: :boolean, default: false
     setting :official_organization_ids, type: :array, default: DEFAULT_OFFICIAL_ORGANIZATION_IDS
@@ -46,6 +48,9 @@ module Settings
     setting :min_interval_minutes, type: :integer, default: 120
     setting :random_delay_minutes, type: :integer, default: 0
     setting :max_posts_per_day, type: :integer, default: 0
+    # Scheduled posts only: a community author whose article went out today
+    # waits until tomorrow. Staff posts, the digest and "post now" are exempt.
+    setting :one_post_per_author_per_day, type: :boolean, default: true
 
     # "Posts of the week" digest
     setting :post_digest, type: :boolean, default: true

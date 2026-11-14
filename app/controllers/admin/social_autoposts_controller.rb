@@ -5,8 +5,8 @@ module Admin
     layout "admin"
 
     BOOLEAN_SETTINGS = %i[
-      enabled disable_link_preview include_community_favorites include_staff_posts include_official_posts
-      use_digest_filters post_digest
+      enabled disable_link_preview include_community_favorites include_featured include_staff_posts
+      include_official_posts use_digest_filters post_digest one_post_per_author_per_day
     ].freeze
     INTEGER_SETTINGS = %i[
       minimum_score minimum_reactions max_age_days minimum_body_length minimum_video_body_length
@@ -25,7 +25,7 @@ module Admin
       @queued_count = SocialAutopostItem.queued.count
       @history = SocialAutopostItem.history.includes(:article).limit(50)
       @organizations = Organization.order(:name).pluck(:name, :id)
-      @upcoming_times = upcoming_times
+      @upcoming_times = SocialAutopost::Forecast.call(@queue, limit: UPCOMING_LIMIT)
       @digest_settings = {
         minimum_body_length: ::Settings::General.top_articles_digest_minimum_body_length,
         excluded_tags: Array(::Settings::General.top_articles_digest_excluded_tags).join(", ")
@@ -83,6 +83,16 @@ module Admin
     def validate_settings!(permitted)
       SCHEDULE_SETTINGS.each { |key| SocialAutopost::Schedule.parse(permitted[key]) if permitted.key?(key) }
 
+      token = permitted[:telegram_bot_token].to_s.strip
+      if token.present? && !token.match?(SocialAutopost::TelegramClient::TOKEN_FORMAT)
+        raise ArgumentError, "That is not a bot token: @BotFather gives one like 123456789:AAH… (digits:letters)."
+      end
+
+      chat_id = permitted[:telegram_chat_id].to_s.strip
+      if chat_id.present? && !chat_id.match?(SocialAutopost::TelegramClient::CHAT_ID_FORMAT)
+        raise ArgumentError, "Channel id must be a number like -1001234567890 (or @username for a public channel)."
+      end
+
       if permitted[:published_after].present?
         Time.zone.parse(permitted[:published_after]) || raise(ArgumentError, "Invalid “published after” date.")
       end
@@ -129,27 +139,6 @@ module Admin
       Article.find_by(path: path) if path.present?
     rescue URI::InvalidURIError
       nil
-    end
-
-    def upcoming_times
-      return [] unless SocialAutopost.active?
-
-      schedule = SocialAutopost::Schedule.new
-      interval = [::Settings::SocialAutopost.min_interval_minutes.to_i, 1].max.minutes
-      not_before = ::Settings::SocialAutopost.next_post_not_before.presence
-      time = [Time.current, (not_before && Time.zone.parse(not_before)) || Time.current].max
-
-      @queue.first(UPCOMING_LIMIT).each_with_object({}) do |item, times|
-        next if item.post_after.present?
-
-        time = schedule.next_open_at(time)
-        break times unless time
-
-        times[item.id] = time
-        time += interval
-      end
-    rescue ArgumentError
-      {}
     end
   end
 end
