@@ -257,11 +257,10 @@ body[data-side-nav-visible='true']:not(.hidden-shell) {
     transform: translateY(0);
   }
 }
+// Fork: upstream (#23927) звузив біллборд під постом до 480px. Наші банери
+// (донати, анонси) мають фонову картинку на всю ширину статті, тож ширину
+// не обмежуємо; лишаємо тільки відступ зверху.
 .below-post-bb {
-  max-width: 480px;
-  margin-left: auto;
-  margin-right: auto;
-
   &:has([data-display-unit]) {
     margin-top: 50px;
   }
