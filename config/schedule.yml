@@ -90,6 +90,10 @@ publish_top_articles_digest:
   description: "Publishes the automated top articles digest according to the configured cadence (checks hourly)"
   cron: "0 * * * *"
   class: "Articles::TopArticlesDigestWorker"
+novelnya_sync_profiles:
+  description: "Pulls the list of Новельня members who show their Kutok link, for the «На Новельні» block on profiles (runs every 15 minutes)"
+  cron: "7,22,37,52 * * * *"
+  class: "Novelnya::SyncProfilesWorker"
 social_autopost_tick:
   description: "Queues qualifying community posts and sends them to the Telegram channel on the configured schedule (runs every 5 minutes)"
   cron: "*/5 * * * *"
