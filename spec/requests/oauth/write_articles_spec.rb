@@ -57,6 +57,26 @@ RSpec.describe "OAuth write_articles scope" do
     expect(article.reload.title).to eq("Девлог: друга глава")
   end
 
+  it "does not let an admin's token edit other members' articles" do
+    user.add_role(:super_admin)
+    token = token_response_for("openid write_articles")["access_token"]
+    other_article = create(:article, title: "Чужа стаття")
+
+    put api_article_path(other_article.id), params: { article: { title: "Змінено" } }, headers: bearer(token), as: :json
+
+    expect(response).to have_http_status(:not_found)
+    expect(other_article.reload.title).to eq("Чужа стаття")
+  end
+
+  it "accepts the token on a private Forem" do
+    allow(Settings::UserExperience).to receive(:public).and_return(false)
+    token = token_response_for("openid write_articles")["access_token"]
+
+    post api_articles_path, params: article_params, headers: bearer(token), as: :json
+
+    expect(response).to have_http_status(:created)
+  end
+
   it "rejects a sign-in token without the scope" do
     token = token_response_for("openid profile")["access_token"]
 

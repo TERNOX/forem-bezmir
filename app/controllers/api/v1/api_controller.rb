@@ -63,7 +63,12 @@ module Api
       # federated site publishing for the member). Used only where writing
       # articles is the whole point — the token never reaches other endpoints.
       def authenticate_with_api_key_or_write_token!
-        @user ||= authenticate_with_api_key || authenticate_with_write_articles_token
+        @user ||= authenticate_with_api_key
+        unless @user
+          @user = authenticate_with_write_articles_token
+          # Narrower than an API key: see ArticlesController#find_updatable_article.
+          @oauth_write_token = @user.present?
+        end
         return error_unauthorized unless @user
         return error_unauthorized if @user.spam_or_suspended?
 
