@@ -98,6 +98,10 @@ pt:
       invalid_speakerdeck_id: ID do Speakerdeck inválido
     spotify_tag:
       invalid_spotify_uri: URI ou URL do Spotify inválida.
+    novelnya_tag:
+      invalid_url: "Link ou slug de jogo da Новельня inválido"
+      open: "Abrir na Новельня"
+      fallback: "Jogo na Новельня"
     steam_tag:
       invalid_url: URL da Steam inválida
     stackblitz_tag:

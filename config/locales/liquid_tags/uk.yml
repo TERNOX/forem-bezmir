@@ -97,6 +97,10 @@ uk:
       invalid_speakerdeck_id: Неправильний Speakerdeck ID
     spotify_tag:
       invalid_spotify_uri: Неправильний Spotify URI або URL.
+    novelnya_tag:
+      invalid_url: "Неправильне посилання на гру Новельні або slug"
+      open: "Відкрити на Новельні"
+      fallback: "Гра на Новельні"
     steam_tag:
       invalid_url: Неправильний Steam URL
     stackblitz_tag:

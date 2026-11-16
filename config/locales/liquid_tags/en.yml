@@ -97,6 +97,10 @@ en:
       invalid_speakerdeck_id: Invalid Speakerdeck Id
     spotify_tag:
       invalid_spotify_uri: Invalid Spotify URI or URL.
+    novelnya_tag:
+      invalid_url: "Invalid Новельня game link or slug"
+      open: "Open on Новельня"
+      fallback: "Game on Новельня"
     steam_tag:
       invalid_url: Invalid Steam URL
     stackblitz_tag:

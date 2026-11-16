@@ -1,0 +1,43 @@
+<%# Fork-only: game card from Новельня (NovelnyaTag). Without card data — a plain link. %>
+<div class="crayons-card c-embed text-styles text-styles--secondary ltag-novelnya">
+  <% if game %>
+    <div class="c-embed__content">
+      <% if game[:cover_url] %>
+        <div class="c-embed__cover">
+          <a href="<%= game[:url] %>" class="c-link align-middle" target="_blank" rel="noopener">
+            <img alt="" src="<%= game[:cover_url] %>" height="auto" loading="lazy" class="m-0">
+          </a>
+        </div>
+      <% end %>
+      <div class="c-embed__body">
+        <h2 class="fs-xl lh-tight">
+          <a href="<%= game[:url] %>" target="_blank" rel="noopener" class="c-link"><%= game[:title] %></a>
+        </h2>
+        <% meta = [game[:developer], game[:year]].compact.join(", ") %>
+        <% if meta.present? %>
+          <p class="color-base-70 fs-s m-0"><%= meta %></p>
+        <% end %>
+        <% if game[:excerpt] %>
+          <p class="truncate-at-3"><%= game[:excerpt] %></p>
+        <% end %>
+        <% if game[:tags].any? %>
+          <p class="color-base-60 fs-s m-0"><%= game[:tags].join(" · ") %></p>
+        <% end %>
+        <div class="mt-3">
+          <a href="<%= game[:url] %>" target="_blank" rel="noopener" class="crayons-btn crayons-btn--s">
+            <%= t("liquid_tags.novelnya_tag.open") %>
+          </a>
+        </div>
+      </div>
+    </div>
+  <% else %>
+    <div class="c-embed__content">
+      <div class="c-embed__body flex items-center justify-between">
+        <a href="<%= url %>" target="_blank" rel="noopener" class="c-link fw-bold flex items-center">
+          <span class="mr-2"><%= t("liquid_tags.novelnya_tag.fallback") %></span>
+          <%= crayons_icon_tag("external-link", class: "crayons-icon--l", aria_hidden: true, height: 40, width: 40) %>
+        </a>
+      </div>
+    </div>
+  <% end %>
+</div>
