@@ -59,11 +59,30 @@ RSpec.describe Novelnya::Profiles do
     described_class.refresh!
 
     stub_request(:get, feed_url).to_return(status: 503, body: "closed")
-    expect(described_class.refresh!).to be_nil
+    expect(described_class.refresh!).to eq([])
 
     stub_request(:get, feed_url).to_timeout
-    expect(described_class.refresh!).to be_nil
+    expect(described_class.refresh!).to eq([])
 
     expect(described_class.for(77)).to include(username: "avtorka")
+  end
+
+  it "purges pages still showing a block once the list expired during an outage" do
+    stub_feed([profile])
+    described_class.refresh!
+    Rails.cache.delete(described_class::CACHE_KEY) # the list expired
+
+    stub_request(:get, feed_url).to_return(status: 503, body: "closed")
+    expect(described_class.refresh!).to eq([77])
+    expect(described_class.refresh!).to eq([])
+  end
+
+  it "purges a member who left while the list was expired" do
+    stub_feed([profile])
+    described_class.refresh!
+    Rails.cache.delete(described_class::CACHE_KEY) # the list expired
+
+    stub_feed([])
+    expect(described_class.refresh!).to eq([77])
   end
 end

@@ -10,6 +10,10 @@ module Novelnya
     # A missed sync keeps the last good list; if Новельня stays unreachable
     # (or closes its site) for this long, the links quietly disappear.
     CACHE_TTL = 6.hours
+    # Who has a block on their (edge-cached) profile page. Outlives the list,
+    # so pages still get purged after the list expired or someone left it.
+    SHOWN_KEY = "novelnya:profiles:shown:v1".freeze
+    SHOWN_TTL = 30.days
     TIMEOUT_SECONDS = 10
     MAX_PROJECTS = 4
 
@@ -20,18 +24,32 @@ module Novelnya
         profiles.is_a?(Hash) ? profiles[user_id.to_i] : nil
       end
 
-      # Pulls the list and stores it. Returns the ids whose entry changed
-      # (added, removed or edited), or nil when the fetch failed; a failure
-      # leaves the cached list as it was.
+      # Pulls the list and stores it. Returns the ids whose profile page must
+      # be purged because its block changed (added, removed or edited).
+      #
+      # A failed fetch keeps the cached list as it was and purges nothing,
+      # until that list has expired: then every page that still shows a block
+      # is purged once, so a long outage or a closed site doesn't leave stale
+      # blocks in the edge cache.
       def refresh!
-        profiles = fetch
-        return unless profiles
-
         previous = Rails.cache.read(CACHE_KEY)
-        previous = {} unless previous.is_a?(Hash)
-        Rails.cache.write(CACHE_KEY, profiles, expires_in: CACHE_TTL)
+        previous = nil unless previous.is_a?(Hash)
+        shown = Array(Rails.cache.read(SHOWN_KEY))
+        profiles = fetch
 
-        (previous.keys | profiles.keys).reject { |id| previous[id] == profiles[id] }
+        unless profiles
+          return [] if previous || shown.empty?
+
+          Rails.cache.delete(SHOWN_KEY)
+          return shown
+        end
+
+        previous ||= {}
+        Rails.cache.write(CACHE_KEY, profiles, expires_in: CACHE_TTL)
+        Rails.cache.write(SHOWN_KEY, profiles.keys, expires_in: SHOWN_TTL)
+
+        changed = (previous.keys | profiles.keys).reject { |id| previous[id] == profiles[id] }
+        changed | (shown - profiles.keys)
       end
 
       private
