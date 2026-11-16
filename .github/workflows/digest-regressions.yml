@@ -15,7 +15,8 @@ concurrency:
 
 jobs:
   digest-regressions:
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest moved to 26.04, where setup-ruby has no Ruby 3.3.0.
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
       RAILS_ENV: test
