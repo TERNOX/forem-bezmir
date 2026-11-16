@@ -37,6 +37,7 @@ fr:
       openid: 'Confirmer que ce compte est le vôtre'
       profile: 'Voir votre nom et votre nom d’utilisateur'
       email: 'Voir votre adresse e-mail'
+      write_articles: 'Publier et modifier vos articles'
 
     errors:
       messages:

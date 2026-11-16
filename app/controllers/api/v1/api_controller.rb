@@ -59,6 +59,17 @@ module Api
 
       # @note This method is performing both authentication and authorization.  The user suspended
       #       should be something added to the corresponding pundit policy.
+      # API key, or an OAuth token with the `write_articles` scope (a
+      # federated site publishing for the member). Used only where writing
+      # articles is the whole point — the token never reaches other endpoints.
+      def authenticate_with_api_key_or_write_token!
+        @user ||= authenticate_with_api_key || authenticate_with_write_articles_token
+        return error_unauthorized unless @user
+        return error_unauthorized if @user.spam_or_suspended?
+
+        true
+      end
+
       def authenticate_with_api_key_or_current_user!
         @user ||= authenticate_with_api_key_or_current_user
         return error_unauthorized unless @user
@@ -114,6 +125,14 @@ end
       def pundit_user
         # What's going on here?
         @pundit_user ||= @user
+      end
+
+      def authenticate_with_write_articles_token
+        token = Doorkeeper::OAuth::Token.authenticate(request, *Doorkeeper.config.access_token_methods)
+        return if token.nil?
+        return unless token.accessible? && token.includes_scope?("write_articles")
+
+        User.find_by(id: token.resource_owner_id)
       end
 
       def authenticate_with_api_key

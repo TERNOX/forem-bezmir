@@ -5,7 +5,8 @@ module Api
     class ArticlesController < ApiController
       include Api::ArticlesController
 
-      before_action :authenticate_with_api_key!, only: %i[create update me unpublish preview]
+      before_action :authenticate_with_api_key_or_write_token!, only: %i[create update]
+      before_action :authenticate_with_api_key!, only: %i[me unpublish preview]
       before_action :validate_article_param_is_hash, only: %i[create update]
       before_action :set_cache_control_headers, only: %i[index show show_by_slug]
       after_action :verify_authorized, only: %i[create preview]
