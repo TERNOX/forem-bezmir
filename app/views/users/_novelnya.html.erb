@@ -1,0 +1,33 @@
+<%# Fork-only: the member's Новельня profile and games, when they chose to show the link there (Novelnya::Profiles). %>
+<% if (novelnya = Novelnya::Profiles.for(user.id)) %>
+  <div class="crayons-card crayons-card--secondary spec-novelnya-profile">
+    <header class="crayons-card__header">
+      <h3 class="crayons-subtitle-3"><%= t("views.novelnya_profile.heading") %></h3>
+    </header>
+
+    <div>
+      <a href="<%= novelnya[:url] %>" target="_blank" rel="noopener me" class="flex items-center crayons-link crayons-link--contentful">
+        <% if novelnya[:avatar_url] %>
+          <span class="crayons-avatar crayons-avatar--l mr-2 shrink-0">
+            <img src="<%= novelnya[:avatar_url] %>" alt="" class="crayons-avatar__image" loading="lazy" referrerpolicy="no-referrer" />
+          </span>
+        <% end %>
+        <span class="min-w-0">
+          <span class="block fw-medium"><%= novelnya[:name] || t("views.novelnya_profile.profile") %></span>
+          <% if novelnya[:username] %>
+            <span class="block fs-s color-base-60">@<%= novelnya[:username] %></span>
+          <% end %>
+        </span>
+      </a>
+
+      <% novelnya[:projects].each do |project| %>
+        <a href="<%= project[:url] %>" target="_blank" rel="noopener" class="flex items-center crayons-link crayons-link--contentful" title="<%= t("views.novelnya_profile.game") %>">
+          <% if project[:cover_url] %>
+            <img src="<%= project[:cover_url] %>" alt="" width="30" height="40" class="radius-default mr-2 shrink-0" style="object-fit: cover;" loading="lazy" referrerpolicy="no-referrer" />
+          <% end %>
+          <span class="fs-s"><%= project[:title] %></span>
+        </a>
+      <% end %>
+    </div>
+  </div>
+<% end %>

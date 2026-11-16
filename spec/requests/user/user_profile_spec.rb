@@ -14,6 +14,20 @@ RSpec.describe "UserProfiles" do
       expect(response.body).to include CGI.escapeHTML(user.name)
     end
 
+    it "shows the Новельня block only for members who linked it there" do
+      allow(Novelnya::Profiles).to receive(:for).and_return(nil)
+      allow(Novelnya::Profiles).to receive(:for).with(user.id).and_return(
+        name: "Авторка", username: "avtorka", url: "https://novelnya.com/users/avtorka", avatar_url: nil,
+        projects: [{ title: "Місто снів", url: "https://novelnya.com/projects/misto-sniv", cover_url: nil }]
+      )
+
+      get "/#{user.username}"
+      expect(response.body).to include("spec-novelnya-profile", "https://novelnya.com/users/avtorka", "Місто снів")
+
+      get "/#{current_user.username}"
+      expect(response.body).not_to include("spec-novelnya-profile")
+    end
+
     it "renders pins if any" do
       create(:article, user_id: user.id)
       create(:article, user_id: user.id)
