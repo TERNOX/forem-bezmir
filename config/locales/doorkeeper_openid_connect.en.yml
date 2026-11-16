@@ -4,6 +4,7 @@ en:
       openid: 'Authenticate your account'
       profile: 'View your profile information'
       email: 'View your email address'
+      write_articles: 'Publish and edit your articles'
       address: 'View your physical address'
       phone: 'View your phone number'
     errors:

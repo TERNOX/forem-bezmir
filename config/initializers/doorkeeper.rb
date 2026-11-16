@@ -41,15 +41,24 @@ Doorkeeper.configure do
   # redirect, so they stay short-lived by design.
   authorization_code_expires_in 10.minutes
 
-  # A token is used to read the userinfo endpoint once, right after login.
-  # A short life makes a leaked token nearly worthless, and nothing needs
-  # long-lived access, so there is no refresh token.
+  # A login token is used to read the userinfo endpoint once, right after
+  # login. A short life makes a leaked token nearly worthless.
   access_token_expires_in 30.minutes
 
+  # Only `write_articles` gets a refresh token: a federated site publishes for
+  # the member later (e.g. when a devlog goes out), long after the login. Plain
+  # sign-in tokens stay short-lived with nothing to renew them.
+  use_refresh_token do |context|
+    context.scopes.exists?(:write_articles)
+  end
+
   # `openid` turns the request into an OIDC one; `email` and `profile` carry
-  # the claims a relying party needs to create an account.
+  # the claims a relying party needs to create an account. `write_articles`
+  # lets the site create and edit the member's articles through the API
+  # (Api::V1::ArticlesController#create/#update only), after explicit consent
+  # and only for applications an admin granted that scope.
   default_scopes  :openid
-  optional_scopes :email, :profile
+  optional_scopes :email, :profile, :write_articles
 
   # A client may only ask for the scopes listed above.
   enforce_configured_scopes

@@ -37,6 +37,7 @@ pt:
       openid: 'Confirmar que a conta é sua'
       profile: 'Ver o seu nome e nome de usuário'
       email: 'Ver o seu endereço de e-mail'
+      write_articles: 'Publicar e editar os seus artigos'
 
     errors:
       messages:
