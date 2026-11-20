@@ -19,6 +19,11 @@ module Settings
     }
     setting :feed_lookback_days, type: :integer, default: 10
     setting :home_feed_minimum_score, type: :integer, default: 0
+    # Fork-only: on the default home feed tab, at most (interval - 1) editorial
+    # posts appear in a row before a community post is mixed in. 0 disables.
+    setting :home_feed_community_interval, type: :integer, default: 3, validates: {
+      numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+    }
     setting :index_minimum_score, type: :integer, default: 0
     setting :index_minimum_date, type: :integer, default: 1_500_000_000
     setting :primary_brand_color_hex, type: :string, default: "#3b49df", validates: {

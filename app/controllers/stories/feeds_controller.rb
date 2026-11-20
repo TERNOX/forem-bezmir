@@ -57,9 +57,9 @@ module Stories
                 elsif timeframe == Timeframe::LATEST_TIMEFRAME
                   latest_feed
                 elsif user_signed_in?
-                  signed_in_base_feed
+                  mix_community_stories(signed_in_base_feed)
                 else
-                  signed_out_base_feed
+                  mix_community_stories(signed_out_base_feed)
                 end
 
       stories = filter_community_stories(stories)
@@ -118,6 +118,20 @@ module Stories
         # ActiveRecord::Relation.  So this is a compromise.
         feed.default_home_feed(user_signed_in: false).to_a
       end
+    end
+
+    # Fork-only: the default ("relevant") tab mixes community posts in between
+    # editorial ones. Tag feeds and the community view are left as they are.
+    def mix_community_stories(stories)
+      return stories if params[:tag].present? || community_feed?
+
+      Articles::Feeds::CommunityMixer.call(
+        stories,
+        user: current_user,
+        page: @page,
+        editorial_organization_ids: COMMUNITY_ORGANIZATION_IDS,
+        interval: Settings::UserExperience.home_feed_community_interval,
+      )
     end
 
     def timeframe_feed

@@ -291,6 +291,8 @@ en:
             placeholder: '10'
           home_feed:
             description: Minimum score needed for a post to show up on the unauthenticated home page.
+          home_feed_community_interval:
+            description: On the default home feed, at most (this number - 1) posts from the editorial organizations appear in a row before a community post is mixed in. 0 disables mixing.
           index_minimum_date:
             description: Minimum date needed for a post to be indexed by search engines (Unix Timestamp).
           index_minimum_score:

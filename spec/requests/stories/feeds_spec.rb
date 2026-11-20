@@ -632,6 +632,92 @@ RSpec.describe "Stories::Feeds" do
     end
   end
 
+  describe "mixing community posts into the default feed" do
+    let(:editorial_org) { create(:organization) }
+    let!(:editorials) do
+      [300, 200, 100].map { |hotness| create(:article, organization: editorial_org, hotness_score: hotness) }
+    end
+    let!(:community_post) { create(:article, hotness_score: 50) }
+    let(:response_ids) { response.parsed_body.pluck("id") }
+    let(:mixed_ids) { [editorials[0].id, editorials[1].id, community_post.id, editorials[2].id, article.id] }
+    let(:unmixed_ids) { [*editorials.map(&:id), community_post.id, article.id] }
+
+    before do
+      article.update_column(:hotness_score, 1)
+      stub_const("Stories::FeedsController::COMMUNITY_ORGANIZATION_IDS", [editorial_org.id])
+      allow(Settings::UserExperience).to receive(:feed_strategy).and_return("basic")
+      allow(Articles::Feeds::CommunityMixer).to receive(:call).and_call_original
+    end
+
+    it "keeps at most two editorial posts in a row for signed-out visitors" do
+      get stories_feed_path
+
+      expect(response_ids).to eq(mixed_ids)
+    end
+
+    it "mixes the signed-in default feed too" do
+      sign_in user
+
+      get stories_feed_path
+
+      expect(response_ids).to eq(mixed_ids)
+      expect(Articles::Feeds::CommunityMixer).to have_received(:call).with(anything, hash_including(user: user))
+    end
+
+    %w[large_forem_experimental configured].each do |strategy|
+      it "runs for the #{strategy} strategy" do
+        allow(Settings::UserExperience).to receive(:feed_strategy).and_return(strategy)
+
+        get stories_feed_path
+
+        expect(response).to have_http_status(:ok)
+        expect(Articles::Feeds::CommunityMixer).to have_received(:call)
+      end
+    end
+
+    it "is disabled when the interval setting is 0" do
+      allow(Settings::UserExperience).to receive(:home_feed_community_interval).and_return(0)
+
+      get stories_feed_path
+
+      expect(response_ids).to eq(unmixed_ids)
+    end
+
+    it "leaves the latest feed alone" do
+      get timeframe_stories_feed_path(:latest)
+
+      expect(Articles::Feeds::CommunityMixer).not_to have_received(:call)
+    end
+
+    it "leaves the top feeds alone" do
+      get timeframe_stories_feed_path(:week)
+
+      expect(Articles::Feeds::CommunityMixer).not_to have_received(:call)
+    end
+
+    it "leaves the community view alone" do
+      get stories_feed_path(feed_view: "community")
+
+      expect(Articles::Feeds::CommunityMixer).not_to have_received(:call)
+      expect(response_ids).not_to include(*editorials.map(&:id))
+    end
+
+    it "leaves tag feeds alone" do
+      get stories_feed_path(tag: "javascript")
+
+      expect(Articles::Feeds::CommunityMixer).not_to have_received(:call)
+    end
+
+    it "leaves the signed-in following and curated feeds alone" do
+      sign_in user
+
+      get stories_feed_path(type_of: "following")
+      get stories_feed_path(type_of: "curated")
+
+      expect(Articles::Feeds::CommunityMixer).not_to have_received(:call)
+    end
+  end
+
   describe "fragment caching behavior" do
     let(:user) { create(:user) }
     let(:article) { create(:article, user: user) }

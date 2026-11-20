@@ -291,6 +291,8 @@ fr:
             placeholder: '10'
           home_feed:
             description: Minimum score needed for a post to show up on the unauthenticated home page.
+          home_feed_community_interval:
+            description: Sur le fil d'accueil par défaut, au plus (ce nombre - 1) publications des organisations éditoriales se suivent avant qu'une publication de la communauté soit insérée. 0 désactive le mélange.
           index_minimum_date:
             description: Minimum date needed for a post to be indexed by search engines (Unix Timestamp).
           index_minimum_score:
