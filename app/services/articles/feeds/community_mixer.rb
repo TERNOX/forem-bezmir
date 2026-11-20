@@ -26,12 +26,15 @@ module Articles
       # @param editorial_organization_ids [Array<Integer>]
       # @param interval [Integer, nil] one community post per this many posts at most;
       #   <= 1 disables mixing
-      def initialize(articles, user:, page:, editorial_organization_ids:, interval:)
+      # @param exclude_ids [Array<Integer>] never supplement these (e.g. stories the caller
+      #   renders elsewhere on the page); does not change the supplement limit/offset
+      def initialize(articles, user:, page:, editorial_organization_ids:, interval:, exclude_ids: [])
         @articles = articles
         @user = user
         @page = [page.to_i, 1].max
         @editorial_organization_ids = Array(editorial_organization_ids)
         @max_editorial_run = interval.to_i - 1
+        @exclude_ids = Array(exclude_ids).compact
       end
 
       def call
@@ -97,12 +100,13 @@ module Articles
         return Article.none if limit < 1
 
         scope = Article.published
+          .with_at_least_home_feed_minimum_score
           .from_subforem
           .where("articles.organization_id IS NULL OR articles.organization_id NOT IN (?)",
                  @editorial_organization_ids)
           .where(score: 0..)
           .where("articles.published_at > ?", LOOKBACK.ago)
-          .where.not(id: @base_ids)
+          .where.not(id: @base_ids + @exclude_ids)
           .limited_column_select
           .order(hotness_score: :desc)
           .limit(limit)

@@ -12,13 +12,14 @@ RSpec.describe Articles::Feeds::CommunityMixer, type: :service do
     create(:article, *traits, **attrs)
   end
 
-  def mix(articles, interval: 3, page: 1, user: nil)
+  def mix(articles, interval: 3, page: 1, user: nil, exclude_ids: [])
     described_class.call(
       articles,
       user: user,
       page: page,
       editorial_organization_ids: [editorial_org.id],
       interval: interval,
+      exclude_ids: exclude_ids,
     )
   end
 
@@ -109,6 +110,35 @@ RSpec.describe Articles::Feeds::CommunityMixer, type: :service do
       eligible = community(hotness_score: 1)
 
       expect(mix(editorials)).to eq([editorials[0], editorials[1], eligible, editorials[2]])
+    end
+
+    it "never supplements exclude_ids" do
+      editorials = Array.new(3) { editorial }
+      featured_elsewhere = community(hotness_score: 1000)
+      eligible = community(hotness_score: 1)
+
+      expect(mix(editorials, exclude_ids: [featured_elsewhere.id]))
+        .to eq([editorials[0], editorials[1], eligible, editorials[2]])
+    end
+
+    it "keeps the supplement limit and offset based on the page size when ids are excluded" do
+      editorials = Array.new(3) { editorial } # one slot per page: limit 1, page 2 offset 1
+      excluded = [1000, 900].map { |hotness| community(hotness_score: hotness) }
+      candidates = [300, 200, 100].map { |hotness| community(hotness_score: hotness) }
+
+      page_two = mix(editorials, page: 2, exclude_ids: excluded.map(&:id))
+
+      expect(page_two - editorials).to eq([candidates[1]])
+    end
+
+    it "respects the home feed minimum score unless the post is featured" do
+      allow(Settings::UserExperience).to receive(:home_feed_minimum_score).and_return(10)
+      editorials = Array.new(5) { editorial(score: 100) }
+      community(score: 5, hotness_score: 1000)
+      featured_low = community(score: 5, featured: true, hotness_score: 900)
+      above_minimum = community(score: 15, hotness_score: 800)
+
+      expect(mix(editorials) - editorials).to eq([featured_low, above_minimum])
     end
 
     it "offsets supplements by page so later pages do not repeat earlier ones" do

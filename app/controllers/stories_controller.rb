@@ -605,6 +605,8 @@ class StoriesController < ApplicationController
       page: @page,
       editorial_organization_ids: COMMUNITY_ORGANIZATION_IDS,
       interval: interval,
+      # The view skips list entries matching pinned/featured, so they must not come back as supplements.
+      exclude_ids: lead_ids,
     )
     # Supplements come straight from the database, so drop "[Boost]" ones like the base feed does.
     lead + mixed.reject { |article| article.title == "[Boost]" }

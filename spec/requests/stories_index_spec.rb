@@ -952,6 +952,32 @@ RSpec.describe "StoriesIndex" do
         .to eq([featured.id, editorials[0].id, editorials[1].id, later_community.id, editorials[2].id])
     end
 
+    it "renders a supplement from outside the base page" do
+      stub_const("Article::DEFAULT_FEED_PAGINATION_WINDOW_SIZE", 3) # base = the three editorials
+      editorials = create_editorials
+      supplement = create(:article, organization: create(:organization), hotness_score: 50)
+
+      get "/"
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include(CGI.escapeHTML(supplement.title))
+      expect(rendered_story_ids(*editorials.map(&:id), supplement.id))
+        .to eq([editorials[0].id, editorials[1].id, supplement.id, editorials[2].id])
+    end
+
+    it "does not supplement the featured story it already renders on top" do
+      stub_const("Article::DEFAULT_FEED_PAGINATION_WINDOW_SIZE", 4) # base = three editorials + featured
+      editorials = create_editorials(with_main_image: false)
+      featured = create(:article, hotness_score: 50)
+      supplement = create(:article, hotness_score: 10, with_main_image: false)
+
+      get "/"
+
+      expect(response).to have_http_status(:ok)
+      expect(rendered_story_ids(*editorials.map(&:id), featured.id, supplement.id))
+        .to eq([featured.id, editorials[0].id, editorials[1].id, supplement.id, editorials[2].id])
+    end
+
     it "is disabled when the interval setting is 0" do
       allow(Settings::UserExperience).to receive(:home_feed_community_interval).and_return(0)
       editorials = create_editorials

@@ -708,6 +708,65 @@ RSpec.describe "Stories::Feeds" do
       expect(Articles::Feeds::CommunityMixer).not_to have_received(:call)
     end
 
+    context "when the only community post is outside the base page (supplement path)" do
+      # Kept out of the basic base by a three-post page (it is fourth by hotness) and out of
+      # the VariantQuery base by its user-specific lookback; still a valid supplement (< 14 days).
+      let(:community_post) { supplement_candidate(organization: create(:organization), hotness_score: 50) }
+      let(:supplement_ids) { [editorials[0].id, editorials[1].id, community_post.id, editorials[2].id] }
+
+      def supplement_candidate(**attrs)
+        create(:article, :past, past_published_at: 5.days.ago, **attrs)
+      end
+
+      before do
+        article.update_columns(featured: false, score: -1)
+        stub_const("Article::DEFAULT_FEED_PAGINATION_WINDOW_SIZE", 3)
+      end
+
+      it "renders the supplement third for signed-out visitors with the same JSON keys" do
+        get stories_feed_path
+
+        expect(response).to have_http_status(:ok)
+        expect(response_ids).to eq(supplement_ids)
+        entries = response.parsed_body.index_by { |story| story["id"] }
+        expect(entries[community_post.id].keys).to match_array(entries[editorials[0].id].keys)
+      end
+
+      it "renders the supplement third for signed-in users, skipping hidden tags and blocked authors" do
+        blocked_author = create(:user)
+        hidden_candidate = supplement_candidate(tags: "notme", hotness_score: 1000)
+        blocked_candidate = supplement_candidate(user: blocked_author, hotness_score: 900)
+        antitag = Tag.find_by(name: "notme") || create(:tag, name: "notme")
+        user.follows_by_type("ActsAsTaggableOn::Tag").create!(followable: antitag, explicit_points: -5.0)
+        create(:user_block, blocker: user, blocked: blocked_author, config: "default")
+        sign_in user
+
+        get stories_feed_path
+
+        expect(response).to have_http_status(:ok)
+        expect(response_ids).to eq(supplement_ids)
+        expect(response_ids).not_to include(hidden_candidate.id, blocked_candidate.id)
+        entries = response.parsed_body.index_by { |story| story["id"] }
+        expect(entries[community_post.id].keys).to match_array(entries[editorials[0].id].keys)
+        expect(entries[community_post.id]["current_user_signed_in"]).to be(true)
+      end
+
+      it "renders a supplement for signed-in users under the large_forem_experimental (VariantQuery) base" do
+        allow(Settings::UserExperience).to receive(:feed_strategy).and_return("large_forem_experimental")
+        # Two page views a day ago shrink the VariantQuery lookback to ~42 hours.
+        create_list(:page_view, 2, user: user, article: editorials[0], created_at: 1.day.ago)
+        sign_in user
+
+        get stories_feed_path
+
+        expect(response).to have_http_status(:ok)
+        expect(response_ids).to match_array(supplement_ids)
+        expect(response_ids[2]).to eq(community_post.id)
+        expect(response.parsed_body[2])
+          .to include("title" => community_post.title, "organization_id" => community_post.organization_id)
+      end
+    end
+
     it "leaves the signed-in following and curated feeds alone" do
       sign_in user
 
