@@ -751,6 +751,19 @@ RSpec.describe "Stories::Feeds" do
         expect(entries[community_post.id]["current_user_signed_in"]).to be(true)
       end
 
+      it "does not pick the pinned article as the supplement" do
+        pinned = supplement_candidate(hotness_score: 60) # hotter than community_post
+        PinnedArticle.set(pinned)
+
+        get stories_feed_path
+
+        expect(response).to have_http_status(:ok)
+        expect(response_ids).to eq([pinned.id, *supplement_ids])
+        expect(response.parsed_body.first["pinned"]).to be(true)
+      ensure
+        PinnedArticle.remove
+      end
+
       it "renders a supplement for signed-in users under the large_forem_experimental (VariantQuery) base" do
         allow(Settings::UserExperience).to receive(:feed_strategy).and_return("large_forem_experimental")
         # Two page views a day ago shrink the VariantQuery lookback to ~42 hours.

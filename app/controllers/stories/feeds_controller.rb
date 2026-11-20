@@ -131,7 +131,18 @@ module Stories
         page: @page,
         editorial_organization_ids: COMMUNITY_ORGANIZATION_IDS,
         interval: Settings::UserExperience.home_feed_community_interval,
+        exclude_ids: pinned_article_id_to_exclude,
       )
+    end
+
+    # add_pinned_article prepends the pinned story unless it is already in the feed, and the
+    # frontend lifts it to the top, so a pinned supplement would leave its slot empty.
+    # Reads the request-cached setting PinnedArticle wraps: no query, and excluding an
+    # id that PinnedArticle would reject as invalid is harmless.
+    def pinned_article_id_to_exclude
+      return [] if params[:timeframe].present?
+
+      [Settings::General.feed_pinned_article_id].compact
     end
 
     def timeframe_feed
