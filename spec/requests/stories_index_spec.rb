@@ -965,6 +965,21 @@ RSpec.describe "StoriesIndex" do
         .to eq([editorials[0].id, editorials[1].id, supplement.id, editorials[2].id])
     end
 
+    it "does not spend the supplement slot on a [Boost]" do
+      stub_const("Article::DEFAULT_FEED_PAGINATION_WINDOW_SIZE", 3) # base = the three editorials
+      editorials = create_editorials
+      boost = create(:article, title: "[Boost]", type_of: "status", body_markdown: "", main_image: nil,
+                               hotness_score: 60)
+      boost.update_columns(published: true, published_at: Time.current, title: "[Boost]")
+      supplement = create(:article, hotness_score: 10)
+
+      get "/"
+
+      expect(response).to have_http_status(:ok)
+      expect(rendered_story_ids(*editorials.map(&:id), boost.id, supplement.id))
+        .to eq([editorials[0].id, editorials[1].id, supplement.id, editorials[2].id])
+    end
+
     it "does not supplement the featured story it already renders on top" do
       stub_const("Article::DEFAULT_FEED_PAGINATION_WINDOW_SIZE", 4) # base = three editorials + featured
       editorials = create_editorials(with_main_image: false)

@@ -73,6 +73,7 @@ module Stories
                Articles::Feeds::Basic.new(user: current_user, page: @page, tag: params[:tag])
              elsif feed_strategy == "configured" && params[:type_of] != "following"
                @feed_config = FeedConfig.select_for_feed(preferred_id: params[:item])
+               @base_feed_full_posts_only = Articles::Feeds::Custom.full_posts_only?
                Articles::Feeds::Custom.new(user: current_user, page: @page, tag: params[:tag],
                                            feed_config: @feed_config)
              else
@@ -132,6 +133,8 @@ module Stories
         editorial_organization_ids: COMMUNITY_ORGANIZATION_IDS,
         interval: Settings::UserExperience.home_feed_community_interval,
         exclude_ids: pinned_article_id_to_exclude,
+        # Set by signed_in_base_feed when Custom restricts the base page to full posts.
+        full_posts_only: @base_feed_full_posts_only == true,
       )
     end
 

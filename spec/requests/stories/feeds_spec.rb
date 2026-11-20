@@ -751,6 +751,23 @@ RSpec.describe "Stories::Feeds" do
         expect(entries[community_post.id]["current_user_signed_in"]).to be(true)
       end
 
+      it "supplements only full posts for the configured feed on the root subforem, like its base" do
+        # A two-day lookback keeps the five-day-old candidates out of Custom's base page.
+        allow(Settings::UserExperience).to receive_messages(feed_strategy: "configured", feed_lookback_days: 2)
+        feed_config = create(:feed_config)
+        status = create(:article, type_of: "status", body_markdown: "", main_image: nil, hotness_score: 1000)
+        # An empty body leaves the status unpublished and titled "[Boost]"; make it a real status.
+        status.update_columns(published: true, published_at: 5.days.ago, title: "A quick community thought")
+        sign_in user
+
+        get stories_feed_path(item: feed_config.id)
+
+        expect(response).to have_http_status(:ok)
+        expect(response_ids).to match_array(supplement_ids)
+        expect(response_ids[2]).to eq(community_post.id)
+        expect(response_ids).not_to include(status.id)
+      end
+
       it "does not pick the pinned article as the supplement" do
         pinned = supplement_candidate(hotness_score: 60) # hotter than community_post
         PinnedArticle.set(pinned)

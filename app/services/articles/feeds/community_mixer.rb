@@ -28,13 +28,17 @@ module Articles
       #   <= 1 disables mixing
       # @param exclude_ids [Array<Integer>] never supplement these (e.g. stories the caller
       #   renders elsewhere on the page); does not change the supplement limit/offset
-      def initialize(articles, user:, page:, editorial_organization_ids:, interval:, exclude_ids: [])
+      # @param full_posts_only [Boolean] supplement only full posts, for base feeds that
+      #   are restricted the same way (see Articles::Feeds::Custom.full_posts_only?)
+      def initialize(articles, user:, page:, editorial_organization_ids:, interval:, exclude_ids: [],
+                     full_posts_only: false)
         @articles = articles
         @user = user
         @page = [page.to_i, 1].max
         @editorial_organization_ids = Array(editorial_organization_ids)
         @max_editorial_run = interval.to_i - 1
         @exclude_ids = Array(exclude_ids).compact
+        @full_posts_only = full_posts_only
       end
 
       def call
@@ -107,10 +111,12 @@ module Articles
           .where(score: 0..)
           .where("articles.published_at > ?", LOOKBACK.ago)
           .where.not(id: @base_ids + @exclude_ids)
+          .where.not(title: "[Boost]") # a bare repost is no separator; filtered before the limit
           .limited_column_select
           .order(hotness_score: :desc)
           .limit(limit)
           .offset((@page - 1) * limit)
+        scope = scope.full_posts if @full_posts_only
 
         return scope unless @user
 

@@ -608,8 +608,8 @@ class StoriesController < ApplicationController
       # The view skips list entries matching pinned/featured, so they must not come back as supplements.
       exclude_ids: lead_ids,
     )
-    # Supplements come straight from the database, so drop "[Boost]" ones like the base feed does.
-    lead + mixed.reject { |article| article.title == "[Boost]" }
+    # The base list is already "[Boost]"-free (rejected above) and the mixer never supplements one.
+    lead + mixed
   end
 
   # articles/_single_story reads public_reaction_categories for every story with reactions;

@@ -3,6 +3,12 @@ module Articles
     TIME_AGO_MAX = Rails.env.production? ? 10.days.ago : 90.days.ago
 
     class Custom
+      # The configured feed shows only full posts on the root subforem; also used by
+      # Stories::FeedsController so CommunityMixer supplements follow the same rule.
+      def self.full_posts_only?
+        RequestStore.store[:subforem_id] == RequestStore.store[:root_subforem_id]
+      end
+
       def initialize(user: nil, number_of_articles: Article::DEFAULT_FEED_PAGINATION_WINDOW_SIZE, page: 1, tag: nil, feed_config: nil)
         @user = user
         @number_of_articles = number_of_articles
@@ -114,7 +120,7 @@ module Articles
 
       def apply_subforem_filters(articles)
         # Apply subforem-specific filters
-        if RequestStore.store[:subforem_id] == RequestStore.store[:root_subforem_id]
+        if self.class.full_posts_only?
           articles = articles.where(type_of: :full_post)
         end
         

@@ -12,7 +12,15 @@ RSpec.describe Articles::Feeds::CommunityMixer, type: :service do
     create(:article, *traits, **attrs)
   end
 
-  def mix(articles, interval: 3, page: 1, user: nil, exclude_ids: [])
+  # With an empty body a status is neither published through the frontmatter nor keeps its
+  # title (a blank title becomes "[Boost]"), so set both directly.
+  def status_post(title:, **attrs)
+    create(:article, type_of: "status", body_markdown: "", main_image: nil, **attrs).tap do |article|
+      article.update_columns(published: true, published_at: Time.current, title: title)
+    end
+  end
+
+  def mix(articles, interval: 3, page: 1, user: nil, exclude_ids: [], full_posts_only: false)
     described_class.call(
       articles,
       user: user,
@@ -20,6 +28,7 @@ RSpec.describe Articles::Feeds::CommunityMixer, type: :service do
       editorial_organization_ids: [editorial_org.id],
       interval: interval,
       exclude_ids: exclude_ids,
+      full_posts_only: full_posts_only,
     )
   end
 
@@ -129,6 +138,30 @@ RSpec.describe Articles::Feeds::CommunityMixer, type: :service do
       page_two = mix(editorials, page: 2, exclude_ids: excluded.map(&:id))
 
       expect(page_two - editorials).to eq([candidates[1]])
+    end
+
+    it "never supplements a [Boost], even a hotter one" do
+      editorials = Array.new(3) { editorial }
+      status_post(title: "[Boost]", hotness_score: 1000)
+      eligible = community(hotness_score: 1)
+
+      expect(mix(editorials)).to eq([editorials[0], editorials[1], eligible, editorials[2]])
+    end
+
+    it "supplements status posts by default" do
+      editorials = Array.new(3) { editorial }
+      status = status_post(title: "A quick community thought", hotness_score: 1000)
+      community(hotness_score: 1)
+
+      expect(mix(editorials) - editorials).to eq([status])
+    end
+
+    it "supplements only full posts with full_posts_only" do
+      editorials = Array.new(3) { editorial }
+      status_post(title: "A quick community thought", hotness_score: 1000)
+      full_post = community(hotness_score: 1)
+
+      expect(mix(editorials, full_posts_only: true) - editorials).to eq([full_post])
     end
 
     it "respects the home feed minimum score unless the post is featured" do
