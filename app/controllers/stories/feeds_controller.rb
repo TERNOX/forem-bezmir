@@ -57,9 +57,9 @@ module Stories
                 elsif timeframe == Timeframe::LATEST_TIMEFRAME
                   latest_feed
                 elsif user_signed_in?
-                  signed_in_base_feed
+                  mix_community_stories(signed_in_base_feed)
                 else
-                  signed_out_base_feed
+                  mix_community_stories(signed_out_base_feed)
                 end
 
       stories = filter_community_stories(stories)
@@ -73,6 +73,7 @@ module Stories
                Articles::Feeds::Basic.new(user: current_user, page: @page, tag: params[:tag])
              elsif feed_strategy == "configured" && params[:type_of] != "following"
                @feed_config = FeedConfig.select_for_feed(preferred_id: params[:item])
+               @base_feed_full_posts_only = Articles::Feeds::Custom.full_posts_only?
                Articles::Feeds::Custom.new(user: current_user, page: @page, tag: params[:tag],
                                            feed_config: @feed_config)
              else
@@ -118,6 +119,33 @@ module Stories
         # ActiveRecord::Relation.  So this is a compromise.
         feed.default_home_feed(user_signed_in: false).to_a
       end
+    end
+
+    # Fork-only: the default ("relevant") tab mixes community posts in between
+    # editorial ones. Tag feeds and the community view are left as they are.
+    def mix_community_stories(stories)
+      return stories if params[:tag].present? || community_feed?
+
+      Articles::Feeds::CommunityMixer.call(
+        stories,
+        user: current_user,
+        page: @page,
+        editorial_organization_ids: COMMUNITY_ORGANIZATION_IDS,
+        interval: Settings::UserExperience.home_feed_community_interval,
+        exclude_ids: pinned_article_id_to_exclude,
+        # Set by signed_in_base_feed when Custom restricts the base page to full posts.
+        full_posts_only: @base_feed_full_posts_only == true,
+      )
+    end
+
+    # add_pinned_article prepends the pinned story unless it is already in the feed, and the
+    # frontend lifts it to the top, so a pinned supplement would leave its slot empty.
+    # Reads the request-cached setting PinnedArticle wraps: no query, and excluding an
+    # id that PinnedArticle would reject as invalid is harmless.
+    def pinned_article_id_to_exclude
+      return [] if params[:timeframe].present?
+
+      [Settings::General.feed_pinned_article_id].compact
     end
 
     def timeframe_feed

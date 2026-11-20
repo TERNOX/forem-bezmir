@@ -632,6 +632,181 @@ RSpec.describe "Stories::Feeds" do
     end
   end
 
+  describe "mixing community posts into the default feed" do
+    let(:editorial_org) { create(:organization) }
+    let!(:editorials) do
+      [300, 200, 100].map { |hotness| create(:article, organization: editorial_org, hotness_score: hotness) }
+    end
+    let!(:community_post) { create(:article, hotness_score: 50) }
+    let(:response_ids) { response.parsed_body.pluck("id") }
+    let(:mixed_ids) { [editorials[0].id, editorials[1].id, community_post.id, editorials[2].id, article.id] }
+    let(:unmixed_ids) { [*editorials.map(&:id), community_post.id, article.id] }
+
+    before do
+      article.update_column(:hotness_score, 1)
+      stub_const("Stories::FeedsController::COMMUNITY_ORGANIZATION_IDS", [editorial_org.id])
+      allow(Settings::UserExperience).to receive(:feed_strategy).and_return("basic")
+      allow(Articles::Feeds::CommunityMixer).to receive(:call).and_call_original
+    end
+
+    it "keeps at most two editorial posts in a row for signed-out visitors" do
+      get stories_feed_path
+
+      expect(response_ids).to eq(mixed_ids)
+    end
+
+    it "mixes the signed-in default feed too" do
+      sign_in user
+
+      get stories_feed_path
+
+      expect(response_ids).to eq(mixed_ids)
+      expect(Articles::Feeds::CommunityMixer).to have_received(:call).with(anything, hash_including(user: user))
+    end
+
+    %w[large_forem_experimental configured].each do |strategy|
+      it "runs for the #{strategy} strategy" do
+        allow(Settings::UserExperience).to receive(:feed_strategy).and_return(strategy)
+
+        get stories_feed_path
+
+        expect(response).to have_http_status(:ok)
+        expect(Articles::Feeds::CommunityMixer).to have_received(:call)
+      end
+    end
+
+    it "is disabled when the interval setting is 0" do
+      allow(Settings::UserExperience).to receive(:home_feed_community_interval).and_return(0)
+
+      get stories_feed_path
+
+      expect(response_ids).to eq(unmixed_ids)
+    end
+
+    it "leaves the latest feed alone" do
+      get timeframe_stories_feed_path(:latest)
+
+      expect(Articles::Feeds::CommunityMixer).not_to have_received(:call)
+    end
+
+    it "leaves the top feeds alone" do
+      get timeframe_stories_feed_path(:week)
+
+      expect(Articles::Feeds::CommunityMixer).not_to have_received(:call)
+    end
+
+    it "leaves the community view alone" do
+      get stories_feed_path(feed_view: "community")
+
+      expect(Articles::Feeds::CommunityMixer).not_to have_received(:call)
+      expect(response_ids).not_to include(*editorials.map(&:id))
+    end
+
+    it "leaves tag feeds alone" do
+      get stories_feed_path(tag: "javascript")
+
+      expect(Articles::Feeds::CommunityMixer).not_to have_received(:call)
+    end
+
+    context "when the only community post is outside the base page (supplement path)" do
+      # Kept out of the basic base by a three-post page (it is fourth by hotness) and out of
+      # the VariantQuery base by its user-specific lookback; still a valid supplement (< 14 days).
+      let(:community_post) { supplement_candidate(organization: create(:organization), hotness_score: 50) }
+      let(:supplement_ids) { [editorials[0].id, editorials[1].id, community_post.id, editorials[2].id] }
+
+      def supplement_candidate(**attrs)
+        create(:article, :past, past_published_at: 5.days.ago, **attrs)
+      end
+
+      before do
+        article.update_columns(featured: false, score: -1)
+        stub_const("Article::DEFAULT_FEED_PAGINATION_WINDOW_SIZE", 3)
+      end
+
+      it "renders the supplement third for signed-out visitors with the same JSON keys" do
+        get stories_feed_path
+
+        expect(response).to have_http_status(:ok)
+        expect(response_ids).to eq(supplement_ids)
+        entries = response.parsed_body.index_by { |story| story["id"] }
+        expect(entries[community_post.id].keys).to match_array(entries[editorials[0].id].keys)
+      end
+
+      it "renders the supplement third for signed-in users, skipping hidden tags and blocked authors" do
+        blocked_author = create(:user)
+        hidden_candidate = supplement_candidate(tags: "notme", hotness_score: 1000)
+        blocked_candidate = supplement_candidate(user: blocked_author, hotness_score: 900)
+        antitag = Tag.find_by(name: "notme") || create(:tag, name: "notme")
+        user.follows_by_type("ActsAsTaggableOn::Tag").create!(followable: antitag, explicit_points: -5.0)
+        create(:user_block, blocker: user, blocked: blocked_author, config: "default")
+        sign_in user
+
+        get stories_feed_path
+
+        expect(response).to have_http_status(:ok)
+        expect(response_ids).to eq(supplement_ids)
+        expect(response_ids).not_to include(hidden_candidate.id, blocked_candidate.id)
+        entries = response.parsed_body.index_by { |story| story["id"] }
+        expect(entries[community_post.id].keys).to match_array(entries[editorials[0].id].keys)
+        expect(entries[community_post.id]["current_user_signed_in"]).to be(true)
+      end
+
+      it "supplements only full posts for the configured feed on the root subforem, like its base" do
+        # A two-day lookback keeps the five-day-old candidates out of Custom's base page.
+        allow(Settings::UserExperience).to receive_messages(feed_strategy: "configured", feed_lookback_days: 2)
+        feed_config = create(:feed_config)
+        status = create(:article, type_of: "status", body_markdown: "", main_image: nil, hotness_score: 1000)
+        # An empty body leaves the status unpublished and titled "[Boost]"; make it a real status.
+        status.update_columns(published: true, published_at: 5.days.ago, title: "A quick community thought")
+        sign_in user
+
+        get stories_feed_path(item: feed_config.id)
+
+        expect(response).to have_http_status(:ok)
+        expect(response_ids).to match_array(supplement_ids)
+        expect(response_ids[2]).to eq(community_post.id)
+        expect(response_ids).not_to include(status.id)
+      end
+
+      it "does not pick the pinned article as the supplement" do
+        pinned = supplement_candidate(hotness_score: 60) # hotter than community_post
+        PinnedArticle.set(pinned)
+
+        get stories_feed_path
+
+        expect(response).to have_http_status(:ok)
+        expect(response_ids).to eq([pinned.id, *supplement_ids])
+        expect(response.parsed_body.first["pinned"]).to be(true)
+      ensure
+        PinnedArticle.remove
+      end
+
+      it "renders a supplement for signed-in users under the large_forem_experimental (VariantQuery) base" do
+        allow(Settings::UserExperience).to receive(:feed_strategy).and_return("large_forem_experimental")
+        # Two page views a day ago shrink the VariantQuery lookback to ~42 hours.
+        create_list(:page_view, 2, user: user, article: editorials[0], created_at: 1.day.ago)
+        sign_in user
+
+        get stories_feed_path
+
+        expect(response).to have_http_status(:ok)
+        expect(response_ids).to match_array(supplement_ids)
+        expect(response_ids[2]).to eq(community_post.id)
+        expect(response.parsed_body[2])
+          .to include("title" => community_post.title, "organization_id" => community_post.organization_id)
+      end
+    end
+
+    it "leaves the signed-in following and curated feeds alone" do
+      sign_in user
+
+      get stories_feed_path(type_of: "following")
+      get stories_feed_path(type_of: "curated")
+
+      expect(Articles::Feeds::CommunityMixer).not_to have_received(:call)
+    end
+  end
+
   describe "fragment caching behavior" do
     let(:user) { create(:user) }
     let(:article) { create(:article, user: user) }

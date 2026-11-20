@@ -914,4 +914,103 @@ RSpec.describe "StoriesIndex" do
       expect(response.body).to include(CGI.escapeHTML(org.name))
     end
   end
+
+  describe "GET / mixing community posts into the signed-out default feed" do
+    let(:editorial_org) { create(:organization) }
+
+    before do
+      stub_const("StoriesController::COMMUNITY_ORGANIZATION_IDS", [editorial_org.id])
+      allow(Articles::Feeds::CommunityMixer).to receive(:call).and_call_original
+    end
+
+    def rendered_story_ids(*ids)
+      response.body.scan(/id="article-link-(\d+)"/).flatten.map(&:to_i).uniq & ids
+    end
+
+    def create_editorials(**attrs)
+      [300, 200, 100].map { |hotness| create(:article, organization: editorial_org, hotness_score: hotness, **attrs) }
+    end
+
+    it "keeps at most two editorial posts in a row" do
+      editorials = create_editorials
+      community_post = create(:article, hotness_score: 50)
+
+      get "/"
+
+      expect(rendered_story_ids(*editorials.map(&:id), community_post.id))
+        .to eq([editorials[0].id, editorials[1].id, community_post.id, editorials[2].id])
+    end
+
+    it "counts the featured story, rendered on top, as the start of the feed" do
+      editorials = create_editorials(with_main_image: false)
+      featured = create(:article, hotness_score: 50)
+      later_community = create(:article, hotness_score: 10, with_main_image: false)
+
+      get "/"
+
+      expect(rendered_story_ids(*editorials.map(&:id), featured.id, later_community.id))
+        .to eq([featured.id, editorials[0].id, editorials[1].id, later_community.id, editorials[2].id])
+    end
+
+    it "renders a supplement from outside the base page" do
+      stub_const("Article::DEFAULT_FEED_PAGINATION_WINDOW_SIZE", 3) # base = the three editorials
+      editorials = create_editorials
+      supplement = create(:article, organization: create(:organization), hotness_score: 50)
+
+      get "/"
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include(CGI.escapeHTML(supplement.title))
+      expect(rendered_story_ids(*editorials.map(&:id), supplement.id))
+        .to eq([editorials[0].id, editorials[1].id, supplement.id, editorials[2].id])
+    end
+
+    it "does not spend the supplement slot on a [Boost]" do
+      stub_const("Article::DEFAULT_FEED_PAGINATION_WINDOW_SIZE", 3) # base = the three editorials
+      editorials = create_editorials
+      boost = create(:article, title: "[Boost]", type_of: "status", body_markdown: "", main_image: nil,
+                               hotness_score: 60)
+      boost.update_columns(published: true, published_at: Time.current, title: "[Boost]")
+      supplement = create(:article, hotness_score: 10)
+
+      get "/"
+
+      expect(response).to have_http_status(:ok)
+      expect(rendered_story_ids(*editorials.map(&:id), boost.id, supplement.id))
+        .to eq([editorials[0].id, editorials[1].id, supplement.id, editorials[2].id])
+    end
+
+    it "does not supplement the featured story it already renders on top" do
+      stub_const("Article::DEFAULT_FEED_PAGINATION_WINDOW_SIZE", 4) # base = three editorials + featured
+      editorials = create_editorials(with_main_image: false)
+      featured = create(:article, hotness_score: 50)
+      supplement = create(:article, hotness_score: 10, with_main_image: false)
+
+      get "/"
+
+      expect(response).to have_http_status(:ok)
+      expect(rendered_story_ids(*editorials.map(&:id), featured.id, supplement.id))
+        .to eq([featured.id, editorials[0].id, editorials[1].id, supplement.id, editorials[2].id])
+    end
+
+    it "is disabled when the interval setting is 0" do
+      allow(Settings::UserExperience).to receive(:home_feed_community_interval).and_return(0)
+      editorials = create_editorials
+      community_post = create(:article, hotness_score: 50)
+
+      get "/"
+
+      expect(rendered_story_ids(*editorials.map(&:id), community_post.id))
+        .to eq([*editorials.map(&:id), community_post.id])
+    end
+
+    it "leaves the latest feed alone" do
+      create_editorials
+
+      get "/latest"
+
+      expect(response).to have_http_status(:ok)
+      expect(Articles::Feeds::CommunityMixer).not_to have_received(:call)
+    end
+  end
 end

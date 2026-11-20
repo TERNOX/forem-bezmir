@@ -426,6 +426,7 @@ class StoriesController < ApplicationController
     @pinned_article = nil if excluded_organization?(@pinned_article)
     @featured_story = (featured_story || Article.new)&.decorate
     @featured_story = Article.new.decorate if excluded_organization?(@featured_story)
+    @stories = mix_community_stories(@stories) if @default_home_feed
 
     @stories = ArticleDecorator.decorate_collection(@stories)
     # Featured and pinned last: the feed renders those instances, not their @stories duplicates.
@@ -586,6 +587,29 @@ class StoriesController < ApplicationController
     return false unless article
 
     COMMUNITY_ORGANIZATION_IDS.include?(article.organization_id)
+  end
+
+  # Fork-only: see Articles::Feeds::CommunityMixer. The pinned and featured stories
+  # render above the list (their list entries are skipped), so they lead the mix
+  # rather than "breaking" an editorial run from a position nobody sees.
+  # No user is passed: this HTML feed is edge-cached and only built for signed-out visitors.
+  def mix_community_stories(stories)
+    interval = Settings::UserExperience.home_feed_community_interval
+    return stories if params[:tag].present? || interval.to_i <= 1
+
+    lead_ids = [@pinned_article&.id, @featured_story&.id].compact
+    lead, rest = stories.partition { |story| lead_ids.include?(story.id) }
+    mixed = Articles::Feeds::CommunityMixer.call(
+      rest,
+      user: nil,
+      page: @page,
+      editorial_organization_ids: COMMUNITY_ORGANIZATION_IDS,
+      interval: interval,
+      # The view skips list entries matching pinned/featured, so they must not come back as supplements.
+      exclude_ids: lead_ids,
+    )
+    # The base list is already "[Boost]"-free (rejected above) and the mixer never supplements one.
+    lead + mixed
   end
 
   # articles/_single_story reads public_reaction_categories for every story with reactions;

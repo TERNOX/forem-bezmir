@@ -291,6 +291,8 @@ pt:
             placeholder: Feed lookback days
           home_feed:
             description: Home feed settings
+          home_feed_community_interval:
+            description: No feed inicial padrão, no máximo (este número - 1) publicações das organizações editoriais aparecem seguidas antes de uma publicação da comunidade ser inserida. 0 desativa a mistura.
           index_minimum_score:
             description: Minimum score for index
           index_minimum_date:

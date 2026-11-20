@@ -27,6 +27,20 @@ RSpec.describe Settings::UserExperience do
     end
   end
 
+  describe "home_feed_community_interval" do
+    it "defaults to one community post per three posts" do
+      expect(described_class.home_feed_community_interval).to eq(3)
+    end
+
+    it "allows 0 to disable mixing" do
+      expect { described_class.home_feed_community_interval = 0 }.not_to raise_error
+    end
+
+    it "rejects negative values" do
+      expect { described_class.home_feed_community_interval = -1 }.to raise_error(ActiveRecord::RecordInvalid)
+    end
+  end
+
   describe "validating color contrast" do
     it "allows high enough color contrast" do
       expect do

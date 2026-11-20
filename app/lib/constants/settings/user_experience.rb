@@ -44,6 +44,10 @@ module Constants
             description: I18n.t("lib.constants.settings.user_experience.home_feed.description"),
             placeholder: "0"
           },
+          home_feed_community_interval: {
+            description: I18n.t("lib.constants.settings.user_experience.home_feed_community_interval.description"),
+            placeholder: "3"
+          },
           index_minimum_score: {
             description: I18n.t("lib.constants.settings.user_experience.index_minimum_score.description"),
             placeholder: "0"

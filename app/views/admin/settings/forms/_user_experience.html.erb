@@ -63,6 +63,15 @@
                              placeholder: Constants::Settings::UserExperience.details[:home_feed_minimum_score][:placeholder] %>
         </div>
         <div class="crayons-field">
+          <%= admin_config_label :home_feed_community_interval, model: Settings::UserExperience %>
+          <%= admin_config_description Constants::Settings::UserExperience.details[:home_feed_community_interval][:description] %>
+          <%= f.number_field :home_feed_community_interval,
+                             class: "crayons-textfield",
+                             min: 0,
+                             value: Settings::UserExperience.home_feed_community_interval,
+                             placeholder: Constants::Settings::UserExperience.details[:home_feed_community_interval][:placeholder] %>
+        </div>
+        <div class="crayons-field">
           <%= admin_config_label :index_minimum_score, model: Settings::UserExperience %>
           <%= admin_config_description Constants::Settings::UserExperience.details[:index_minimum_score][:description] %>
           <%= f.number_field :index_minimum_score,
