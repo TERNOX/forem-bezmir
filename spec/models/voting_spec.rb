@@ -18,6 +18,21 @@ RSpec.describe Voting do
       expect(voting.errors[:closes_at]).to be_present
     end
 
+    it "requires opens_at when only accounts created before the start may vote" do
+      voting = build(:voting, require_account_before_start: true, opens_at: nil)
+      expect(voting).not_to be_valid
+      expect(voting.errors[:opens_at]).to eq([I18n.t("models.voting.opens_at_required")])
+
+      expect(build(:voting, require_account_before_start: true, opens_at: 1.day.ago)).to be_valid
+      expect(build(:voting, require_account_before_start: false, opens_at: nil)).to be_valid
+    end
+
+    it "can still publish results of an older voting saved with the rule but no opens_at" do
+      voting = create(:voting)
+      voting.update_columns(require_account_before_start: true, opens_at: nil)
+      expect(voting.reload.update(results_published_at: Time.current)).to be(true)
+    end
+
     it "rejects a top-level slug taken by a member" do
       create(:user, username: "gra-roku")
       expect(build(:voting, slug: "gra-roku", top_level_path: true)).not_to be_valid

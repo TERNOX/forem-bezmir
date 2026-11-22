@@ -70,6 +70,18 @@ RSpec.describe "Votings" do
       token = VotingBallot.find_by(user: user).share_token
       expect(body["shareUrl"]).to end_with("/vote/gra-roku-2026/u/#{user.username}/#{token}")
     end
+
+    it "gives a suspended member no share link" do
+      Votings::BallotSubmitter.call(voting: voting, user: user,
+                                    selections: { category.id.to_s => { "nominee_ids" => [nominees[0].id] } })
+      user.add_role(:suspended)
+      sign_in user
+      get "/vote/gra-roku-2026/ballot"
+
+      body = response.parsed_body
+      expect(body["ballot"]).to be_present
+      expect(body["shareUrl"]).to be_nil
+    end
   end
 
   describe "PUT /vote/:slug/ballot" do
@@ -100,6 +112,23 @@ RSpec.describe "Votings" do
       put "/vote/gra-roku-2026/ballot", params: { selections: {} }, as: :json
       expect(response).to have_http_status(:unprocessable_entity)
       expect(response.parsed_body["errors"]).to eq("base" => ["empty"])
+    end
+
+    it "ignores nested arrays and hashes in a malformed payload instead of failing" do
+      put "/vote/gra-roku-2026/ballot",
+          params: { selections: { category.id => { nominee_ids: [[nominees[0].id]] } } }, as: :json
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response.parsed_body["errors"]).to eq("base" => ["empty"])
+
+      put "/vote/gra-roku-2026/ballot",
+          params: { selections: { category.id => { nominee_ids: { a: nominees[0].id } } } }, as: :json
+      expect(response).to have_http_status(:unprocessable_entity)
+
+      put "/vote/gra-roku-2026/ballot",
+          params: { selections: { category.id => { nominee_ids: [nominees[1].id, [nominees[0].id], { a: 1 }] } } },
+          as: :json
+      expect(response).to have_http_status(:ok)
+      expect(VotingBallot.find_by(user: user).choices.pluck(:voting_nominee_id)).to eq([nominees[1].id])
     end
 
     it "refuses members who may not vote" do
@@ -142,6 +171,14 @@ RSpec.describe "Votings" do
                                             selections: { category.id.to_s => { "nominee_ids" => [nominees[1].id] } })
       expect(other.ballot.share_token).not_to eq(ballot.share_token)
       expect(ballot.valid_share_token?(other.ballot.share_token)).to be(false)
+    end
+
+    it "404s, image included, once the member is suspended" do
+      share_path # the ballot is submitted before the suspension
+      user.add_role(:suspended)
+
+      expect { get share_path }.to raise_error(ActiveRecord::RecordNotFound)
+      expect { get "#{share_path}/image" }.to raise_error(ActiveRecord::RecordNotFound)
     end
 
     it "404s for members without a ballot" do

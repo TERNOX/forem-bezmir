@@ -92,8 +92,8 @@ module Admin
       CSV.generate do |csv|
         csv << ["Category", "Place", "Nominee", "Points", "Votes", "First places"]
         results[:categories].each do |category_result|
-          category_result.rows.each_with_index do |row, index|
-            csv << [category_result.category.title, index + 1, row.nominee.display_title, row.points, row.votes,
+          category_result.rows.each do |row|
+            csv << [category_result.category.title, row.place, row.nominee.display_title, row.points, row.votes,
                     row.firsts]
           end
           category_result.other_answers.each do |text, count|

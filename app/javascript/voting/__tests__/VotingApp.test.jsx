@@ -69,3 +69,161 @@ describe('VotingApp results access', () => {
     ).not.toBeInTheDocument();
   });
 });
+
+describe('VotingApp results places', () => {
+  const ranked = {
+    ...category,
+    id: 2,
+    title: 'Best story',
+    maxChoices: 3,
+    ranked: true,
+    points: [3, 2, 1],
+    nominees: [
+      { id: 20, title: 'Hades', imageUrl: null },
+      { id: 21, title: 'Clair', imageUrl: null },
+      { id: 22, title: 'Silksong', imageUrl: null },
+      { id: 23, title: 'Nobody picked me', imageUrl: null },
+    ],
+  };
+  const plain = {
+    ...category,
+    nominees: [
+      { id: 10, title: 'Doom', imageUrl: null },
+      { id: 11, title: 'Tetris', imageUrl: null },
+    ],
+  };
+  const placesResults = {
+    ballotsCount: 2,
+    categories: {
+      1: {
+        voters: 2,
+        rows: [
+          {
+            nomineeId: 10,
+            place: 1,
+            points: 1,
+            votes: 1,
+            firsts: 0,
+            share: 100,
+          },
+          {
+            nomineeId: 11,
+            place: 1,
+            points: 1,
+            votes: 1,
+            firsts: 0,
+            share: 100,
+          },
+        ],
+      },
+      2: {
+        voters: 2,
+        rows: [
+          {
+            nomineeId: 20,
+            place: 1,
+            points: 4,
+            votes: 2,
+            firsts: 1,
+            share: 100,
+          },
+          {
+            nomineeId: 21,
+            place: 1,
+            points: 4,
+            votes: 2,
+            firsts: 1,
+            share: 100,
+          },
+          {
+            nomineeId: 22,
+            place: 3,
+            points: 4,
+            votes: 2,
+            firsts: 0,
+            share: 100,
+          },
+          {
+            nomineeId: 23,
+            place: null,
+            points: 0,
+            votes: 0,
+            firsts: 0,
+            share: 0,
+          },
+        ],
+      },
+    },
+  };
+
+  function renderResults() {
+    return render(
+      <VotingApp
+        voting={{
+          slug: 'goty',
+          status: 'closed',
+          ballotUrl: '/vote/goty/ballot',
+        }}
+        categories={[plain, ranked]}
+        results={placesResults}
+        strings={{
+          points: 'Points: %{count}',
+          votes: 'Votes: %{count}',
+          first_places: '1st places: %{count}',
+          ranked_tie_hint: 'More first places win a points tie.',
+        }}
+        signInUrl="/enter"
+      />,
+    );
+  }
+
+  function placeOf(title) {
+    const row = screen.getByText(title).closest('.voting-results__row');
+    return row.querySelector('.voting-results__place').textContent;
+  }
+
+  beforeEach(() => {
+    request.mockResolvedValue({
+      json: () =>
+        Promise.resolve({ signedIn: false, eligible: false, ballot: null }),
+    });
+  });
+
+  it('gives the trophy to every row in first place and to no one else', async () => {
+    renderResults();
+    await waitFor(() => expect(request).toHaveBeenCalled());
+
+    expect(placeOf('Hades')).toBe('🏆');
+    expect(placeOf('Clair')).toBe('🏆');
+    expect(placeOf('Silksong')).toBe('3');
+    expect(placeOf('Nobody picked me')).toBe('—');
+    expect(placeOf('Doom')).toBe('🏆');
+    expect(placeOf('Tetris')).toBe('🏆');
+    expect(
+      screen
+        .getByText('Silksong')
+        .closest('.voting-results__row')
+        .classList.contains('voting-results__row--winner'),
+    ).toBe(false);
+  });
+
+  it('shows first places and the tie hint only for ranked nominations', async () => {
+    const { container } = renderResults();
+    await waitFor(() => expect(request).toHaveBeenCalled());
+
+    const sections = container.querySelectorAll('.voting-results__category');
+    const [plainSection, rankedSection] = sections;
+    expect(plainSection.textContent).not.toContain('1st places');
+    expect(plainSection.textContent).not.toContain('More first places');
+    const firstsOf = (title) =>
+      screen
+        .getByText(title)
+        .closest('.voting-results__row')
+        .querySelector('.voting-results__firsts').textContent;
+    expect(firstsOf('Hades')).toBe('1st places: 1');
+    expect(firstsOf('Silksong')).toBe('1st places: 0');
+    expect(rankedSection.textContent).toContain(
+      'More first places win a points tie.',
+    );
+  });
+});

@@ -18,6 +18,9 @@ class Voting < ApplicationRecord
   validate :top_level_slug_available, if: -> { top_level_path? && (slug_changed? || top_level_path_changed?) }
   validates :min_user_score, numericality: { only_integer: true }
   validate :closes_after_opens
+  # Checked only when one of the two changes, so a voting saved before this
+  # rule can still have its results published (update!) without a 500.
+  validate :opens_at_for_account_age_rule, if: :account_age_rule_changing?
 
   before_validation :normalize_slug
   before_save :render_description
@@ -91,5 +94,18 @@ class Voting < ApplicationRecord
     return if opens_at.blank? || closes_at.blank? || closes_at > opens_at
 
     errors.add(:closes_at, I18n.t("models.voting.closes_before_opens"))
+  end
+
+  def account_age_rule_changing?
+    require_account_before_start? &&
+      (will_save_change_to_require_account_before_start? || will_save_change_to_opens_at?)
+  end
+
+  # "Only accounts created before the start" is measured against opens_at, so
+  # without it the rule would silently do nothing.
+  def opens_at_for_account_age_rule
+    return if opens_at.present?
+
+    errors.add(:opens_at, I18n.t("models.voting.opens_at_required"))
   end
 end

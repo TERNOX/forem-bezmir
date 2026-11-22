@@ -11,6 +11,9 @@ module Votings
           published: false,
           top_level_path: false,
           results_published_at: nil,
+          # A legacy voting may have the account-age rule on without an opening
+          # date; the copy is validated as new, so it can't carry that over.
+          require_account_before_start: voting.require_account_before_start? && voting.opens_at.present?,
         )
         copy[:banner_image] = nil # the file lives under the original voting's id...
         copy_upload(voting.banner_image, copy, :banner_image) # ...so upload it again for the copy

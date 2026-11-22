@@ -794,6 +794,14 @@
     color: var(--base-70);
     white-space: nowrap;
     font-variant-numeric: tabular-nums;
+    text-align: end;
+  }
+
+  // Ranked nominations: first places under the points (they break points ties).
+  &__firsts {
+    display: block;
+    font-size: var(--fs-xs);
+    color: var(--base-60);
   }
 }
 

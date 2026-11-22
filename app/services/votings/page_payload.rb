@@ -74,8 +74,8 @@ module Votings
         categories: results[:categories].to_h do |category_result|
           total = [category_result.max_points, 1].max
           rows = category_result.rows.map do |row|
-            { nomineeId: row.nominee.id, points: row.points, votes: row.votes,
-              share: (row.points * 100.0 / total).round(1) }
+            { nomineeId: row.nominee.id, place: row.place, points: row.points, votes: row.votes,
+              firsts: row.firsts, share: (row.points * 100.0 / total).round(1) }
           end
           [category_result.category.id, { voters: category_result.voters, rows: rows }]
         end

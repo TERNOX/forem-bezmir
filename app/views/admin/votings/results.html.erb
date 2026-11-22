@@ -4,9 +4,12 @@
     <p class="mt-1 flex flex-wrap items-center gap-2">
       <%= render "admin/votings/status_badge", voting: @voting %>
       <span class="color-base-60">
-        <%= pluralize(@results[:ballots_count], "counted ballot") %> (ballots of spam/suspended members are excluded)
+        <%= @results[:ballots_count] %> counted of <%= pluralize(@results[:submitted_count], "submitted ballot") %>
       </span>
     </p>
+    <% excluded = ["unconfirmed accounts", "spam, suspended and banished members", "members with a score below #{@voting.min_user_score}"] %>
+    <% excluded << "accounts created after the voting opened" if @voting.require_account_before_start? && @voting.opens_at.present? %>
+    <p class="mt-1 fs-s color-base-60">Not counted: <%= excluded.join("; ") %>.</p>
   </div>
   <div class="flex flex-wrap gap-2">
     <%= link_to "Back to voting", admin_voting_path(@voting), class: "crayons-btn crayons-btn--ghost" %>
@@ -34,9 +37,9 @@
       </thead>
       <tbody>
         <% max = [category_result.max_points, 1].max %>
-        <% category_result.rows.each_with_index do |row, index| %>
+        <% category_result.rows.each do |row| %>
           <tr>
-            <td><%= index + 1 %></td>
+            <td><%= row.place || "—" %></td>
             <td><%= row.nominee.display_title %></td>
             <td>
               <div class="flex items-center gap-2">

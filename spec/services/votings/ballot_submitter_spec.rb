@@ -79,4 +79,17 @@ RSpec.describe Votings::BallotSubmitter do
     params = ActionController::Parameters.new(single.id.to_s => { nominee_ids: [single_nominees.first.id.to_s] })
     expect(submit(params)).to be_success
   end
+
+  it "drops non-scalar ids and answers instead of failing or storing junk" do
+    result = submit({
+                      single.id.to_s => { "nominee_ids" => [[single_nominees[0].id], true, single_nominees[1].id] },
+                      multi.id.to_s => { "nominee_ids" => { "a" => multi_nominees[0].id }, "other" => ["Steam Deck"] }
+                    })
+    expect(result).to be_success
+    expect(result.ballot.choices.pluck(:voting_category_id, :voting_nominee_id, :other_text))
+      .to eq([[single.id, single_nominees[1].id, nil]])
+
+    result = submit({ multi.id.to_s => { "nominee_ids" => [], "other" => { "text" => "Steam Deck" } } })
+    expect(result.errors[:base]).to eq([:empty])
+  end
 end

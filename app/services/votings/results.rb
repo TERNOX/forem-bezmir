@@ -1,9 +1,17 @@
-# Fork-only: tallies a voting. Only submitted ballots of users who are not
-# spam/suspended count. Ranked categories score VotingCategory#points_for(rank)
+# Fork-only: tallies a voting. Only submitted ballots of users who still pass
+# the voter rules count (see #counted_ballot_ids). Ranked categories score VotingCategory#points_for(rank)
 # per pick (rank_points, or max_choices..1); other categories score 1 point per pick.
+#
+# Rows are ordered by points, then first places, then votes. Rows equal on all
+# three share a place (1, 1, 3, ...); the winners are the rows with place 1. A
+# nominee nobody voted for has no place.
 module Votings
   class Results
-    Row = Struct.new(:nominee, :points, :votes, :firsts, keyword_init: true)
+    Row = Struct.new(:nominee, :points, :votes, :firsts, :place, keyword_init: true) do
+      def tie_key
+        [points, firsts, votes]
+      end
+    end
     CategoryResult = Struct.new(:category, :rows, :other_answers, :voters, keyword_init: true) do
       def max_points
         rows.map(&:points).max.to_i
@@ -18,7 +26,9 @@ module Votings
       @voting = voting
     end
 
-    # @return [Hash] { ballots_count:, categories: [CategoryResult] }
+    # @return [Hash] { ballots_count:, submitted_count:, categories: [CategoryResult] }
+    #   ballots_count: submitted ballots that pass the voter rules (the ones
+    #   tallied); submitted_count: every submitted ballot.
     def call
       ballot_ids = counted_ballot_ids
       scope = VotingChoice.where(voting_ballot_id: ballot_ids)
@@ -32,7 +42,7 @@ module Votings
       categories = @voting.categories.includes(nominees: :game).map do |category|
         build_category(category, tallies, others, voters)
       end
-      { ballots_count: ballot_ids.size, categories: categories }
+      { ballots_count: ballot_ids.size, submitted_count: @voting.submitted_ballots.count, categories: categories }
     end
 
     private
@@ -70,11 +80,23 @@ module Votings
         row
       end
       rows.sort_by! { |row| [-row.points, -row.firsts, -row.votes, row.nominee.position] }
+      assign_places(rows)
 
       other_answers = others.filter_map { |(category_id, text), count| [text, count] if category_id == category.id }
         .sort_by { |text, count| [-count, text] }
       CategoryResult.new(category: category, rows: rows, other_answers: other_answers,
                          voters: voters[category.id].to_i)
+    end
+
+    # Standard competition numbering over the sorted rows: tied rows share the
+    # place of the first of them and the next row skips ahead (1, 1, 3).
+    def assign_places(rows)
+      rows.each_with_index do |row, index|
+        next if row.votes.zero?
+
+        previous = rows[index - 1] if index.positive?
+        row.place = previous&.place && previous.tie_key == row.tie_key ? previous.place : index + 1
+      end
     end
   end
 end

@@ -104,6 +104,47 @@ RSpec.describe "Admin::Votings" do
     expect(voting.reload.results_published_at).to be_present
   end
 
+  it "numbers result rows by place, sharing it on a tie, and explains what is not counted" do
+    category = create(:voting_category, voting: voting)
+    first, second, unvoted = create_list(:voting_nominee, 3, category: category)
+    voting.update!(published: true)
+    [first, second].each do |nominee|
+      Votings::BallotSubmitter.call(voting: voting, user: create(:user),
+                                    selections: { category.id.to_s => { "nominee_ids" => [nominee.id] } })
+    end
+    Votings::BallotSubmitter.call(voting: voting, user: create(:user),
+                                  selections: { category.id.to_s => { "nominee_ids" => [unvoted.id] } })
+      .ballot.user.add_role(:spam)
+
+    get results_admin_voting_path(voting)
+    page = Nokogiri::HTML(response.body)
+    expect(page.css("tbody tr").map { |tr| tr.at_css("td").text.strip }).to eq(%w[1 1 —])
+    expect(page.text.squish).to include("2 counted of 3 submitted ballots")
+      .and include("Not counted: unconfirmed accounts; spam, suspended and banished members; " \
+                   "members with a score below 0.")
+    expect(response.body).not_to include("accounts created after the voting opened")
+
+    get results_admin_voting_path(voting, format: :csv)
+    expect(response.body).to include("#{category.title},1,#{first.display_title},1,1,0")
+      .and include("#{category.title},1,#{second.display_title},1,1,0")
+      .and include("#{category.title},,#{unvoted.display_title},0,0,0")
+
+    get admin_voting_path(voting)
+    expect(response.body).to include("3 submitted ballots")
+  end
+
+  it "mentions the account age rule on the results page only when it is on" do
+    voting.update!(require_account_before_start: true, opens_at: 1.day.ago)
+    get results_admin_voting_path(voting)
+    expect(response.body).to include("accounts created after the voting opened")
+  end
+
+  it "requires an opening time for the account age rule" do
+    patch admin_voting_path(voting), params: { voting: { require_account_before_start: "1", opens_at: "" } }
+    expect(response).to have_http_status(:unprocessable_entity)
+    expect(voting.reload.require_account_before_start).to be(false)
+  end
+
   it "clones a voting without ballots" do
     category = create(:voting_category, voting: voting, ranked: true, max_choices: 3, rank_points: [5, 3, 1])
     create(:voting_nominee, category: category)
@@ -113,6 +154,13 @@ RSpec.describe "Admin::Votings" do
     expect(copy).to have_attributes(published: false, slug: "#{voting.slug}-copy")
     expect(copy.categories.first).to have_attributes(ranked: true, max_choices: 3, rank_points: [5, 3, 1])
     expect(copy.categories.first.nominees.count).to eq(1)
+  end
+
+  it "clones a legacy voting that has the account-age rule on without an opening date" do
+    voting.update_columns(require_account_before_start: true, opens_at: nil)
+
+    expect { post clone_admin_voting_path(voting) }.to change(Voting, :count).by(1)
+    expect(Voting.order(:id).last).to have_attributes(require_account_before_start: false, opens_at: nil)
   end
 
   it "keeps uploaded images when cloning, as the copy's own files" do
