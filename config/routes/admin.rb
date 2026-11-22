@@ -175,6 +175,12 @@ namespace :admin do
         patch :unpublish_results
         post :clone
       end
+      resources :voting_ballots, path: "ballots", only: %i[index] do
+        member do
+          patch :disqualify
+          patch :restore
+        end
+      end
       resources :voting_categories, path: "nominations", except: %i[index show] do
         member do
           patch :move

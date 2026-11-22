@@ -9,10 +9,12 @@
     </p>
     <% excluded = ["unconfirmed accounts", "spam, suspended and banished members", "members with a score below #{@voting.min_user_score}"] %>
     <% excluded << "accounts created after the voting opened" if @voting.require_account_before_start? && @voting.opens_at.present? %>
-    <p class="mt-1 fs-s color-base-60">Not counted: <%= excluded.join("; ") %>.</p>
+    <% excluded << safe_join(["ballots disqualified on the ", link_to("ballots page", admin_voting_voting_ballots_path(@voting))]) %>
+    <p class="mt-1 fs-s color-base-60">Not counted: <%= safe_join(excluded, "; ") %>.</p>
   </div>
   <div class="flex flex-wrap gap-2">
     <%= link_to "Back to voting", admin_voting_path(@voting), class: "crayons-btn crayons-btn--ghost" %>
+    <%= link_to "Ballots", admin_voting_voting_ballots_path(@voting), class: "crayons-btn crayons-btn--secondary" %>
     <%= link_to "Download CSV", results_admin_voting_path(@voting, format: :csv), class: "crayons-btn crayons-btn--secondary" %>
     <% if @voting.results_published? %>
       <%= button_to "Hide results", unpublish_results_admin_voting_path(@voting), method: :patch, class: "crayons-btn crayons-btn--secondary" %>

@@ -139,6 +139,19 @@ RSpec.describe Votings::Results do
     expect(result).to include(ballots_count: 1, submitted_count: 2)
   end
 
+  it "does not count a disqualified ballot but still reports it as submitted" do
+    stuffed = vote(create(:user), [clair.id]).ballot
+    honest = vote(create(:user), [hades.id]).ballot
+    stuffed.update!(disqualified_at: Time.current)
+
+    results = described_class.new(voting)
+    result = results.call
+    rows = result[:categories].detect { |c| c.category == ranked }.rows
+    expect(result).to include(ballots_count: 1, submitted_count: 2)
+    expect(results.counted_ballot_ids).to eq([honest.id])
+    expect(rows.detect { |row| row.nominee == clair }.points).to eq(0)
+  end
+
   it "drops accounts created after the opening when the voting asks for that" do
     veteran = create(:user, created_at: 1.month.ago)
     vote(veteran, [hades.id])

@@ -1,6 +1,7 @@
-# Fork-only: tallies a voting. Only submitted ballots of users who still pass
-# the voter rules count (see #counted_ballot_ids). Ranked categories score VotingCategory#points_for(rank)
-# per pick (rank_points, or max_choices..1); other categories score 1 point per pick.
+# Fork-only: tallies a voting. Only submitted, not disqualified ballots of users
+# who still pass the voter rules count (see #counted_ballot_ids). Ranked
+# categories score VotingCategory#points_for(rank) per pick (rank_points, or
+# max_choices..1); other categories score 1 point per pick.
 #
 # Rows are ordered by points, then first places, then votes. Rows equal on all
 # three share a place (1, 1, 3, ...); the winners are the rows with place 1. A
@@ -27,8 +28,8 @@ module Votings
     end
 
     # @return [Hash] { ballots_count:, submitted_count:, categories: [CategoryResult] }
-    #   ballots_count: submitted ballots that pass the voter rules (the ones
-    #   tallied); submitted_count: every submitted ballot.
+    #   ballots_count: submitted ballots that pass the voter rules and are not
+    #   disqualified (the ones tallied); submitted_count: every submitted ballot.
     def call
       ballot_ids = counted_ballot_ids
       scope = VotingChoice.where(voting_ballot_id: ballot_ids)
@@ -45,10 +46,10 @@ module Votings
       { ballots_count: ballot_ids.size, submitted_count: @voting.submitted_ballots.count, categories: categories }
     end
 
-    private
-
-    # The same voter rules as Votings::Eligibility, applied at counting time, so
-    # accounts restricted or pushed below the score floor after voting drop out.
+    # Submitted ballots that are tallied: not disqualified by an admin, and of
+    # members who pass the same voter rules as Votings::Eligibility.user_reason,
+    # applied at counting time, so accounts restricted or pushed below the score
+    # floor after voting drop out. Votings::BallotAudit must agree with this.
     def counted_ballot_ids
       restricted_user_ids = User.joins(:roles).where(roles: { name: %w[spam suspended] }).select(:id)
       voters = User.where.not(confirmed_at: nil)
@@ -58,8 +59,10 @@ module Votings
       if @voting.require_account_before_start? && @voting.opens_at.present?
         voters = voters.where(created_at: ...@voting.opens_at)
       end
-      @voting.submitted_ballots.where(user_id: voters.select(:id)).ids
+      @voting.submitted_ballots.where(disqualified_at: nil).where(user_id: voters.select(:id)).ids
     end
+
+    private
 
     # { [category_id, nominee_id] => [[rank, count], ...] }, so each nominee
     # only walks its own tallies.

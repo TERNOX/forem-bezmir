@@ -1,0 +1,93 @@
+<% not_counted = @audit.not_counted.select { |_, count| count.positive? } %>
+<header class="admin__header mb-4 flex flex-wrap items-start justify-between gap-4">
+  <div>
+    <h1 class="fs-4xl fw-bold">Ballots: <%= @voting.title %></h1>
+    <p class="mt-1 flex flex-wrap items-center gap-2">
+      <%= render "admin/votings/status_badge", voting: @voting %>
+      <span class="color-base-60" data-ballot-totals>
+        <%= pluralize(@audit.submitted_count, "submitted ballot") %> ·
+        <%= @audit.counted_count %> counted ·
+        <%= @audit.submitted_count - @audit.counted_count %> not counted<% if not_counted.any? %>
+          (<%= not_counted.map { |reason, count| "#{count} #{Votings::BallotAudit.reason_label(reason)}" }.join(", ") %>)<% end %> ·
+        <%= @audit.flagged_count %> with signals
+      </span>
+    </p>
+    <p class="mt-1 fs-s color-base-60">
+      Account signals only, to spot ballot stuffing; what each ballot voted for stays private.
+      A disqualified ballot is not counted; its voter is not told and can still edit it.
+    </p>
+  </div>
+  <div class="flex flex-wrap gap-2">
+    <%= link_to "Back to voting", admin_voting_path(@voting), class: "crayons-btn crayons-btn--ghost" %>
+    <%= link_to "Results", results_admin_voting_path(@voting), class: "crayons-btn crayons-btn--secondary" %>
+    <%= link_to "Download CSV", admin_voting_voting_ballots_path(@voting, format: :csv, signals: (@only_signals ? "1" : nil)),
+                class: "crayons-btn crayons-btn--secondary" %>
+  </div>
+</header>
+
+<nav class="flex gap-2 mb-4" aria-label="Ballot filter">
+  <%= link_to "All ballots", admin_voting_voting_ballots_path(@voting),
+              class: "crayons-btn crayons-btn--s #{@only_signals ? 'crayons-btn--ghost' : 'crayons-btn--secondary'}",
+              aria: { current: (@only_signals ? nil : "page") } %>
+  <%= link_to "Only with signals (#{@audit.flagged_count})", admin_voting_voting_ballots_path(@voting, signals: "1"),
+              class: "crayons-btn crayons-btn--s #{@only_signals ? 'crayons-btn--secondary' : 'crayons-btn--ghost'}",
+              aria: { current: (@only_signals ? "page" : nil) } %>
+</nav>
+
+<% if @rows.empty? %>
+  <div class="crayons-card p-6 text-center color-base-60">
+    <%= @only_signals ? "No ballots with signals." : "No submitted ballots yet." %>
+  </div>
+<% else %>
+  <%= paginate @rows %>
+  <table class="crayons-table w-100 mb-4">
+    <thead>
+      <tr>
+        <th scope="col">Member</th>
+        <th scope="col">Account created</th>
+        <th scope="col">Ballot submitted</th>
+        <th scope="col">Status</th>
+        <th scope="col">Signals</th>
+        <th scope="col"><span class="screen-reader-only">Actions</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @rows.each do |row| %>
+        <% ballot = row.ballot %>
+        <% user = row.user %>
+        <tr data-ballot-id="<%= ballot.id %>">
+          <td><%= link_to "@#{user.username}", admin_user_path(user) %></td>
+          <td><%= l(user.created_at, format: :short) %></td>
+          <td><%= l(ballot.submitted_at, format: :short) %></td>
+          <td data-ballot-status="<%= row.reason || 'counted' %>">
+            <% if row.counted? %>
+              <span class="crayons-badge">Counted</span>
+            <% else %>
+              <span class="crayons-badge color-accent-danger">Not counted: <%= Votings::BallotAudit.reason_label(row.reason) %></span>
+            <% end %>
+          </td>
+          <td>
+            <span class="flex flex-wrap gap-1">
+              <% row.signals.each do |signal, value| %>
+                <span class="crayons-badge fs-xs" data-signal="<%= signal %>"><%= Votings::BallotAudit.signal_label(signal, value) %></span>
+              <% end %>
+            </span>
+          </td>
+          <td>
+            <% back = { signals: (@only_signals ? "1" : nil), page: params[:page].presence }.compact %>
+            <% if ballot.disqualified? %>
+              <%= button_to "Restore", restore_admin_voting_voting_ballot_path(@voting, ballot), method: :patch, params: back,
+                                                                                               class: "crayons-btn crayons-btn--s crayons-btn--secondary",
+                                                                                               form: { data: { confirm: "Count the ballot of @#{user.username} again (if the member passes the voter rules)?" } } %>
+            <% else %>
+              <%= button_to "Disqualify", disqualify_admin_voting_voting_ballot_path(@voting, ballot), method: :patch, params: back,
+                                                                                                     class: "crayons-btn crayons-btn--s crayons-btn--ghost color-accent-danger",
+                                                                                                     form: { data: { confirm: "Disqualify the ballot of @#{user.username}? It stops being counted; the member is not told." } } %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <%= paginate @rows %>
+<% end %>

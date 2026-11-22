@@ -212,7 +212,7 @@ RSpec.describe "Admin::Votings" do
     expect(page.css("tbody tr").map { |tr| tr.at_css("td").text.strip }).to eq(%w[1 1 —])
     expect(page.text.squish).to include("2 counted of 3 submitted ballots")
       .and include("Not counted: unconfirmed accounts; spam, suspended and banished members; " \
-                   "members with a score below 0.")
+                   "members with a score below 0; ballots disqualified on the ballots page.")
     expect(response.body).not_to include("accounts created after the voting opened")
 
     get results_admin_voting_path(voting, format: :csv)
@@ -432,6 +432,174 @@ RSpec.describe "Admin::Votings" do
 
       expect(response).to redirect_to(results_admin_voting_path(voting))
       expect(flash[:alert]).to eq("No “celeste” answers found in “#{category.title}”.")
+    end
+  end
+
+  describe "ballot audit" do
+    let(:category) { create(:voting_category, voting: voting, max_choices: 3) }
+    let!(:picks) do
+      ["Secret Pick Alpha", "Secret Pick Beta", "Secret Pick Gamma", "Secret Pick Delta"].map do |title|
+        create(:voting_nominee, category: category, title: title, game: nil)
+      end
+    end
+    let(:ballots_path) { admin_voting_voting_ballots_path(voting) }
+
+    # An established, active member: no account signals.
+    def member
+      create(:user, created_at: 1.month.ago).tap { |user| user.update_column(:articles_count, 3) }
+    end
+
+    def vote(user, nominees = picks.first(3))
+      Votings::BallotSubmitter.call(voting: voting, user: user,
+                                    selections: { category.id.to_s => { "nominee_ids" => nominees.map(&:id) } }).ballot
+    end
+
+    def rows
+      Nokogiri::HTML(response.body).css("tr[data-ballot-id]")
+    end
+
+    def row(ballot)
+      rows.detect { |tr| tr["data-ballot-id"] == ballot.id.to_s }
+    end
+
+    before { voting.update!(published: true) }
+
+    it "is linked from the voting and results pages" do
+      get admin_voting_path(voting)
+      expect(response.body).to include(%(href="#{ballots_path}"))
+      get results_admin_voting_path(voting)
+      expect(response.body).to include(%(href="#{ballots_path}"))
+    end
+
+    describe "the list" do
+      let!(:honest) { vote(member) }
+      let!(:fresh) { vote(create(:user)) } # brand new, no activity, same picks as honest
+      let!(:spammer) { vote(create(:user), picks.last(3)).tap { |ballot| ballot.user.add_role(:spam) } }
+
+      before do
+        create(:voting_ballot, voting: voting, submitted_at: nil) # started, never sent
+        get ballots_path
+      end
+
+      it "shows each submitted ballot's member, status and signals" do
+        expect(response).to have_http_status(:ok)
+        expect(rows.size).to eq(3)
+        expect(row(honest).at_css("[data-ballot-status]")["data-ballot-status"]).to eq("counted")
+        expect(row(spammer).text.squish).to include("Not counted: restricted")
+        expect(row(fresh).css("[data-signal]").pluck("data-signal"))
+          .to eq(%w[joined_after_opening new_account no_activity identical_picks])
+        expect(row(honest).text.squish).to include("Same picks as 1 other ballot")
+        expect(row(fresh).at_css("a")["href"]).to eq(admin_user_path(fresh.user))
+      end
+
+      it "totals the ballots and never shows what they voted for" do
+        expect(Nokogiri::HTML(response.body).at_css("[data-ballot-totals]").text.squish)
+          .to eq("3 submitted ballots · 2 counted · 1 not counted (1 restricted) · 3 with signals")
+        expect(response.body).not_to include("Secret Pick")
+      end
+    end
+
+    it "paginates and filters to the ballots with signals" do
+      stub_const("Admin::VotingBallotsController::PER_PAGE", 2)
+      clean = vote(member, picks.first(1))
+      flagged = [vote(create(:user), picks.first(1)), vote(create(:user), picks.last(1))]
+
+      get ballots_path
+      expect(rows.pluck("data-ballot-id")).to match_array(flagged.map { |ballot| ballot.id.to_s })
+      get ballots_path, params: { page: 2 }
+      expect(rows.pluck("data-ballot-id")).to eq([clean.id.to_s])
+
+      get ballots_path, params: { signals: "1" }
+      expect(rows.size).to eq(2)
+      get ballots_path, params: { signals: "1", page: 2 }
+      expect(rows).to be_empty
+    end
+
+    it "exports every row as CSV, without the picks" do
+      stub_const("Admin::VotingBallotsController::PER_PAGE", 1)
+      honest = vote(member, picks.first(1))
+      fresh = vote(create(:user), picks.last(1))
+
+      get admin_voting_voting_ballots_path(voting, format: :csv)
+      csv = CSV.parse(response.body, headers: true)
+      expect(csv.size).to eq(2)
+      expect(csv.detect { |line| line["Username"] == honest.user.username }.to_h)
+        .to include("Status" => "Counted", "No activity" => "no", "Other voters on the same IP" => "0")
+      expect(csv.detect { |line| line["Username"] == fresh.user.username }.to_h)
+        .to include("Status" => "Counted", "Joined after opening" => "yes", "No activity" => "yes")
+      expect(response.body).not_to include("Secret Pick")
+
+      get admin_voting_voting_ballots_path(voting, format: :csv, signals: "1")
+      expect(CSV.parse(response.body, headers: true).pluck("Username")).to eq([fresh.user.username])
+    end
+
+    describe "disqualifying" do
+      let!(:ballot) { vote(member) }
+
+      before do
+        vote(member, picks.last(1))
+        Audit::Subscribe.listen(:internal)
+      end
+
+      after { Audit::Subscribe.forget(:internal) }
+
+      it "disqualifies a ballot, logging it and dropping it from the live count" do
+        expect do
+          patch disqualify_admin_voting_voting_ballot_path(voting, ballot), params: { signals: "1", page: "2" }
+        end.to change(AuditLog, :count).by(1)
+        expect(response).to redirect_to(admin_voting_voting_ballots_path(voting, signals: "1", page: "2"))
+        expect(ballot.reload.disqualified_at).to be_present
+        expect(AuditLog.last.data).to include("action" => "disqualify", "voting_id" => voting.id,
+                                              "voting_ballot_id" => ballot.id, "voter_id" => ballot.user_id)
+        expect(Votings::Results.call(voting)).to include(ballots_count: 1, submitted_count: 2)
+
+        get results_admin_voting_path(voting)
+        expect(response.body).to include("1 counted of 2 submitted ballots")
+      end
+
+      it "keeps the ballot disqualified when its voter changes it" do
+        patch disqualify_admin_voting_voting_ballot_path(voting, ballot)
+        vote(ballot.user, picks.last(2))
+
+        expect(ballot.reload.disqualified_at).to be_present
+        get ballots_path
+        expect(row(ballot).text.squish).to include("Not counted: disqualified")
+      end
+
+      it "restores a ballot, logging it and counting it again" do
+        ballot.update!(disqualified_at: 1.hour.ago)
+        expect(Votings::Results.call(voting)[:ballots_count]).to eq(1)
+
+        expect do
+          patch restore_admin_voting_voting_ballot_path(voting, ballot)
+        end.to change(AuditLog, :count).by(1)
+        expect(response).to redirect_to(ballots_path)
+        expect(ballot.reload.disqualified_at).to be_nil
+        expect(AuditLog.last.data).to include("action" => "restore", "voting_ballot_id" => ballot.id)
+        expect(Votings::Results.call(voting)[:ballots_count]).to eq(2)
+      end
+    end
+
+    it "changes and logs nothing when the ballot already is in that state" do
+      Audit::Subscribe.listen(:internal)
+      ballot = vote(member)
+
+      expect { patch restore_admin_voting_voting_ballot_path(voting, ballot) }.not_to change(AuditLog, :count)
+      expect(ballot.reload.disqualified_at).to be_nil
+      expect(flash[:notice]).to include("Nothing changed")
+    ensure
+      Audit::Subscribe.forget(:internal)
+    end
+
+    it "denies regular members, as the other voting pages do" do
+      ballot = vote(member)
+      sign_in create(:user)
+
+      expect { get ballots_path }.to raise_error(Pundit::NotAuthorizedError)
+      expect do
+        patch disqualify_admin_voting_voting_ballot_path(voting, ballot)
+      end.to raise_error(Pundit::NotAuthorizedError)
+      expect(ballot.reload.disqualified_at).to be_nil
     end
   end
 
