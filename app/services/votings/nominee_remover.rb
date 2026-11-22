@@ -5,7 +5,8 @@
 #
 # Each affected ballot's share image showed the removed pick, so it is dropped
 # and queued for a re-render, like a re-submitted ballot (see
-# Votings::BallotSubmitter#persist).
+# Votings::BallotSubmitter#persist); every affected ballot's updated_at moves,
+# so a render already in flight with the old picks is not stored.
 #
 # Deleting a whole nomination does not go through here (its ballots lose the
 # nomination entirely, there is nothing to renumber).
@@ -32,7 +33,10 @@ module Votings
         ballots_with_image = ballots.select { |ballot| ballot.share_image.present? }
         nominee.destroy!
         renumber_ranks(ballot_ids) if category.ranked? && ballot_ids.any?
-        VotingBallot.where(id: ballots_with_image.map(&:id)).update_all(share_image: nil, updated_at: Time.current)
+        # Bumping updated_at on every affected ballot (not only those with an
+        # image) makes a render that already read the old picks drop its
+        # result (Votings::GenerateShareImage#store).
+        VotingBallot.where(id: ballot_ids).update_all(share_image: nil, updated_at: Time.current)
       end
 
       # The files go only once the transaction is committed, so a rollback

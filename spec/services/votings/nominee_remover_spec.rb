@@ -108,6 +108,23 @@ RSpec.describe Votings::NomineeRemover do
     expect(Votings::GenerateShareImageWorker.jobs.pluck("args")).to eq([[affected.id]])
   end
 
+  it "moves updated_at of every affected ballot, with or without an image, but not submitted_at" do
+    with_image = vote([x_game.id, b_game.id])
+    with_image.update!(share_image: Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/800x600.png"),
+                                                                 "image/png"))
+    without_image = vote([b_game.id, x_game.id])
+    untouched = vote([b_game.id])
+    before = [with_image, without_image, untouched].map { |ballot| ballot.reload.slice(:updated_at, :submitted_at) }
+
+    Timecop.travel(1.second.from_now) { described_class.call(x_game) }
+
+    after = [with_image, without_image, untouched].map { |ballot| ballot.reload.slice(:updated_at, :submitted_at) }
+    expect(after[0]["updated_at"]).to be > before[0]["updated_at"]
+    expect(after[1]["updated_at"]).to be > before[1]["updated_at"]
+    expect(after[2]).to eq(before[2])
+    expect(after.first(2).pluck("submitted_at")).to eq(before.first(2).pluck("submitted_at"))
+  end
+
   it "queues nothing for a nominee without votes" do
     vote([b_game.id])
     Sidekiq::Worker.clear_all

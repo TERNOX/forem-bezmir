@@ -116,6 +116,23 @@ RSpec.describe Votings::OtherAnswerMerger do
     expect(Votings::GenerateShareImageWorker.jobs.pluck("args")).to eq([[affected.id]])
   end
 
+  it "moves updated_at of every affected ballot, with or without an image, but not submitted_at" do
+    affected = vote([hades.id], other: "silksong")
+    untouched = vote(other: "hades 2")
+    affected.update!(share_image: Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/800x600.png"),
+                                                               "image/png"))
+    without_image = vote(other: "Silksong")
+    before = [affected, without_image, untouched].map { |ballot| ballot.reload.slice(:updated_at, :submitted_at) }
+
+    Timecop.travel(1.second.from_now) { merge("silksong") }
+
+    after = [affected, without_image, untouched].map { |ballot| ballot.reload.slice(:updated_at, :submitted_at) }
+    expect(after[0]["updated_at"]).to be > before[0]["updated_at"]
+    expect(after[1]["updated_at"]).to be > before[1]["updated_at"]
+    expect(after[2]).to eq(before[2])
+    expect(after.first(2).pluck("submitted_at")).to eq(before.first(2).pluck("submitted_at"))
+  end
+
   it "does nothing and queues nothing when no answer matches" do
     vote(other: "hades 2")
     Sidekiq::Worker.clear_all

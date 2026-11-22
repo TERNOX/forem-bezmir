@@ -42,7 +42,7 @@ class VotingBallotsController < ApplicationController
     @picks = Votings::BallotPicks.call(@ballot, @categories)
     @share_url = share_url_for(@ballot)
     @share_image_url = voting_share_image_url(@voting.slug, @user.username, @ballot.share_token,
-                                              v: @ballot.submitted_at.to_i)
+                                              v: @ballot.updated_at.to_i)
   end
 
   # GET /vote/:slug/u/:username/:token/image — the generated share image.

@@ -53,4 +53,51 @@ RSpec.describe Votings::GenerateShareImage do
     expect(described_class.call(ballot)).to be(false)
     expect(ballot.reload.share_image).to be_blank
   end
+
+  describe "when an admin rewrites the picks during a render" do
+    let(:voting) { create(:voting) }
+    let(:category) { create(:voting_category, voting: voting, max_choices: 2, allow_other: true) }
+    let!(:nominee) { create(:voting_nominee, category: category) }
+    let(:ballot_id) do
+      Votings::BallotSubmitter.call(voting: voting, user: create(:user),
+                                    selections: { category.id.to_s => { "other" => "Silksong" } }).ballot.id
+    end
+
+    def merge
+      Votings::OtherAnswerMerger.call(category: category, text: "silksong", nominee: nominee)
+    end
+
+    it "drops a render whose ballot row changed after it started" do
+      render = described_class.new(VotingBallot.find(ballot_id))
+      Timecop.travel(0.2.seconds.from_now) { merge }
+
+      expect(render.call).to be(false)
+      expect(VotingBallot.find(ballot_id).share_image).to be_blank
+    end
+
+    it "drops a render even when the change lands between loading the ballot and reading its picks" do
+      merged = false
+      allow(Votings::BallotPicks).to receive(:call).and_wrap_original do |original, *args|
+        Timecop.travel(0.2.seconds.from_now) { merge } unless merged
+        merged = true
+        original.call(*args)
+      end
+
+      expect(described_class.call(VotingBallot.find(ballot_id))).to be(false)
+      expect(VotingBallot.find(ballot_id).share_image).to be_blank
+
+      expect(described_class.call(VotingBallot.find(ballot_id))).to be(true)
+      expect(VotingBallot.find(ballot_id).share_image).to be_present
+    end
+
+    it "reads the picks when it draws, not from a copy preloaded with the ballot" do
+      ballot = VotingBallot.includes(:choices).find(ballot_id)
+      allow(Votings::BallotPicks).to receive(:call).and_wrap_original do |original, picked_ballot, *rest|
+        expect(picked_ballot.choices).not_to be_loaded
+        original.call(picked_ballot, *rest)
+      end
+
+      expect(described_class.call(ballot)).to be(true)
+    end
+  end
 end

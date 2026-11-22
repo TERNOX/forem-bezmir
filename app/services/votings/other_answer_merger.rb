@@ -50,7 +50,10 @@ module Votings
         ballot_ids = ballots.map(&:id)
         ballots_with_image = ballots.select { |ballot| ballot.share_image.present? }
         result = merge(ballot_ids)
-        VotingBallot.where(id: ballots_with_image.map(&:id)).update_all(share_image: nil, updated_at: Time.current)
+        # Bumping updated_at on every affected ballot (not only those with an
+        # image) makes a render that already read the old picks drop its
+        # result (Votings::GenerateShareImage#store).
+        VotingBallot.where(id: ballot_ids).update_all(share_image: nil, updated_at: Time.current)
       end
 
       # The files go only once the transaction is committed, so a rollback
