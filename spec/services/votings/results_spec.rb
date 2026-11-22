@@ -31,6 +31,31 @@ RSpec.describe Votings::Results do
     )
   end
 
+  it "scores ranked places by the category's custom points" do
+    ranked.update!(rank_points: [5, 3, 1])
+    vote(create(:user), [hades.id, silksong.id, clair.id])   # hades 5, silksong 3, clair 1
+    vote(create(:user), [silksong.id, hades.id])             # silksong 5, hades 3
+    vote(create(:user), [clair.id])                          # clair 5
+
+    rows = described_class.call(voting)[:categories].detect { |c| c.category == ranked }.rows
+    expect(rows.map { |row| [row.nominee, row.points, row.votes, row.firsts] }).to eq(
+      [[hades, 8, 2, 1], [silksong, 8, 2, 1], [clair, 6, 2, 1]],
+    )
+  end
+
+  it "gives a pick without a rank (voted before the category became ranked) the lowest place's points" do
+    ranked.update!(ranked: false)
+    vote(create(:user), [hades.id, silksong.id])
+    ranked.update!(ranked: true, rank_points: [5, 3, 1])
+    vote(create(:user), [clair.id])
+
+    rows = described_class.call(voting)[:categories].detect { |c| c.category == ranked }.rows
+    expect(VotingChoice.where(voting_nominee_id: [hades.id, silksong.id]).pluck(:rank)).to eq([nil, nil])
+    expect(rows.map { |row| [row.nominee, row.points, row.votes, row.firsts] }).to eq(
+      [[clair, 5, 1, 1], [hades, 1, 1, 0], [silksong, 1, 1, 0]],
+    )
+  end
+
   it "groups other answers case-insensitively" do
     vote(create(:user), [hades.id], other: "Steam Deck")
     vote(create(:user), [hades.id], other: "steam deck ")

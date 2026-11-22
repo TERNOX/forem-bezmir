@@ -16,6 +16,11 @@ uk:
     voting:
       closes_before_opens: має бути пізніше за час відкриття
       slug_taken: уже зайнята користувачем, проєктом, сторінкою, подкастом чи іншим голосуванням
+    voting_category:
+      rank_points_count: "має містити по одному числу на кожне місце (усього %{count})"
+      rank_points_format: "мають бути цілі числа через кому, наприклад 5,3,1"
+      rank_points_order: не може давати нижчому місцю більше балів, ніж вищому
+      rank_points_range: "мають бути цілі числа від 1 до %{max}"
     voting_nominee:
       game_or_title: Оберіть гру або вкажіть назву
   views:

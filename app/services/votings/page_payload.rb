@@ -52,7 +52,7 @@ module Votings
         required: category.required?,
         allowOther: category.allow_other?,
         cardStyle: category.card_style,
-        points: category.ranked? ? (1..category.max_choices).map { |rank| category.points_for(rank) } : [],
+        points: category.rank_points_list,
         nominees: category.nominees.map { |nominee| nominee_json(nominee, category) }
       }
     end

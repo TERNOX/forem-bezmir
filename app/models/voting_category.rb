@@ -1,12 +1,16 @@
 # Fork-only: one nomination ("Найкращий горрор") inside a Voting.
 #
 # * max_choices — how many nominees a voter may pick (1 = single choice).
-# * ranked      — voters order their picks; place N earns (max_choices - N + 1) points.
+# * ranked      — voters order their picks; place N earns rank_points[N - 1]
+#                 points, or (max_choices - N + 1) when rank_points is empty.
+# * rank_points — points per place for a ranked nomination (e.g. [5, 3, 1]);
+#                 always [] for an unranked one.
 # * allow_other — voters may type their own answer instead of / besides the nominees.
 # * card_style  — cover (vertical 2:3 box art) or artwork (horizontal 16:9).
 class VotingCategory < ApplicationRecord
   MAX_CHOICES_LIMIT = 20
   OTHER_TEXT_MAX_LENGTH = 100
+  RANK_POINTS_MAX = 1000
 
   belongs_to :voting, inverse_of: :categories
   has_many :nominees, -> { order(:position, :id) },
@@ -18,13 +22,39 @@ class VotingCategory < ApplicationRecord
   validates :title, presence: true, length: { maximum: 150 }
   validates :description, length: { maximum: 1000 }
   validates :max_choices, numericality: { only_integer: true, in: 1..MAX_CHOICES_LIMIT }
+  validate :rank_points_valid
 
+  before_validation :clear_rank_points_unless_ranked
   before_create :set_default_position
 
+  # Points per place, 1st place first: the custom list, else the linear
+  # max_choices..1 scale; [] for an unranked nomination.
+  def rank_points_list
+    return [] unless ranked?
+    return rank_points if rank_points.present?
+
+    max_choices.to_i.downto(1).to_a
+  end
+
+  # A rank that isn't a valid place (nil, 0, past the last place — e.g. votes
+  # cast before the nomination became ranked) earns the lowest place's points.
   def points_for(rank)
     return 1 unless ranked?
 
-    [max_choices - rank.to_i + 1, 1].max
+    list = rank_points_list
+    rank.to_i.between?(1, list.size) ? list[rank.to_i - 1] : list.last.to_i
+  end
+
+  # The admin form edits rank_points as "5,3,1"; blank means the linear scale.
+  def rank_points_text
+    @rank_points_text || rank_points.join(",")
+  end
+
+  def rank_points_text=(value)
+    @rank_points_text = value.to_s.strip
+    parts = @rank_points_text.split(",").map(&:strip)
+    @rank_points_text_invalid = parts.any? { |part| !part.match?(/\A\d+\z/) }
+    self.rank_points = parts.map(&:to_i) unless @rank_points_text_invalid
   end
 
   def single_choice?
@@ -32,6 +62,34 @@ class VotingCategory < ApplicationRecord
   end
 
   private
+
+  def clear_rank_points_unless_ranked
+    self.rank_points = [] if rank_points.nil?
+    return if ranked?
+
+    self.rank_points = []
+    @rank_points_text_invalid = false
+  end
+
+  def rank_points_valid
+    return unless ranked?
+
+    if @rank_points_text_invalid
+      errors.add(:rank_points, I18n.t("models.voting_category.rank_points_format"))
+    elsif rank_points.present?
+      validate_rank_points_list
+    end
+  end
+
+  def validate_rank_points_list
+    if rank_points.size != max_choices
+      errors.add(:rank_points, I18n.t("models.voting_category.rank_points_count", count: max_choices))
+    elsif !rank_points.all? { |points| points.is_a?(Integer) && points.between?(1, RANK_POINTS_MAX) }
+      errors.add(:rank_points, I18n.t("models.voting_category.rank_points_range", max: RANK_POINTS_MAX))
+    elsif rank_points.each_cons(2).any? { |higher, lower| lower > higher }
+      errors.add(:rank_points, I18n.t("models.voting_category.rank_points_order"))
+    end
+  end
 
   def set_default_position
     return if position.to_i.positive? || voting.nil?

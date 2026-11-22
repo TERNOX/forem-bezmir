@@ -14,6 +14,11 @@ fr:
     voting:
       closes_before_opens: doit être postérieure à l'ouverture
       slug_taken: est déjà prise par un membre, une organisation, une page, un podcast ou un autre vote
+    voting_category:
+      rank_points_count: "doit contenir un nombre par place (%{count} au total)"
+      rank_points_format: "doit contenir des nombres entiers séparés par des virgules, comme 5,3,1"
+      rank_points_order: ne peut pas donner plus de points à une place inférieure qu'à une place supérieure
+      rank_points_range: "doit contenir des nombres entiers de 1 à %{max}"
     voting_nominee:
       game_or_title: Choisissez un jeu ou saisissez un titre
   views:

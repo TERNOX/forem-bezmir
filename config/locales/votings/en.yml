@@ -14,6 +14,11 @@ en:
     voting:
       closes_before_opens: must be later than the opening time
       slug_taken: is already taken by a member, organization, page, podcast or another voting
+    voting_category:
+      rank_points_count: "must have one number per place (%{count} in total)"
+      rank_points_format: must be whole numbers separated by commas, like 5,3,1
+      rank_points_order: can't give a lower place more points than a higher one
+      rank_points_range: must be whole numbers from 1 to %{max}
     voting_nominee:
       game_or_title: Pick a game or enter a title
   views:
