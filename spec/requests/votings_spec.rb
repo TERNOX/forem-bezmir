@@ -2,7 +2,9 @@ require "rails_helper"
 
 RSpec.describe "Votings" do
   let(:voting) { create(:voting, slug: "gra-roku-2026", title: "Гра року 2026") }
-  let!(:category) { create(:voting_category, voting: voting, title: "Гра року", max_choices: 3, ranked: true) }
+  let!(:category) do
+    create(:voting_category, voting: voting, title: "Гра року", max_choices: 3, ranked: true, rank_points: [3, 2, 1])
+  end
   let!(:nominees) { create_list(:voting_nominee, 3, category: category) }
   let(:user) { create(:user) }
 

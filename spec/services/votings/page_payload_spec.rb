@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe Votings::PagePayload do
   let(:voting) { create(:voting, results_published_at: Time.current) }
-  let(:category) { create(:voting_category, voting: voting, max_choices: 3, ranked: true) }
+  let(:category) { create(:voting_category, voting: voting, max_choices: 3, ranked: true, rank_points: [3, 2, 1]) }
   let!(:hades) { create(:voting_nominee, category: category) }
   let!(:silksong) { create(:voting_nominee, category: category) }
   let!(:clair) { create(:voting_nominee, category: category) }

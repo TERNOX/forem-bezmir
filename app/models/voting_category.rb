@@ -4,7 +4,10 @@
 # * ranked      — voters order their picks; place N earns rank_points[N - 1]
 #                 points, or (max_choices - N + 1) when rank_points is empty.
 # * rank_points — points per place for a ranked nomination (e.g. [5, 3, 1]);
-#                 always [] for an unranked one.
+#                 always [] for an unranked one. A three-place ranked nomination
+#                 saved with it blank gets DEFAULT_THREE_PLACE_POINTS (5-3-1)
+#                 when it is new or just became ranked / three-place; older ones
+#                 left empty keep the linear 3-2-1 their votes were cast at.
 # * allow_other — voters may type their own answer instead of / besides the nominees.
 # * card_style  — cover (vertical 2:3 box art) or artwork (horizontal 16:9).
 #
@@ -15,6 +18,7 @@ class VotingCategory < ApplicationRecord
   MAX_CHOICES_LIMIT = 20
   OTHER_TEXT_MAX_LENGTH = 100
   RANK_POINTS_MAX = 1000
+  DEFAULT_THREE_PLACE_POINTS = [5, 3, 1].freeze
 
   belongs_to :voting, inverse_of: :categories
   has_many :nominees, -> { order(:position, :id) },
@@ -30,6 +34,7 @@ class VotingCategory < ApplicationRecord
   validate :structure_locked_once_voted, on: :update
 
   before_validation :clear_rank_points_unless_ranked
+  before_validation :default_three_place_rank_points
   before_create :set_default_position
 
   # Points per place, 1st place first: the custom list, else the linear
@@ -50,7 +55,8 @@ class VotingCategory < ApplicationRecord
     rank.to_i.between?(1, list.size) ? list[rank.to_i - 1] : list.last.to_i
   end
 
-  # The admin form edits rank_points as "5,3,1"; blank means the linear scale.
+  # The admin form edits rank_points as "5,3,1"; blank means the linear scale
+  # (5-3-1 instead for a new three-place nomination, see above).
   def rank_points_text
     @rank_points_text || rank_points.join(",")
   end
@@ -79,6 +85,16 @@ class VotingCategory < ApplicationRecord
 
     self.rank_points = []
     @rank_points_text_invalid = false
+  end
+
+  # Only when the nomination is new or ranked / max_choices change, so an
+  # unrelated edit never moves a legacy one with empty rank_points off the 3-2-1
+  # it may have been voted at (those two attributes lock once anyone votes).
+  def default_three_place_rank_points
+    return unless ranked? && max_choices == 3 && rank_points.blank? && !@rank_points_text_invalid
+    return unless new_record? || will_save_change_to_ranked? || will_save_change_to_max_choices?
+
+    self.rank_points = DEFAULT_THREE_PLACE_POINTS.dup
   end
 
   def rank_points_valid

@@ -82,10 +82,11 @@ RSpec.describe VotingCategory do
       expect(category).to be_valid
     end
 
-    it "treats blank as the linear scale" do
-      category = build(:voting_category, max_choices: 3, ranked: true, rank_points: [5, 3, 1])
+    it "treats blank on an existing nomination as the linear scale" do
+      category = create(:voting_category, max_choices: 3, ranked: true, rank_points: [5, 3, 1])
       category.rank_points_text = ""
-      expect(category.rank_points).to eq([])
+      category.save!
+      expect(category.reload.rank_points).to eq([])
       expect(category.rank_points_list).to eq([3, 2, 1])
     end
 
@@ -107,6 +108,63 @@ RSpec.describe VotingCategory do
     it "rejects negative numbers and empty entries" do
       expect(build(:voting_category, max_choices: 3, ranked: true, rank_points_text: "5,-3,1")).not_to be_valid
       expect(build(:voting_category, max_choices: 3, ranked: true, rank_points_text: "5,,1")).not_to be_valid
+    end
+  end
+
+  describe "default points for a three-place ranked nomination" do
+    it "gives a new one 5-3-1 when the points are left blank" do
+      category = create(:voting_category, max_choices: 3, ranked: true, rank_points_text: "")
+      expect(category.reload.rank_points).to eq(VotingCategory::DEFAULT_THREE_PLACE_POINTS)
+      expect(category.rank_points).to eq([5, 3, 1])
+      expect(category.rank_points_list).to eq([5, 3, 1])
+      expect(create(:voting_category, max_choices: 3, ranked: true).reload.rank_points).to eq([5, 3, 1])
+    end
+
+    it "keeps the points typed for a new one, linear included" do
+      category = create(:voting_category, max_choices: 3, ranked: true, rank_points_text: "3,2,1")
+      expect(category.reload.rank_points).to eq([3, 2, 1])
+    end
+
+    it "keeps the linear fallback for other numbers of places" do
+      two = create(:voting_category, max_choices: 2, ranked: true)
+      four = create(:voting_category, max_choices: 4, ranked: true)
+
+      expect(two.reload).to have_attributes(rank_points: [], rank_points_list: [2, 1])
+      expect(four.reload).to have_attributes(rank_points: [], rank_points_list: [4, 3, 2, 1])
+    end
+
+    it "stores no points for an unranked one" do
+      category = create(:voting_category, max_choices: 3, ranked: false)
+      expect(category.reload).to have_attributes(rank_points: [], rank_points_list: [])
+    end
+
+    it "leaves a legacy one with empty points at 3-2-1 when other attributes change" do
+      category = create(:voting_category, max_choices: 3, ranked: true)
+      category.update_column(:rank_points, [])
+
+      expect(category.reload.update(title: "Гра року", description: "Нове", rank_points_text: "")).to be(true)
+      expect(category.reload).to have_attributes(title: "Гра року", rank_points: [], rank_points_list: [3, 2, 1])
+      expect(category.update(ranked: true, max_choices: "3")).to be(true) # same values, as the form sends them
+      expect(category.reload.rank_points).to eq([])
+    end
+
+    it "gives 5-3-1 to an unvoted one that becomes ranked or gets three places" do
+      unranked = create(:voting_category, max_choices: 3)
+      expect(unranked.update(ranked: true)).to be(true)
+      expect(unranked.reload.rank_points).to eq([5, 3, 1])
+
+      two_places = create(:voting_category, max_choices: 2, ranked: true)
+      expect(two_places.update(max_choices: 3)).to be(true)
+      expect(two_places.reload.rank_points).to eq([5, 3, 1])
+    end
+
+    it "still reports invalid typed points instead of defaulting them" do
+      category = build(:voting_category, max_choices: 3, ranked: true, rank_points_text: "a,b")
+
+      expect(category).not_to be_valid
+      expect(category.errors[:rank_points]).to include(I18n.t("models.voting_category.rank_points_format"))
+      expect(category.rank_points).to eq([])
+      expect(category.save).to be(false)
     end
   end
 
