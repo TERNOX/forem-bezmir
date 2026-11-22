@@ -79,8 +79,13 @@
               <%= button_to "←", move_admin_voting_voting_category_voting_nominee_path(@voting, category, nominee, direction: "up"), method: :patch, class: "crayons-btn crayons-btn--ghost crayons-btn--xs", title: "Move earlier", disabled: nominee_index.zero? %>
               <%= button_to "→", move_admin_voting_voting_category_voting_nominee_path(@voting, category, nominee, direction: "down"), method: :patch, class: "crayons-btn crayons-btn--ghost crayons-btn--xs", title: "Move later", disabled: nominee_index == category.nominees.size - 1 %>
               <%= link_to "Edit", edit_admin_voting_voting_category_voting_nominee_path(@voting, category, nominee), class: "crayons-btn crayons-btn--ghost crayons-btn--xs" %>
+              <% votes = @nominee_vote_counts[nominee.id].to_i %>
+              <% remove_confirm = "Remove “#{nominee.display_title}”?" %>
+              <% if votes.positive? %>
+                <% remove_confirm += " It has #{pluralize(votes, 'vote')}; " + (category.ranked? ? "those voters' lower places will move up." : "they will be deleted.") %>
+              <% end %>
               <%= link_to "✕", admin_voting_voting_category_voting_nominee_path(@voting, category, nominee), method: :delete,
-                                                                                                         data: { confirm: "Remove “#{nominee.display_title}”?" },
+                                                                                                         data: { confirm: remove_confirm },
                                                                                                          title: "Remove",
                                                                                                          class: "crayons-btn crayons-btn--ghost crayons-btn--xs" %>
             </div>

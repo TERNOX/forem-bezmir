@@ -1,3 +1,5 @@
+<% voted = @category.voted? %>
+<% max_choices_locked = voted && @category.ranked_in_database %>
 <%= form_for [:admin, @voting, @category], html: { class: "flex flex-col gap-6" } do |f| %>
   <% if @category.errors.any? %>
     <div class="crayons-notice crayons-notice--danger" role="alert"><%= @category.errors.full_messages.to_sentence %></div>
@@ -13,17 +15,27 @@
     <%= f.text_area :description, class: "crayons-textfield", rows: 2, placeholder: "Ігри, що змушують серце битися частіше…" %>
   </div>
 
+  <% if voted %>
+    <div class="crayons-notice crayons-notice--warning">
+      People have already voted here, so the existing picks fix the structure:
+      “Ranked” can't change<%= max_choices_locked ? ", nor can the number of places" : ", and the number of picks can only go up" %>.
+    </div>
+  <% end %>
+
   <div class="crayons-field">
     <%= f.label :max_choices, "How many picks", class: "crayons-field__label" %>
     <p class="crayons-field__description">1 = one choice. For a ranked nomination this is the number of places.</p>
-    <%= f.number_field :max_choices, class: "crayons-textfield", min: 1, max: VotingCategory::MAX_CHOICES_LIMIT %>
+    <%= f.number_field :max_choices, class: "crayons-textfield", max: VotingCategory::MAX_CHOICES_LIMIT,
+                                     min: voted ? @category.max_choices_in_database : 1,
+                                     disabled: max_choices_locked %>
   </div>
 
   <label class="crayons-field crayons-field--checkbox">
-    <%= f.check_box :ranked, class: "crayons-checkbox" %>
+    <%# A disabled checkbox must not send its hidden "0" either, or a locked ranked nomination would fail to save. %>
+    <%= f.check_box :ranked, class: "crayons-checkbox", disabled: voted, include_hidden: !voted %>
     <div>
       <div class="crayons-field__label">Ranked (places with points)</div>
-      <p class="crayons-field__description">Voters order their picks and each place earns the points set below.</p>
+      <p class="crayons-field__description">Voters order their picks and each place earns the points set below.<%= " Locked: people have already voted." if voted %></p>
     </div>
   </label>
 

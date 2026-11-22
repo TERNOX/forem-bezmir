@@ -3,6 +3,7 @@
   <h1 class="fs-4xl fw-bold">Edit nominee</h1>
 </header>
 
+<% voted = @nominee.voted? %>
 <div class="crayons-card p-6">
   <%= form_for @nominee, url: admin_voting_voting_category_voting_nominee_path(@voting, @category, @nominee), method: :patch, html: { class: "flex flex-col gap-6", multipart: true } do |f| %>
     <% if @nominee.errors.any? %>
@@ -14,20 +15,28 @@
         <img src="<%= @nominee.game.cover_url %>" alt="" style="width: 90px; border-radius: 6px;">
         <div>
           <p class="fw-bold"><%= @nominee.game.title %> <%= "(#{@nominee.game.release_year})" if @nominee.game.release_year %></p>
-          <p class="fs-s color-base-60">Wrong game or picture? Fix the picture in the <%= link_to "catalog entry", edit_admin_game_path(@nominee.game) %> (applies everywhere), or link another game below.</p>
+          <% if voted %>
+            <p class="fs-s color-base-60">Wrong picture? Fix it in the <%= link_to "catalog entry", edit_admin_game_path(@nominee.game) %> (applies everywhere) or upload your own image below.</p>
+          <% else %>
+            <p class="fs-s color-base-60">Wrong game or picture? Fix the picture in the <%= link_to "catalog entry", edit_admin_game_path(@nominee.game) %> (applies everywhere), or link another game below.</p>
+          <% end %>
         </div>
       </div>
-      <div class="crayons-field">
-        <label class="crayons-field__label" for="replace_igdb_id">Replace with IGDB game id</label>
-        <p class="crayons-field__description">The number from the IGDB search (or the catalog game id in the next field).</p>
-        <input id="replace_igdb_id" name="replace_igdb_id" type="number" class="crayons-textfield">
-      </div>
-      <div class="crayons-field">
-        <label class="crayons-field__label" for="replace_game_id">…or catalog game</label>
-        <div class="crayons-select">
-          <%= select_tag :replace_game_id, options_for_select([["—", ""]] + Game.order(:title).pluck(:title, :id)), class: "crayons-select__native" %>
+      <% if voted %>
+        <p class="crayons-notice crayons-notice--warning">People have already voted for this nominee, so its game can't be replaced: their votes would silently count for another game. Add the right game as a new nominee instead.</p>
+      <% else %>
+        <div class="crayons-field">
+          <label class="crayons-field__label" for="replace_igdb_id">Replace with IGDB game id</label>
+          <p class="crayons-field__description">The number from the IGDB search (or the catalog game id in the next field).</p>
+          <input id="replace_igdb_id" name="replace_igdb_id" type="number" class="crayons-textfield">
         </div>
-      </div>
+        <div class="crayons-field">
+          <label class="crayons-field__label" for="replace_game_id">…or catalog game</label>
+          <div class="crayons-select">
+            <%= select_tag :replace_game_id, options_for_select([["—", ""]] + Game.order(:title).pluck(:title, :id)), class: "crayons-select__native" %>
+          </div>
+        </div>
+      <% end %>
     <% end %>
 
     <div class="crayons-field">

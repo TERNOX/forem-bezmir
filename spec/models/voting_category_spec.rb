@@ -122,6 +122,80 @@ RSpec.describe VotingCategory do
     expect(build(:voting_category, max_choices: 0)).not_to be_valid
     expect(build(:voting_category, max_choices: VotingCategory::MAX_CHOICES_LIMIT + 1)).not_to be_valid
   end
+
+  describe "structure lock once people have voted" do
+    let(:voting) { create(:voting) }
+    let(:plain) { create(:voting_category, voting: voting, max_choices: 3) }
+    let(:ranked) { create(:voting_category, voting: voting, max_choices: 3, ranked: true, rank_points: [5, 3, 1]) }
+
+    def vote_in(category)
+      nominee = create(:voting_nominee, category: category)
+      Votings::BallotSubmitter.call(voting: voting, user: create(:user),
+                                    selections: { category.id.to_s => { "nominee_ids" => [nominee.id] } }).tap do |r|
+        raise r.errors.inspect unless r.success?
+      end
+    end
+
+    it "allows any structural change while nobody has voted" do
+      create(:voting_nominee, category: ranked)
+
+      expect(ranked.voted?).to be(false)
+      expect(ranked.update(max_choices: 2, rank_points: [3, 1])).to be(true)
+      expect(ranked.update(ranked: false)).to be(true)
+      expect(plain.update(max_choices: 1, ranked: true)).to be(true)
+    end
+
+    it "does not let ranked be turned on" do
+      vote_in(plain)
+
+      expect(plain.voted?).to be(true)
+      expect(plain.update(ranked: true)).to be(false)
+      expect(plain.errors[:ranked]).to include(I18n.t("models.voting_category.ranked_locked"))
+      expect(plain.reload.ranked).to be(false)
+    end
+
+    it "does not let ranked be turned off" do
+      vote_in(ranked)
+
+      expect(ranked.update(ranked: false)).to be(false)
+      expect(ranked.errors[:ranked]).to include(I18n.t("models.voting_category.ranked_locked"))
+      expect(ranked.reload).to have_attributes(ranked: true, rank_points: [5, 3, 1])
+    end
+
+    it "does not let max_choices be lowered" do
+      vote_in(plain)
+
+      expect(plain.update(max_choices: 2)).to be(false)
+      expect(plain.errors[:max_choices]).to include(I18n.t("models.voting_category.max_choices_lowered", count: 3))
+      expect(plain.reload.max_choices).to eq(3)
+    end
+
+    it "lets max_choices go up in an unranked nomination" do
+      vote_in(plain)
+
+      expect(plain.update(max_choices: 5)).to be(true)
+      expect(plain.reload.max_choices).to eq(5)
+    end
+
+    it "does not let max_choices change at all in a ranked nomination" do
+      vote_in(ranked)
+
+      expect(ranked.update(max_choices: 4, rank_points: [5, 3, 2, 1])).to be(false)
+      expect(ranked.errors[:max_choices]).to include(I18n.t("models.voting_category.max_choices_locked_ranked"))
+      expect(ranked.update(max_choices: 2, rank_points: [5, 3])).to be(false)
+      expect(ranked.reload.max_choices).to eq(3)
+    end
+
+    it "keeps everything else editable" do
+      vote_in(ranked)
+
+      expect(ranked.update(title: "Гра року", description: "Нове", required: true, allow_other: true,
+                           card_style: "artwork", position: 7, rank_points: [10, 5, 1],
+                           ranked: true, max_choices: "3")).to be(true)
+      expect(ranked.reload).to have_attributes(title: "Гра року", required: true, allow_other: true,
+                                               card_style: "artwork", position: 7, rank_points: [10, 5, 1])
+    end
+  end
 end
 
 RSpec.describe VotingNominee do
@@ -134,6 +208,22 @@ RSpec.describe VotingNominee do
     nominee = create(:voting_nominee)
     duplicate = build(:voting_nominee, category: nominee.category, game: nominee.game)
     expect(duplicate).not_to be_valid
+  end
+
+  it "locks its game once people have voted for it" do
+    nominee = create(:voting_nominee)
+    other_game = create(:game)
+    expect(nominee.update(game: other_game)).to be(true) # no votes yet
+
+    voting = nominee.category.voting
+    Votings::BallotSubmitter.call(voting: voting, user: create(:user),
+                                  selections: { nominee.voting_category_id.to_s => { "nominee_ids" => [nominee.id] } })
+
+    expect(nominee.voted?).to be(true)
+    expect(nominee.update(game: create(:game))).to be(false)
+    expect(nominee.errors[:base]).to include(I18n.t("models.voting_nominee.game_locked"))
+    expect(nominee.reload.game).to eq(other_game)
+    expect(nominee.update(title: "Override", subtitle: "DLC", link_url: "https://kutok.io")).to be(true)
   end
 
   it "only accepts http(s) links" do

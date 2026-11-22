@@ -130,6 +130,85 @@ RSpec.describe "Admin::Votings" do
     expect(copied_nominee.image.path).not_to eq(category.nominees.first.image.path)
   end
 
+  describe "nominations and nominees that already have votes" do
+    let(:ranked) { create(:voting_category, voting: voting, max_choices: 3, ranked: true, rank_points: [5, 3, 1]) }
+    let!(:first_game) { create(:voting_nominee, category: ranked) }
+    let!(:second_game) { create(:voting_nominee, category: ranked) }
+    let!(:ballot) do
+      voting.update!(published: true)
+      Votings::BallotSubmitter.call(
+        voting: voting, user: create(:user),
+        selections: { ranked.id.to_s => { "nominee_ids" => [first_game.id, second_game.id] } }
+      ).ballot
+    end
+
+    # What a browser would send for the form: enabled fields only, unchecked boxes left out.
+    def submitted_fields(html, action, overrides = {})
+      form = Nokogiri::HTML(html).css("form").detect { |candidate| candidate["action"] == action }
+      toggles = %w[checkbox radio]
+      form.css("input, select, textarea").filter_map do |field|
+        next if field["name"].blank? || field.key?("disabled") || field["type"] == "submit"
+        next if toggles.include?(field["type"]) && !field.key?("checked")
+
+        value = case field.name
+                when "select" then (field.at_css("option[selected]") || field.at_css("option"))&.[]("value")
+                when "textarea" then field.text
+                else field["value"]
+                end
+        [field["name"], overrides.fetch(field["name"], value.to_s)]
+      end
+    end
+
+    it "saves the edit form of a locked ranked nomination when only the title changes" do
+      get edit_admin_voting_voting_category_path(voting, ranked)
+      expect(response.body).to include("People have already voted here")
+      action = admin_voting_voting_category_path(voting, ranked)
+      fields = submitted_fields(response.body, action, "voting_category[title]" => "Гра року 2026")
+      expect(fields.map(&:first)).not_to include("voting_category[ranked]", "voting_category[max_choices]")
+
+      post action, params: URI.encode_www_form(fields),
+                   headers: { "CONTENT_TYPE" => "application/x-www-form-urlencoded" }
+
+      expect(response).to redirect_to(admin_voting_path(voting, anchor: "category-#{ranked.id}"))
+      expect(ranked.reload).to have_attributes(title: "Гра року 2026", ranked: true, max_choices: 3,
+                                               rank_points: [5, 3, 1])
+    end
+
+    it "rejects a structural change with the reason" do
+      patch admin_voting_voting_category_path(voting, ranked), params: { voting_category: { ranked: "0" } }
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response.body).to include(CGI.escapeHTML(I18n.t("models.voting_category.ranked_locked")))
+      expect(ranked.reload.ranked).to be(true)
+    end
+
+    it "removes a nominee through the remover, moving the lower places up" do
+      get admin_voting_path(voting)
+      expect(response.body).to include("It has 1 vote;")
+
+      allow(Votings::NomineeRemover).to receive(:call).and_call_original
+      delete admin_voting_voting_category_voting_nominee_path(voting, ranked, first_game)
+
+      expect(Votings::NomineeRemover).to have_received(:call).with(first_game)
+
+      expect(response).to redirect_to(admin_voting_path(voting, anchor: "category-#{ranked.id}"))
+      expect(ballot.choices.reload.pluck(:voting_nominee_id, :rank)).to eq([[second_game.id, 1]])
+    end
+
+    it "does not replace the game of a nominee that has votes" do
+      original_game = first_game.game
+      get edit_admin_voting_voting_category_voting_nominee_path(voting, ranked, first_game)
+      expect(response.body).not_to include("replace_game_id")
+
+      patch admin_voting_voting_category_voting_nominee_path(voting, ranked, first_game),
+            params: { replace_game_id: create(:game).id, voting_nominee: { subtitle: "DLC" } }
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response.body).to include(CGI.escapeHTML(I18n.t("models.voting_nominee.game_locked")))
+      expect(first_game.reload).to have_attributes(game: original_game, subtitle: nil)
+    end
+  end
+
   it "searches the catalog (and reports IGDB as not configured)" do
     create(:game, title: "Hades II")
     get search_admin_games_path(q: "hades", format: :json)

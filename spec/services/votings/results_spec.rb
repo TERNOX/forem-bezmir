@@ -46,7 +46,8 @@ RSpec.describe Votings::Results do
   it "gives a pick without a rank (voted before the category became ranked) the lowest place's points" do
     ranked.update!(ranked: false)
     vote(create(:user), [hades.id, silksong.id])
-    ranked.update!(ranked: true, rank_points: [5, 3, 1])
+    # Data from before the structure lock (the model no longer allows this once people have voted).
+    ranked.update_columns(ranked: true, rank_points: [5, 3, 1])
     vote(create(:user), [clair.id])
 
     rows = described_class.call(voting)[:categories].detect { |c| c.category == ranked }.rows
