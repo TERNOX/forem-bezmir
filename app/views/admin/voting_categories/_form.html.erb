@@ -41,7 +41,7 @@
 
   <div class="crayons-field">
     <%= f.label :rank_points_text, "Points per place", class: "crayons-field__label" %>
-    <p class="crayons-field__description">Ranked nominations only. Comma separated, one number per place from 1st to last, never more for a lower place (e.g. <code>5,3,1</code>). Leave blank for the linear scale: with 3 places, 1st = 3 points, 2nd = 2, 3rd = 1.</p>
+    <p class="crayons-field__description">Ranked nominations only. Comma separated, one number per place from 1st to last, never more for a lower place (e.g. <code>5,3,1</code>). Left blank, a three-place nomination gets 5-3-1 when added (or switched to ranked / 3 places); otherwise blank means the linear scale (4-3-2-1 for 4 places). Type e.g. <code>3,2,1</code> to override.</p>
     <%= f.text_field :rank_points_text, class: "crayons-textfield", placeholder: "5,3,1" %>
   </div>
 

@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe Votings::Results do
   let(:voting) { create(:voting) }
-  let(:ranked) { create(:voting_category, voting: voting, max_choices: 3, ranked: true) }
+  let(:ranked) { create(:voting_category, voting: voting, max_choices: 3, ranked: true, rank_points: [3, 2, 1]) }
   let(:plain) { create(:voting_category, voting: voting, max_choices: 2, allow_other: true) }
   let!(:hades) { create(:voting_nominee, category: ranked) }
   let!(:silksong) { create(:voting_nominee, category: ranked) }
@@ -17,7 +17,8 @@ RSpec.describe Votings::Results do
     end
   end
 
-  it "scores ranked places 3-2-1 and orders by points" do
+  it "scores ranked places 3-2-1 without custom points (a legacy nomination) and orders by points" do
+    ranked.update_column(:rank_points, [])
     vote(create(:user), [hades.id, silksong.id, clair.id])   # hades 3, silksong 2, clair 1
     vote(create(:user), [silksong.id, hades.id])             # silksong 3, hades 2
     vote(create(:user), [clair.id])                          # clair 3
