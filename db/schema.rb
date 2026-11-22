@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_11_22_120000) do
+ActiveRecord::Schema[7.2].define(version: 2026_11_22_130000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "ltree"
@@ -2310,6 +2310,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_11_22_120000) do
     t.boolean "published", default: false, null: false
     t.boolean "require_account_before_start", default: false, null: false
     t.datetime "results_published_at"
+    t.jsonb "results_snapshot"
     t.string "slug", null: false
     t.string "title", null: false
     t.boolean "top_level_path", default: false, null: false

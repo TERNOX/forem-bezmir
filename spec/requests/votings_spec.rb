@@ -25,6 +25,43 @@ RSpec.describe "Votings" do
       expect(payload["results"]).to include("ballotsCount" => 0)
     end
 
+    it "serves the results frozen on publishing, in the shape the app reads, without counting again" do
+      Votings::BallotSubmitter.call(voting: voting, user: user,
+                                    selections: { category.id.to_s => { "nominee_ids" => [nominees[1].id] } })
+      voting.publish_results!
+      user.add_role(:suspended) # would drop the only counted ballot from a live count
+      allow(Votings::Results).to receive(:call).and_call_original
+
+      get "/vote/gra-roku-2026"
+
+      expect(Votings::Results).not_to have_received(:call)
+      payload = JSON.parse(Nokogiri::HTML(response.body).at_css("#voting-app")["data-voting"])
+      results = payload["results"]
+      expect(results["ballotsCount"]).to eq(1)
+      expect(results["categories"].keys).to eq([category.id.to_s])
+      category_result = results["categories"][category.id.to_s]
+      expect(category_result["voters"]).to eq(1)
+      expect(category_result["rows"].first).to eq(
+        "nomineeId" => nominees[1].id, "place" => 1, "points" => 3, "votes" => 1, "firsts" => 1, "share" => 100.0,
+      )
+      # jsonb reorders object keys; the app reads them by name.
+      expect(category_result["rows"].map { |row| row.keys.sort }.uniq)
+        .to eq([%w[firsts nomineeId place points share votes]])
+      expect(category_result["rows"].drop(1).pluck("place")).to eq([nil, nil])
+    end
+
+    it "serves the live count for results published before snapshots existed" do
+      voting.update!(results_published_at: Time.current)
+      Votings::BallotSubmitter.call(voting: voting, user: user,
+                                    selections: { category.id.to_s => { "nominee_ids" => [nominees[0].id] } })
+
+      get "/vote/gra-roku-2026"
+
+      payload = JSON.parse(Nokogiri::HTML(response.body).at_css("#voting-app")["data-voting"])
+      expect(payload["results"]["ballotsCount"]).to eq(1)
+      expect(payload.dig("results", "categories", category.id.to_s, "rows", 0, "nomineeId")).to eq(nominees[0].id)
+    end
+
     it "hides drafts from members but lets admins preview" do
       voting.update!(published: false)
       expect { get "/vote/gra-roku-2026" }.to raise_error(ActiveRecord::RecordNotFound)

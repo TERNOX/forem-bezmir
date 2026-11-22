@@ -51,6 +51,28 @@ class Voting < ApplicationRecord
     results_published_at.present?
   end
 
+  # Publishes the results as they stand now: the public page keeps showing
+  # this snapshot (see Votings::PublicResults) until it is taken again, so
+  # later suspensions, deleted accounts or ballots still cast while the voting
+  # is open don't move the announced numbers. Calling it again re-takes it.
+  #
+  # @param results [Hash, nil] an existing Votings::Results.call(self), to avoid tallying twice
+  def publish_results!(now: Time.current, results: nil)
+    update!(results_published_at: now, results_snapshot: Votings::PublicResults.call(self, results: results))
+  end
+
+  def unpublish_results!
+    update!(results_published_at: nil, results_snapshot: nil)
+  end
+
+  # What the public page shows once results are published: the snapshot, or
+  # for results published before snapshots existed, the live count.
+  def public_results
+    return unless results_published?
+
+    results_snapshot || Votings::PublicResults.call(self)
+  end
+
   def status(now = Time.current)
     return :draft unless published?
     return :upcoming if upcoming?(now)

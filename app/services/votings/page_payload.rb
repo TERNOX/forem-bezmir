@@ -19,7 +19,8 @@ module Votings
       {
         voting: voting_json,
         categories: categories.map { |category| category_json(category) },
-        results: (results_json if @voting.results_published?),
+        # The snapshot taken on publishing, not a live count (see Voting#publish_results!).
+        results: @voting.public_results,
         strings: I18n.t("views.votings.app"),
         signInUrl: "/enter"
       }
@@ -64,21 +65,6 @@ module Votings
         subtitle: nominee.subtitle.presence || nominee.game&.release_year&.to_s,
         imageUrl: nominee.image_url_for(category.card_style),
         linkUrl: nominee.link_url.presence
-      }
-    end
-
-    def results_json
-      results = Votings::Results.call(@voting)
-      {
-        ballotsCount: results[:ballots_count],
-        categories: results[:categories].to_h do |category_result|
-          total = [category_result.max_points, 1].max
-          rows = category_result.rows.map do |row|
-            { nomineeId: row.nominee.id, place: row.place, points: row.points, votes: row.votes,
-              firsts: row.firsts, share: (row.points * 100.0 / total).round(1) }
-          end
-          [category_result.category.id, { voters: category_result.voters, rows: rows }]
-        end
       }
     end
 

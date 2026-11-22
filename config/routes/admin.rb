@@ -171,6 +171,7 @@ namespace :admin do
       member do
         get :results
         patch :publish_results
+        patch :republish_results
         patch :unpublish_results
         post :clone
       end

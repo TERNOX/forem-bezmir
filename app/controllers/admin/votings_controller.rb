@@ -46,10 +46,16 @@ module Admin
       redirect_to admin_votings_path, notice: "Voting deleted."
     end
 
+    # Always the live count; once published, also whether the public page's
+    # snapshot still matches it.
     def results
       @results = Votings::Results.call(@voting)
       respond_to do |format|
-        format.html
+        format.html do
+          if @voting.results_snapshot
+            @snapshot_matches = Votings::PublicResults.call(@voting, results: @results) == @voting.results_snapshot
+          end
+        end
         format.csv do
           send_data results_csv(@results), filename: "#{@voting.slug}-results-#{Date.current}.csv",
                                            type: "text/csv; charset=utf-8"
@@ -58,12 +64,22 @@ module Admin
     end
 
     def publish_results
-      @voting.update!(results_published_at: Time.current)
+      @voting.publish_results!
       redirect_to results_admin_voting_path(@voting), notice: "Results are now public."
     end
 
+    # Re-takes the published snapshot from the current count.
+    def republish_results
+      unless @voting.results_published?
+        return redirect_to results_admin_voting_path(@voting), notice: "Results are not published."
+      end
+
+      @voting.publish_results!
+      redirect_to results_admin_voting_path(@voting), notice: "Published results updated to the current count."
+    end
+
     def unpublish_results
-      @voting.update!(results_published_at: nil)
+      @voting.unpublish_results!
       redirect_to results_admin_voting_path(@voting), notice: "Results are hidden again."
     end
 
