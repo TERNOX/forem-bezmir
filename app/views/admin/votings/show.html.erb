@@ -9,6 +9,7 @@
   </div>
   <div class="flex flex-wrap gap-2">
     <%= link_to "Results", results_admin_voting_path(@voting), class: "crayons-btn crayons-btn--secondary" %>
+    <%= link_to "Ballots", admin_voting_voting_ballots_path(@voting), class: "crayons-btn crayons-btn--secondary" %>
     <%= link_to "Settings", edit_admin_voting_path(@voting), class: "crayons-btn crayons-btn--secondary" %>
     <%= button_to "Copy voting", clone_admin_voting_path(@voting), method: :post, class: "crayons-btn crayons-btn--ghost",
                                                                   form: { data: { confirm: "Copy all nominations and nominees into a new draft voting?" } } %>

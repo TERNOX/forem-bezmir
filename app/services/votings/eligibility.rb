@@ -20,6 +20,24 @@ module Votings
       user.spam_or_suspended? || user.banished?
     end
 
+    # The member-level voter rules alone, whatever the voting's state (draft,
+    # open or closed): nil when the member passes them, otherwise :unconfirmed,
+    # :restricted, :low_score or :account_too_new. Results#counted_ballot_ids
+    # applies the same rules in SQL; Votings::BallotAudit uses this per ballot
+    # (with roles preloaded), and a spec keeps the two in agreement.
+    def self.user_reason(voting, user)
+      return :unconfirmed unless user.confirmed?
+      return :restricted if restricted_user?(user)
+      return :low_score if user.score.to_i < voting.min_user_score
+      return :account_too_new if account_too_new?(voting, user)
+
+      nil
+    end
+
+    def self.account_too_new?(voting, user)
+      voting.require_account_before_start? && voting.opens_at.present? && user.created_at >= voting.opens_at
+    end
+
     def initialize(voting, user, now: Time.current)
       @voting = voting
       @user = user
@@ -40,16 +58,8 @@ module Votings
       return :upcoming if voting.upcoming?(now)
       return :closed if voting.closed?(now)
       return :sign_in unless user
-      return :unconfirmed unless user.confirmed?
-      return :restricted if self.class.restricted_user?(user)
-      return :low_score if user.score.to_i < voting.min_user_score
-      return :account_too_new if account_too_new?
 
-      nil
-    end
-
-    def account_too_new?
-      voting.require_account_before_start? && voting.opens_at.present? && user.created_at >= voting.opens_at
+      self.class.user_reason(voting, user)
     end
   end
 end

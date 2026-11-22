@@ -18,6 +18,12 @@ class VotingBallot < ApplicationRecord
     submitted_at.present?
   end
 
+  # Set by an admin (ballot audit page): the ballot is not counted, but its
+  # voter is not told and can still edit it.
+  def disqualified?
+    disqualified_at.present?
+  end
+
   # Unguessable part of the public "my picks" URL, so ballots can't be read by
   # walking usernames (which would leak results before they are published).
   # Derived from the app secret, so it needs no column and never changes.

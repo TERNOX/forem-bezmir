@@ -48,6 +48,15 @@ RSpec.describe Votings::Eligibility do
     expect(reason_for(voting, user)).to eq(:low_score)
   end
 
+  it "checks the member rules alone, whatever the voting's state" do
+    closed = create(:voting, opens_at: 2.days.ago, closes_at: 1.day.ago)
+    expect(described_class.user_reason(closed, user)).to be_nil
+
+    user.update_column(:score, -1)
+    expect(described_class.user_reason(closed, user)).to eq(:low_score)
+    expect(described_class.user_reason(closed, create(:user, username: "spam_bot"))).to eq(:restricted)
+  end
+
   it "can require accounts older than the voting" do
     voting.update!(require_account_before_start: true, opens_at: 1.day.ago)
     expect(reason_for(voting, user)).to eq(:account_too_new)
