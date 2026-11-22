@@ -40,7 +40,7 @@
           <p class="color-base-70 fs-s"><%= category.description %></p>
         <% end %>
         <p class="flex flex-wrap gap-1 mt-1">
-          <span class="crayons-badge"><%= category.ranked? ? "Ranked: #{category.max_choices} places (#{(1..category.max_choices).map { |r| category.points_for(r) }.join('-')} pts)" : (category.single_choice? ? "One choice" : "Up to #{category.max_choices}") %></span>
+          <span class="crayons-badge"><%= category.ranked? ? "Ranked: #{category.max_choices} places (#{category.rank_points_list.join('-')} pts)" : (category.single_choice? ? "One choice" : "Up to #{category.max_choices}") %></span>
           <span class="crayons-badge"><%= category.required? ? "Required" : "Optional" %></span>
           <span class="crayons-badge"><%= category.card_style == "artwork" ? "Wide artwork" : "Covers 2:3" %></span>
           <% if category.allow_other? %><span class="crayons-badge">“Other” answer</span><% end %>

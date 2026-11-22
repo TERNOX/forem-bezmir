@@ -47,6 +47,27 @@ RSpec.describe "Admin::Votings" do
     expect(second.nominees.count).to eq(1)
   end
 
+  it "saves points per place for a ranked nomination from the form" do
+    post admin_voting_voting_categories_path(voting),
+         params: { voting_category: { title: "Гра року", max_choices: 3, ranked: "1", rank_points_text: "5,3,1" } }
+    category = voting.categories.last
+    expect(category).to have_attributes(ranked: true, rank_points: [5, 3, 1])
+
+    get edit_admin_voting_voting_category_path(voting, category)
+    expect(response.body).to include('value="5,3,1"')
+    get admin_voting_path(voting)
+    expect(response.body).to include("(5-3-1 pts)")
+
+    category_path = admin_voting_voting_category_path(voting, category)
+    patch category_path, params: { voting_category: { rank_points_text: "" } }
+    expect(category.reload.rank_points).to eq([])
+
+    patch category_path, params: { voting_category: { rank_points_text: "5,x,1" } }
+    expect(response).to have_http_status(:unprocessable_entity)
+    expect(response.body).to include("5,x,1")
+    expect(category.reload.rank_points).to eq([])
+  end
+
   it "adds catalog games, custom cards and bulk titles as nominees" do
     category = create(:voting_category, voting: voting)
     game = create(:game, title: "Hades II")
@@ -84,13 +105,13 @@ RSpec.describe "Admin::Votings" do
   end
 
   it "clones a voting without ballots" do
-    category = create(:voting_category, voting: voting, ranked: true, max_choices: 3)
+    category = create(:voting_category, voting: voting, ranked: true, max_choices: 3, rank_points: [5, 3, 1])
     create(:voting_nominee, category: category)
 
     expect { post clone_admin_voting_path(voting) }.to change(Voting, :count).by(1)
     copy = Voting.order(:id).last
     expect(copy).to have_attributes(published: false, slug: "#{voting.slug}-copy")
-    expect(copy.categories.first).to have_attributes(ranked: true, max_choices: 3)
+    expect(copy.categories.first).to have_attributes(ranked: true, max_choices: 3, rank_points: [5, 3, 1])
     expect(copy.categories.first.nominees.count).to eq(1)
   end
 

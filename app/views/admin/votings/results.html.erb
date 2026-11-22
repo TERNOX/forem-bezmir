@@ -26,7 +26,7 @@
     <h2 class="crayons-subtitle-1 mb-1"><%= category.title %></h2>
     <p class="fs-s color-base-60 mb-3">
       <%= pluralize(category_result.voters, "voter") %>
-      <%= category.ranked? ? "· ranked, #{(1..category.max_choices).map { |r| category.points_for(r) }.join('-')} points" : "· 1 point per pick" %>
+      <%= category.ranked? ? "· ranked, #{category.rank_points_list.join('-')} points" : "· 1 point per pick" %>
     </p>
     <table class="crayons-table w-100">
       <thead>

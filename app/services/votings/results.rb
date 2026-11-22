@@ -1,6 +1,6 @@
 # Fork-only: tallies a voting. Only submitted ballots of users who are not
-# spam/suspended count. Ranked categories score (max_choices - rank + 1) points
-# per pick; other categories score 1 point per pick.
+# spam/suspended count. Ranked categories score VotingCategory#points_for(rank)
+# per pick (rank_points, or max_choices..1); other categories score 1 point per pick.
 module Votings
   class Results
     Row = Struct.new(:nominee, :points, :votes, :firsts, keyword_init: true)
@@ -22,7 +22,9 @@ module Votings
     def call
       ballot_ids = counted_ballot_ids
       scope = VotingChoice.where(voting_ballot_id: ballot_ids)
-      tallies = scope.where.not(voting_nominee_id: nil).group(:voting_category_id, :voting_nominee_id, :rank).count
+      tallies = index_tallies(
+        scope.where.not(voting_nominee_id: nil).group(:voting_category_id, :voting_nominee_id, :rank).count,
+      )
       others = scope.where(voting_nominee_id: nil).where.not(other_text: [nil, ""])
         .group(:voting_category_id, Arel.sql("lower(trim(other_text))")).count
       voters = scope.group(:voting_category_id).distinct.count(:voting_ballot_id)
@@ -49,12 +51,18 @@ module Votings
       @voting.submitted_ballots.where(user_id: voters.select(:id)).ids
     end
 
+    # { [category_id, nominee_id] => [[rank, count], ...] }, so each nominee
+    # only walks its own tallies.
+    def index_tallies(counts)
+      counts.each_with_object({}) do |((category_id, nominee_id, rank), count), index|
+        (index[[category_id, nominee_id]] ||= []) << [rank, count]
+      end
+    end
+
     def build_category(category, tallies, others, voters)
       rows = category.nominees.map do |nominee|
         row = Row.new(nominee: nominee, points: 0, votes: 0, firsts: 0)
-        tallies.each do |(category_id, nominee_id, rank), count|
-          next unless category_id == category.id && nominee_id == nominee.id
-
+        tallies.fetch([category.id, nominee.id], []).each do |rank, count|
           row.votes += count
           row.points += category.points_for(rank) * count
           row.firsts += count if rank == 1

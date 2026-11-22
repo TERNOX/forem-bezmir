@@ -65,7 +65,7 @@ module Admin
 
     def category_params
       params.require(:voting_category).permit(
-        :title, :description, :max_choices, :required, :ranked, :allow_other, :card_style
+        :title, :description, :max_choices, :required, :ranked, :allow_other, :card_style, :rank_points_text
       )
     end
   end
