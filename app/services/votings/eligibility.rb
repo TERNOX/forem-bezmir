@@ -14,6 +14,12 @@ module Votings
       new(...)
     end
 
+    # Spam, suspended or banished: such members can't vote, and their public
+    # "my picks" pages are hidden too (VotingBallotsController).
+    def self.restricted_user?(user)
+      user.spam_or_suspended? || user.banished?
+    end
+
     def initialize(voting, user, now: Time.current)
       @voting = voting
       @user = user
@@ -35,7 +41,7 @@ module Votings
       return :closed if voting.closed?(now)
       return :sign_in unless user
       return :unconfirmed unless user.confirmed?
-      return :restricted if user.spam_or_suspended? || user.banished?
+      return :restricted if self.class.restricted_user?(user)
       return :low_score if user.score.to_i < voting.min_user_score
       return :account_too_new if account_too_new?
 

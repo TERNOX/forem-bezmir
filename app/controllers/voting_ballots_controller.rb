@@ -11,12 +11,14 @@ class VotingBallotsController < ApplicationController
   def show
     eligibility = Votings::Eligibility.call(@voting, current_user)
     ballot = current_user && @voting.ballots.includes(:choices).find_by(user: current_user)
+    # A restricted member's share page 404s (find_shared_ballot), so don't link to it.
+    shareable = ballot&.submitted? && !Votings::Eligibility.restricted_user?(current_user)
     render json: {
       signedIn: current_user.present?,
       eligible: eligibility.eligible?,
       reason: eligibility.reason,
       ballot: ballot && ballot_json(ballot),
-      shareUrl: (share_url_for(ballot) if ballot&.submitted?)
+      shareUrl: (share_url_for(ballot) if shareable)
     }
   end
 
@@ -95,6 +97,8 @@ class VotingBallotsController < ApplicationController
 
   def find_shared_ballot(includes: nil)
     user = User.find_by!(username: params[:username])
+    # The page shows the member's free-text answers, so it goes away with them.
+    not_found if Votings::Eligibility.restricted_user?(user)
     scope = @voting.submitted_ballots
     scope = scope.includes(includes) if includes
     ballot = scope.find_by!(user: user)

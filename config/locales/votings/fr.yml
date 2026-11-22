@@ -13,6 +13,7 @@ fr:
   models:
     voting:
       closes_before_opens: doit être postérieure à l'ouverture
+      opens_at_required: est obligatoire lorsque seuls les comptes créés avant l'ouverture peuvent voter
       slug_taken: est déjà prise par un membre, une organisation, une page, un podcast ou un autre vote
     voting_category:
       max_choices_locked_ranked: ne peut plus être modifié une fois que des votes ont été exprimés (c'est le nombre de places dont dépendent les points)
@@ -121,3 +122,5 @@ fr:
         your_pick: Votre choix
         points: "Points : %{count}"
         votes: "Votes : %{count}"
+        first_places: "Premières places : %{count}"
+        ranked_tie_hint: À points égaux, le nommé qui a le plus de premières places est classé devant.

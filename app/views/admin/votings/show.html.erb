@@ -3,7 +3,7 @@
     <h1 class="fs-4xl fw-bold"><%= @voting.title %></h1>
     <p class="mt-1 flex flex-wrap items-center gap-2">
       <%= render "admin/votings/status_badge", voting: @voting %>
-      <span class="color-base-60"><%= pluralize(@ballots_count, "ballot") %></span>
+      <span class="color-base-60"><%= pluralize(@ballots_count, "submitted ballot") %></span>
       <a href="<%= @voting.path %>" target="_blank" rel="noopener"><code><%= @voting.path %></code> ↗</a>
     </p>
   </div>

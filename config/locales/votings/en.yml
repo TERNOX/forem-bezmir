@@ -13,6 +13,7 @@ en:
   models:
     voting:
       closes_before_opens: must be later than the opening time
+      opens_at_required: is required when only accounts created before the start may vote
       slug_taken: is already taken by a member, organization, page, podcast or another voting
     voting_category:
       max_choices_locked_ranked: can't change once people have voted (it is the number of places the points depend on)
@@ -121,3 +122,5 @@ en:
         your_pick: Your pick
         points: "Points: %{count}"
         votes: "Votes: %{count}"
+        first_places: "1st places: %{count}"
+        ranked_tie_hint: On equal points, the nominee with more first places ranks higher.

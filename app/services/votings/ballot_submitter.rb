@@ -53,10 +53,24 @@ module Votings
 
         value = value.stringify_keys
         acc[category_id.to_s] = {
-          nominee_ids: Array(value["nominee_ids"]).map(&:to_i).uniq,
-          other: value["other"].to_s.strip.presence
+          nominee_ids: scalar_ids(value["nominee_ids"]),
+          other: scalar_text(value["other"])
         }
       end
+    end
+
+    # Only numbers and strings are ids; nested arrays/hashes (a malformed
+    # payload) are dropped instead of raising.
+    def scalar_ids(raw)
+      ids = raw.is_a?(Array) ? raw : [raw]
+      ids.filter_map { |id| id.to_i if id.is_a?(String) || (id.is_a?(Numeric) && id.finite?) }.uniq
+    end
+
+    # An array or hash is not an answer; don't store its #to_s as one.
+    def scalar_text(raw)
+      return unless raw.is_a?(String) || raw.is_a?(Numeric)
+
+      raw.to_s.strip.presence
     end
 
     def build_choices(category)

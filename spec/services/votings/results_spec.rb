@@ -57,6 +57,38 @@ RSpec.describe Votings::Results do
     )
   end
 
+  describe "places" do
+    def ranked_rows
+      described_class.call(voting)[:categories].detect { |c| c.category == ranked }.rows
+    end
+
+    it "breaks a points tie by first places" do
+      vote(create(:user), [hades.id, silksong.id])               # hades 3, silksong 2
+      vote(create(:user), [clair.id, silksong.id, hades.id])     # clair 3, silksong 2, hades 1
+
+      expect(ranked_rows.map { |row| [row.nominee, row.points, row.firsts, row.place] }).to eq(
+        [[hades, 4, 1, 1], [silksong, 4, 0, 2], [clair, 3, 1, 3]],
+      )
+    end
+
+    it "shares a place on a complete tie and skips the next one" do
+      vote(create(:user), [hades.id, silksong.id, clair.id])     # hades 3, silksong 2, clair 1
+      vote(create(:user), [clair.id, silksong.id, hades.id])     # clair 3, silksong 2, hades 1
+
+      expect(ranked_rows.map { |row| [row.nominee, row.points, row.firsts, row.votes, row.place] }).to eq(
+        [[hades, 4, 1, 2, 1], [clair, 4, 1, 2, 1], [silksong, 4, 0, 2, 3]],
+      )
+    end
+
+    it "gives no place to a nominee nobody voted for" do
+      vote(create(:user), [hades.id])
+
+      expect(ranked_rows.map { |row| [row.nominee, row.place] }).to eq([[hades, 1], [silksong, nil], [clair, nil]])
+      plain_rows = described_class.call(voting)[:categories].detect { |c| c.category == plain }.rows
+      expect(plain_rows.map(&:place)).to eq([nil])
+    end
+  end
+
   it "groups other answers case-insensitively" do
     vote(create(:user), [hades.id], other: "Steam Deck")
     vote(create(:user), [hades.id], other: "steam deck ")
@@ -96,5 +128,23 @@ RSpec.describe Votings::Results do
     rows = result[:categories].detect { |c| c.category == ranked }.rows
     expect(result[:ballots_count]).to eq(1)
     expect(rows.detect { |row| row.nominee == clair }.points).to eq(0)
+  end
+
+  it "also reports how many ballots were submitted in total" do
+    vote(create(:user), [hades.id])
+    vote(create(:user), [clair.id]).ballot.user.update_column(:confirmed_at, nil)
+    create(:voting_ballot, voting: voting, submitted_at: nil) # started, never sent
+
+    result = described_class.call(voting)
+    expect(result).to include(ballots_count: 1, submitted_count: 2)
+  end
+
+  it "drops accounts created after the opening when the voting asks for that" do
+    veteran = create(:user, created_at: 1.month.ago)
+    vote(veteran, [hades.id])
+    vote(create(:user), [clair.id])
+    voting.update!(require_account_before_start: true, opens_at: 1.week.ago)
+
+    expect(described_class.call(voting)).to include(ballots_count: 1, submitted_count: 2)
   end
 end

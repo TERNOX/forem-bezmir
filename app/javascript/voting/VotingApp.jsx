@@ -853,7 +853,6 @@ function ResultsView({
         const byId = Object.fromEntries(
           category.nominees.map((n) => [n.id, n]),
         );
-        const topPoints = categoryResult.rows[0]?.points || 0;
         return (
           <section key={category.id} className="voting-results__category">
             <h3 className="voting-step__title">{category.title}</h3>
@@ -861,17 +860,19 @@ function ResultsView({
               {msg('voters_count', { count: categoryResult.voters })}
             </p>
             <ol className="voting-results__rows">
-              {categoryResult.rows.map((row, index) => {
+              {categoryResult.rows.map((row) => {
                 const nominee = byId[row.nomineeId];
                 if (!nominee) return null;
-                const winner = topPoints > 0 && row.points === topPoints;
+                // place comes from the server: tied rows share it, and a
+                // nominee nobody voted for has none.
+                const winner = row.place === 1;
                 return (
                   <li
                     key={row.nomineeId}
                     className={`voting-results__row${winner ? ' voting-results__row--winner' : ''}`}
                   >
                     <span className="voting-results__place">
-                      {winner ? '🏆' : index + 1}
+                      {winner ? '🏆' : (row.place ?? '—')}
                     </span>
                     {nominee.imageUrl && (
                       <img
@@ -898,11 +899,19 @@ function ResultsView({
                       {category.ranked
                         ? msg('points', { count: row.points })
                         : msg('votes', { count: row.votes })}
+                      {category.ranked && (
+                        <span className="voting-results__firsts">
+                          {msg('first_places', { count: row.firsts ?? 0 })}
+                        </span>
+                      )}
                     </span>
                   </li>
                 );
               })}
             </ol>
+            {category.ranked && (
+              <p className="voting-step__hint">{msg('ranked_tie_hint')}</p>
+            )}
           </section>
         );
       })}
