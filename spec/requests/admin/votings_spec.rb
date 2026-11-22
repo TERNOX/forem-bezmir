@@ -102,6 +102,97 @@ RSpec.describe "Admin::Votings" do
 
     patch publish_results_admin_voting_path(voting)
     expect(voting.reload.results_published_at).to be_present
+    expect(voting.results_snapshot).to eq(Votings::PublicResults.call(voting))
+
+    patch unpublish_results_admin_voting_path(voting)
+    expect(voting.reload).to have_attributes(results_published_at: nil, results_snapshot: nil)
+  end
+
+  describe "publishing" do
+    def publish_confirm
+      Nokogiri::HTML(response.body).css("form").detect do |form|
+        form["action"] == publish_results_admin_voting_path(voting)
+      end["data-confirm"]
+    end
+
+    it "warns that ballots can still change while the voting is open" do
+      voting.update!(published: true)
+      get results_admin_voting_path(voting)
+      expect(publish_confirm).to include("The voting has not closed yet")
+        .and include("people can still change their ballots")
+        .and include("snapshot of this moment that does not follow later votes")
+    end
+
+    it "does not warn about later votes once the voting is closed" do
+      voting.update!(published: true, opens_at: 2.weeks.ago, closes_at: 1.day.ago)
+      get results_admin_voting_path(voting)
+      expect(publish_confirm).to include("Make the results public")
+      expect(publish_confirm).not_to include("can still change their ballots")
+    end
+  end
+
+  describe "published results against the live count" do
+    let(:category) { create(:voting_category, voting: voting) }
+    let!(:nominee) { create(:voting_nominee, category: category) }
+    let!(:other_nominee) { create(:voting_nominee, category: category) }
+
+    def vote(nominee_id)
+      Votings::BallotSubmitter.call(voting: voting, user: create(:user),
+                                    selections: { category.id.to_s => { "nominee_ids" => [nominee_id] } })
+    end
+
+    def snapshot_state
+      Nokogiri::HTML(response.body).at_css("[data-results-snapshot]")&.[]("data-results-snapshot")
+    end
+
+    before do
+      voting.update!(published: true)
+      vote(nominee.id)
+      voting.publish_results!(now: 1.hour.ago)
+    end
+
+    it "says the published results match the current count" do
+      get results_admin_voting_path(voting)
+      expect(snapshot_state).to eq("matches")
+      expect(response.body).to include("Published on #{I18n.l(voting.reload.results_published_at, format: :short)}")
+      expect(response.body).not_to include("Update published results")
+    end
+
+    it "warns when the count has moved since publishing and re-takes the snapshot on request" do
+      vote(other_nominee.id)
+      vote(other_nominee.id)
+
+      get results_admin_voting_path(voting)
+      expect(snapshot_state).to eq("differs")
+      expect(response.body).to include("the public page still shows the numbers frozen at that moment")
+      expect(response.body).to include("Update published results")
+
+      published_at = voting.reload.results_published_at
+      patch republish_results_admin_voting_path(voting)
+      expect(response).to redirect_to(results_admin_voting_path(voting))
+
+      voting.reload
+      expect(voting.results_published_at).to be > published_at
+      expect(voting.results_snapshot).to eq(Votings::PublicResults.call(voting))
+      expect(voting.results_snapshot.dig("categories", category.id.to_s, "rows", 0, "nomineeId"))
+        .to eq(other_nominee.id)
+
+      get results_admin_voting_path(voting)
+      expect(snapshot_state).to eq("matches")
+    end
+
+    it "offers to freeze results published before snapshots existed" do
+      voting.update_columns(results_snapshot: nil)
+      get results_admin_voting_path(voting)
+      expect(snapshot_state).to eq("none")
+      expect(response.body).to include("Update published results")
+    end
+
+    it "does not publish through the update button when results are hidden" do
+      voting.unpublish_results!
+      patch republish_results_admin_voting_path(voting)
+      expect(voting.reload).to have_attributes(results_published_at: nil, results_snapshot: nil)
+    end
   end
 
   it "numbers result rows by place, sharing it on a tie, and explains what is not counted" do
@@ -145,13 +236,16 @@ RSpec.describe "Admin::Votings" do
     expect(voting.reload.require_account_before_start).to be(false)
   end
 
-  it "clones a voting without ballots" do
+  it "clones a voting without ballots or published results" do
     category = create(:voting_category, voting: voting, ranked: true, max_choices: 3, rank_points: [5, 3, 1])
     create(:voting_nominee, category: category)
+    voting.publish_results!
+    expect(voting.reload.results_snapshot).to be_present
 
     expect { post clone_admin_voting_path(voting) }.to change(Voting, :count).by(1)
     copy = Voting.order(:id).last
     expect(copy).to have_attributes(published: false, slug: "#{voting.slug}-copy")
+    expect(copy).to have_attributes(results_published_at: nil, results_snapshot: nil)
     expect(copy.categories.first).to have_attributes(ranked: true, max_choices: 3, rank_points: [5, 3, 1])
     expect(copy.categories.first.nominees.count).to eq(1)
   end

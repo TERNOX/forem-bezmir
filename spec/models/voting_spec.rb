@@ -72,6 +72,50 @@ RSpec.describe Voting do
     end
   end
 
+  describe "#publish_results! and #unpublish_results!" do
+    let(:voting) { create(:voting) }
+    let(:category) { create(:voting_category, voting: voting) }
+    let!(:nominee) { create(:voting_nominee, category: category) }
+
+    before do
+      Votings::BallotSubmitter.call(voting: voting, user: create(:user),
+                                    selections: { category.id.to_s => { "nominee_ids" => [nominee.id] } })
+    end
+
+    it "stores the public results together with the publishing time" do
+      now = Time.zone.parse("2026-12-31 20:00")
+      voting.publish_results!(now: now)
+
+      voting.reload
+      expect(voting.results_published_at).to eq(now)
+      expect(voting.results_snapshot).to eq(
+        "ballotsCount" => 1,
+        "categories" => {
+          category.id.to_s => {
+            "voters" => 1,
+            "rows" => [{ "nomineeId" => nominee.id, "place" => 1, "points" => 1, "votes" => 1, "firsts" => 0,
+                         "share" => 100.0 }]
+          }
+        },
+      )
+      expect(voting.public_results).to eq(voting.results_snapshot)
+    end
+
+    it "clears both when the results are hidden" do
+      voting.publish_results!
+      voting.unpublish_results!
+
+      expect(voting.reload).to have_attributes(results_published_at: nil, results_snapshot: nil)
+      expect(voting.public_results).to be_nil
+    end
+
+    it "still publishes an older voting saved with the account-age rule but no opens_at" do
+      voting.update_columns(require_account_before_start: true, opens_at: nil)
+      expect { voting.reload.publish_results! }.not_to raise_error
+      expect(voting.reload.results_snapshot).to be_present
+    end
+  end
+
   it "makes a top-level slug unavailable to new members (CrossModelSlug)" do
     create(:voting, slug: "goty-2026", top_level_path: true)
     create(:voting, slug: "hidden-goty", top_level_path: false)

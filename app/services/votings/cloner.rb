@@ -11,6 +11,7 @@ module Votings
           published: false,
           top_level_path: false,
           results_published_at: nil,
+          results_snapshot: nil,
           # A legacy voting may have the account-age rule on without an opening
           # date; the copy is validated as new, so it can't carry that over.
           require_account_before_start: voting.require_account_before_start? && voting.opens_at.present?,

@@ -17,11 +17,40 @@
     <% if @voting.results_published? %>
       <%= button_to "Hide results", unpublish_results_admin_voting_path(@voting), method: :patch, class: "crayons-btn crayons-btn--secondary" %>
     <% else %>
+      <% publish_confirm = if @voting.closed?
+                             "Make the results public on the voting page? The public page will show a snapshot of the current count."
+                           else
+                             "Make the results public on the voting page? The voting has not closed yet: people can still change their ballots, " \
+                               "and the public results will be a snapshot of this moment that does not follow later votes."
+                           end %>
       <%= button_to "Publish results", publish_results_admin_voting_path(@voting), method: :patch, class: "crayons-btn crayons-btn--branded",
-                                                                                   form: { data: { confirm: "Make the results public on the voting page?" } } %>
+                                                                                   form: { data: { confirm: publish_confirm } } %>
     <% end %>
   </div>
 </header>
+
+<% if @voting.results_published? %>
+  <% published_at = l(@voting.results_published_at, format: :short) %>
+  <% republish_button = capture do %>
+    <%= button_to "Update published results", republish_results_admin_voting_path(@voting), method: :patch, class: "crayons-btn crayons-btn--s mt-2",
+                                                                                            form: { data: { confirm: "Replace the published results with the current count below?" } } %>
+  <% end %>
+  <% if @voting.results_snapshot.nil? %>
+    <div class="crayons-notice crayons-notice--warning mb-4" data-results-snapshot="none">
+      <p>Results were published on <%= published_at %>, before published results were frozen, so the public page still follows the live count. Update them to freeze the current count.</p>
+      <%= republish_button %>
+    </div>
+  <% elsif @snapshot_matches %>
+    <div class="crayons-notice crayons-notice--success mb-4" data-results-snapshot="matches">
+      <p>Published on <%= published_at %>. The public page shows the numbers frozen at that moment, which match the current count below.</p>
+    </div>
+  <% else %>
+    <div class="crayons-notice crayons-notice--warning mb-4" data-results-snapshot="differs">
+      <p>Published on <%= published_at %>. The current count below differs from the published results: the public page still shows the numbers frozen at that moment.</p>
+      <%= republish_button %>
+    </div>
+  <% end %>
+<% end %>
 
 <% @results[:categories].each do |category_result| %>
   <% category = category_result.category %>
