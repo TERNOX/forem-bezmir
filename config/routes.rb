@@ -197,6 +197,7 @@ Rails.application.routes.draw do
     put "vote/:slug/ballot", to: "voting_ballots#update"
     get "vote/:slug/u/:username/:token", to: "voting_ballots#share", as: :voting_share
     get "vote/:slug/u/:username/:token/image", to: "voting_ballots#image", as: :voting_share_image
+    get "vote/:slug/u/:username/:token/preview", to: "voting_ballots#preview", as: :voting_share_preview
     resources :article_mutes, only: %i[update]
     resources :comments, only: %i[create update destroy] do
       patch "/hide", to: "comments#hide"

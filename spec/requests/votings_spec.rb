@@ -190,18 +190,24 @@ RSpec.describe "Votings" do
     end
     let(:share_path) { "/vote/gra-roku-2026/u/#{user.username}/#{ballot.share_token}" }
 
-    it "shows the member's picks with an og:image" do
+    it "shows the member's picks with the link preview as og:image" do
       get share_path
       expect(response).to have_http_status(:ok)
       expect(response.body).to include(nominees[0].display_title)
-      og_image = Nokogiri::HTML(response.body).at_css('meta[property="og:image"]')["content"]
-      expect(og_image).to match(%r{#{Regexp.escape(share_path)}/image\?v=\d+\z})
+      page = Nokogiri::HTML(response.body)
+      og_image = page.at_css('meta[property="og:image"]')["content"]
+      expect(og_image).to match(%r{#{Regexp.escape(share_path)}/preview\?v=\d+\z})
+      expect(page.at_css('meta[name="twitter:image:src"]')["content"]).to eq(og_image)
+      expect(page.at_css('meta[property="og:image:width"]')["content"]).to eq("1200")
+      expect(page.at_css('meta[property="og:image:height"]')["content"]).to eq("630")
     end
 
     it "can't be found by guessing the username alone" do
       expect { get "/vote/gra-roku-2026/u/#{user.username}/#{'0' * ballot.share_token.size}" }
         .to raise_error(ActiveRecord::RecordNotFound)
       expect { get "/vote/gra-roku-2026/u/#{user.username}/#{'0' * ballot.share_token.size}/image" }
+        .to raise_error(ActiveRecord::RecordNotFound)
+      expect { get "/vote/gra-roku-2026/u/#{user.username}/#{'0' * ballot.share_token.size}/preview" }
         .to raise_error(ActiveRecord::RecordNotFound)
     end
 
@@ -218,6 +224,7 @@ RSpec.describe "Votings" do
 
       expect { get share_path }.to raise_error(ActiveRecord::RecordNotFound)
       expect { get "#{share_path}/image" }.to raise_error(ActiveRecord::RecordNotFound)
+      expect { get "#{share_path}/preview" }.to raise_error(ActiveRecord::RecordNotFound)
     end
 
     it "404s for members without a ballot" do
@@ -229,6 +236,70 @@ RSpec.describe "Votings" do
       get "#{share_path}/image"
       expect(response).to have_http_status(:redirect)
       expect(ballot.reload.share_image).to be_present
+      expect(response).to redirect_to(ballot.share_image.url)
+    end
+
+    it "generates the link preview on demand and redirects to it" do
+      get "#{share_path}/preview"
+
+      ballot.reload
+      expect(ballot.share_preview_image).to be_present
+      expect(response).to redirect_to(ballot.share_preview_image.url)
+      expect(MiniMagick::Image.open(ballot.share_preview_image.path).dimensions).to eq([1200, 630])
+    end
+
+    context "when both pictures are stored" do
+      let(:image_path) { Rails.root.join("spec/fixtures/files/800x600.png") }
+
+      before do
+        ballot.update!(share_image: Rack::Test::UploadedFile.new(image_path, "image/png"),
+                       share_preview_image: Rack::Test::UploadedFile.new(image_path, "image/png"))
+        allow(Votings::GenerateShareImage).to receive(:call)
+      end
+
+      it "serves the vote card at /image" do
+        get "#{share_path}/image"
+
+        expect(response).to redirect_to(ballot.reload.share_image.url)
+        expect(Votings::GenerateShareImage).not_to have_received(:call)
+      end
+
+      it "serves the link preview at /preview" do
+        get "#{share_path}/preview"
+
+        expect(response).to redirect_to(ballot.reload.share_preview_image.url)
+        expect(ballot.share_preview_image.url).not_to eq(ballot.share_image.url)
+        expect(Votings::GenerateShareImage).not_to have_received(:call)
+      end
+    end
+
+    # Pictures drawn before the link preview existed: only the card is stored.
+    context "when only an old-style card is stored" do
+      before do
+        ballot.update!(share_image: Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/800x600.png"),
+                                                                 "image/png"))
+      end
+
+      it "draws both pictures for /preview and redirects to the new preview" do
+        old_card = ballot.reload.share_image.url
+
+        get "#{share_path}/preview"
+
+        ballot.reload
+        expect(ballot.share_preview_image).to be_present
+        expect(response).to redirect_to(ballot.share_preview_image.url)
+        expect(ballot.share_image.url).not_to eq(old_card)
+        expect(MiniMagick::Image.open(ballot.share_image.path).width).to eq(1080)
+      end
+
+      it "keeps serving the card at /image without drawing" do
+        allow(Votings::GenerateShareImage).to receive(:call)
+
+        get "#{share_path}/image"
+
+        expect(response).to redirect_to(ballot.reload.share_image.url)
+        expect(Votings::GenerateShareImage).not_to have_received(:call)
+      end
     end
 
     context "when the image is still being drawn elsewhere" do
@@ -247,13 +318,27 @@ RSpec.describe "Votings" do
         expect(response).to have_http_status(:service_unavailable)
         expect(response.headers["Retry-After"]).to eq("3")
       end
+
+      it "does the same for the link preview" do
+        get "#{share_path}/preview"
+
+        expect(response).to redirect_to(Settings::General.main_social_image.to_s)
+        expect(response.headers["Cache-Control"]).to include("no-store")
+
+        get "#{share_path}/preview", params: { attempt: 0 }
+
+        expect(response).to have_http_status(:service_unavailable)
+        expect(response.headers["Retry-After"]).to eq("3")
+      end
     end
 
     it "falls back instead of failing when rendering raises" do
       allow(Votings::GenerateShareImage).to receive(:call).and_raise(MiniMagick::Error)
 
       get "#{share_path}/image"
+      expect(response).to redirect_to(Settings::General.main_social_image.to_s)
 
+      get "#{share_path}/preview"
       expect(response).to redirect_to(Settings::General.main_social_image.to_s)
     end
   end

@@ -40,7 +40,7 @@ pt:
         vote_too: Votar também
         open_voting: Ir para a votação
         image_byline: "Escolhas de @%{username}"
-        image_more_picks: Minhas outras escolhas
+        image_total: "Categorias votadas: %{count}"
         image_footer: "Vote em %{url}"
       app:
         progress: "%{done} de %{total} respondidas"

@@ -1,4 +1,4 @@
-<%# Fork-only: public "my picks" page — the link people share; its og:image is the generated card. %>
+<%# Fork-only: public "my picks" page — the link people share; its og:image is the generated link preview. %>
 <% page_title = t("views.votings.share.title", username: @user.username, voting: @voting.title) %>
 <% content_for :title, page_title %>
 <% canonical = @share_url %>
@@ -9,12 +9,12 @@
   <meta property="og:url" content="<%= canonical %>" />
   <meta property="og:title" content="<%= page_title %>" />
   <meta property="og:description" content="<%= t("views.votings.share.description", voting: @voting.title) %>" />
-  <meta property="og:image" content="<%= @share_image_url %>" />
+  <meta property="og:image" content="<%= @share_preview_url %>" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="<%= page_title %>">
-  <meta name="twitter:image:src" content="<%= @share_image_url %>">
+  <meta name="twitter:image:src" content="<%= @share_preview_url %>">
 <% end %>
 
 <main class="voting-page crayons-layout crayons-layout--limited-l mx-auto" id="main-content">

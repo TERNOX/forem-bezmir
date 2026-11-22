@@ -738,7 +738,11 @@ function ThanksView({ voting, shareUrl, updated, msg, onEdit }) {
       {shareUrl && (
         <div className="voting-share">
           <h3 className="voting-share__title">{msg('share_title')}</h3>
-          <div className="voting-share__preview">
+          <div
+            className={`voting-share__preview${
+              imageReady ? '' : ' voting-share__preview--loading'
+            }`}
+          >
             {!imageReady && (
               <span className="voting-share__loading">
                 {msg('image_generating')}
@@ -748,8 +752,6 @@ function ThanksView({ voting, shareUrl, updated, msg, onEdit }) {
               <img
                 src={imageUrl}
                 alt={msg('share_image_alt', { title: voting.title })}
-                width="1200"
-                height="630"
                 onLoad={() => setImageReady(true)}
                 onError={() =>
                   attempt < 8 && setTimeout(() => setAttempt(attempt + 1), 3000)

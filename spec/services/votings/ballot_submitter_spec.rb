@@ -44,6 +44,39 @@ RSpec.describe Votings::BallotSubmitter do
     expect(result.ballot.choices.pluck(:voting_nominee_id)).to eq([single_nominees[1].id])
   end
 
+  describe "share pictures" do
+    let(:image_path) { Rails.root.join("spec/fixtures/files/800x600.png") }
+    let!(:ballot) do
+      submit({ single.id.to_s => { "nominee_ids" => [single_nominees[0].id] } }).ballot.tap do |ballot|
+        ballot.update!(share_image: Rack::Test::UploadedFile.new(image_path, "image/png"),
+                       share_preview_image: Rack::Test::UploadedFile.new(image_path, "image/png"))
+      end
+    end
+
+    it "drops the vote card and the link preview together when the picks change" do
+      card_path = ballot.reload.share_image.path
+      preview_path = ballot.share_preview_image.path
+
+      result = submit({ single.id.to_s => { "nominee_ids" => [single_nominees[1].id] } })
+
+      expect(result.changed).to be(true)
+      ballot.reload
+      expect(ballot.share_image).to be_blank
+      expect(ballot.share_preview_image).to be_blank
+      expect(File.exist?(card_path)).to be(false)
+      expect(File.exist?(preview_path)).to be(false)
+    end
+
+    it "keeps both when the same picks are sent again" do
+      result = submit({ single.id.to_s => { "nominee_ids" => [single_nominees[0].id] } })
+
+      expect(result.changed).to be(false)
+      ballot.reload
+      expect(ballot.share_image).to be_present
+      expect(ballot.share_preview_image).to be_present
+    end
+  end
+
   it "rejects more picks than allowed, counting the other answer" do
     result = submit({ multi.id.to_s => { "nominee_ids" => multi_nominees.first(2).map(&:id), "other" => "x" } })
     expect(result).not_to be_success
