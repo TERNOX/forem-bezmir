@@ -1,6 +1,8 @@
 # Fork-only: a nominee in a VotingCategory. Usually a Game from the catalog;
 # can also be a custom card (title + optional image + link), e.g. a news story
 # for "Найбільший прикол року" or a device for "Улюблений ігровий девайс".
+# Once it has votes its game can't change (the votes would silently move to
+# another game); remove it with Votings::NomineeRemover instead.
 class VotingNominee < ApplicationRecord
   belongs_to :category, class_name: "VotingCategory", foreign_key: :voting_category_id, inverse_of: :nominees
   belongs_to :game, optional: true
@@ -14,6 +16,7 @@ class VotingNominee < ApplicationRecord
                        format: { with: %r{\Ahttps?://\S+\z}i }, allow_blank: true
   validate :game_or_title_present
   validates :game_id, uniqueness: { scope: :voting_category_id }, allow_nil: true
+  validate :game_locked_once_voted, on: :update
 
   before_create :set_default_position
 
@@ -28,7 +31,17 @@ class VotingNominee < ApplicationRecord
     style.to_s == "artwork" ? game.artwork_url : game.cover_url
   end
 
+  def voted?
+    persisted? && choices.exists?
+  end
+
   private
+
+  def game_locked_once_voted
+    return unless will_save_change_to_game_id? && choices.exists?
+
+    errors.add(:base, I18n.t("models.voting_nominee.game_locked"))
+  end
 
   def game_or_title_present
     return if game.present? || title.present?

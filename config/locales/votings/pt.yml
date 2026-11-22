@@ -15,11 +15,15 @@ pt:
       closes_before_opens: deve ser posterior à abertura
       slug_taken: já está em uso por um membro, organização, página, podcast ou outra votação
     voting_category:
+      max_choices_locked_ranked: não pode ser alterado depois que já houver votos (é o número de posições de que dependem os pontos)
+      max_choices_lowered: "não pode ser reduzido para menos de %{count} depois que já houver votos"
       rank_points_count: "deve ter um número por posição (%{count} no total)"
       rank_points_format: "deve ter números inteiros separados por vírgulas, como 5,3,1"
       rank_points_order: não pode dar mais pontos a uma posição inferior do que a uma superior
       rank_points_range: "deve ter números inteiros de 1 a %{max}"
+      ranked_locked: não pode ser alterado depois que já houver votos
     voting_nominee:
+      game_locked: O jogo não pode ser substituído depois que já houver votos neste indicado
       game_or_title: Escolha um jogo ou informe um título
   views:
     votings:

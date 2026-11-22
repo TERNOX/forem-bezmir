@@ -7,6 +7,10 @@
 #                 always [] for an unranked one.
 # * allow_other — voters may type their own answer instead of / besides the nominees.
 # * card_style  — cover (vertical 2:3 box art) or artwork (horizontal 16:9).
+#
+# Once anyone has voted, the structure that existing picks depend on is locked:
+# `ranked` can't change, and `max_choices` can't be lowered (or changed at all
+# in a ranked nomination, where it is the number of places).
 class VotingCategory < ApplicationRecord
   MAX_CHOICES_LIMIT = 20
   OTHER_TEXT_MAX_LENGTH = 100
@@ -23,6 +27,7 @@ class VotingCategory < ApplicationRecord
   validates :description, length: { maximum: 1000 }
   validates :max_choices, numericality: { only_integer: true, in: 1..MAX_CHOICES_LIMIT }
   validate :rank_points_valid
+  validate :structure_locked_once_voted, on: :update
 
   before_validation :clear_rank_points_unless_ranked
   before_create :set_default_position
@@ -61,6 +66,11 @@ class VotingCategory < ApplicationRecord
     max_choices == 1 && !ranked?
   end
 
+  # Whether anyone has picked anything here (locks the structure, see above).
+  def voted?
+    persisted? && choices.exists?
+  end
+
   private
 
   def clear_rank_points_unless_ranked
@@ -88,6 +98,20 @@ class VotingCategory < ApplicationRecord
       errors.add(:rank_points, I18n.t("models.voting_category.rank_points_range", max: RANK_POINTS_MAX))
     elsif rank_points.each_cons(2).any? { |higher, lower| lower > higher }
       errors.add(:rank_points, I18n.t("models.voting_category.rank_points_order"))
+    end
+  end
+
+  def structure_locked_once_voted
+    return unless will_save_change_to_ranked? || will_save_change_to_max_choices?
+    return unless choices.exists?
+
+    errors.add(:ranked, I18n.t("models.voting_category.ranked_locked")) if will_save_change_to_ranked?
+    return unless will_save_change_to_max_choices?
+
+    if ranked_in_database || ranked?
+      errors.add(:max_choices, I18n.t("models.voting_category.max_choices_locked_ranked"))
+    elsif max_choices.to_i < max_choices_in_database.to_i
+      errors.add(:max_choices, I18n.t("models.voting_category.max_choices_lowered", count: max_choices_in_database))
     end
   end
 

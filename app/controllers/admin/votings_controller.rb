@@ -12,6 +12,8 @@ module Admin
 
     def show
       @categories = @voting.categories.includes(nominees: :game)
+      @nominee_vote_counts = VotingChoice.joins(:category).where(voting_categories: { voting_id: @voting.id })
+        .where.not(voting_nominee_id: nil).group(:voting_nominee_id).count
       @ballots_count = @voting.submitted_ballots.count
       @igdb_configured = Igdb::Client.configured?
     end

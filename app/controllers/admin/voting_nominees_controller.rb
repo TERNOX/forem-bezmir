@@ -37,6 +37,7 @@ module Admin
       if @nominee.update(nominee_params)
         redirect_to admin_voting_path(@voting, anchor: "category-#{@category.id}"), notice: "Nominee updated."
       else
+        @nominee.restore_attributes([:game_id]) # show the current game again, not the rejected one
         render :edit, status: :unprocessable_entity
       end
     rescue Igdb::Client::Error => e
@@ -44,9 +45,12 @@ module Admin
                   alert: "IGDB: #{e.message}"
     end
 
+    # Votes for the nominee go with it; ranked ballots close the gap (see Votings::NomineeRemover).
     def destroy
-      @nominee.destroy
-      redirect_to admin_voting_path(@voting, anchor: "category-#{@category.id}"), notice: "Nominee removed."
+      ballots = Votings::NomineeRemover.call(@nominee)
+      notice = "Nominee removed."
+      notice += " #{helpers.pluralize(ballots, 'vote')} removed with it." if ballots.positive?
+      redirect_to admin_voting_path(@voting, anchor: "category-#{@category.id}"), notice: notice
     end
 
     def move
