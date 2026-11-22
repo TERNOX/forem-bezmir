@@ -227,3 +227,61 @@ describe('VotingApp results places', () => {
     );
   });
 });
+
+describe('VotingApp thanks view', () => {
+  const shareUrl = '/vote/goty/u/alice/abc123';
+
+  beforeEach(() => {
+    window.HTMLElement.prototype.scrollIntoView = jest.fn();
+    request.mockImplementation((_url, options) =>
+      Promise.resolve(
+        options.method === 'PUT'
+          ? {
+              ok: true,
+              json: () =>
+                Promise.resolve({
+                  ballot: {
+                    submittedAt: '2026-11-22T12:00:00Z',
+                    selections: { 1: { nominee_ids: [10], other: null } },
+                  },
+                  shareUrl,
+                }),
+            }
+          : {
+              json: () =>
+                Promise.resolve({
+                  signedIn: true,
+                  eligible: true,
+                  ballot: null,
+                }),
+            },
+      ),
+    );
+  });
+
+  it('shows the portrait vote card at its own ratio once it has loaded', async () => {
+    const { container } = renderApp('open', null);
+    await waitFor(() => expect(request).toHaveBeenCalled());
+
+    fireEvent.click(screen.getByRole('button', { name: 'Clair' }));
+    fireEvent.click(screen.getByRole('button', { name: /to_summary/ }));
+    const submit = screen.getByRole('button', { name: 'submit' });
+    await waitFor(() => expect(submit).not.toBeDisabled());
+    fireEvent.click(submit);
+
+    const image = await screen.findByAltText('share_image_alt');
+    expect(image).toHaveAttribute('src', `${shareUrl}/image?attempt=0`);
+    expect(image).not.toHaveAttribute('width');
+    expect(image).not.toHaveAttribute('height');
+    const preview = container.querySelector('.voting-share__preview');
+    expect(preview).toHaveClass('voting-share__preview--loading');
+    expect(screen.getByText('image_generating')).toBeInTheDocument();
+
+    fireEvent.load(image);
+    expect(preview).not.toHaveClass('voting-share__preview--loading');
+    expect(screen.queryByText('image_generating')).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'share_download' }),
+    ).toHaveAttribute('href', `${shareUrl}/image`);
+  });
+});

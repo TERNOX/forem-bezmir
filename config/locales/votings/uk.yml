@@ -42,7 +42,7 @@ uk:
         vote_too: Проголосувати теж
         open_voting: До голосування
         image_byline: "Вибір @%{username}"
-        image_more_picks: Інші мої вибори
+        image_total: "Номінацій у бюлетені: %{count}"
         image_footer: "Голосуйте на %{url}"
       app:
         progress: "Заповнено %{done} з %{total}"

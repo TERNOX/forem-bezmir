@@ -101,18 +101,23 @@ RSpec.describe Votings::OtherAnswerMerger do
     untouched = vote([hades.id], other: "hades 2")
     image_path = Rails.root.join("spec/fixtures/files/800x600.png")
     [affected, untouched].each do |ballot|
-      ballot.update!(share_image: Rack::Test::UploadedFile.new(image_path, "image/png"))
+      ballot.update!(share_image: Rack::Test::UploadedFile.new(image_path, "image/png"),
+                     share_preview_image: Rack::Test::UploadedFile.new(image_path, "image/png"))
     end
     old_path = affected.reload.share_image.path
+    old_preview_path = affected.share_preview_image.path
     submitted_at = affected.submitted_at
     Sidekiq::Worker.clear_all
 
     merge("silksong")
 
     expect(affected.reload.share_image).to be_blank
+    expect(affected.share_preview_image).to be_blank
     expect(File.exist?(old_path)).to be(false)
+    expect(File.exist?(old_preview_path)).to be(false)
     expect(affected.submitted_at).to eq(submitted_at)
     expect(untouched.reload.share_image).to be_present
+    expect(untouched.share_preview_image).to be_present
     expect(Votings::GenerateShareImageWorker.jobs.pluck("args")).to eq([[affected.id]])
   end
 

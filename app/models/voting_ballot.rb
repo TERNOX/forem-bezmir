@@ -4,7 +4,10 @@ class VotingBallot < ApplicationRecord
   belongs_to :user
   has_many :choices, class_name: "VotingChoice", dependent: :delete_all, inverse_of: :ballot
 
+  # The vote card (downloadable picture) and the 1200x630 link preview
+  # (og:image); always drawn and cleared together.
   mount_uploader :share_image, VotingImageUploader
+  mount_uploader :share_preview_image, VotingImageUploader
 
   validates :user_id, uniqueness: { scope: :voting_id }
 

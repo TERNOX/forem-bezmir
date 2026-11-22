@@ -3,8 +3,8 @@
 # of every ballot that had the nominee move up (a ballot "X, B, C" without X
 # becomes B = 1st, C = 2nd), so nobody's first place silently disappears.
 #
-# Each affected ballot's share image showed the removed pick, so it is dropped
-# and queued for a re-render, like a re-submitted ballot (see
+# Each affected ballot's share images showed the removed pick, so they are
+# dropped and queued for a re-render, like a re-submitted ballot (see
 # Votings::BallotSubmitter#persist); every affected ballot's updated_at moves,
 # so a render already in flight with the old picks is not stored.
 #
@@ -30,18 +30,24 @@ module Votings
         # for (and then fully replaces) the renumbered picks.
         ballots = VotingBallot.where(id: nominee.choices.select(:voting_ballot_id)).order(:id).lock.to_a
         ballot_ids = ballots.map(&:id)
-        ballots_with_image = ballots.select { |ballot| ballot.share_image.present? }
+        ballots_with_image = ballots.select do |ballot|
+          ballot.share_image.present? || ballot.share_preview_image.present?
+        end
         nominee.destroy!
         renumber_ranks(ballot_ids) if category.ranked? && ballot_ids.any?
         # Bumping updated_at on every affected ballot (not only those with an
         # image) makes a render that already read the old picks drop its
         # result (Votings::GenerateShareImage#store).
-        VotingBallot.where(id: ballot_ids).update_all(share_image: nil, updated_at: Time.current)
+        VotingBallot.where(id: ballot_ids).update_all(share_image: nil, share_preview_image: nil,
+                                                      updated_at: Time.current)
       end
 
       # The files go only once the transaction is committed, so a rollback
       # never leaves a ballot pointing at a deleted image.
-      ballots_with_image.each { |ballot| ballot.share_image.remove! }
+      ballots_with_image.each do |ballot|
+        ballot.share_image.remove!
+        ballot.share_preview_image.remove!
+      end
       ballot_ids.each { |ballot_id| Votings::GenerateShareImageWorker.perform_async(ballot_id) }
       ballot_ids.size
     end

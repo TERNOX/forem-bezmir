@@ -638,20 +638,27 @@
     margin-bottom: var(--su-3);
   }
 
+  // The vote card is portrait and its height follows the number of answers,
+  // so the box takes the picture's own ratio once it has loaded.
   &__preview {
     position: relative;
-    max-width: 720px;
+    max-width: 420px;
     margin: 0 auto var(--su-4);
-    aspect-ratio: 1200 / 630;
     border-radius: var(--voting-radius);
     overflow: hidden;
     background: var(--base-10);
 
     img {
       width: 100%;
-      height: 100%;
+      height: auto;
       display: block;
     }
+  }
+
+  // Room for the "generating" text while there is no picture yet (the hidden
+  // image has no size of its own until it loads).
+  &__preview--loading {
+    min-height: 240px;
   }
 
   &__loading {

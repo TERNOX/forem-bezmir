@@ -1,5 +1,5 @@
 # Fork-only: the signed-in user's ballot for a voting (JSON), plus the public
-# "my picks" share page and its social image.
+# "my picks" share page and its pictures (vote card and link preview).
 class VotingBallotsController < ApplicationController
   before_action :set_voting
   before_action :authenticate_user!, only: :update
@@ -41,28 +41,44 @@ class VotingBallotsController < ApplicationController
     @categories = @voting.categories.includes(nominees: :game).to_a
     @picks = Votings::BallotPicks.call(@ballot, @categories)
     @share_url = share_url_for(@ballot)
-    @share_image_url = voting_share_image_url(@voting.slug, @user.username, @ballot.share_token,
-                                              v: @ballot.updated_at.to_i)
+    @share_preview_url = voting_share_preview_url(@voting.slug, @user.username, @ballot.share_token,
+                                                  v: @ballot.updated_at.to_i)
   end
 
-  # GET /vote/:slug/u/:username/:token/image — the generated share image.
-  # Normally made by the worker right after voting; if it's missing we try to
-  # render it here (GenerateShareImage allows one render per ballot at a time).
-  # While it isn't ready the voting app (which passes ?attempt=) gets a 503 to
-  # retry on; crawlers get the voting's generic social image.
+  # GET /vote/:slug/u/:username/:token/image — the vote card (the picture
+  # people download and post).
   def image
+    serve_share_picture(:share_image)
+  end
+
+  # GET /vote/:slug/u/:username/:token/preview — the 1200x630 link preview
+  # (the share page's og:image).
+  def preview
+    serve_share_picture(:share_preview_image)
+  end
+
+  private
+
+  # Both pictures are normally made by the worker right after voting; if the
+  # one asked for is missing we try to render it here (GenerateShareImage
+  # allows one render per ballot at a time and always draws both, so a ballot
+  # with only an old-style card gets its preview too). While it isn't ready
+  # the voting app (which passes ?attempt=) gets a 503 to retry on; crawlers
+  # get the voting's generic social image.
+  def serve_share_picture(attribute)
     ballot = find_shared_ballot
-    if ballot.share_image.blank?
+    if ballot.public_send(attribute).blank?
       begin
         Votings::GenerateShareImage.call(ballot)
       rescue StandardError => e
-        Rails.logger.error("[VotingBallotsController#image] #{e.class}: #{e.message}")
+        Rails.logger.error("[VotingBallotsController##{action_name}] #{e.class}: #{e.message}")
       end
       ballot.reload
     end
 
-    if ballot.share_image.present?
-      redirect_to ballot.share_image.url, allow_other_host: true
+    picture = ballot.public_send(attribute)
+    if picture.present?
+      redirect_to picture.url, allow_other_host: true
     else
       response.headers["Cache-Control"] = "no-store"
       if params[:attempt].present?
@@ -73,8 +89,6 @@ class VotingBallotsController < ApplicationController
       end
     end
   end
-
-  private
 
   def set_voting
     @voting = Voting.find_by(slug: params[:slug].to_s.downcase)

@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Votings::GenerateShareImage do
-  it "renders a 1200x630 card even when nominees have no pictures" do
+  it "stores the vote card and the 1200x630 link preview even when nominees have no pictures" do
     voting = create(:voting, title: "Гра року 2026 — «тест» 100% @home")
     ranked = create(:voting_category, voting: voting, ranked: true, max_choices: 3)
     other = create(:voting_category, voting: voting, max_choices: 2)
@@ -16,11 +16,68 @@ RSpec.describe Votings::GenerateShareImage do
       }
     ).ballot
 
-    described_class.call(ballot)
+    expect(described_class.call(ballot)).to be(true)
 
-    expect(ballot.reload.share_image).to be_present
-    image = MiniMagick::Image.open(ballot.share_image.path)
-    expect([image.width, image.height]).to eq([1200, 630])
+    ballot.reload
+    expect(ballot.share_image).to be_present
+    expect(ballot.share_preview_image).to be_present
+    card = MiniMagick::Image.open(ballot.share_image.path)
+    expect(card.width).to eq(1080)
+    expect(card.height).to be > 630
+    preview = MiniMagick::Image.open(ballot.share_preview_image.path)
+    expect([preview.width, preview.height]).to eq([1200, 630])
+    expect(ballot.share_image.path).not_to eq(ballot.share_preview_image.path)
+  end
+
+  it "draws both pictures in the community's language" do
+    allow(Settings::UserExperience).to receive(:default_locale).and_return("uk")
+    voting = create(:voting)
+    category = create(:voting_category, voting: voting)
+    nominee = create(:voting_nominee, category: category)
+    ballot = Votings::BallotSubmitter.call(voting: voting, user: create(:user),
+                                           selections: { category.id.to_s => { "nominee_ids" => [nominee.id] } }).ballot
+    locales = []
+    allow(Votings::ShareCard).to receive(:call).and_wrap_original do |original, **args|
+      locales << [args[:layout], I18n.locale]
+      original.call(**args)
+    end
+
+    expect(described_class.call(ballot)).to be(true)
+    expect(locales).to eq([%i[card uk], %i[preview uk]])
+  end
+
+  it "replaces an old-style card that has no preview" do
+    voting = create(:voting)
+    category = create(:voting_category, voting: voting)
+    nominee = create(:voting_nominee, category: category)
+    ballot = Votings::BallotSubmitter.call(voting: voting, user: create(:user),
+                                           selections: { category.id.to_s => { "nominee_ids" => [nominee.id] } }).ballot
+    ballot.update!(share_image: Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/800x600.png"),
+                                                             "image/png"))
+
+    expect(described_class.call(VotingBallot.find(ballot.id))).to be(true)
+
+    ballot.reload
+    expect(MiniMagick::Image.open(ballot.share_image.path).width).to eq(1080)
+    expect(MiniMagick::Image.open(ballot.share_preview_image.path).width).to eq(1200)
+  end
+
+  it "stores nothing when a picture fails to draw" do
+    voting = create(:voting)
+    category = create(:voting_category, voting: voting)
+    nominee = create(:voting_nominee, category: category)
+    ballot = Votings::BallotSubmitter.call(voting: voting, user: create(:user),
+                                           selections: { category.id.to_s => { "nominee_ids" => [nominee.id] } }).ballot
+    allow(Votings::ShareCard).to receive(:call).and_wrap_original do |original, **args|
+      raise MiniMagick::Error, "boom" if args[:layout] == :preview
+
+      original.call(**args)
+    end
+
+    expect { described_class.call(ballot) }.to raise_error(MiniMagick::Error)
+    ballot.reload
+    expect(ballot.share_image).to be_blank
+    expect(ballot.share_preview_image).to be_blank
   end
 
   it "drops a stale render when the voter changed their picks meanwhile" do
@@ -38,6 +95,7 @@ RSpec.describe Votings::GenerateShareImage do
 
     expect(stale.call).to be(false)
     expect(ballot.reload.share_image).to be_blank
+    expect(ballot.share_preview_image).to be_blank
   end
 
   it "skips the render while another one holds the ballot's lock" do
@@ -52,6 +110,7 @@ RSpec.describe Votings::GenerateShareImage do
 
     expect(described_class.call(ballot)).to be(false)
     expect(ballot.reload.share_image).to be_blank
+    expect(ballot.share_preview_image).to be_blank
   end
 
   describe "when an admin rewrites the picks during a render" do
@@ -73,6 +132,7 @@ RSpec.describe Votings::GenerateShareImage do
 
       expect(render.call).to be(false)
       expect(VotingBallot.find(ballot_id).share_image).to be_blank
+      expect(VotingBallot.find(ballot_id).share_preview_image).to be_blank
     end
 
     it "drops a render even when the change lands between loading the ballot and reading its picks" do
@@ -85,9 +145,11 @@ RSpec.describe Votings::GenerateShareImage do
 
       expect(described_class.call(VotingBallot.find(ballot_id))).to be(false)
       expect(VotingBallot.find(ballot_id).share_image).to be_blank
+      expect(VotingBallot.find(ballot_id).share_preview_image).to be_blank
 
       expect(described_class.call(VotingBallot.find(ballot_id))).to be(true)
       expect(VotingBallot.find(ballot_id).share_image).to be_present
+      expect(VotingBallot.find(ballot_id).share_preview_image).to be_present
     end
 
     it "reads the picks when it draws, not from a copy preloaded with the ballot" do

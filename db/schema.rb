@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_11_22_140000) do
+ActiveRecord::Schema[7.2].define(version: 2026_11_22_150000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "ltree"
@@ -2249,6 +2249,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_11_22_140000) do
     t.datetime "created_at", null: false
     t.datetime "disqualified_at"
     t.string "share_image"
+    t.string "share_preview_image"
     t.datetime "submitted_at"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
