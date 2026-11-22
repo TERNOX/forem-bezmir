@@ -52,6 +52,7 @@ module Admin
       @results = Votings::Results.call(@voting)
       respond_to do |format|
         format.html do
+          @other_answer_totals = other_answer_totals
           if @voting.results_snapshot
             @snapshot_matches = Votings::PublicResults.call(@voting, results: @results) == @voting.results_snapshot
           end
@@ -101,6 +102,14 @@ module Admin
         :title, :slug, :description_markdown, :banner_image, :remove_banner_image,
         :opens_at, :closes_at, :published, :top_level_path, :require_account_before_start, :min_user_score
       )
+    end
+
+    # { [category_id, normalised text] => count } over every ballot, counted or
+    # not: merging an "other" answer into a nominee rewrites all of them.
+    def other_answer_totals
+      VotingChoice.joins(:category).where(voting_categories: { voting_id: @voting.id })
+        .where(voting_nominee_id: nil).where.not(other_text: [nil, ""])
+        .group(:voting_category_id, Arel.sql("lower(trim(voting_choices.other_text))")).count
     end
 
     def results_csv(results)

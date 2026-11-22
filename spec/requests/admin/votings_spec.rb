@@ -351,6 +351,90 @@ RSpec.describe "Admin::Votings" do
     end
   end
 
+  describe "counting an “other” answer as a nominee" do
+    let(:category) do
+      create(:voting_category, voting: voting, max_choices: 3, ranked: true, rank_points: [5, 3, 1], allow_other: true)
+    end
+    let!(:silksong) { create(:voting_nominee, category: category, title: "Hollow Knight: Silksong", game: nil) }
+    let!(:hades) { create(:voting_nominee, category: category) }
+    let(:other_category) { create(:voting_category, voting: voting, max_choices: 2, allow_other: true) }
+    let!(:foreign) { create(:voting_nominee, category: other_category) }
+    let(:merge_path) { merge_other_answer_admin_voting_voting_category_path(voting, category) }
+
+    def vote(ids, other)
+      Votings::BallotSubmitter.call(voting: voting, user: create(:user),
+                                    selections: { category.id.to_s => { "nominee_ids" => ids, "other" => other },
+                                                  other_category.id.to_s => { "other" => "Steam Deck" } }).ballot
+    end
+
+    before do
+      voting.update!(published: true)
+      vote([], "Silksong")
+      vote([hades.id], "silksong ")
+      vote([silksong.id], "SILKSONG")
+      vote([], "Hades 2")
+    end
+
+    it "offers a nominee picker for every other answer of a nomination with nominees" do
+      get results_admin_voting_path(voting)
+
+      page = Nokogiri::HTML(response.body)
+      forms = page.css("form").select { |form| form["action"] == merge_path }
+      expect(forms.map { |form| form.at_css("input[name=text]")["value"] }).to eq(["silksong", "hades 2"])
+      expect(forms.first.css("select[name=nominee_id] option").map(&:text))
+        .to eq(["Hollow Knight: Silksong", hades.display_title])
+      expect(forms.first["data-confirm"]).to include("Count all 3 answers “silksong”").and include("cannot be undone")
+      # The other nomination has nominees too, so its answer gets a form as well.
+      other_path = merge_other_answer_admin_voting_voting_category_path(voting, other_category)
+      expect(page.css("form").count { |form| form["action"] == other_path }).to eq(1)
+    end
+
+    it "shows no picker in a nomination without nominees" do
+      foreign.destroy!
+      get results_admin_voting_path(voting)
+
+      other_path = merge_other_answer_admin_voting_voting_category_path(voting, other_category)
+      expect(response.body).to include("steam deck")
+      expect(response.body).not_to include(other_path)
+    end
+
+    it "merges the answers and says what happened" do
+      Audit::Subscribe.listen(:internal)
+
+      expect do
+        post merge_path, params: { text: "silksong", nominee_id: silksong.id }
+      end.to change(AuditLog, :count).by(1)
+
+      expect(response).to redirect_to(results_admin_voting_path(voting))
+      expect(flash[:notice]).to eq("Counted 3 answers “silksong” as “Hollow Knight: Silksong” (1 duplicate dropped).")
+      expect(AuditLog.last.data).to include("voting_category_id" => category.id, "other_text" => "silksong",
+                                            "voting_nominee_id" => silksong.id, "merged" => 2, "dropped" => 1)
+      expect(VotingChoice.where(voting_category_id: category.id, voting_nominee_id: nil).pluck(:other_text))
+        .to eq(["Hades 2"])
+      expect(VotingChoice.where(voting_nominee_id: silksong.id).count).to eq(3)
+    ensure
+      Audit::Subscribe.forget(:internal)
+    end
+
+    it "refuses a nominee from another nomination or an unknown one, changing nothing" do
+      [foreign.id, 0, ""].each do |nominee_id|
+        expect do
+          post merge_path, params: { text: "silksong", nominee_id: nominee_id }
+        end.not_to(change { VotingChoice.order(:id).pluck(:voting_nominee_id, :rank, :other_text) })
+
+        expect(response).to redirect_to(results_admin_voting_path(voting))
+        expect(flash[:alert]).to include("Pick a nominee")
+      end
+    end
+
+    it "says so when no answer matches" do
+      post merge_path, params: { text: "celeste", nominee_id: silksong.id }
+
+      expect(response).to redirect_to(results_admin_voting_path(voting))
+      expect(flash[:alert]).to eq("No “celeste” answers found in “#{category.title}”.")
+    end
+  end
+
   it "searches the catalog (and reports IGDB as not configured)" do
     create(:game, title: "Hades II")
     get search_admin_games_path(q: "hades", format: :json)

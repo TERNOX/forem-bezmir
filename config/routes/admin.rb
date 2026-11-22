@@ -179,6 +179,7 @@ namespace :admin do
         member do
           patch :move
           post :copy_nominees
+          post :merge_other_answer
         end
         resources :voting_nominees, path: "nominees", only: %i[create edit update destroy] do
           member { patch :move }

@@ -47,6 +47,33 @@ module Admin
                   notice: "Copied #{added} nominee(s) from “#{source.title}”."
     end
 
+    # Counts one "other" answer (as grouped on the results page) as a nominee
+    # of this nomination, on every ballot that gave it. Irreversible.
+    def merge_other_answer
+      results_path = results_admin_voting_path(@voting)
+      text = params[:text].to_s
+      nominee = @category.nominees.find_by(id: params[:nominee_id].to_s)
+      return redirect_to(results_path, alert: "Pick a nominee of “#{@category.title}”.") unless nominee
+      return redirect_to(results_path, alert: "Pick an “other” answer to count.") if text.strip.empty?
+
+      result = Votings::OtherAnswerMerger.call(category: @category, text: text, nominee: nominee)
+      if result.total.zero?
+        return redirect_to(results_path, alert: "No “#{text}” answers found in “#{@category.title}”.")
+      end
+
+      Audit::Logger.log(:internal, current_user, {
+                          "action" => params[:action],
+                          "controller" => params[:controller],
+                          "voting_id" => @voting.id,
+                          "voting_category_id" => @category.id,
+                          "other_text" => text,
+                          "voting_nominee_id" => nominee.id,
+                          "merged" => result.merged,
+                          "dropped" => result.dropped
+                        })
+      redirect_to results_path, notice: merge_notice(result, text, nominee)
+    end
+
     protected
 
     def authorization_resource
@@ -61,6 +88,12 @@ module Admin
 
     def set_category
       @category = @voting.categories.find(params[:id])
+    end
+
+    def merge_notice(result, text, nominee)
+      notice = "Counted #{helpers.pluralize(result.total, 'answer')} “#{text}” as “#{nominee.display_title}”"
+      notice += " (#{helpers.pluralize(result.dropped, 'duplicate')} dropped)" if result.dropped.positive?
+      "#{notice}."
     end
 
     def category_params

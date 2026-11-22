@@ -48,7 +48,12 @@ module Votings
 
     def initialize(ballot)
       @ballot = ballot
-      @revision = ballot.submitted_at
+      # The ballot row's updated_at is the revision of its picks: a re-submit
+      # (Votings::BallotSubmitter) and the admin services that rewrite picks
+      # (Votings::NomineeRemover, Votings::OtherAnswerMerger) all bump it in
+      # the same transaction as the choices. Captured from the row as it was
+      # loaded, i.e. no newer than the picks #render reads afterwards.
+      @revision = ballot.updated_at
       @voting = ballot.voting
       @user = ballot.user
       @tempfiles = []
@@ -88,6 +93,10 @@ module Votings
     end
 
     def render
+      # Read the picks now, after the revision was captured, even if the
+      # caller preloaded them: picks older than the revision would let a
+      # stale card pass the check in #store.
+      @ballot.choices.reset
       picks = Votings::BallotPicks.call(@ballot)
       featured = picks.detect { |pick| pick.category.ranked? && pick.nominees.any? } ||
         picks.detect { |pick| pick.nominees.any? }
@@ -253,10 +262,12 @@ module Votings
       file = tempfile(".png")
       image.write(file.path)
       @ballot.with_lock do
-        # The voter changed their picks while we were drawing: a newer render
-        # (queued by that submission) owns the image, so drop this stale one.
-        # Compared at the database's microsecond precision.
-        next false if @ballot.submitted_at&.floor(6) != @revision&.floor(6)
+        # The picks changed while we were drawing (the voter re-submitted, or
+        # an admin removed a nominee / merged an "other" answer): the render
+        # queued by that change owns the image, so drop this stale one.
+        # with_lock reloaded the row; compared at the database's microsecond
+        # precision.
+        next false if @ballot.updated_at&.floor(6) != @revision&.floor(6)
 
         @ballot.share_image = File.open(file.path)
         @ballot.save!

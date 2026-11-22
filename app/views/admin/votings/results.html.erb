@@ -85,9 +85,33 @@
     <% if category_result.other_answers.any? %>
       <details class="mt-3">
         <summary class="cursor-pointer fs-s fw-medium">“Other” answers (<%= category_result.other_answers.sum(&:last) %>)</summary>
-        <ul class="mt-2 fs-s">
-          <% category_result.other_answers.each do |text, count| %>
-            <li><%= text %> — <%= count %></li>
+        <% nominees = category.nominees %>
+        <% if nominees.any? %>
+          <p class="mt-2 fs-s color-base-60">“Count as nominee” turns every ballot's answer into a pick of that nominee (the last place in a ranked nomination); a ballot that already has the nominee just loses the answer.</p>
+        <% end %>
+        <ul class="mt-2 fs-s flex flex-col gap-2">
+          <% category_result.other_answers.each_with_index do |(text, count), index| %>
+            <li class="flex flex-wrap items-center gap-2" data-other-answer="<%= text %>">
+              <span><%= text %> — <%= count %></span>
+              <% if nominees.any? %>
+                <% total = @other_answer_totals.fetch([category.id, text], count) %>
+                <% affected = total == count ? pluralize(total, "answer") : "#{pluralize(total, 'answer')} (#{count} on counted ballots)" %>
+                <% merge_confirm = "Count all #{affected} “#{text}” as the selected nominee? This rewrites voters' ballots and cannot be undone." %>
+                <%= form_with url: merge_other_answer_admin_voting_voting_category_path(@voting, category), method: :post, local: true,
+                              class: "flex flex-wrap items-center gap-2", data: { confirm: merge_confirm } do %>
+                  <input type="hidden" name="text" value="<%= text %>">
+                  <label class="screen-reader-only" for="merge-<%= category.id %>-<%= index %>">Nominee for “<%= text %>”</label>
+                  <div class="crayons-select">
+                    <select id="merge-<%= category.id %>-<%= index %>" name="nominee_id" class="crayons-select__native fs-s">
+                      <% nominees.each do |nominee| %>
+                        <option value="<%= nominee.id %>"><%= nominee.display_title %></option>
+                      <% end %>
+                    </select>
+                  </div>
+                  <button type="submit" class="crayons-btn crayons-btn--s crayons-btn--secondary">Count as nominee</button>
+                <% end %>
+              <% end %>
+            </li>
           <% end %>
         </ul>
       </details>
